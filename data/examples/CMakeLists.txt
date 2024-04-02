@@ -1,11 +1,14 @@
 
-SET(Examples_Files 
+SET(Examples_Files
     Schenkel.stp
-    DrawingExample.FCStd
+    draft_test_objects.FCStd
     EngineBlock.FCStd
     PartDesignExample.FCStd
     RobotExample.FCStd
     ArchDetail.FCStd
+    FemCalculixCantilever2D.FCStd
+    FemCalculixCantilever3D.FCStd
+    FemCalculixCantilever3D_newSolver.FCStd
 )
 
 ADD_CUSTOM_TARGET(Example_data ALL

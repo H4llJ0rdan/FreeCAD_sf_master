@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true">Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -27,12 +27,32 @@
       <widget class="QComboBox" name="axis">
        <item>
         <property name="text">
-         <string>Vertical sketch axis</string>
+         <string>Base X axis</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Base Y axis</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Base Z axis</string>
         </property>
        </item>
        <item>
         <property name="text">
          <string>Horizontal sketch axis</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Vertical sketch axis</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Select reference...</string>
         </property>
        </item>
       </widget>
@@ -50,6 +70,9 @@
      </item>
      <item>
       <widget class="Gui::QuantitySpinBox" name="revolveAngle">
+       <property name="keyboardTracking">
+        <bool>false</bool>
+       </property>
        <property name="unit" stdset="0">
         <string notr="true">deg</string>
        </property>
@@ -112,6 +135,13 @@
    <header>Gui/QuantitySpinBox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>axis</tabstop>
+  <tabstop>revolveAngle</tabstop>
+  <tabstop>checkBoxMidplane</tabstop>
+  <tabstop>checkBoxReversed</tabstop>
+  <tabstop>checkBoxUpdateView</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

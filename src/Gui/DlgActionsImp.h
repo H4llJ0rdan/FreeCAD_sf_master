@@ -24,13 +24,22 @@
 #ifndef GUI_DIALOG_DLGACTIONS_IMP_H
 #define GUI_DIALOG_DLGACTIONS_IMP_H
 
-#include "ui_DlgActions.h"
+#include <memory>
 #include "PropertyPage.h"
 #include <QDialog>
+#include <QList>
+#include <QPair>
 
+class QListWidgetItem;
+class QTreeWidgetItem;
+class QLabel;
+class QGridLayout;
+class QLineEdit;
 
 namespace Gui {
 namespace Dialog {
+
+class Ui_DlgCustomActions;
 
 /** This class implements the creation of user defined actions executing a recorded macro.
  * It is possible to use these actions in own toolbars or commandbars.
@@ -39,13 +48,13 @@ namespace Dialog {
  * @see Command
  * \author Werner Mayer
  */
-class DlgCustomActionsImp : public CustomizeActionPage, public Ui_DlgCustomActions
-{ 
+class DlgCustomActionsImp : public CustomizeActionPage
+{
     Q_OBJECT
 
 public:
-    DlgCustomActionsImp( QWidget* parent = 0 );
-    ~DlgCustomActionsImp();
+    explicit DlgCustomActionsImp( QWidget* parent = nullptr );
+    ~DlgCustomActionsImp() override;
 
 Q_SIGNALS:
     void addMacroAction( const QByteArray& );
@@ -54,34 +63,35 @@ Q_SIGNALS:
 
 protected:
     /** Trigger for reparent event. */
-    bool event(QEvent* e);
-    void showEvent(QShowEvent* e);
-    void changeEvent(QEvent *e);
+    bool event(QEvent* e) override;
+    void changeEvent(QEvent *e) override;
+
+protected:
+    void setupConnections();
+    /** Enables/disables buttons for deletion */
+    void onActionListWidgetItemActivated( QTreeWidgetItem *i );
+    /** Opens a iconview to select a pixmap */
+    void onButtonChoosePixmapClicked();
+    /** Adds a custom action */
+    void onButtonAddActionClicked();
+    /** Deletes a custom action */
+    void onButtonRemoveActionClicked();
+    /** Shows the setup of the action */
+    void onButtonReplaceActionClicked();
 
 protected Q_SLOTS:
-    /** Enables/disables buttons for deletion */
-    void on_actionListWidget_itemActivated( QTreeWidgetItem *i );
-    /** Opens a iconview to select a pixmap */
-    void on_buttonChoosePixmap_clicked();
-    /** Adds a custom action */
-    void on_buttonAddAction_clicked();
-    /** Deletes a custom action */
-    void on_buttonRemoveAction_clicked();
-    /** Shows the setup of the action */
-    void on_buttonReplaceAction_clicked();
-    void onAddMacroAction(const QByteArray&);
-    void onRemoveMacroAction(const QByteArray&);
-    void onModifyMacroAction(const QByteArray&);
+    void onAddMacroAction(const QByteArray&) override;
+    void onRemoveMacroAction(const QByteArray&) override;
+    void onModifyMacroAction(const QByteArray&) override;
 
 private:
     /** Shows all actions and their pixmaps if available  */
     void showActions();
-    /** Name for the new created action */
-    QString newActionName();
 
 private:
-    bool bShown; /**< For internal use only*/
+    std::unique_ptr<Ui_DlgCustomActions> ui;
     QString m_sPixmap; /**< Name of the specified pixmap */
+    bool bChanged = false;
 };
 
 class Ui_DlgChooseIcon;
@@ -90,16 +100,38 @@ class IconDialog : public QDialog
     Q_OBJECT
 
 public:
-    IconDialog(QWidget* parent);
-    ~IconDialog();
-    void resizeEvent(QResizeEvent*);
+    explicit IconDialog(QWidget* parent);
+    ~IconDialog() override;
+    void resizeEvent(QResizeEvent*) override;
     QListWidgetItem* currentItem() const;
 
-private Q_SLOTS:
+private:
     void onAddIconPath();
 
 private:
     Ui_DlgChooseIcon *ui;
+};
+
+class IconFolders : public QDialog
+{
+    Q_OBJECT
+
+public:
+    IconFolders(const QStringList&, QWidget* parent);
+    ~IconFolders() override;
+    QStringList getPaths() const;
+
+private:
+    void addFolder();
+    void removeFolder();
+
+private:
+    bool restart;
+    int maxLines;
+    QGridLayout* gridLayout;
+    QLabel* textLabel;
+    QPushButton* addButton;
+    QList< QPair<QLineEdit*, QPushButton*> > buttonMap;
 };
 
 } // namespace Dialog

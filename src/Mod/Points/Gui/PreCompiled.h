@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,57 +20,38 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef POINTSGUI_PRECOMPILED_H
 #define POINTSGUI_PRECOMPILED_H
 
 #include <FCConfig.h>
 
-// Importing of App classes
-#ifdef FC_OS_WIN32
-# define PointsExport    __declspec(dllimport)
-# define PointsGuiExport __declspec(dllexport)
-#else // for Linux
-# define PointsExport
-# define PointsGuiExport
-#endif
-
 #ifdef _PreComp_
-
-// standard
-#include <stdio.h>
-#include <assert.h>
 
 // STL
 #include <algorithm>
-#include <iostream>
-#include <list>
-#include <map>
-#include <queue>
-#include <set>
-#include <sstream>
-#include <stack>
-#include <string>
-#include <vector>
-#include <bitset>
+#include <limits>
+#include <memory>
 
-#include <Python.h>
-#ifdef FC_OS_WIN32
-# include <windows.h>
-#endif
+// boost
+#include <boost/math/special_functions/fpclassify.hpp>
 
-
-// Qt Toolkit
-#ifndef __Qt4All__
-# include <Gui/Qt4All.h>
-#endif
+// Qt
+#include <QDialog>
+#include <QInputDialog>
 
 // Inventor
-#ifndef __InventorAll__
-# include <Gui/InventorAll.h>
-#endif
-
+#include <Inventor/SbVec2f.h>
+#include <Inventor/errors/SoDebugError.h>
+#include <Inventor/events/SoMouseButtonEvent.h>
+#include <Inventor/nodes/SoCamera.h>
+#include <Inventor/nodes/SoCoordinate3.h>
+#include <Inventor/nodes/SoDrawStyle.h>
+#include <Inventor/nodes/SoIndexedPointSet.h>
+#include <Inventor/nodes/SoMaterial.h>
+#include <Inventor/nodes/SoMaterialBinding.h>
+#include <Inventor/nodes/SoNormal.h>
+#include <Inventor/nodes/SoPointSet.h>
 
 #endif  //_PreComp_
 
-#endif // POINTSGUI_PRECOMPILED_H 
+#endif  // POINTSGUI_PRECOMPILED_H

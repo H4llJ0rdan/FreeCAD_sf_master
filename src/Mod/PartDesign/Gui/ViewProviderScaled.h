@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -30,14 +30,20 @@ namespace PartDesignGui {
 
 class PartDesignGuiExport ViewProviderScaled : public ViewProviderTransformed
 {
-    PROPERTY_HEADER(PartGui::ViewProviderScaled);
+    Q_DECLARE_TR_FUNCTIONS(PartDesignGui::ViewProviderScaled)
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderScaled);
 public:
-    ViewProviderScaled()
-        { featureName = std::string("Scaled");
-	   sPixmap = "PartDesign_Scaled.svg"; }
+    ViewProviderScaled() {
+        menuName = tr("Scaled parameters");
+        sPixmap = "PartDesign_Scaled.svg";
+    }
+
+    const std::string & featureName() const override;
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
+    /// Returns a newly create dialog for the part to be placed in the task view
+    TaskDlgFeatureParameters *getEditDialog() override;
 
 };
 

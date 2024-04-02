@@ -32,25 +32,26 @@
 
 #include "SensorManager.h"
 
-#include <QtCore/QTimer>
+#include <QTimer>
 
-#include <Inventor/SoDB.h>
 #include <Inventor/SbTime.h>
+#include <Inventor/SoDB.h>
 #include <Inventor/SoRenderManager.h>
-#include <Inventor/nodekits/SoNodeKit.h>
 #include <Inventor/C/threads/thread.h>
+
 #include "SignalThread.h"
+
 
 using namespace SIM::Coin3D::Quarter;
 
-SensorManager::SensorManager(void)
+SensorManager::SensorManager()
   : inherited()
 {
   this->mainthreadid = cc_thread_id();
   this->signalthread = new SignalThread();
 
-  QObject::connect(this->signalthread, SIGNAL(triggerSignal()),
-                   this, SLOT(sensorQueueChanged()));
+  QObject::connect(this->signalthread, &SignalThread::triggerSignal,
+                   this, &SensorManager::sensorQueueChanged);
 
   this->idletimer = new QTimer;
   this->delaytimer = new QTimer;
@@ -60,21 +61,21 @@ SensorManager::SensorManager(void)
   this->delaytimer->setSingleShot(true);
   this->timerqueuetimer->setSingleShot(true);
 
-  this->connect(this->idletimer, SIGNAL(timeout(void)), this, SLOT(idleTimeout()));
-  this->connect(this->delaytimer, SIGNAL(timeout(void)), this, SLOT(delayTimeout()));
-  this->connect(this->timerqueuetimer, SIGNAL(timeout(void)), this, SLOT(timerQueueTimeout()));
+  this->connect(this->idletimer, &QTimer::timeout, this, &SensorManager::idleTimeout);
+  this->connect(this->delaytimer, &QTimer::timeout, this, &SensorManager::delayTimeout);
+  this->connect(this->timerqueuetimer, &QTimer::timeout, this, &SensorManager::timerQueueTimeout);
 
   SoDB::getSensorManager()->setChangedCallback(SensorManager::sensorQueueChangedCB, this);
   this->timerEpsilon = 1.0 / 5000.0;
 
   SoDB::setRealTimeInterval(1.0 / 25.0);
-  SoRenderManager::enableRealTimeUpdate(FALSE);
+  SoRenderManager::enableRealTimeUpdate(false);
 }
 
 SensorManager::~SensorManager()
 {
   // remove the Coin callback before shutting down
-  SoDB::getSensorManager()->setChangedCallback(NULL, NULL);
+  SoDB::getSensorManager()->setChangedCallback(nullptr, nullptr);
 
   if (this->signalthread->isRunning()) {
     this->signalthread->stopThread();
@@ -104,7 +105,7 @@ SensorManager::sensorQueueChangedCB(void * closure)
 }
 
 void
-SensorManager::sensorQueueChanged(void)
+SensorManager::sensorQueueChanged()
 {
   SoSensorManager * sensormanager = SoDB::getSensorManager();
   assert(sensormanager);
@@ -144,25 +145,25 @@ SensorManager::sensorQueueChanged(void)
 }
 
 void
-SensorManager::idleTimeout(void)
+SensorManager::idleTimeout()
 {
   SoDB::getSensorManager()->processTimerQueue();
-  SoDB::getSensorManager()->processDelayQueue(TRUE);
+  SoDB::getSensorManager()->processDelayQueue(true);
   this->sensorQueueChanged();
 }
 
 void
-SensorManager::timerQueueTimeout(void)
+SensorManager::timerQueueTimeout()
 {
   SoDB::getSensorManager()->processTimerQueue();
   this->sensorQueueChanged();
 }
 
 void
-SensorManager::delayTimeout(void)
+SensorManager::delayTimeout()
 {
   SoDB::getSensorManager()->processTimerQueue();
-  SoDB::getSensorManager()->processDelayQueue(FALSE);
+  SoDB::getSensorManager()->processDelayQueue(false);
   this->sensorQueueChanged();
 }
 

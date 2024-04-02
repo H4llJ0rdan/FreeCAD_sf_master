@@ -1,46 +1,31 @@
-#FIND_PACKAGE(Subversion)
 
-#IF(Subversion_FOUND)
-#    Subversion_WC_INFO(${CMAKE_SOURCE_DIR} Project)
-#    MESSAGE(STATUS "Current revision is ${Project_WC_REVISION}")
-#ENDIF(Subversion_FOUND)
+set(PACKAGE_WCREF "$WCREV$")
+set(PACKAGE_WCDATE "$WCDATE$")
+set(PACKAGE_WCURL "$WCURL$")
 
+# If the sources don't include a Version.h then create one
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Version.h)
 
-#add_custom_target(Version ALL
-#        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/Tools/SubWCRev.py
-#          --srcdir=${CMAKE_SOURCE_DIR} --bindir=${CMAKE_BINARY_DIR}
-#          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-#    DEPENDS Version.h.in
-#    COMMENT Building Version.h out of Version.h.in
-#)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Version.h.cmake
+                ${CMAKE_CURRENT_BINARY_DIR}/Version.h.in)
 
+    add_custom_command(
+        OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/Version.h
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/Version.h.out
+            ${CMAKE_CURRENT_BINARY_DIR}/Version.h
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS version_check)
 
-if (WIN32)
-    # TortoiseSVN
-    FIND_PROGRAM(Subversion_WCREF_EXECUTABLE SubWCRev)
-    SET (RESULT 1)
-    if(Subversion_WCREF_EXECUTABLE)
-    EXECUTE_PROCESS(COMMAND ${Subversion_WCREF_EXECUTABLE} ${CMAKE_SOURCE_DIR}
-      ${CMAKE_CURRENT_SOURCE_DIR}/Version.h.in ${CMAKE_CURRENT_BINARY_DIR}/Version.h
-      RESULT_VARIABLE RESULT
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    endif(Subversion_WCREF_EXECUTABLE)
-    # No SVN repo
-    if (NOT RESULT EQUAL 0)
-    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/Tools/SubWCRev.py
-      --srcdir=${CMAKE_SOURCE_DIR} --bindir=${CMAKE_BINARY_DIR}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-    endif(NOT RESULT EQUAL 0)
-else (WIN32)
-    EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/Tools/SubWCRev.py
-      --srcdir=${CMAKE_SOURCE_DIR} --bindir=${CMAKE_BINARY_DIR}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
-endif (WIN32)
+    add_custom_command(
+        OUTPUT  version_check
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/Tools/SubWCRev.py
+        --srcdir=${CMAKE_SOURCE_DIR} --bindir=${CMAKE_BINARY_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-# as fallback if Version.h isn't created for any reason
-if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Version.h)
-    file(READ  ${CMAKE_CURRENT_SOURCE_DIR}/Version.h.in VERSION_INFO)
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Version.h  ${VERSION_INFO})
-endif (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Version.h)
+    ADD_CUSTOM_TARGET(fc_version DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Version.h)
+
+else (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Version.h)
+
+    ADD_CUSTOM_TARGET(fc_version DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Version.h)
+
+endif (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Version.h)

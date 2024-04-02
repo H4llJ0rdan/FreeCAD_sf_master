@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2002 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,36 +24,39 @@
 #ifndef GUI_DIALOG_DLGMACRORECORDIMP_H
 #define GUI_DIALOG_DLGMACRORECORDIMP_H
 
-#include "ui_DlgMacroRecord.h"
+#include <QDialog>
+#include <memory>
 #include "Window.h"
-
 
 namespace Gui {
 class MacroManager;
 namespace Dialog {
+class Ui_DlgMacroRecord;
 
 /**
  * The DlgMacroRecordImp class implements a dialog to record a macro.
- * \author Jürgen Riegel
+ * \author JÃ¼rgen Riegel
  */
-class DlgMacroRecordImp : public QDialog, public Ui_DlgMacroRecord, public Gui::WindowParameter
-{ 
+class DlgMacroRecordImp : public QDialog, public Gui::WindowParameter
+{
     Q_OBJECT
 
 public:
-    DlgMacroRecordImp( QWidget* parent = 0, Qt::WFlags fl = 0 );
-    virtual ~DlgMacroRecordImp();
-
-protected Q_SLOTS:
-    void on_buttonStart_clicked();
-    void on_buttonStop_clicked();
-    void on_buttonCancel_clicked();
-    void on_pushButtonChooseDir_clicked();
-    void on_lineEditMacroPath_textChanged ( const QString & );
+    explicit DlgMacroRecordImp( QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags() );
+    ~DlgMacroRecordImp() override;
 
 protected:
-    /// conviniance pointer
-    MacroManager* macroManager; 
+    void setupConnections();
+    void onButtonStartClicked();
+    void onButtonStopClicked();
+    void onButtonCloseClicked();
+    void onButtonChooseDirClicked();
+    void onMacroPathTextChanged ( const QString & );
+
+private:
+    std::unique_ptr<Ui_DlgMacroRecord> ui;
+    /// convenience pointer
+    MacroManager* macroManager;
     QString macroPath; // Macro file to save in
 };
 

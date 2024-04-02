@@ -49,10 +49,12 @@
 #include <iterator>
 #include <utility>
 #include <typeinfo>
+#include <algorithm>
+
 
 namespace Py
 {
-    typedef size_t sequence_index_type;    // type of an index into a sequence
+    typedef Py_ssize_t sequence_index_type;    // type of an index into a sequence
 
     // Forward declarations
     class Object;
@@ -101,19 +103,20 @@ namespace Py
     //
     /*
     explicit MyType (PyObject *pyob): Object(pyob) {
-    validate();
-}
+        validate();
+    }
 
     MyType(const Object& other): Object(other.ptr()) {
-    validate();
-}
+        validate();
+    }
     */
 
     // Alernate version for the constructor to allow for construction from owned pointers:
     /*
-    explicit MyType (PyObject *pyob): Object(pyob) {
-    validate();
-}
+    explicit MyType (PyObject *pyob)
+    : Object(pyob) {
+        validate();
+    }
     */
 
     // You may wish to add other constructors; see the classes below for examples.
@@ -123,14 +126,14 @@ namespace Py
     // (4) Each class needs at least these two assignment operators:
     /*
     MyType& operator= (const Object& rhs) {
-    return (*this = *rhs);
-}
+        return (*this = *rhs);
+    }
 
     Mytype& operator= (PyObject* rhsp) {
-    if(ptr() == rhsp) return *this;
-    set(rhsp);
-    return *this;
-}
+        if(ptr() == rhsp) return *this;
+        set(rhsp);
+        return *this;
+    }
     */
     // Note on accepts: constructors call the base class
     // version of a virtual when calling the base class constructor,
@@ -174,7 +177,8 @@ namespace Py
 
     public:
         // Constructor acquires new ownership of pointer unless explicitly told not to.
-        explicit Object (PyObject* pyob=Py::_None(), bool owned = false): p (pyob)
+        explicit Object (PyObject* pyob=Py::_None(), bool owned = false)
+        : p(pyob)
         {
             if(!owned)
             {
@@ -184,7 +188,8 @@ namespace Py
         }
 
         // Copy constructor acquires new ownership of pointer
-        Object (const Object& ob): p(ob.p)
+        Object (const Object& ob)
+        : p(ob.p)
         {
             Py::_XINCREF (p);
             validate();
@@ -226,9 +231,10 @@ namespace Py
         {
             // not allowed to commit suicide, however
             if(reference_count() == 1)
-            throw RuntimeError("Object::decrement_reference_count error.");
+                throw RuntimeError("Object::decrement_reference_count error.");
             Py::_XDECREF(p);
         }
+
         // Would like to call this pointer() but messes up STL in SeqBase<T>
         PyObject* ptr () const
         {
@@ -298,6 +304,11 @@ namespace Py
         bool is(const Object& other) const
         { // identity test
             return p == other.p;
+        }
+
+        bool isNull() const
+        {
+            return p == NULL;
         }
 
         bool isNone() const
@@ -371,13 +382,13 @@ namespace Py
         void setAttr (const std::string& s, const Object& value)
         {
             if(PyObject_SetAttrString (p, const_cast<char*>(s.c_str()), *value) == -1)
-            throw AttributeError ("getAttr failed.");
+                throw AttributeError ("setAttr failed.");
         }
 
         void delAttr (const std::string& s)
         {
             if(PyObject_DelAttrString (p, const_cast<char*>(s.c_str())) == -1)
-            throw AttributeError ("delAttr failed.");
+                throw AttributeError ("delAttr failed.");
         }
 
         // PyObject_SetItem is too weird to be using from C++
@@ -385,9 +396,9 @@ namespace Py
 
         void delItem (const Object& key)
         {
-            //if(PyObject_DelItem(p, *key) == -1)
-            // failed to link on Windows?
-            throw KeyError("delItem failed.");
+            if(PyObject_DelItem(p, *key) == -1)
+                // failed to link on Windows?
+                throw KeyError("delItem failed.");
         }
 
         // Equality and comparison use PyObject_RichCompareBool
@@ -467,7 +478,7 @@ namespace Py
         return Object(Py::_True());
     }
 
-    // TMM: 31May'01 - Added the #ifndef so I can exlude iostreams.
+    // TMM: 31May'01 - Added the #ifndef so I can exclude iostreams.
 #ifndef CXX_NO_IOSTREAMS
     PYCXX_EXPORT std::ostream& operator<< (std::ostream& os, const Object& ob);
 #endif
@@ -1115,7 +1126,7 @@ namespace Py
     {
     protected:
         SeqBase<T>& s; // the sequence
-        size_t  offset; // item number
+        sequence_index_type  offset; // item number
         T the_item; // lvalue
     public:
 
@@ -1305,7 +1316,7 @@ namespace Py
     {
     public:
         // STL definitions
-        typedef size_t size_type;
+        typedef Py_ssize_t size_type;
         typedef seqref<T> reference;
         typedef T const_reference;
         typedef seqref<T>* pointer;
@@ -1409,7 +1420,7 @@ namespace Py
             return SeqBase<T> (PySequence_Concat(ptr(), *other), true);
         }
 
-        // more STL compatability
+        // more STL compatibility
         const T front () const
         {
             return getItem(0);
@@ -2088,7 +2099,7 @@ namespace Py
             }
             else
             {
-                return std::string( PyString_AsString( ptr() ), static_cast<size_type>( PyString_Size( ptr() ) ) );
+                return std::string( PyString_AsString( ptr() ), static_cast<size_t>( PyString_Size( ptr() ) ) );
             }
         }
 
@@ -2294,7 +2305,7 @@ namespace Py
         }
 
         // New tuple of a given size
-        explicit Tuple (sequence_index_type size = 0)
+        explicit Tuple (size_type size=0)
         {
             set(PyTuple_New (size), true);
             validate ();
@@ -2352,7 +2363,7 @@ namespace Py
     {
     public:
         TupleN()
-        : Tuple( (sequence_index_type)0 )
+        : Tuple( (size_type)0 )
         {
         }
 
@@ -2476,11 +2487,11 @@ namespace Py
             validate();
         }
         // Creation at a fixed size
-        List (sequence_index_type size = 0)
+        List (size_type size=0)
         {
             set(PyList_New (size), true);
             validate();
-            for (sequence_index_type i=0; i < size; i++)
+            for (size_type i=0; i < size; i++)
             {
                 if(PyList_SetItem (ptr(), i, new_reference_to(Py::_None())) == -1)
                 {
@@ -2492,7 +2503,7 @@ namespace Py
         // List from a sequence
         List (const Sequence& s): Sequence()
         {
-            sequence_index_type n = s.length();
+            size_type n = s.length();
             set(PyList_New (n), true);
             validate();
             for (sequence_index_type i=0; i < n; i++)
@@ -2739,13 +2750,13 @@ namespace Py
 
     // TMM: now for mapref<T>
     template< class T >
-    bool operator==(const mapref<T>& left, const mapref<T>& right)
+    bool operator==(const mapref<T>& /*left*/, const mapref<T>& /*right*/)
     {
         return true;    // NOT completed.
     }
 
     template< class T >
-    bool operator!=(const mapref<T>& left, const mapref<T>& right)
+    bool operator!=(const mapref<T>& /*left*/, const mapref<T>& /*right*/)
     {
         return true;    // not completed.
     }
@@ -2762,7 +2773,7 @@ namespace Py
         // If you assume that Python mapping is a hash_map...
         // hash_map::value_type is not assignable, but
         // (*it).second = data must be a valid expression
-        typedef size_t size_type;
+        typedef Py_ssize_t size_type;
         typedef Object key_type;
         typedef mapref<T> data_type;
         typedef std::pair< const T, T > value_type;
@@ -2909,7 +2920,8 @@ namespace Py
         // Queries
         List keys () const
         {
-            return List(PyMapping_Keys(ptr()), true);
+            static char keys[] = {'k', 'e', 'y', 's', 0};
+            return List(PyObject_CallMethod( ptr(), keys, NULL ), true );
         }
 
         List values () const
@@ -3212,18 +3224,35 @@ namespace Py
         // Call
         Object apply(const Tuple& args) const
         {
-            return asObject(PyObject_CallObject(ptr(), args.ptr()));
+            PyObject *result = PyObject_CallObject( ptr(), args.ptr() );
+            if( result == NULL )
+            {
+                throw Exception();
+            }
+            return asObject( result );
         }
 
         // Call with keywords
         Object apply(const Tuple& args, const Dict& kw) const
         {
-            return asObject( PyEval_CallObjectWithKeywords( ptr(), args.ptr(), kw.ptr() ) );
+            PyObject *result = PyEval_CallObjectWithKeywords( ptr(), args.ptr(), kw.ptr() );
+            if( result == NULL )
+            {
+                throw Exception();
+            }
+            return asObject( result );
         }
 
         Object apply(PyObject* pargs = 0) const
         {
-            return apply (Tuple(pargs));
+            if( pargs == 0 )
+            {
+                return apply( Tuple() );
+            }
+            else
+            {
+                return apply( Tuple( pargs ) );
+            }
         }
     };
 

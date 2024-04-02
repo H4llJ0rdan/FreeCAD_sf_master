@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2005     *
+ *   Copyright (c) 2005 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -25,7 +25,20 @@
 #define APP_PROPERTYCONTAINER_H
 
 #include <map>
+#include <cstring>
 #include <Base/Persistence.h>
+
+#include "DynamicProperty.h"
+
+#include <xercesc/util/XercesDefs.hpp>
+
+XERCES_CPP_NAMESPACE_BEGIN
+	class DOMNode;
+	class DOMElement;
+//    class DefaultHandler;
+//    class SAX2XMLReader;
+XERCES_CPP_NAMESPACE_END
+
 
 namespace Base {
 class Writer;
@@ -37,45 +50,99 @@ namespace App
 class Property;
 class PropertyContainer;
 class DocumentObject;
+class Extension;
 
-enum PropertyType 
+enum PropertyType
 {
-  Prop_None     = 0,
-  Prop_ReadOnly = 1,
-  Prop_Transient= 2,
-  Prop_Hidden   = 4,
-  Prop_Output   = 8
+  Prop_None        = 0, /*!< No special property type */
+  Prop_ReadOnly    = 1, /*!< Property is read-only in the editor */
+  Prop_Transient   = 2, /*!< Property content won't be saved to file, but still saves name, type and status */
+  Prop_Hidden      = 4, /*!< Property won't appear in the editor */
+  Prop_Output      = 8, /*!< Modified property doesn't touch its parent container */
+  Prop_NoRecompute = 16,/*!< Modified property doesn't touch its container for recompute */
+  Prop_NoPersist   = 32,/*!< Property won't be saved to file at all */
 };
 
 struct AppExport PropertyData
 {
   struct PropertySpec
   {
-    const char* Name;
+    const char * Name;
     const char * Group;
     const char * Docu;
-    short Offset,Type;
+    short Offset, Type;
+
+    inline PropertySpec(const char *name, const char *group, const char *doc, short offset, short type)
+        :Name(name),Group(group),Docu(doc),Offset(offset),Type(type)
+    {}
   };
-  // vector of all properties
-  std::vector<PropertySpec> propertyData;
-  const PropertyData *parentPropertyData;
 
-  void addProperty(const PropertyContainer *container,const char* PropName, Property *Prop, const char* PropertyGroup= 0, PropertyType = Prop_None, const char* PropertyDocu= 0 );
+  //purpose of this struct is to be constructible from all acceptable container types and to
+  //be able to return the offset to a property from the accepted containers. This allows to use
+  //one function implementation for multiple container types without losing all type safety by
+  //accepting void*
+  struct OffsetBase
+  {
+      OffsetBase(const App::PropertyContainer* container) : m_container(container) {}//explicit bombs
+      OffsetBase(const App::Extension* container) : m_container(container) {}//explicit bombs
 
-  const PropertySpec *findProperty(const PropertyContainer *container,const char* PropName) const;
-  const PropertySpec *findProperty(const PropertyContainer *container,const Property* prop) const;
-  
-  const char* getName         (const PropertyContainer *container,const Property* prop) const;
-  short       getType         (const PropertyContainer *container,const Property* prop) const;
-  short       getType         (const PropertyContainer *container,const char* name)     const;
-  const char* getGroup        (const PropertyContainer *container,const char* name)     const;
-  const char* getGroup        (const PropertyContainer *container,const Property* prop) const;
-  const char* getDocumentation(const PropertyContainer *container,const char* name)     const;
-  const char* getDocumentation(const PropertyContainer *container,const Property* prop) const;
+      short int getOffsetTo(const App::Property* prop) const {
+            auto *pt = (const char*)prop;
+            auto *base = (const char *)m_container;
+            if(pt<base || pt>base+SHRT_MAX)
+                return -1;
+            return (short) (pt-base);
+      }
+      char* getOffset() const {return (char*) m_container;}
 
-  Property *getPropertyByName(const PropertyContainer *container,const char* name) const;
-  void getPropertyMap(const PropertyContainer *container,std::map<std::string,Property*> &Map) const;
-  void getPropertyList(const PropertyContainer *container,std::vector<Property*> &List) const;
+  private:
+      const void* m_container;
+  };
+
+  // A multi index container for holding the property spec, with the following
+  // index,
+  // * a sequence, to preserve creation order
+  // * hash index on property name
+  // * hash index on property pointer offset
+  mutable bmi::multi_index_container<
+      PropertySpec,
+      bmi::indexed_by<
+          bmi::sequenced<>,
+          bmi::hashed_unique<
+              bmi::member<PropertySpec, const char*, &PropertySpec::Name>,
+              CStringHasher,
+              CStringHasher
+          >,
+          bmi::hashed_unique<
+              bmi::member<PropertySpec, short, &PropertySpec::Offset>
+          >
+      >
+  > propertyData;
+
+  mutable bool parentMerged = false;
+
+  const PropertyData*     parentPropertyData;
+
+  void addProperty(OffsetBase offsetBase,const char* PropName, Property *Prop, const char* PropertyGroup= nullptr, PropertyType = Prop_None, const char* PropertyDocu= nullptr );
+
+  const PropertySpec *findProperty(OffsetBase offsetBase,const char* PropName) const;
+  const PropertySpec *findProperty(OffsetBase offsetBase,const Property* prop) const;
+
+  const char* getName         (OffsetBase offsetBase,const Property* prop) const;
+  short       getType         (OffsetBase offsetBase,const Property* prop) const;
+  short       getType         (OffsetBase offsetBase,const char* name)     const;
+  const char* getGroup        (OffsetBase offsetBase,const char* name)     const;
+  const char* getGroup        (OffsetBase offsetBase,const Property* prop) const;
+  const char* getDocumentation(OffsetBase offsetBase,const char* name)     const;
+  const char* getDocumentation(OffsetBase offsetBase,const Property* prop) const;
+
+  Property *getPropertyByName(OffsetBase offsetBase,const char* name) const;
+  void getPropertyMap(OffsetBase offsetBase,std::map<std::string,Property*> &Map) const;
+  void getPropertyList(OffsetBase offsetBase,std::vector<Property*> &List) const;
+  void getPropertyNamedList(OffsetBase offsetBase, std::vector<std::pair<const char*,Property*> > &List) const;
+
+  void merge(PropertyData *other=nullptr) const;
+  void split(PropertyData *other);
 };
 
 
@@ -84,7 +151,7 @@ struct AppExport PropertyData
 class AppExport PropertyContainer: public Base::Persistence
 {
 
-  TYPESYSTEM_HEADER();
+  TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
   /**
@@ -97,9 +164,11 @@ public:
    * A destructor.
    * A more elaborate description of the destructor.
    */
-  virtual ~PropertyContainer();
+  ~PropertyContainer() override;
 
-  virtual unsigned int getMemSize (void) const;
+  unsigned int getMemSize () const override;
+
+  virtual std::string getFullName() const {return {};}
 
   /// find a property by its name
   virtual Property *getPropertyByName(const char* name) const;
@@ -109,6 +178,8 @@ public:
   virtual void getPropertyMap(std::map<std::string,Property*> &Map) const;
   /// get all properties of the class (including properties of the parent)
   virtual void getPropertyList(std::vector<Property*> &List) const;
+  /// get all properties with their names, may contain duplicates and aliases
+  virtual void getPropertyNamedList(std::vector<std::pair<const char*,Property*> > &List) const;
   /// set the Status bit of all properties at once
   void setPropertyStatus(unsigned char bit,bool value);
 
@@ -125,72 +196,106 @@ public:
   /// get the Group of a named Property
   virtual const char* getPropertyDocumentation(const char *name) const;
   /// check if the property is read-only
-  virtual bool isReadOnly(const Property* prop) const;
-  /// check if the nameed property is read-only
-  virtual bool isReadOnly(const char *name) const;
+  bool isReadOnly(const Property* prop) const;
+  /// check if the named property is read-only
+  bool isReadOnly(const char *name) const;
   /// check if the property is hidden
-  virtual bool isHidden(const Property* prop) const;
+  bool isHidden(const Property* prop) const;
   /// check if the named property is hidden
-  virtual bool isHidden(const char *name) const;
+  bool isHidden(const char *name) const;
   virtual App::Property* addDynamicProperty(
-        const char* type, const char* name=0,
-        const char* group=0, const char* doc=0,
-        short attr=0, bool ro=false, bool hidden=false){
-        return 0;
+        const char* type, const char* name=nullptr,
+        const char* group=nullptr, const char* doc=nullptr,
+        short attr=0, bool ro=false, bool hidden=false);
+
+  DynamicProperty::PropData getDynamicPropertyData(const Property* prop) const {
+      return dynamicProps.getDynamicPropertyData(prop);
   }
+
+  bool changeDynamicProperty(const Property *prop, const char *group, const char *doc) {
+      return dynamicProps.changeDynamicProperty(prop,group,doc);
+  }
+
   virtual bool removeDynamicProperty(const char* name) {
-      return false;
+      return dynamicProps.removeDynamicProperty(name);
   }
   virtual std::vector<std::string> getDynamicPropertyNames() const {
-      return std::vector<std::string>();
+      return dynamicProps.getDynamicPropertyNames();
   }
   virtual App::Property *getDynamicPropertyByName(const char* name) const {
-      return 0;
-  }
-  virtual void addDynamicProperties(const PropertyContainer*) {
+      return dynamicProps.getDynamicPropertyByName(name);
   }
 
-  virtual void Save (Base::Writer &writer) const;
-  virtual void Restore(Base::XMLReader &reader);
+  virtual void onPropertyStatusChanged(const Property &prop, unsigned long oldStatus);
 
+  void Save (Base::Writer &writer) const override;
+  void Restore(Base::XMLReader &reader) override;
+  void Restore(Base::DocumentReader &reader, XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *containerEl) override;
+  virtual void beforeSave() const;
+
+  virtual void editProperty(const char * /*propName*/) {}
+
+  const char *getPropertyPrefix() const {
+      return _propertyPrefix.c_str();
+  }
+
+  void setPropertyPrefix(const char *prefix) {
+      _propertyPrefix = prefix;
+  }
 
   friend class Property;
+  friend class DynamicProperty;
 
 
-protected: 
+protected:
   /// get called by the container when a property has changed
   virtual void onChanged(const Property* /*prop*/){}
   /// get called before the value is changed
   virtual void onBeforeChange(const Property* /*prop*/){}
 
-  //void hasChanged(Propterty* prop);
-  static const  PropertyData * getPropertyDataPtr(void); 
-  virtual const PropertyData& getPropertyData(void) const; 
+  //void hasChanged(Property* prop);
+  static const  PropertyData * getPropertyDataPtr();
+  virtual const PropertyData& getPropertyData() const;
+
+  virtual void handleChangedPropertyName(Base::XMLReader &reader, const char * TypeName, const char *PropName);
+  virtual void handleChangedPropertyType(Base::XMLReader &reader, const char * TypeName, Property * prop);
+  virtual void handleChangedPropertyName(Base::DocumentReader &reader, const char * TypeName, const char *PropName);
+  virtual void handleChangedPropertyType(Base::DocumentReader &reader, const char * TypeName, Property * prop);
+
+public:
+  // forbidden
+  PropertyContainer(const PropertyContainer&) = delete;
+  PropertyContainer& operator = (const PropertyContainer&) = delete;
+  void readProperty(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *PropertyDOM);
+
+protected:
+  DynamicProperty dynamicProps;
 
 private:
-  // forbidden
-  PropertyContainer(const PropertyContainer&);
-  PropertyContainer& operator = (const PropertyContainer&);
-
-private: 
-  static PropertyData propertyData; 
+  std::string _propertyPrefix;
+  static PropertyData propertyData;
 };
 
-/// Property define 
-#define ADD_PROPERTY(_prop_, _defaultval_) \
+/// Property define
+#define _ADD_PROPERTY(_name,_prop_, _defaultval_) \
   do { \
     this->_prop_.setValue _defaultval_;\
     this->_prop_.setContainer(this); \
-    propertyData.addProperty(this, #_prop_, &this->_prop_); \
+    propertyData.addProperty(static_cast<App::PropertyContainer*>(this), _name, &this->_prop_); \
+  } while (0)
+
+#define ADD_PROPERTY(_prop_, _defaultval_) \
+    _ADD_PROPERTY(#_prop_, _prop_, _defaultval_)
+
+#define _ADD_PROPERTY_TYPE(_name,_prop_, _defaultval_, _group_,_type_,_Docu_) \
+  do { \
+    this->_prop_.setValue _defaultval_;\
+    this->_prop_.setContainer(this); \
+    propertyData.addProperty(static_cast<App::PropertyContainer*>(this), _name, &this->_prop_, (_group_),(_type_),(_Docu_)); \
   } while (0)
 
 #define ADD_PROPERTY_TYPE(_prop_, _defaultval_, _group_,_type_,_Docu_) \
-  do { \
-    this->_prop_.setValue _defaultval_;\
-    this->_prop_.setContainer(this); \
-    propertyData.addProperty(this, #_prop_, &this->_prop_, (_group_),(_type_),(_Docu_)); \
-  } while (0)
-
+    _ADD_PROPERTY_TYPE(#_prop_,_prop_,_defaultval_,_group_,_type_,_Docu_)
 
 
 #define PROPERTY_HEADER(_class_) \
@@ -199,27 +304,35 @@ protected: \
   static const App::PropertyData * getPropertyDataPtr(void); \
   virtual const App::PropertyData &getPropertyData(void) const; \
 private: \
-  static App::PropertyData propertyData 
+  static App::PropertyData propertyData
 
-/// 
+/// Like PROPERTY_HEADER, but with overridden methods declared as such
+#define PROPERTY_HEADER_WITH_OVERRIDE(_class_) \
+  TYPESYSTEM_HEADER_WITH_OVERRIDE(); \
+protected: \
+  static const App::PropertyData * getPropertyDataPtr(void); \
+  const App::PropertyData &getPropertyData(void) const override; \
+private: \
+  static App::PropertyData propertyData
+///
 #define PROPERTY_SOURCE(_class_, _parentclass_) \
-TYPESYSTEM_SOURCE_P(_class_);\
+TYPESYSTEM_SOURCE_P(_class_)\
 const App::PropertyData * _class_::getPropertyDataPtr(void){return &propertyData;} \
 const App::PropertyData & _class_::getPropertyData(void) const{return propertyData;} \
 App::PropertyData _class_::propertyData; \
 void _class_::init(void){\
   initSubclass(_class_::classTypeId, #_class_ , #_parentclass_, &(_class_::create) ); \
-  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr();\
+  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr(); \
 }
 
 #define PROPERTY_SOURCE_ABSTRACT(_class_, _parentclass_) \
-TYPESYSTEM_SOURCE_ABSTRACT_P(_class_);\
+TYPESYSTEM_SOURCE_ABSTRACT_P(_class_)\
 const App::PropertyData * _class_::getPropertyDataPtr(void){return &propertyData;} \
 const App::PropertyData & _class_::getPropertyData(void) const{return propertyData;} \
 App::PropertyData _class_::propertyData; \
 void _class_::init(void){\
   initSubclass(_class_::classTypeId, #_class_ , #_parentclass_, &(_class_::create) ); \
-  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr();\
+  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr(); \
 }
 
 #define TYPESYSTEM_SOURCE_TEMPLATE(_class_) \
@@ -231,15 +344,14 @@ template<> void * _class_::create(void){\
 }
 
 #define PROPERTY_SOURCE_TEMPLATE(_class_, _parentclass_) \
-TYPESYSTEM_SOURCE_TEMPLATE(_class_);\
+TYPESYSTEM_SOURCE_TEMPLATE(_class_)\
 template<> App::PropertyData _class_::propertyData = App::PropertyData(); \
 template<> const App::PropertyData * _class_::getPropertyDataPtr(void){return &propertyData;} \
 template<> const App::PropertyData & _class_::getPropertyData(void) const{return propertyData;} \
 template<> void _class_::init(void){\
   initSubclass(_class_::classTypeId, #_class_ , #_parentclass_, &(_class_::create) ); \
-  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr();\
+  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr(); \
 }
-
 
 } // namespace App
 

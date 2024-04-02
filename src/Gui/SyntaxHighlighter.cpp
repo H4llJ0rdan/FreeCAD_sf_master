@@ -20,11 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
+#include <QApplication>
+#include <QPalette>
+
 #include "SyntaxHighlighter.h"
-#include "TextEdit.h"
+
 
 using namespace Gui;
 
@@ -34,11 +36,16 @@ class SyntaxHighlighterP
 public:
     SyntaxHighlighterP()
     {
-        cNormalText.setRgb(0, 0, 0); cComment.setRgb(0, 170, 0);
-        cBlockcomment.setRgb(160, 160, 164); cLiteral.setRgb(255, 0, 0);
-        cNumber.setRgb(0, 0, 255); cOperator.setRgb(160, 160, 164);
-        cKeyword.setRgb(0, 0, 255); cClassName.setRgb(255, 170, 0);
-        cDefineName.setRgb(255, 170, 0); cOutput.setRgb(170, 170, 127); 
+        cNormalText = qApp->palette().windowText().color();
+        cComment.setRgb(0, 170, 0);
+        cBlockcomment.setRgb(160, 160, 164);
+        cLiteral.setRgb(255, 0, 0);
+        cNumber.setRgb(0, 0, 255);
+        cOperator.setRgb(160, 160, 164);
+        cKeyword.setRgb(0, 0, 255);
+        cClassName.setRgb(255, 170, 0);
+        cDefineName.setRgb(255, 170, 0);
+        cOutput.setRgb(170, 170, 127);
         cError.setRgb(255, 0, 0);
     }
 
@@ -62,7 +69,7 @@ SyntaxHighlighter::~SyntaxHighlighter()
     delete d;
 }
 
-/** Sets the color \a col to the paragraph type \a type. 
+/** Sets the color \a col to the paragraph type \a type.
  * This method is provided for convenience to specify the paragraph type
  * by its name.
  */
@@ -73,7 +80,7 @@ void SyntaxHighlighter::setColor(const QString& type, const QColor& col)
     if (!old.isValid())
         return; // no such type
     if (old == col)
-        return; 
+        return;
     if (type == QLatin1String("Text"))
         d->cNormalText = col;
     else if (type == QLatin1String("Comment"))
@@ -124,7 +131,7 @@ QColor SyntaxHighlighter::color(const QString& type)
     else if (type == QLatin1String("Python error"))
         return d->cError;
     else
-        return QColor(); // not found
+        return {}; // not found
 }
 
 QColor SyntaxHighlighter::colorByType(SyntaxHighlighter::TColor type)
@@ -152,18 +159,14 @@ QColor SyntaxHighlighter::colorByType(SyntaxHighlighter::TColor type)
     else if (type == SyntaxHighlighter::Error)
         return d->cError;
     else
-        return QColor(); // not found
+        return {}; // not found
 }
 
 void SyntaxHighlighter::colorChanged(const QString& type, const QColor& col)
 {
-  // rehighlight
-#if QT_VERSION >= 0x040200
+    Q_UNUSED(type);
+    Q_UNUSED(col);
     rehighlight();
-#else
-    document()->setPlainText(document()->toPlainText());
-    document()->setModified(false);
-#endif
 }
 
 int SyntaxHighlighter::maximumUserState() const

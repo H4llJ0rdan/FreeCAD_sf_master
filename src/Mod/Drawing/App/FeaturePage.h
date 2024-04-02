@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2007     *
+ *   Copyright (c) JÃ¼rgen Riegel          (juergen.riegel@web.de) 2007     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,19 +20,16 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef _FeaturePage_h_
 #define _FeaturePage_h_
 
-
 #include <App/DocumentObjectGroup.h>
-#include <App/PropertyStandard.h>
 #include <App/PropertyFile.h>
+#include <Mod/Drawing/DrawingGlobal.h>
 
 
 namespace Drawing
 {
-
 
 /** Base class of all View Features in the drawing module
  */
@@ -49,24 +46,31 @@ public:
     App::PropertyFile Template;
     App::PropertyStringList EditableTexts;
 
-    /** @name methods overide Feature */
+    /** @name methods override Feature */
     //@{
     /// recalculate the Feature
-    virtual App::DocumentObjectExecReturn *execute(void);
+    virtual App::DocumentObjectExecReturn* execute(void);
     //@}
 
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
+    virtual const char* getViewProviderName(void) const
+    {
         return "DrawingGui::ViewProviderDrawingPage";
     }
     virtual std::vector<std::string> getEditableTextsFromTemplate(void) const;
 
 protected:
+    void onBeforeChange(const App::Property* prop);
     void onChanged(const App::Property* prop);
+    /// get called after a document has been fully restored
+    virtual void onDocumentRestored();
+
+private:
+    int numChildren;
 };
 
 
-} //namespace Drawing
+}  // namespace Drawing
 
 
 #endif

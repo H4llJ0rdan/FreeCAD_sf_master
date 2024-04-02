@@ -20,17 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
+#include <Gui/Window.h>
+
 #include "DlgSettingsMeshView.h"
-#include "ViewProvider.h"
-#include <Gui/PrefWidgets.h>
-#include <Gui/Application.h>
-#include <Gui/Document.h>
-#include <App/Application.h>
-#include <App/Document.h>
-#include <Base/Console.h>
+#include "ui_DlgSettingsMeshView.h"
+
 
 using namespace MeshGui;
 
@@ -38,78 +34,57 @@ using namespace MeshGui;
  *  Constructs a DlgSettingsMeshView which is a child of 'parent'.
  */
 DlgSettingsMeshView::DlgSettingsMeshView(QWidget* parent)
-  : PreferencePage(parent)
+    : PreferencePage(parent)
+    , ui(new Ui_DlgSettingsMeshView)
 {
-    this->setupUi(this);
-    labelBackfaceColor->hide();
-    buttonBackfaceColor->hide();
+    ui->setupUi(this);
+    ui->labelBackfaceColor->hide();
+    ui->buttonBackfaceColor->hide();
 }
 
-/** 
+/**
  *  Destroys the object and frees any allocated resources
  */
-DlgSettingsMeshView::~DlgSettingsMeshView()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
+DlgSettingsMeshView::~DlgSettingsMeshView() = default;
 
 void DlgSettingsMeshView::saveSettings()
 {
-    checkboxRendering->onSave();
-    checkboxBoundbox->onSave();
-    buttonMeshColor->onSave();
-    buttonLineColor->onSave();
-    buttonBackfaceColor->onSave();
-    spinMeshTransparency->onSave();
-    spinLineTransparency->onSave();
-    checkboxNormal->onSave();
-    spinboxAngle->onSave();
-
-    bool twoside = checkboxRendering->isChecked();
-    double angle = 0.0;
-    if (checkboxNormal->isChecked()) {
-        angle = spinboxAngle->value();
-    }
-
-    // search for Mesh view providers and apply the new settings
-    std::vector<App::Document*> docs = App::GetApplication().getDocuments();
-    for (std::vector<App::Document*>::iterator it = docs.begin(); it != docs.end(); ++it) {
-        Gui::Document* doc = Gui::Application::Instance->getDocument(*it);
-        std::vector<Gui::ViewProvider*> views = doc->getViewProvidersOfType(ViewProviderMesh::getClassTypeId());
-        for (std::vector<Gui::ViewProvider*>::iterator jt = views.begin(); jt != views.end(); ++jt) {
-            ViewProviderMesh* meshview = static_cast<ViewProviderMesh*>(*jt);
-            if (twoside) meshview->Lighting.setValue(1);
-            else meshview->Lighting.setValue((long)0);
-            meshview->CreaseAngle.setValue(angle);
-        }
-    }
+    ui->checkboxRendering->onSave();
+    ui->checkboxBoundbox->onSave();
+    ui->buttonMeshColor->onSave();
+    ui->buttonLineColor->onSave();
+    ui->buttonBackfaceColor->onSave();
+    ui->spinMeshTransparency->onSave();
+    ui->spinLineTransparency->onSave();
+    ui->checkboxNormal->onSave();
+    ui->spinboxAngle->onSave();
 }
 
 void DlgSettingsMeshView::loadSettings()
 {
     Base::Reference<ParameterGrp> hGrp = Gui::WindowParameter::getDefaultParameter();
     hGrp = hGrp->GetGroup("View");
-    if (!hGrp->GetBool("EnablePreselection",true) &&
-        !hGrp->GetBool("EnableSelection",true))
-        checkboxBoundbox->setDisabled(true);
-    checkboxRendering->onRestore();
-    checkboxBoundbox->onRestore();
-    buttonMeshColor->onRestore();
-    buttonLineColor->onRestore();
-    buttonBackfaceColor->onRestore();
-    spinMeshTransparency->onRestore();
-    spinLineTransparency->onRestore();
-    checkboxNormal->onRestore();
-    spinboxAngle->onRestore();
+    if (!hGrp->GetBool("EnablePreselection", true) && !hGrp->GetBool("EnableSelection", true)) {
+        ui->checkboxBoundbox->setDisabled(true);
+    }
+    ui->checkboxRendering->onRestore();
+    ui->checkboxBoundbox->onRestore();
+    ui->buttonMeshColor->onRestore();
+    ui->buttonLineColor->onRestore();
+    ui->buttonBackfaceColor->onRestore();
+    ui->spinMeshTransparency->onRestore();
+    ui->spinLineTransparency->onRestore();
+    ui->checkboxNormal->onRestore();
+    ui->spinboxAngle->onRestore();
 }
 
 /**
  * Sets the strings of the subwidgets using the current language.
  */
-void DlgSettingsMeshView::changeEvent(QEvent *e)
+void DlgSettingsMeshView::changeEvent(QEvent* e)
 {
     if (e->type() == QEvent::LanguageChange) {
-        retranslateUi(this);
+        ui->retranslateUi(this);
     }
     else {
         QWidget::changeEvent(e);

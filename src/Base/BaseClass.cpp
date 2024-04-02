@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Riegel         <juergen.riegel@web.de>                  *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,18 +24,17 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-# include <assert.h>
+# include <cassert>
 #endif
 
-/// Here the FreeCAD includes sorted by Base,App,Gui......
 #include "BaseClass.h"
 #include "PyObjectBase.h"
 
 using namespace Base;
 
 Type BaseClass::classTypeId = Base::Type::badType();
-   
-  
+
+
 //**************************************************************************
 // Construction/Destruction
 
@@ -43,56 +42,51 @@ Type BaseClass::classTypeId = Base::Type::badType();
  * A constructor.
  * A more elaborate description of the constructor.
  */
-BaseClass::BaseClass()
-{
-
-}
+BaseClass::BaseClass() = default;
 
 /**
  * A destructor.
  * A more elaborate description of the destructor.
  */
-BaseClass::~BaseClass()
-{
-}
+BaseClass::~BaseClass() = default;
 
 
 //**************************************************************************
-// separator for other implemetation aspects
+// separator for other implementation aspects
 
-void BaseClass::init(void)
+void BaseClass::init()
 {
     assert(BaseClass::classTypeId == Type::badType() && "don't init() twice!");
-    /* Make sure superclass gets initialized before subclass. */ 
+    /* Make sure superclass gets initialized before subclass. */
     /*assert(strcmp(#_parentclass_), "inherited"));*/
-    /*Type parentType(Type::fromName(#_parentclass_));*/ 
+    /*Type parentType(Type::fromName(#_parentclass_));*/
     /*assert(parentType != Type::badType() && "you forgot init() on parentclass!");*/
 
-    /* Set up entry in the type system. */ 
-    BaseClass::classTypeId = 
-        Type::createType(Type::badType(), 
-                         "Base::BaseClass", 
-                         BaseClass::create); 
+    /* Set up entry in the type system. */
+    BaseClass::classTypeId =
+        Type::createType(Type::badType(),
+                         "Base::BaseClass",
+                         BaseClass::create);
 }
 
-Type BaseClass::getClassTypeId(void) 
+Type BaseClass::getClassTypeId()
 {
-    return BaseClass::classTypeId; 
+    return BaseClass::classTypeId;
 }
 
-Type BaseClass::getTypeId(void) const 
+Type BaseClass::getTypeId() const
 {
-    return BaseClass::classTypeId; 
+    return BaseClass::classTypeId;
 }
 
 
 void BaseClass::initSubclass(Base::Type &toInit,const char* ClassName, const char *ParentName,
                              Type::instantiationMethod method)
 {
-    // dont't init twice!
+    // don't init twice!
     assert(toInit == Base::Type::badType());
     // get the parent class
-    Base::Type parentType(Base::Type::fromName(ParentName)); 
+    Base::Type parentType(Base::Type::fromName(ParentName));
     // forgot init parent!
     assert(parentType != Base::Type::badType() );
 
@@ -101,16 +95,16 @@ void BaseClass::initSubclass(Base::Type &toInit,const char* ClassName, const cha
 }
 
 /**
- * This method returns the Python wrapper for a C++ object. It's in the responsibility of 
+ * This method returns the Python wrapper for a C++ object. It's in the responsibility of
  * the programmer to do the correct reference counting. Basically there are two ways how
  * to implement that: Either always return a new Python object then reference counting is
  * not a matter or return always the same Python object then the reference counter must be
  * incremented by one. However, it's absolutely forbidden to return always the same Python
- * object without incrementing the reference counter. 
+ * object without incrementing the reference counter.
  *
  * The default implementation returns 'None'.
  */
-PyObject *BaseClass::getPyObject(void)
+PyObject *BaseClass::getPyObject()
 {
     assert(0);
     Py_Return;

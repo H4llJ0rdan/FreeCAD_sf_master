@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,76 +20,96 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
+#include <Base/PyObjectBase.h>
 #include <Gui/Application.h>
-#include <Gui/WorkbenchManager.h>
 #include <Gui/Language/Translator.h>
-#include "Workbench.h"
+#include <Gui/WidgetFactory.h>
 
-#include <Mod/Start/App/StartConfiguration.h>
+#include "DlgStartPreferencesImp.h"
+#include "Workbench.h"
 
 
 // use a different name to CreateCommand()
-void CreateStartCommands(void);
+void CreateStartCommands();
 
 void loadStartResource()
 {
     // add resources and reloads the translators
     Q_INIT_RESOURCE(Start);
+    Q_INIT_RESOURCE(Start_translation);
     Gui::Translator::instance()->refresh();
 }
 
-/* registration table  */
-extern struct PyMethodDef StartGui_Import_methods[];
+namespace StartGui
+{
+class Module: public Py::ExtensionModule<Module>
+{
+public:
+    Module()
+        : Py::ExtensionModule<Module>("StartGui")
+    {
+        initialize("This module is the StartGui module.");  // register with Python
+    }
+
+private:
+};
+
+PyObject* initModule()
+{
+    return Base::Interpreter().addModule(new Module);
+}
+
+}  // namespace StartGui
 
 
 /* Python entry */
-extern "C" {
-void StartGuiExport initStartGui()
+PyMOD_INIT_FUNC(StartGui)
 {
     if (!Gui::Application::Instance) {
         PyErr_SetString(PyExc_ImportError, "Cannot load Gui module in console application.");
-        return;
+        PyMOD_Return(nullptr);
     }
 
     // load dependent module
     try {
         Base::Interpreter().runString("import WebGui");
     }
-    catch(const Base::Exception& e) {
+    catch (const Base::Exception& e) {
         PyErr_SetString(PyExc_ImportError, e.what());
-        return;
+        PyMOD_Return(nullptr);
     }
     catch (Py::Exception& e) {
         Py::Object o = Py::type(e);
         if (o.isString()) {
             Py::String s(o);
-            Base::Console().Error("%s\n", s.as_std_string().c_str());
+            Base::Console().Error("%s\n", s.as_std_string("utf-8").c_str());
         }
         else {
             Py::String s(o.repr());
-            Base::Console().Error("%s\n", s.as_std_string().c_str());
+            Base::Console().Error("%s\n", s.as_std_string("utf-8").c_str());
         }
         // Prints message to console window if we are in interactive mode
         PyErr_Print();
     }
 
-    (void) Py_InitModule("StartGui", StartGui_Import_methods);   /* mod name, table ptr */
+    PyObject* mod = StartGui::initModule();
     Base::Console().Log("Loading GUI of Start module... done\n");
+
+    // clang-format off
+    // register preferences pages
+    new Gui::PrefPageProducer<StartGui::DlgStartPreferencesImp> (QT_TRANSLATE_NOOP("QObject", "Start"));
+    new Gui::PrefPageProducer<StartGui::DlgStartPreferencesAdvancedImp> (QT_TRANSLATE_NOOP("QObject", "Start"));
+    // clang-format on
 
     // instantiating the commands
     CreateStartCommands();
     StartGui::Workbench::init();
 
-     // add resources and reloads the translators
+    // add resources and reloads the translators
     loadStartResource();
+    PyMOD_Return(mod);
 }
-
-} // extern "C" {

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2005                        *
+ *   Copyright (c) 2005 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -10,22 +10,22 @@
  *   for detail see the LICENCE text file.                                 *
  *                                                                         *
  *   FreeCAD is distributed in the hope that it will be useful,            *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        * 
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU Library General Public License for more details.                  *
  *                                                                         *
  *   You should have received a copy of the GNU Library General Public     *
- *   License along with FreeCAD; if not, write to the Free Software        * 
+ *   License along with FreeCAD; if not, write to the Free Software        *
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
  *   USA                                                                   *
  *                                                                         *
- *   Juergen Riegel 2002                                                   *
  ***************************************************************************/
 
 
 #ifndef BASE_FILEINFO_H
 #define BASE_FILEINFO_H
 
+#include <boost/filesystem.hpp>
 #include <string>
 #include <vector>
 #include <Base/TimeInfo.h>
@@ -48,7 +48,7 @@ public:
         ReadWrite = 0x03,
     };
 
-    /// Constrction
+    /// Construction
     FileInfo (const char* _FileName="");
     FileInfo (const std::string &_FileName);
     /// Set a new file name
@@ -67,24 +67,31 @@ public:
     std::string fileName () const;
     /// Returns the name of the file, excluding the path and the extension.
     std::string fileNamePure () const;
-    /// Convert the path name into a UCS-2 encoded wide string format.
+    /// Convert the path name into a UTF-16 encoded wide string format.
+    /// @note: Use this function on Windows only.
     std::wstring toStdWString() const;
-    /** Returns the file's extension name.
-     * If complete is TRUE (the default), extension() returns the string of all
-     * characters in the file name after (but not including) the first '.' character.
-     * If complete is FALSE, extension() returns the string of all characters in
-     * the file name after (but not including) the last '.' character.
-     * Example:
+    /** Returns the extension of the file.
+     * The extension consists of all characters in the file after (but not including)
+     * the last '.' character.
      *@code
      *  FileInfo fi( "/tmp/archive.tar.gz" );
-     *  std::string ext = fi.extension(true);  // ext = "tar.gz"
-     *  ext = fi.extension(false);   // ext = "gz"
      *  ext = fi.extension();   // ext = "gz"
      *@endcode
      */
-    std::string extension (bool complete = false) const;
-    /// Checks for a special extension, NOT case sensetive
+    std::string extension () const;
+    /** Returns the complete extension of the file.
+     * The complete extension consists of all characters in the file after (but not including)
+     * the first '.' character.
+     *@code
+     *  FileInfo fi( "/tmp/archive.tar.gz" );
+     *  ext = fi.completeExtension();   // ext = "tar.gz"
+     *@endcode
+     */
+    std::string completeExtension () const;
+    /// Checks for a special extension, NOT case sensitive
     bool hasExtension (const char* Ext) const;
+    /// Checks for any of the special extensions, NOT case sensitive 
+    bool hasExtension (std::initializer_list<const char*> Exts) const; 
     //@}
 
     /** @name methods to test the status of the file or dir */
@@ -95,13 +102,13 @@ public:
     bool isReadable () const;
     /// Checks if the file exist and is writable
     bool isWritable () const;
-    /// Tries to set the file permisson
+    /// Tries to set the file permission
     bool setPermissions (Permissions);
-    /// Checks if it is a file (not a direrctory)
+    /// Checks if it is a file (not a directory)
     bool isFile () const;
     /// Checks if it is a directory (not a file)
     bool isDir () const;
-    /// The size of the file 
+    /// The size of the file
     unsigned int size () const;
     /// Returns the time when the file was last modified.
     TimeInfo lastModified() const;
@@ -111,18 +118,20 @@ public:
 
     /** @name Directory management*/
     //@{
-    /// Creates a directory. Returns TRUE if successful; otherwise returns FALSE.
-    bool createDirectory( void ) const;
+    /// Creates a directory. Returns true if successful; otherwise returns false.
+    bool createDirectory( ) const;
+    /// Creates a directory and all its parent directories. Returns true if successful; otherwise returns false.
+    bool createDirectories() const;
     /// Get a list of the directory content
-    std::vector<Base::FileInfo> getDirectoryContent(void) const;
-    /// Delete an empty directory 
-    bool deleteDirectory(void) const;
+    std::vector<Base::FileInfo> getDirectoryContent() const;
+    /// Delete an empty directory
+    bool deleteDirectory() const;
     /// Delete a directory and all its content.
-    bool deleteDirectoryRecursive(void) const;
+    bool deleteDirectoryRecursive() const;
     //@}
 
     /// Delete the file
-    bool deleteFile(void) const;
+    bool deleteFile() const;
     /// Rename the file
     bool renameFile(const char* NewName);
     /// Rename the file
@@ -131,9 +140,13 @@ public:
     /** @name Tools */
     //@{
     /// Get a unique File Name in the given or (if 0) in the temp path
-    static std::string getTempFileName(const char* FileName=0, const char* path=0);
+    static std::string getTempFileName(const char* FileName=nullptr, const char* path=nullptr);
     /// Get the path to the dir which is considered to temp files
-    static const std::string &getTempPath(void);
+    static const std::string &getTempPath();
+    /// Convert from filesystem path to string
+    static std::string pathToString(const boost::filesystem::path& p);
+    /// Convert from string to filesystem path
+    static boost::filesystem::path stringToPath(const std::string& str);
     //@}
 
 protected:
@@ -144,4 +157,3 @@ protected:
 
 
 #endif // BASE_FILEINFO_H
-

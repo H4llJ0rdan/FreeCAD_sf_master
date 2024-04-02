@@ -19,129 +19,141 @@
  */
 
 #include "PreCompiled.h"
-#include "SoQTQuarterAdaptor.h"
+
 #include <Base/Console.h>
-#include <Inventor/nodes/SoPerspectiveCamera.h>
-#include <Inventor/nodes/SoOrthographicCamera.h>
-#include <Inventor/nodes/SoSeparator.h>
-#include <Inventor/nodes/SoLocateHighlight.h>
+#include <Inventor/SbLine.h>
+#include <Inventor/SbPlane.h>
 #include <Inventor/SoEventManager.h>
-#include <Inventor/actions/SoSearchAction.h>
-#include <Inventor/actions/SoRayPickAction.h>
-#include <Inventor/actions/SoGetBoundingBoxAction.h>
 #include <Inventor/SoPickedPoint.h>
+#include <Inventor/actions/SoHandleEventAction.h>
+#include <Inventor/actions/SoRayPickAction.h>
+#include <Inventor/actions/SoSearchAction.h>
+#include <Inventor/events/SoEvents.h>
+#include <Inventor/nodes/SoLocateHighlight.h>
+#include <Inventor/nodes/SoOrthographicCamera.h>
+#include <Inventor/nodes/SoPerspectiveCamera.h>
+#include <Inventor/nodes/SoSeparator.h>
+
+#if !defined(FC_OS_MACOSX)
+# include <GL/gl.h>
+# include <GL/glu.h>
+# include <GL/glext.h>
+#endif
+
+#include "SoQTQuarterAdaptor.h"
+
 
 static unsigned char fps2dfont[][12] = {
-  {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, //
-  {  0,  0, 12, 12,  0,  8, 12, 12, 12, 12, 12,  0 }, // !
-  {  0,  0,  0,  0,  0,  0,  0,  0,  0, 20, 20, 20 }, // \"
-  {  0,  0, 18, 18, 18, 63, 18, 18, 63, 18, 18,  0 }, // #
-  {  0,  8, 28, 42, 10, 10, 12, 24, 40, 42, 28,  8 }, // $
-  {  0,  0,  6, 73, 41, 22,  8, 52, 74, 73, 48,  0 }, // %
-  {  0, 12, 18, 18, 12, 25, 37, 34, 34, 29,  0,  0 }, // &
-  { 12, 12, 24,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // '
-  {  0,  6,  8,  8, 16, 16, 16, 16, 16,  8,  8,  6 }, // (
-  {  0, 48,  8,  8,  4,  4,  4,  4,  4,  8,  8, 48 }, //)
-  {  0,  0,  0,  0,  0,  0,  8, 42, 20, 42,  8,  0 }, // *
-  {  0,  0,  0,  8,  8,  8,127,  8,  8,  8,  0,  0 }, // +
-  {  0, 24, 12, 12,  0,  0,  0,  0,  0,  0,  0,  0 }, // ,
-  {  0,  0,  0,  0,  0,  0,127,  0,  0,  0,  0,  0 }, // -
-  {  0,  0, 24, 24,  0,  0,  0,  0,  0,  0,  0,  0 }, // .
-  {  0, 32, 32, 16, 16,  8,  8,  8,  4,  4,  2,  2 }, // /
-  {  0,  0, 28, 34, 34, 34, 34, 34, 34, 34, 28,  0 }, // 0
-  {  0,  0,  8,  8,  8,  8,  8,  8, 40, 24,  8,  0 }, // 1
-  {  0,  0, 62, 32, 16,  8,  4,  2,  2, 34, 28,  0 }, // 2
-  {  0,  0, 28, 34,  2,  2, 12,  2,  2, 34, 28,  0 }, // 3
-  {  0,  0,  4,  4,  4,126, 68, 36, 20, 12,  4,  0 }, // 4
-  {  0,  0, 28, 34,  2,  2,  2, 60, 32, 32, 62,  0 }, // 5
-  {  0,  0, 28, 34, 34, 34, 60, 32, 32, 34, 28,  0 }, // 6
-  {  0,  0, 16, 16, 16,  8,  8,  4,  2,  2, 62,  0 }, // 7
-  {  0,  0, 28, 34, 34, 34, 28, 34, 34, 34, 28,  0 }, // 8
-  {  0,  0, 28, 34,  2,  2, 30, 34, 34, 34, 28,  0 }, // 9
-  {  0,  0, 24, 24,  0,  0,  0, 24, 24,  0,  0,  0 }, // :
-  {  0, 48, 24, 24,  0,  0,  0, 24, 24,  0,  0,  0 }, // ;
-  {  0,  0,  0,  2,  4,  8, 16,  8,  4,  2,  0,  0 }, // <
-  {  0,  0,  0,  0,  0,127,  0,127,  0,  0,  0,  0 }, // =
-  {  0,  0,  0, 16,  8,  4,  2,  4,  8, 16,  0,  0 }, // >
-  {  0,  0, 16, 16,  0, 16, 28,  2,  2,  2, 60,  0 }, // ?
-  {  0,  0, 28, 32, 73, 86, 82, 82, 78, 34, 28,  0 }, // @
-  {  0,  0, 33, 33, 33, 63, 18, 18, 18, 12, 12,  0 }, // A
-  {  0,  0, 60, 34, 34, 34, 60, 34, 34, 34, 60,  0 }, // B
-  {  0,  0, 14, 16, 32, 32, 32, 32, 32, 18, 14,  0 }, // C
-  {  0,  0, 56, 36, 34, 34, 34, 34, 34, 36, 56,  0 }, // D
-  {  0,  0, 62, 32, 32, 32, 60, 32, 32, 32, 62,  0 }, // E
-  {  0,  0, 16, 16, 16, 16, 30, 16, 16, 16, 30,  0 }, // F
-  {  0,  0, 14, 18, 34, 34, 32, 32, 32, 18, 14,  0 }, // G
-  {  0,  0, 34, 34, 34, 34, 62, 34, 34, 34, 34,  0 }, // H
-  {  0,  0, 62,  8,  8,  8,  8,  8,  8,  8, 62,  0 }, // I
-  {  0,  0,112,  8,  8,  8,  8,  8,  8,  8, 62,  0 }, // J
-  {  0,  0, 33, 33, 34, 36, 56, 40, 36, 34, 33,  0 }, // K
-  {  0,  0, 30, 16, 16, 16, 16, 16, 16, 16, 16,  0 }, // L
-  {  0,  0, 33, 33, 33, 45, 45, 45, 51, 51, 33,  0 }, // M
-  {  0,  0, 34, 34, 38, 38, 42, 42, 50, 50, 34,  0 }, // N
-  {  0,  0, 12, 18, 33, 33, 33, 33, 33, 18, 12,  0 }, // O
-  {  0,  0, 32, 32, 32, 60, 34, 34, 34, 34, 60,  0 }, // P
-  {  3,  6, 12, 18, 33, 33, 33, 33, 33, 18, 12,  0 }, // Q
-  {  0,  0, 34, 34, 34, 36, 60, 34, 34, 34, 60,  0 }, // R
-  {  0,  0, 60,  2,  2,  6, 28, 48, 32, 32, 30,  0 }, // S
-  {  0,  0,  8,  8,  8,  8,  8,  8,  8,  8,127,  0 }, // T
-  {  0,  0, 28, 34, 34, 34, 34, 34, 34, 34, 34,  0 }, // U
-  {  0,  0, 12, 12, 18, 18, 18, 33, 33, 33, 33,  0 }, // V
-  {  0,  0, 34, 34, 34, 54, 85, 73, 73, 73, 65,  0 }, // W
-  {  0,  0, 34, 34, 20, 20,  8, 20, 20, 34, 34,  0 }, // X
-  {  0,  0,  8,  8,  8,  8, 20, 20, 34, 34, 34,  0 }, // Y
-  {  0,  0, 62, 32, 16, 16,  8,  4,  4,  2, 62,  0 }, // Z
-  {  0, 14,  8,  8,  8,  8,  8,  8,  8,  8,  8, 14 }, // [
-  {  0,  2,  2,  4,  4,  8,  8,  8, 16, 16, 32, 32 }, // [backslash]
-  {  0, 56,  8,  8,  8,  8,  8,  8,  8,  8,  8, 56 }, // ]
-  {  0,  0,  0,  0,  0, 34, 34, 20, 20,  8,  8,  0 }, // ^
-  {  0,127,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // _
-  {  0,  0,  0,  0,  0,  0,  0,  0,  0, 24, 24, 12 }, // `
-  {  0,  0, 29, 34, 34, 30,  2, 34, 28,  0,  0,  0 }, // a
-  {  0,  0, 60, 34, 34, 34, 34, 50, 44, 32, 32, 32 }, // b
-  {  0,  0, 14, 16, 32, 32, 32, 16, 14,  0,  0,  0 }, // c
-  {  0,  0, 26, 38, 34, 34, 34, 34, 30,  2,  2,  2 }, // d
-  {  0,  0, 28, 34, 32, 62, 34, 34, 28,  0,  0,  0 }, // e
-  {  0,  0, 16, 16, 16, 16, 16, 16, 62, 16, 16, 14 }, // f
-  { 28,  2,  2, 26, 38, 34, 34, 34, 30,  0,  0,  0 }, // g
-  {  0,  0, 34, 34, 34, 34, 34, 50, 44, 32, 32, 32 }, // h
-  {  0,  0,  8,  8,  8,  8,  8,  8, 56,  0,  8,  8 }, // i
-  { 56,  4,  4,  4,  4,  4,  4,  4, 60,  0,  4,  4 }, // j
-  {  0,  0, 33, 34, 36, 56, 40, 36, 34, 32, 32, 32 }, // k
-  {  0,  0,  8,  8,  8,  8,  8,  8,  8,  8,  8, 56 }, // l
-  {  0,  0, 73, 73, 73, 73, 73,109, 82,  0,  0,  0 }, // m
-  {  0,  0, 34, 34, 34, 34, 34, 50, 44,  0,  0,  0 }, // n
-  {  0,  0, 28, 34, 34, 34, 34, 34, 28,  0,  0,  0 }, // o
-  { 32, 32, 60, 34, 34, 34, 34, 50, 44,  0,  0,  0 }, // p
-  {  2,  2, 26, 38, 34, 34, 34, 34, 30,  0,  0,  0 }, // q
-  {  0,  0, 16, 16, 16, 16, 16, 24, 22,  0,  0,  0 }, // r
-  {  0,  0, 60,  2,  2, 28, 32, 32, 30,  0,  0,  0 }, // s
-  {  0,  0, 14, 16, 16, 16, 16, 16, 62, 16, 16,  0 }, // t
-  {  0,  0, 26, 38, 34, 34, 34, 34, 34,  0,  0,  0 }, // u
-  {  0,  0,  8,  8, 20, 20, 34, 34, 34,  0,  0,  0 }, // v
-  {  0,  0, 34, 34, 34, 85, 73, 73, 65,  0,  0,  0 }, // w
-  {  0,  0, 34, 34, 20,  8, 20, 34, 34,  0,  0,  0 }, // x
-  { 48, 16,  8,  8, 20, 20, 34, 34, 34,  0,  0,  0 }, // y
-  {  0,  0, 62, 32, 16,  8,  4,  2, 62,  0,  0,  0 }, // z
-  {  0,  6,  8,  8,  8,  4, 24,  4,  8,  8,  8,  6 }, // {
-  {  0,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8 }, // |
-  {  0, 48,  8,  8,  8, 16, 12, 16,  8,  8,  8, 48 }, // }
-  {  0,  0,  0,  0,  0,  0, 78, 57,  0,  0,  0,  0 }  // ~
+    {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, //
+    {  0,  0, 12, 12,  0,  8, 12, 12, 12, 12, 12,  0 }, // !
+    {  0,  0,  0,  0,  0,  0,  0,  0,  0, 20, 20, 20 }, // \"
+    {  0,  0, 18, 18, 18, 63, 18, 18, 63, 18, 18,  0 }, // #
+    {  0,  8, 28, 42, 10, 10, 12, 24, 40, 42, 28,  8 }, // $
+    {  0,  0,  6, 73, 41, 22,  8, 52, 74, 73, 48,  0 }, // %
+    {  0, 12, 18, 18, 12, 25, 37, 34, 34, 29,  0,  0 }, // &
+    { 12, 12, 24,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // '
+    {  0,  6,  8,  8, 16, 16, 16, 16, 16,  8,  8,  6 }, // (
+    {  0, 48,  8,  8,  4,  4,  4,  4,  4,  8,  8, 48 }, //)
+    {  0,  0,  0,  0,  0,  0,  8, 42, 20, 42,  8,  0 }, // *
+    {  0,  0,  0,  8,  8,  8,127,  8,  8,  8,  0,  0 }, // +
+    {  0, 24, 12, 12,  0,  0,  0,  0,  0,  0,  0,  0 }, // ,
+    {  0,  0,  0,  0,  0,  0,127,  0,  0,  0,  0,  0 }, // -
+    {  0,  0, 24, 24,  0,  0,  0,  0,  0,  0,  0,  0 }, // .
+    {  0, 32, 32, 16, 16,  8,  8,  8,  4,  4,  2,  2 }, // /
+    {  0,  0, 28, 34, 34, 34, 34, 34, 34, 34, 28,  0 }, // 0
+    {  0,  0,  8,  8,  8,  8,  8,  8, 40, 24,  8,  0 }, // 1
+    {  0,  0, 62, 32, 16,  8,  4,  2,  2, 34, 28,  0 }, // 2
+    {  0,  0, 28, 34,  2,  2, 12,  2,  2, 34, 28,  0 }, // 3
+    {  0,  0,  4,  4,  4,126, 68, 36, 20, 12,  4,  0 }, // 4
+    {  0,  0, 28, 34,  2,  2,  2, 60, 32, 32, 62,  0 }, // 5
+    {  0,  0, 28, 34, 34, 34, 60, 32, 32, 34, 28,  0 }, // 6
+    {  0,  0, 16, 16, 16,  8,  8,  4,  2,  2, 62,  0 }, // 7
+    {  0,  0, 28, 34, 34, 34, 28, 34, 34, 34, 28,  0 }, // 8
+    {  0,  0, 28, 34,  2,  2, 30, 34, 34, 34, 28,  0 }, // 9
+    {  0,  0, 24, 24,  0,  0,  0, 24, 24,  0,  0,  0 }, // :
+    {  0, 48, 24, 24,  0,  0,  0, 24, 24,  0,  0,  0 }, // ;
+    {  0,  0,  0,  2,  4,  8, 16,  8,  4,  2,  0,  0 }, // <
+    {  0,  0,  0,  0,  0,127,  0,127,  0,  0,  0,  0 }, // =
+    {  0,  0,  0, 16,  8,  4,  2,  4,  8, 16,  0,  0 }, // >
+    {  0,  0, 16, 16,  0, 16, 28,  2,  2,  2, 60,  0 }, // ?
+    {  0,  0, 28, 32, 73, 86, 82, 82, 78, 34, 28,  0 }, // @
+    {  0,  0, 33, 33, 33, 63, 18, 18, 18, 12, 12,  0 }, // A
+    {  0,  0, 60, 34, 34, 34, 60, 34, 34, 34, 60,  0 }, // B
+    {  0,  0, 14, 16, 32, 32, 32, 32, 32, 18, 14,  0 }, // C
+    {  0,  0, 56, 36, 34, 34, 34, 34, 34, 36, 56,  0 }, // D
+    {  0,  0, 62, 32, 32, 32, 60, 32, 32, 32, 62,  0 }, // E
+    {  0,  0, 16, 16, 16, 16, 30, 16, 16, 16, 30,  0 }, // F
+    {  0,  0, 14, 18, 34, 34, 32, 32, 32, 18, 14,  0 }, // G
+    {  0,  0, 34, 34, 34, 34, 62, 34, 34, 34, 34,  0 }, // H
+    {  0,  0, 62,  8,  8,  8,  8,  8,  8,  8, 62,  0 }, // I
+    {  0,  0,112,  8,  8,  8,  8,  8,  8,  8, 62,  0 }, // J
+    {  0,  0, 33, 33, 34, 36, 56, 40, 36, 34, 33,  0 }, // K
+    {  0,  0, 30, 16, 16, 16, 16, 16, 16, 16, 16,  0 }, // L
+    {  0,  0, 33, 33, 33, 45, 45, 45, 51, 51, 33,  0 }, // M
+    {  0,  0, 34, 34, 38, 38, 42, 42, 50, 50, 34,  0 }, // N
+    {  0,  0, 12, 18, 33, 33, 33, 33, 33, 18, 12,  0 }, // O
+    {  0,  0, 32, 32, 32, 60, 34, 34, 34, 34, 60,  0 }, // P
+    {  3,  6, 12, 18, 33, 33, 33, 33, 33, 18, 12,  0 }, // Q
+    {  0,  0, 34, 34, 34, 36, 60, 34, 34, 34, 60,  0 }, // R
+    {  0,  0, 60,  2,  2,  6, 28, 48, 32, 32, 30,  0 }, // S
+    {  0,  0,  8,  8,  8,  8,  8,  8,  8,  8,127,  0 }, // T
+    {  0,  0, 28, 34, 34, 34, 34, 34, 34, 34, 34,  0 }, // U
+    {  0,  0, 12, 12, 18, 18, 18, 33, 33, 33, 33,  0 }, // V
+    {  0,  0, 34, 34, 34, 54, 85, 73, 73, 73, 65,  0 }, // W
+    {  0,  0, 34, 34, 20, 20,  8, 20, 20, 34, 34,  0 }, // X
+    {  0,  0,  8,  8,  8,  8, 20, 20, 34, 34, 34,  0 }, // Y
+    {  0,  0, 62, 32, 16, 16,  8,  4,  4,  2, 62,  0 }, // Z
+    {  0, 14,  8,  8,  8,  8,  8,  8,  8,  8,  8, 14 }, // [
+    {  0,  2,  2,  4,  4,  8,  8,  8, 16, 16, 32, 32 }, // [backslash]
+    {  0, 56,  8,  8,  8,  8,  8,  8,  8,  8,  8, 56 }, // ]
+    {  0,  0,  0,  0,  0, 34, 34, 20, 20,  8,  8,  0 }, // ^
+    {  0,127,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 }, // _
+    {  0,  0,  0,  0,  0,  0,  0,  0,  0, 24, 24, 12 }, // `
+    {  0,  0, 29, 34, 34, 30,  2, 34, 28,  0,  0,  0 }, // a
+    {  0,  0, 60, 34, 34, 34, 34, 50, 44, 32, 32, 32 }, // b
+    {  0,  0, 14, 16, 32, 32, 32, 16, 14,  0,  0,  0 }, // c
+    {  0,  0, 26, 38, 34, 34, 34, 34, 30,  2,  2,  2 }, // d
+    {  0,  0, 28, 34, 32, 62, 34, 34, 28,  0,  0,  0 }, // e
+    {  0,  0, 16, 16, 16, 16, 16, 16, 62, 16, 16, 14 }, // f
+    { 28,  2,  2, 26, 38, 34, 34, 34, 30,  0,  0,  0 }, // g
+    {  0,  0, 34, 34, 34, 34, 34, 50, 44, 32, 32, 32 }, // h
+    {  0,  0,  8,  8,  8,  8,  8,  8, 56,  0,  8,  8 }, // i
+    { 56,  4,  4,  4,  4,  4,  4,  4, 60,  0,  4,  4 }, // j
+    {  0,  0, 33, 34, 36, 56, 40, 36, 34, 32, 32, 32 }, // k
+    {  0,  0,  8,  8,  8,  8,  8,  8,  8,  8,  8, 56 }, // l
+    {  0,  0, 73, 73, 73, 73, 73,109, 82,  0,  0,  0 }, // m
+    {  0,  0, 34, 34, 34, 34, 34, 50, 44,  0,  0,  0 }, // n
+    {  0,  0, 28, 34, 34, 34, 34, 34, 28,  0,  0,  0 }, // o
+    { 32, 32, 60, 34, 34, 34, 34, 50, 44,  0,  0,  0 }, // p
+    {  2,  2, 26, 38, 34, 34, 34, 34, 30,  0,  0,  0 }, // q
+    {  0,  0, 16, 16, 16, 16, 16, 24, 22,  0,  0,  0 }, // r
+    {  0,  0, 60,  2,  2, 28, 32, 32, 30,  0,  0,  0 }, // s
+    {  0,  0, 14, 16, 16, 16, 16, 16, 62, 16, 16,  0 }, // t
+    {  0,  0, 26, 38, 34, 34, 34, 34, 34,  0,  0,  0 }, // u
+    {  0,  0,  8,  8, 20, 20, 34, 34, 34,  0,  0,  0 }, // v
+    {  0,  0, 34, 34, 34, 85, 73, 73, 65,  0,  0,  0 }, // w
+    {  0,  0, 34, 34, 20,  8, 20, 34, 34,  0,  0,  0 }, // x
+    { 48, 16,  8,  8, 20, 20, 34, 34, 34,  0,  0,  0 }, // y
+    {  0,  0, 62, 32, 16,  8,  4,  2, 62,  0,  0,  0 }, // z
+    {  0,  6,  8,  8,  8,  4, 24,  4,  8,  8,  8,  6 }, // {
+    {  0,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8 }, // |
+    {  0, 48,  8,  8,  8, 16, 12, 16,  8,  8,  8, 48 }, // }
+    {  0,  0,  0,  0,  0,  0, 78, 57,  0,  0,  0,  0 }  // ~
 };
 
-SIM::Coin3D::Quarter::SoQTQuarterAdaptor::SoQTQuarterAdaptor(QWidget* parent, const QGLWidget* sharewidget, Qt::WindowFlags f)
+SIM::Coin3D::Quarter::SoQTQuarterAdaptor::SoQTQuarterAdaptor(QWidget* parent, const QtGLWidget* sharewidget, Qt::WindowFlags f)
     : QuarterWidget(parent, sharewidget, f), matrixaction(SbViewportRegion(100,100))
 {
     init();
 }
 
-SIM::Coin3D::Quarter::SoQTQuarterAdaptor::SoQTQuarterAdaptor(const QGLFormat& format, QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags f)
+SIM::Coin3D::Quarter::SoQTQuarterAdaptor::SoQTQuarterAdaptor(const QtGLFormat& format, QWidget* parent, const QtGLWidget* shareWidget, Qt::WindowFlags f)
     : QuarterWidget(format, parent, shareWidget, f), matrixaction(SbViewportRegion(100,100))
 {
     init();
 }
 
-SIM::Coin3D::Quarter::SoQTQuarterAdaptor::SoQTQuarterAdaptor(QGLContext* context, QWidget* parent, const QGLWidget* sharewidget, Qt::WindowFlags f)
+SIM::Coin3D::Quarter::SoQTQuarterAdaptor::SoQTQuarterAdaptor(QtGLContext* context, QWidget* parent, const QtGLWidget* sharewidget, Qt::WindowFlags f)
     : QuarterWidget(context, parent, sharewidget, f), matrixaction(SbViewportRegion(100,100))
 {
     init();
@@ -156,19 +168,24 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::init()
 {
     m_interactionnesting = 0;
     m_seekdistance = 50.0f;
-    m_seekdistanceabs = FALSE;
+    m_seekdistanceabs = false;
     m_seekperiod = 2.0f;
-    m_inseekmode = FALSE;
+    m_inseekmode = false;
+    m_storedcamera = nullptr;
+    m_viewingflag = false;
+    pickRadius = 5.0;
 
     m_seeksensor = new SoTimerSensor(SoQTQuarterAdaptor::seeksensorCB, (void*)this);
     getSoEventManager()->setNavigationState(SoEventManager::NO_NAVIGATION);
+
+    resetFrameCounter();
 }
 
 
 QWidget* SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getWidget()
 {
     //we keep the function from SoQt as we want to introduce the QGraphicsView and then the GLWidget
-    //is seperated from the Widget used in layouts again
+    //is separated from the Widget used in layouts again
     return this;
 }
 
@@ -180,19 +197,20 @@ QWidget* SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getGLWidget()
 QWidget* SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getWidget() const
 {
     //we keep the function from SoQt as we want to introduce the QGraphicsView and then the GLWidget
-    //is seperated from the Widget used in layouts again
+    //is separated from the Widget used in layouts again
     return const_cast<SoQTQuarterAdaptor*>(this);
 }
 
 QWidget* SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getGLWidget() const
 {
-    return const_cast<QWidget*>(viewport());
+    return viewport();
 }
 
 void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::setCameraType(SoType type)
 {
-    if(!getSoRenderManager()->getCamera()->isOfType(SoPerspectiveCamera::getClassTypeId()) &&
-            !getSoRenderManager()->getCamera()->isOfType(SoOrthographicCamera::getClassTypeId())) {
+    SoCamera* cam = getSoRenderManager()->getCamera();
+    if (cam && !cam->isOfType(SoPerspectiveCamera::getClassTypeId()) &&
+               !cam->isOfType(SoOrthographicCamera::getClassTypeId())) {
         Base::Console().Warning("Quarter::setCameraType",
                                 "Only SoPerspectiveCamera and SoOrthographicCamera is supported.");
         return;
@@ -200,11 +218,10 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::setCameraType(SoType type)
 
 
     SoType perspectivetype = SoPerspectiveCamera::getClassTypeId();
-    SbBool oldisperspective = getSoRenderManager()->getCamera()->getTypeId().isDerivedFrom(perspectivetype);
+    SbBool oldisperspective = cam ? cam->getTypeId().isDerivedFrom(perspectivetype) : false;
     SbBool newisperspective = type.isDerivedFrom(perspectivetype);
 
-    if((oldisperspective && newisperspective) ||
-            (!oldisperspective && !newisperspective)) // Same old, same old..
+    if (oldisperspective == newisperspective) // Same old, same old..
         return;
 
 
@@ -239,11 +256,16 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::setCameraType(SoType type)
             parent->replaceChild(node, newcamera);
         }
     }
-};
+}
 
 void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::convertOrtho2Perspective(const SoOrthographicCamera* in,
         SoPerspectiveCamera* out)
 {
+    if (!in || !out) {
+        Base::Console().Log("Quarter::convertOrtho2Perspective",
+                            "Cannot convert camera settings due to wrong input.");
+        return;
+    }
     out->aspectRatio.setValue(in->aspectRatio.getValue());
     out->focalDistance.setValue(in->focalDistance.getValue());
     out->orientation.setValue(in->orientation.getValue());
@@ -263,7 +285,7 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::convertOrtho2Perspective(const So
 
     // 45° is the default value of this field in SoPerspectiveCamera.
     out->heightAngle = (float)(M_PI / 4.0);
-};
+}
 
 void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::convertPerspective2Ortho(const SoPerspectiveCamera* in,
         SoOrthographicCamera* out)
@@ -277,7 +299,17 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::convertPerspective2Ortho(const So
     float focaldist = in->focalDistance.getValue();
 
     out->height = 2.0f * focaldist * (float)tan(in->heightAngle.getValue() / 2.0);
-};
+}
+
+SoCamera* SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getCamera() const
+{
+    return getSoRenderManager()->getCamera();
+}
+
+const SbViewportRegion & SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getViewportRegion() const
+{
+    return getSoRenderManager()->getViewportRegion();
+}
 
 void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::setViewing(SbBool enable)
 {
@@ -286,20 +318,20 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::setViewing(SbBool enable)
 
     // Turn off the selection indicators when we go back from picking
     // mode into viewing mode.
-    if(m_viewingflag) {
+    if (m_viewingflag) {
         SoGLRenderAction* action = getSoRenderManager()->getGLRenderAction();
 
-        if(action != NULL)
+        if (action)
             SoLocateHighlight::turnOffCurrentHighlight(action);
     }
 }
 
-SbBool SIM::Coin3D::Quarter::SoQTQuarterAdaptor::isViewing(void) const
+SbBool SIM::Coin3D::Quarter::SoQTQuarterAdaptor::isViewing() const
 {
     return m_viewingflag;
 }
 
-void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::interactiveCountInc(void)
+void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::interactiveCountInc()
 {
     // Catch problems with missing interactiveCountDec() calls.
     assert(m_interactionnesting < 100);
@@ -309,7 +341,7 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::interactiveCountInc(void)
     }
 }
 
-void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::interactiveCountDec(void)
+void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::interactiveCountDec()
 {
     if(--m_interactionnesting <= 0) {
         m_interactionEndCallback.invokeCallbacks(this);
@@ -317,7 +349,7 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::interactiveCountDec(void)
     }
 }
 
-int SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getInteractiveCount(void) const
+int SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getInteractiveCount() const
 {
     return m_interactionnesting;
 }
@@ -343,24 +375,36 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::removeFinishCallback(SIM::Coin3D:
 }
 
 
-float SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getSeekDistance(void) const
+float SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getSeekDistance() const
 {
     return m_seekdistance;
 }
 
-float SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getSeekTime(void) const
+float SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getSeekTime() const
 {
     return m_seekperiod;
 }
 
-SbBool SIM::Coin3D::Quarter::SoQTQuarterAdaptor::isSeekMode(void) const
+SbBool SIM::Coin3D::Quarter::SoQTQuarterAdaptor::isSeekMode() const
 {
     return m_inseekmode;
 }
 
-SbBool SIM::Coin3D::Quarter::SoQTQuarterAdaptor::isSeekValuePercentage(void) const
+SbBool SIM::Coin3D::Quarter::SoQTQuarterAdaptor::isSeekValuePercentage() const
 {
-    return m_seekdistanceabs ? FALSE : TRUE;
+    return m_seekdistanceabs ? false : true;
+}
+
+void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::setPickRadius(float pickRadius)
+{
+    this->pickRadius = pickRadius;
+    SoEventManager* evm = this->getSoEventManager();
+    if (evm){
+        SoHandleEventAction* a = evm->getHandleEventAction();
+        if (a){
+            a->setPickRadius(pickRadius);
+        }
+    }
 }
 
 SbBool SIM::Coin3D::Quarter::SoQTQuarterAdaptor::seekToPoint(const SbVec2s screenpos)
@@ -368,22 +412,22 @@ SbBool SIM::Coin3D::Quarter::SoQTQuarterAdaptor::seekToPoint(const SbVec2s scree
 
     SoRayPickAction rpaction(getSoRenderManager()->getViewportRegion());
     rpaction.setPoint(screenpos);
-    rpaction.setRadius(2);
+    rpaction.setRadius(pickRadius);
     rpaction.apply(getSoRenderManager()->getSceneGraph());
 
     SoPickedPoint* picked = rpaction.getPickedPoint();
 
     if(!picked) {
-        this->interactiveCountInc(); // decremented in setSeekMode(FALSE)
-        this->setSeekMode(FALSE);
-        return FALSE;
+        this->interactiveCountInc(); // decremented in setSeekMode(false)
+        this->setSeekMode(false);
+        return false;
     }
 
     SbVec3f hitpoint;
     hitpoint = picked->getPoint();
 
     this->seekToPoint(hitpoint);
-    return TRUE;
+    return true;
 }
 
 void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::seekToPoint(const SbVec3f& scenepos)
@@ -452,13 +496,13 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::setSeekTime(const float seconds)
 
 void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::setSeekValueAsPercentage(const SbBool on)
 {
-    m_seekdistanceabs = on ? FALSE : TRUE;
+    m_seekdistanceabs = on ? false : true;
 }
 
 void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::getCameraCoordinateSystem(SoCamera* camera, SoNode* root, SbMatrix& matrix, SbMatrix& inverse)
 {
     searchaction.reset();
-    searchaction.setSearchingAll(TRUE);
+    searchaction.setSearchingAll(true);
     searchaction.setInterest(SoSearchAction::FIRST);
     searchaction.setNode(camera);
     searchaction.apply(root);
@@ -497,12 +541,17 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::seeksensorCB(void* data, SoSensor
                           thisp->m_cameraendorient,
                           t);
 
-    if(end) thisp->setSeekMode(FALSE);
+    if(end) thisp->setSeekMode(false);
 }
 
-void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::saveHomePosition(void)
+void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::saveHomePosition()
 {
-    SoType t = getSoRenderManager()->getCamera()->getTypeId();
+    SoCamera* cam = getSoRenderManager()->getCamera();
+    if (!cam) {
+        return;
+    }
+
+    SoType t = cam->getTypeId();
     assert(t.isDerivedFrom(SoNode::getClassTypeId()));
     assert(t.canCreateInstance());
 
@@ -516,8 +565,13 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::saveHomePosition(void)
     m_storedcamera->copyFieldValues(getSoRenderManager()->getCamera());
 }
 
-void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::resetToHomePosition(void)
+void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::resetToHomePosition()
 {
+    SoCamera* cam = getSoRenderManager()->getCamera();
+    if (!cam) {
+        return;
+    }
+
     if(!m_storedcamera) {
         return;
     }
@@ -546,32 +600,32 @@ void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::resetToHomePosition(void)
     }
 
     // otherwise, cameras have changed in ways we don't understand since
-    // the last saveHomePosition() invokation, and so we're just going
+    // the last saveHomePosition() invocation, and so we're just going
     // to ignore the reset request
 }
 
 
-void 
-SIM::Coin3D::Quarter::SoQTQuarterAdaptor::draw2DString(const char * str, SbVec2s glsize, SbVec2f position)
+void
+SIM::Coin3D::Quarter::SoQTQuarterAdaptor::draw2DString(const char* str, SbVec2s glsize, SbVec2f position)
 {
-  // Store GL state.
-  glPushAttrib(GL_ENABLE_BIT|GL_CURRENT_BIT);
+    // Store GL state.
+    glPushAttrib(GL_ENABLE_BIT|GL_CURRENT_BIT);
 
-  glDisable(GL_LIGHTING);
-  glDisable(GL_DEPTH_TEST);
-  glDisable(GL_TEXTURE_2D);
-  glDisable(GL_BLEND);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
 
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
-  glLoadIdentity();
-  glOrtho(0.0, glsize[0], 0.0, glsize[1], -1, 1);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, glsize[0], 0.0, glsize[1], -1, 1);
 
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 //   glColor3f(0.0, 0.0, 0.0);
 //   glRasterPos2f(position[0] + 1, position[1]);
@@ -583,24 +637,124 @@ SIM::Coin3D::Quarter::SoQTQuarterAdaptor::draw2DString(const char * str, SbVec2s
 //   glRasterPos2f(position[0], position[1] - 1);
 //   printString(str);
 
-  glColor3f(1.0, 1.0, 0.0);
-  glRasterPos2f(position[0], position[1]);
-  printString(str);
+    glColor3f(1.0, 1.0, 0.0);
+    glRasterPos2f(position[0], position[1]);
+    printString(str);
 
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 4); // restore default value
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4); // restore default value
 
-  glPopAttrib();
+    glPopAttrib();
 }
 
-void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::printString(const char * s)
+void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::printString(const char* s)
 {
-  int i,n;
-  n = strlen(s);
-  for (i = 0; i < n; i++)
-    glBitmap(8, 12, 0.0, 2.0, 10.0, 0.0, fps2dfont[s[i] - 32]);
+    int i,n;
+    n = strlen(s);
+
+    for(i = 0; i < n; i++)
+        glBitmap(8, 12, 0.0, 2.0, 10.0, 0.0, fps2dfont[s[i] - 32]);
 }
+
+void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::moveCameraScreen(const SbVec2f& screenpos) {
+
+    SoCamera* cam = getSoRenderManager()->getCamera();
+    assert(cam);
+
+
+    SbViewVolume vv = cam->getViewVolume(getGLWidget()->width() / getGLWidget()->height());
+    SbPlane panplane = vv.getPlane(cam->focalDistance.getValue());
+
+    SbLine line;
+    vv.projectPointToLine(screenpos + SbVec2f(0.5, 0.5f), line);
+    SbVec3f current_planept;
+    panplane.intersect(line, current_planept);
+    vv.projectPointToLine(SbVec2f(0.5f, 0.5f), line);
+    SbVec3f old_planept;
+    panplane.intersect(line, old_planept);
+
+    // Reposition camera according to the vector difference between the
+    // projected points.
+    cam->position = cam->position.getValue() - (current_planept - old_planept);
+}
+
+bool SIM::Coin3D::Quarter::SoQTQuarterAdaptor::processSoEvent(const SoEvent* event) {
+
+    const SoType type(event->getTypeId());
+
+    if(type.isDerivedFrom(SoKeyboardEvent::getClassTypeId())) {
+        const SoKeyboardEvent* keyevent = static_cast<const SoKeyboardEvent*>(event);
+
+        if(keyevent->getState() == SoButtonEvent::DOWN) {
+            switch(keyevent->getKey()) {
+
+            case SoKeyboardEvent::LEFT_ARROW:
+                moveCameraScreen(SbVec2f(-0.1f, 0.0f));
+                return true;
+
+            case SoKeyboardEvent::UP_ARROW:
+                moveCameraScreen(SbVec2f(0.0f, 0.1f));
+                return true;
+
+            case SoKeyboardEvent::RIGHT_ARROW:
+                moveCameraScreen(SbVec2f(0.1f, 0.0f));
+                return true;
+
+            case SoKeyboardEvent::DOWN_ARROW:
+                moveCameraScreen(SbVec2f(0.0f, -0.1f));
+                return true;
+
+            default:
+                break;
+            }
+        }
+    }
+
+    return SIM::Coin3D::Quarter::QuarterWidget::processSoEvent(event);
+}
+
+/*!
+  Overridden from QuarterWidget to render the scenegraph
+*/
+void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::paintEvent(QPaintEvent* event)
+{
+    double start = SbTime::getTimeOfDay().getValue();
+    QuarterWidget::paintEvent(event);
+    this->framesPerSecond = addFrametime(start);
+}
+
+void SIM::Coin3D::Quarter::SoQTQuarterAdaptor::resetFrameCounter()
+{
+    this->framecount = 0;
+    this->frametime = 0.0f;
+    this->drawtime = 0.0f;
+    this->starttime = SbTime::getTimeOfDay().getValue();
+    this->framesPerSecond = SbVec2f(0, 0);
+}
+
+SbVec2f SIM::Coin3D::Quarter::SoQTQuarterAdaptor::addFrametime(double starttime)
+{
+    this->framecount++;
+
+    double timeofday = SbTime::getTimeOfDay().getValue();
+
+    // draw time is the actual time spent on rendering
+    double drawtime = timeofday - starttime;
+#define FPS_FACTOR 0.7
+    this->drawtime = (drawtime*FPS_FACTOR) + this->drawtime*(1.0-FPS_FACTOR);
+
+    // frame time is the time spent since the last frame. There could an
+    // indefinite pause between the last frame because the scene is not
+    // changing. So we limit the skew to 5 second.
+    double frametime = std::min(timeofday-this->starttime, std::max(drawtime,5000.0));
+    this->frametime = (frametime*FPS_FACTOR) + this->frametime*(1.0-FPS_FACTOR);
+
+    this->starttime = timeofday;
+    return {1000 * float(this->drawtime), 1.0F / float(this->frametime)};
+}
+
+#include "moc_SoQTQuarterAdaptor.cpp"

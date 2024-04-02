@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -21,57 +21,37 @@
  ***************************************************************************/
 
 
-
-
 #ifndef _AppPlacement_h_
 #define _AppPlacement_h_
 
-#include <Base/Placement.h>
-
-#include "GeoFeature.h"
-#include "PropertyGeo.h"
-
-
-namespace Base
-{
-//  class Vector3D;
-  //class Matrix4D;
-}
-
-//using Base::Vector3D;
-//using Base::Matrix4D;
+#include "FeaturePython.h"
 
 namespace App
 {
-
 
 /** Placement Object
  *  Handles the repositioning of data. Also can do grouping
  */
 class AppExport Placement: public App::GeoFeature
 {
-    PROPERTY_HEADER(App::Placement);
+    PROPERTY_HEADER_WITH_OVERRIDE(App::Placement);
 
 public:
-
-
   /// Constructor
-  Placement(void);
-  virtual ~Placement();
-  
+  Placement();
+  ~Placement() override;
+
   /// returns the type name of the ViewProvider
-  virtual const char* getViewProviderName(void) const {
+  const char* getViewProviderName() const override {
       return "Gui::ViewProviderPlacement";
   }
 
 
 };
-
-
+using PlacementPython = App::FeaturePythonT<App::Placement>;
 
 
 } //namespace App
-
 
 
 #endif

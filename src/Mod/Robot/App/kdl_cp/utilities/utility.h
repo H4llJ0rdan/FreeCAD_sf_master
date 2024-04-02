@@ -16,7 +16,7 @@
  *    functions and macro definitions.
  *  
  *  \par history
- *   - changed layout of the comments to accomodate doxygen
+ *   - changed layout of the comments to accommodate doxygen
  */
 
 
@@ -81,6 +81,10 @@ namespace KDL {
 #ifndef __GNUC__
     //only real solution : get Rall1d and varia out of namespaces.
     #pragma warning (disable:4786)
+    #pragma warning (disable:4244)
+    #pragma warning (disable:4267)
+    #pragma warning (disable:4800)
+    #pragma warning (disable:4996)
 
     inline double sin(double a) {
         return ::sin(a);

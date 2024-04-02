@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,14 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
+#include <App/DocumentObjectPy.h>
+#include <App/FeaturePythonPyImp.h>
 
 #include "FemResultObject.h"
-#include <App/DocumentObjectPy.h>
+
 
 using namespace Fem;
 using namespace App;
@@ -37,41 +36,57 @@ PROPERTY_SOURCE(Fem::FemResultObject, App::DocumentObject)
 
 FemResultObject::FemResultObject()
 {
-    ADD_PROPERTY_TYPE(DataType,(""), "General",Prop_None,"Type identifier of the result data");
-    ADD_PROPERTY_TYPE(Unit,(0), "General",Prop_None,"Unit of the data");
-    ADD_PROPERTY_TYPE(ElementNumbers,(0), "Data",Prop_None,"Numbers of the result elements");
-    ADD_PROPERTY_TYPE(Mesh,(0), "General",Prop_None,"Link to the corosbonding mesh");
+    ADD_PROPERTY_TYPE(Mesh, (nullptr), "General", Prop_None, "Link to the corresponding mesh");
+    ADD_PROPERTY_TYPE(NodeNumbers, (0), "NodeData", Prop_None, "Numbers of the result nodes");
+    ADD_PROPERTY_TYPE(Stats, (0), "Data", Prop_None, "Statistics of the results");
+    ADD_PROPERTY_TYPE(Time, (0), "Data", Prop_None, "Time of analysis increment");
+
+    // make read-only for property editor
+    NodeNumbers.setStatus(App::Property::ReadOnly, true);
+    Stats.setStatus(App::Property::ReadOnly, true);
+    Time.setStatus(App::Property::ReadOnly, true);
 }
 
-FemResultObject::~FemResultObject()
-{
-}
+FemResultObject::~FemResultObject() = default;
 
-short FemResultObject::mustExecute(void) const
+short FemResultObject::mustExecute() const
 {
     return 0;
 }
 
-PyObject *FemResultObject::getPyObject()
+PyObject* FemResultObject::getPyObject()
 {
-    if (PythonObject.is(Py::_None())){
+    if (PythonObject.is(Py::_None())) {
         // ref counter is set to 1
-        PythonObject = Py::Object(new DocumentObjectPy(this),true);
+        PythonObject = Py::Object(new DocumentObjectPy(this), true);
     }
-    return Py::new_reference_to(PythonObject); 
+    return Py::new_reference_to(PythonObject);
 }
 
 // Python feature ---------------------------------------------------------
 
-namespace App {
+namespace App
+{
 /// @cond DOXERR
-PROPERTY_SOURCE_TEMPLATE(Fem::FemResultPython, Fem::FemResultObject)
-template<> const char* Fem::FemResultPython::getViewProviderName(void) const {
-    return "FemGui::ViewProviderFemResultPython";
+PROPERTY_SOURCE_TEMPLATE(Fem::FemResultObjectPython, Fem::FemResultObject)
+template<>
+const char* Fem::FemResultObjectPython::getViewProviderName() const
+{
+    return "FemGui::ViewProviderResultPython";
 }
 /// @endcond
 
-// explicit template instantiation
-template class AppFemExport FeaturePythonT<Fem::FemResultObject>;
-
+template<>
+PyObject* Fem::FemResultObjectPython::getPyObject()
+{
+    if (PythonObject.is(Py::_None())) {
+        // ref counter is set to 1
+        PythonObject = Py::Object(new App::FeaturePythonPyT<App::DocumentObjectPy>(this), true);
+    }
+    return Py::new_reference_to(PythonObject);
 }
+
+// explicit template instantiation
+template class FemExport FeaturePythonT<Fem::FemResultObject>;
+
+}  // namespace App

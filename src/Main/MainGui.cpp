@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2008                        *   
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -10,18 +10,24 @@
  *   for detail see the LICENCE text file.                                 *
  *                                                                         *
  *   FreeCAD is distributed in the hope that it will be useful,            *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        * 
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU Library General Public License for more details.                  *
  *                                                                         *
  *   You should have received a copy of the GNU Library General Public     *
- *   License along with FreeCAD; if not, write to the Free Software        * 
+ *   License along with FreeCAD; if not, write to the Free Software        *
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
  *   USA                                                                   *
  *                                                                         *
- *   Juergen Riegel 2002                                                   *
  ***************************************************************************/
+
 #include <FCConfig.h>
+
+#if defined(_MSC_VER)
+#include <windows.h>
+#include <dbghelp.h>
+#endif
+
 
 #ifdef _PreComp_
 #   undef _PreComp_
@@ -35,37 +41,28 @@
 #   include <config.h>
 #endif // HAVE_CONFIG_H
 
-#include <map>
-#include <vector>
-#include <algorithm>
-
 #include <cstdio>
-#include <QApplication>
-#include <QFile>
-#include <QMessageBox>
-#include <QLocale>
-#include <QTextCodec>
+#include <map>
+#include <stdexcept>
 
-#include <QDomDocument>
-#include <QXmlSimpleReader>
-#include <QXmlInputSource>
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
+#include <QApplication>
+#include <QLocale>
+#include <QMessageBox>
 
 // FreeCAD header
-#include <Base/Console.h>
+#include <App/Application.h>
+#include <Base/ConsoleObserver.h>
 #include <Base/Interpreter.h>
 #include <Base/Parameter.h>
 #include <Base/Exception.h>
-#include <Base/Factory.h>
-#include <App/Application.h>
-#include <Gui/BitmapFactory.h>
 #include <Gui/Application.h>
 
-void PrintInitHelp(void);
 
-const char sBanner[] = "\xc2\xa9 Juergen Riegel, Werner Mayer, Yorik van Havre 2001-2014\n"\
+void PrintInitHelp();
+
+const char sBanner[] = "\xc2\xa9 Juergen Riegel, Werner Mayer, Yorik van Havre and others 2001-2023\n"\
+"FreeCAD is free and open-source software licensed under the terms of LGPL2+ license.\n"\
+"FreeCAD wouldn't be possible without FreeCAD community.\n"\
 "  #####                 ####  ###   ####  \n" \
 "  #                    #      # #   #   # \n" \
 "  #     ##  #### ####  #     #   #  #   # \n" \
@@ -74,137 +71,72 @@ const char sBanner[] = "\xc2\xa9 Juergen Riegel, Werner Mayer, Yorik van Havre 2
 "  #     #   #    #     #    #     # #   #  ##  ##  ##\n" \
 "  #     #   #### ####   ### #     # ####   ##  ##  ##\n\n" ;
 
-class Branding
-{
-public:
-    typedef std::map<std::string, std::string> XmlConfig;
-    Branding()
-    {
-        filter.push_back("Application");
-        filter.push_back("WindowTitle");
-        filter.push_back("CopyrightInfo");
-        filter.push_back("MaintainerUrl");
-        filter.push_back("WindowIcon");
-        filter.push_back("ProgramLogo");
-        filter.push_back("ProgramIcons");
-
-        filter.push_back("BuildVersionMajor");
-        filter.push_back("BuildVersionMinor");
-        filter.push_back("BuildRevision");
-        filter.push_back("BuildRevisionDate");
-
-        filter.push_back("SplashScreen");
-        filter.push_back("SplashAlignment");
-        filter.push_back("SplashTextColor");
-        filter.push_back("SplashInfoColor");
-
-        filter.push_back("StartWorkbench");
-
-        filter.push_back("ExeName");
-        filter.push_back("ExeVendor");
-    }
-
-    bool readFile(const QString& fn)
-    {
-        QFile file(fn);
-        if (!file.open(QFile::ReadOnly))
-            return false;
-        if (!evaluateXML(&file, domDocument))
-            return false;
-        file.close();
-        return true;
-    }
-    XmlConfig getUserDefines() const
-    {
-        XmlConfig cfg;
-        QDomElement root = domDocument.documentElement();
-        QDomElement child;
-        if (!root.isNull()) {
-            child = root.firstChildElement();
-            while (!child.isNull()) {
-                std::string name = (const char*)child.localName().toAscii();
-                std::string value = (const char*)child.text().toUtf8();
-                if (std::find(filter.begin(), filter.end(), name) != filter.end())
-                    cfg[name] = value;
-                child = child.nextSiblingElement();
-            }
-        }
-        return cfg;
-    }
-
-private:
-    std::vector<std::string> filter;
-    bool evaluateXML(QIODevice *device, QDomDocument& xmlDocument)
-    {
-        QString errorStr;
-        int errorLine;
-        int errorColumn;
-
-        if (!xmlDocument.setContent(device, true, &errorStr, &errorLine,
-                                    &errorColumn)) {
-            return false;
-        }
-
-        QDomElement root = xmlDocument.documentElement();
-        if (root.tagName() != QLatin1String("Branding")) {
-            return false;
-        }
-        else if (root.hasAttribute(QLatin1String("version"))) {
-            QString attr = root.attribute(QLatin1String("version"));
-            if (attr != QLatin1String("1.0"))
-                return false;
-        }
-
-        return true;
-    }
-    QDomDocument domDocument;
-};
-
 #if defined(_MSC_VER)
 void InitMiniDumpWriter(const std::string&);
 #endif
 
-#if defined (FC_OS_LINUX) || defined(FC_OS_BSD)
-QString myDecoderFunc(const QByteArray &localFileName)
+class Redirection
 {
-    QTextCodec* codec = QTextCodec::codecForName("UTF-8");
-    return codec->toUnicode(localFileName);
-}
-
-QByteArray myEncoderFunc(const QString &fileName)
-{
-    QTextCodec* codec = QTextCodec::codecForName("UTF-8");
-    return codec->fromUnicode(fileName);
-}
+public:
+    Redirection(FILE* f)
+        : fi(Base::FileInfo::getTempFileName()), file(f)
+    {
+#ifdef WIN32
+        FILE* ptr = _wfreopen(fi.toStdWString().c_str(),L"w",file);
+#else
+        FILE* ptr = freopen(fi.filePath().c_str(),"w",file);
 #endif
+        if (!ptr) {
+            std::cerr << "Failed to reopen file" << std::endl;
+        }
+    }
+    ~Redirection()
+    {
+        fclose(file);
+        fi.deleteFile();
+    }
+
+private:
+    Base::FileInfo fi;
+    FILE* file;
+};
 
 int main( int argc, char ** argv )
 {
 #if defined (FC_OS_LINUX) || defined(FC_OS_BSD)
+    setlocale(LC_ALL, ""); // use native environment settings
+
     // Make sure to setup the Qt locale system before setting LANG and LC_ALL to C.
     // which is needed to use the system locale settings.
     (void)QLocale::system();
-    // http://www.freecadweb.org/tracker/view.php?id=399
-    // Because of setting LANG=C the Qt automagic to use the correct encoding
-    // for file names is broken. This is a workaround to force the use of UTF-8 encoding
-    QFile::setEncodingFunction(myEncoderFunc);
-    QFile::setDecodingFunction(myDecoderFunc);
-    // Make sure that we use '.' as decimal point. See also
-    // http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=559846
-    putenv("LANG=C");
-    putenv("LC_ALL=C");
+    // See https://forum.freecad.org/viewtopic.php?f=18&t=20600
+    // See Gui::Application::runApplication()
+    putenv("LC_NUMERIC=C");
     putenv("PYTHONPATH=");
 #elif defined(FC_OS_MACOSX)
     (void)QLocale::system();
-    putenv("LANG=C");
-    putenv("LC_ALL=C");
     putenv("PYTHONPATH=");
+#elif defined(__MINGW32__)
+    const char* mingw_prefix = getenv("MINGW_PREFIX");
+    const char* py_home = getenv("PYTHONHOME");
+    if (!py_home && mingw_prefix)
+        _putenv_s("PYTHONHOME", mingw_prefix);
 #else
-    setlocale(LC_NUMERIC, "C");
     _putenv("PYTHONPATH=");
+    // https://forum.freecad.org/viewtopic.php?f=4&t=18288
+    // https://forum.freecad.org/viewtopic.php?f=3&t=20515
+    const char* fc_py_home = getenv("FC_PYTHONHOME");
+    if (fc_py_home)
+        _putenv_s("PYTHONHOME", fc_py_home);
+    else
+        _putenv("PYTHONHOME=");
 #endif
 
 #if defined (FC_OS_WIN32)
+    // we need to force Coin not to use Freetype in order to find installed fonts on Windows
+    // see https://forum.freecad.org/viewtopic.php?p=485142#p485016
+    _putenv("COIN_FORCE_FREETYPE_OFF=1");
+
     int argc_ = argc;
     QVector<QByteArray> data;
     QVector<char *> argv_;
@@ -225,24 +157,30 @@ int main( int argc, char ** argv )
     App::Application::Config()["ExeName"] = "FreeCAD";
     App::Application::Config()["ExeVendor"] = "FreeCAD";
     App::Application::Config()["AppDataSkipVendor"] = "true";
-    App::Application::Config()["MaintainerUrl"] = "http://www.freecadweb.org/wiki/index.php?title=Main_Page";
+    App::Application::Config()["MaintainerUrl"] = "http://www.freecad.org/wiki/Main_Page";
 
     // set the banner (for logging and console)
     App::Application::Config()["CopyrightInfo"] = sBanner;
     App::Application::Config()["AppIcon"] = "freecad";
     App::Application::Config()["SplashScreen"] = "freecadsplash";
+    App::Application::Config()["AboutImage"] = "freecadabout";
     App::Application::Config()["StartWorkbench"] = "StartWorkbench";
     //App::Application::Config()["HiddenDockWindow"] = "Property editor";
     App::Application::Config()["SplashAlignment" ] = "Bottom|Left";
-    App::Application::Config()["SplashTextColor" ] = "#ffffff"; // white
-    App::Application::Config()["SplashInfoColor" ] = "#c8c8c8"; // light grey
+    App::Application::Config()["SplashTextColor" ] = "#8aadf4"; // light blue
+    App::Application::Config()["SplashInfoColor" ] = "#8aadf4"; // light blue 
+    App::Application::Config()["SplashInfoPosition" ] = "6,75";
+
+    QGuiApplication::setDesktopFileName(QStringLiteral("org.freecad.FreeCAD.desktop"));
 
     try {
         // Init phase ===========================================================
         // sets the default run mode for FC, starts with gui if not overridden in InitConfig...
         App::Application::Config()["RunMode"] = "Gui";
+        App::Application::Config()["Console"] = "0";
+        App::Application::Config()["LoggingConsole"] = "1";
 
-        // Inits the Application 
+        // Inits the Application
 #if defined (FC_OS_WIN32)
         App::Application::init(argc_, argv_.data());
 #else
@@ -254,35 +192,52 @@ int main( int argc, char ** argv )
         dmpfile += "crash.dmp";
         InitMiniDumpWriter(dmpfile);
 #endif
+        std::map<std::string, std::string>::iterator it = App::Application::Config().find("NavigationStyle");
+        if (it != App::Application::Config().end()) {
+            ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/View");
+            // if not already defined do it now (for the very first start)
+            std::string style = hGrp->GetASCII("NavigationStyle", it->second.c_str());
+            hGrp->SetASCII("NavigationStyle", style.c_str());
+        }
+
         Gui::Application::initApplication();
-        Base::Interpreter().replaceStdOutput();
+
+        // Only if 'RunMode' is set to 'Gui' do the replacement
+        if (App::Application::Config()["RunMode"] == "Gui")
+            Base::Interpreter().replaceStdOutput();
     }
     catch (const Base::UnknownProgramOption& e) {
         QApplication app(argc,argv);
-        QString appName = QString::fromAscii(App::Application::Config()["ExeName"].c_str());
-        QString msg = QString::fromAscii(e.what());
+        QString appName = QString::fromLatin1(App::Application::Config()["ExeName"].c_str());
+        QString msg = QString::fromLatin1(e.what());
         QString s = QLatin1String("<pre>") + msg + QLatin1String("</pre>");
-        QMessageBox::critical(0, appName, s);
+        QMessageBox::critical(nullptr, appName, s);
         exit(1);
     }
     catch (const Base::ProgramInformation& e) {
         QApplication app(argc,argv);
-        QString appName = QString::fromAscii(App::Application::Config()["ExeName"].c_str());
-        QString msg = QString::fromAscii(e.what());
+        QString appName = QString::fromLatin1(App::Application::Config()["ExeName"].c_str());
+        QString msg = QString::fromUtf8(e.what());
         QString s = QLatin1String("<pre>") + msg + QLatin1String("</pre>");
-        QMessageBox::information(0, appName, s);
+
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Information);
+        msgBox.setWindowTitle(appName);
+        msgBox.setDetailedText(msg);
+        msgBox.setText(s);
+        msgBox.exec();
         exit(0);
     }
     catch (const Base::Exception& e) {
         // Popup an own dialog box instead of that one of Windows
         QApplication app(argc,argv);
-        QString appName = QString::fromAscii(App::Application::Config()["ExeName"].c_str());
+        QString appName = QString::fromLatin1(App::Application::Config()["ExeName"].c_str());
         QString msg;
-        msg = QObject::tr("While initializing %1 the  following exception occurred: '%2'\n\n"
+        msg = QObject::tr("While initializing %1 the following exception occurred: '%2'\n\n"
                           "Python is searching for its files in the following directories:\n%3\n\n"
                           "Python version information:\n%4\n")
-                          .arg(appName).arg(QString::fromUtf8(e.what()))
-                          .arg(QString::fromUtf8(Py_GetPath())).arg(QString::fromAscii(Py_GetVersion()));
+                          .arg(appName, QString::fromUtf8(e.what()),
+                          QString::fromUtf8(Py_EncodeLocale(Py_GetPath(),nullptr)), QString::fromLatin1(Py_GetVersion()));
         const char* pythonhome = getenv("PYTHONHOME");
         if (pythonhome) {
             msg += QObject::tr("\nThe environment variable PYTHONHOME is set to '%1'.")
@@ -293,28 +248,17 @@ int main( int argc, char ** argv )
             msg += QObject::tr("\nPlease contact the application's support team for more information.\n\n");
         }
 
-        QMessageBox::critical(0, QObject::tr("Initialization of %1 failed").arg(appName), msg);
+        QMessageBox::critical(nullptr, QObject::tr("Initialization of %1 failed").arg(appName), msg);
         exit(100);
     }
     catch (...) {
         // Popup an own dialog box instead of that one of Windows
         QApplication app(argc,argv);
-        QString appName = QString::fromAscii(App::Application::Config()["ExeName"].c_str());
+        QString appName = QString::fromLatin1(App::Application::Config()["ExeName"].c_str());
         QString msg = QObject::tr("Unknown runtime error occurred while initializing %1.\n\n"
                                   "Please contact the application's support team for more information.\n\n").arg(appName);
-        QMessageBox::critical(0, QObject::tr("Initialization of %1 failed").arg(appName), msg);
+        QMessageBox::critical(nullptr, QObject::tr("Initialization of %1 failed").arg(appName), msg);
         exit(101);
-    }
-
-    // Now it's time to read-in the file branding.xml if it exists
-    Branding brand;
-    QString path = QString::fromUtf8(App::GetApplication().getHomePath());
-    QFileInfo fi(path, QString::fromAscii("branding.xml"));
-    if (brand.readFile(fi.absoluteFilePath())) {
-        Branding::XmlConfig cfg = brand.getUserDefines();
-        for (Branding::XmlConfig::iterator it = cfg.begin(); it != cfg.end(); ++it) {
-            App::Application::Config()[it->first] = it->second;
-        }
     }
 
     // Run phase ===========================================================
@@ -326,19 +270,29 @@ int main( int argc, char ** argv )
     std::streambuf* oldcerr = std::cerr.rdbuf(&stdcerr);
 
     try {
-        if (App::Application::Config()["RunMode"] == "Gui")
+        // if console option is set then run in cmd mode
+        if (App::Application::Config()["Console"] == "1")
+            App::Application::runApplication();
+        if (App::Application::Config()["RunMode"] == "Gui" ||
+            App::Application::Config()["RunMode"] == "Internal")
             Gui::Application::runApplication();
         else
             App::Application::runApplication();
     }
-    catch (const Base::SystemExitException&) {
-        exit(0);
+    catch (const Base::SystemExitException& e) {
+        exit(e.getExitCode());
     }
     catch (const Base::Exception& e) {
-        Base::Console().Error("%s\n", e.what());
+        e.ReportException();
+        exit(1);
+    }
+    catch (const std::exception& e) {
+        Base::Console().Error("Application unexpectedly terminated: %s\n", e.what());
+        exit(1);
     }
     catch (...) {
         Base::Console().Error("Application unexpectedly terminated\n");
+        exit(1);
     }
 
     std::cout.rdbuf(oldcout);
@@ -348,7 +302,7 @@ int main( int argc, char ** argv )
     // Destruction phase ===========================================================
     Base::Console().Log("%s terminating...\n",App::Application::Config()["ExeName"].c_str());
 
-    // cleans up 
+    // cleans up
     App::Application::destruct();
 
     Base::Console().Log("%s completely terminated\n",App::Application::Config()["ExeName"].c_str());
@@ -357,8 +311,6 @@ int main( int argc, char ** argv )
 }
 
 #if defined(_MSC_VER)
-#include <windows.h>
-#include <dbghelp.h>
 
 typedef BOOL (__stdcall *tMDWD)(
   IN HANDLE hProcess,
@@ -373,7 +325,7 @@ typedef BOOL (__stdcall *tMDWD)(
 static tMDWD s_pMDWD;
 static HMODULE s_hDbgHelpMod;
 static MINIDUMP_TYPE s_dumpTyp = MiniDumpNormal;
-static std::string s_szMiniDumpFileName;  // initialize with whatever appropriate...
+static std::wstring s_szMiniDumpFileName;  // initialize with whatever appropriate...
 
 #include <Base/StackWalker.h>
 class MyStackWalker : public StackWalker
@@ -398,7 +350,7 @@ static LONG __stdcall MyCrashHandlerExceptionFilter(EXCEPTION_POINTERS* pEx)
 #ifdef _M_IX86 
   if (pEx->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW)   
   { 
-    // be sure that we have enought space... 
+    // be sure that we have enough space... 
     static char MyStack[1024*128];   
     // it assumes that DS and SS are the same!!! (this is the case for Win32) 
     // change the stack only if the selectors are the same (this is the case for Win32) 
@@ -417,14 +369,14 @@ static LONG __stdcall MyCrashHandlerExceptionFilter(EXCEPTION_POINTERS* pEx)
 
   bool bFailed = true; 
   HANDLE hFile; 
-  hFile = CreateFile(s_szMiniDumpFileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL); 
+  hFile = CreateFileW(s_szMiniDumpFileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if (hFile != INVALID_HANDLE_VALUE) 
   { 
     MINIDUMP_EXCEPTION_INFORMATION stMDEI; 
     stMDEI.ThreadId = GetCurrentThreadId(); 
     stMDEI.ExceptionPointers = pEx; 
-    stMDEI.ClientPointers = TRUE; 
-    // try to create an miniDump: 
+    stMDEI.ClientPointers = true; 
+    // try to create a miniDump: 
     if (s_pMDWD( 
       GetCurrentProcess(), 
       GetCurrentProcessId(), 
@@ -435,7 +387,7 @@ static LONG __stdcall MyCrashHandlerExceptionFilter(EXCEPTION_POINTERS* pEx)
       NULL 
       )) 
     { 
-      bFailed = false;  // suceeded 
+      bFailed = false;  // succeeded 
     } 
     CloseHandle(hFile); 
   } 
@@ -460,11 +412,12 @@ void InitMiniDumpWriter(const std::string& filename)
 {
   if (s_hDbgHelpMod != NULL)
     return;
-  s_szMiniDumpFileName = filename;
+  Base::FileInfo fi(filename);
+  s_szMiniDumpFileName = fi.toStdWString();
 
-  // Initialize the member, so we do not load the dll after the exception has occured
+  // Initialize the member, so we do not load the dll after the exception has occurred
   // which might be not possible anymore...
-  s_hDbgHelpMod = LoadLibrary(("dbghelp.dll"));
+  s_hDbgHelpMod = LoadLibraryA(("dbghelp.dll"));
   if (s_hDbgHelpMod != NULL)
     s_pMDWD = (tMDWD) GetProcAddress(s_hDbgHelpMod, "MiniDumpWriteDump");
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Juergen Riegel (FreeCAD@juergen-riegel.net)        *
+ *   Copyright (c) 2009 Jürgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -26,12 +26,18 @@
 # include <unistd.h>
 #endif
 
+#include <CXX/WrapPython.h>
+#include <memory>
 #include <QString>
 #include "Exception.h"
+
 #include "UnitsApi.h"
+#include "UnitsSchemaCentimeters.h"
 #include "UnitsSchemaInternal.h"
 #include "UnitsSchemaImperial1.h"
-#include "UnitsSchemaMKS.h" 
+#include "UnitsSchemaMKS.h"
+#include "UnitsSchemaMmMin.h"
+#include "UnitsSchemaFemMilliMeterNewton.h"
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846
@@ -48,133 +54,165 @@
 
 using namespace Base;
 
-
-//const QString  UnitsApi::getQuantityName(QuantityType t)
-//{
-//    // check limits
-//    assert(t<9);
-//    // returns 
-//    return QString::fromLatin1(QuantityNames[t]);
-//}
 // === static attributes  ================================================
-double UnitsApi::defaultFactor = 1.0;
 
-UnitsSchema  *UnitsApi::UserPrefSystem = new UnitsSchemaInternal();
-UnitSystem    UnitsApi::actSystem = SI1;
+UnitsSchemaPtr  UnitsApi::UserPrefSystem(new UnitsSchemaInternal());
+UnitSystem    UnitsApi::currentSystem = UnitSystem::SI1;
 
-//double   UnitsApi::UserPrefFactor [50];
-//QString  UnitsApi::UserPrefUnit   [50];
-int      UnitsApi::UserPrefDecimals = 2;
+int UnitsApi::UserPrefDecimals = 2;
 
-UnitsApi::UnitsApi(const char* filter)
+QString UnitsApi::getDescription(UnitSystem system)
 {
+    switch (system) {
+    case UnitSystem::SI1:
+        return tr("Standard (mm, kg, s, degree)");
+    case UnitSystem::SI2:
+        return tr("MKS (m, kg, s, degree)");
+    case UnitSystem::Imperial1:
+        return tr("US customary (in, lb)");
+    case UnitSystem::ImperialDecimal:
+        return tr("Imperial decimal (in, lb)");
+    case UnitSystem::Centimeters:
+        return tr("Building Euro (cm, m², m³)");
+    case UnitSystem::ImperialBuilding:
+        return tr("Building US (ft-in, sqft, cft)");
+    case UnitSystem::MmMin:
+        return tr("Metric small parts & CNC(mm, mm/min)");
+    case UnitSystem::ImperialCivil:
+        return tr("Imperial for Civil Eng (ft, ft/sec)");
+    case UnitSystem::FemMilliMeterNewton:
+        return tr("FEM (mm, N, s)");
+    default:
+        return tr("Unknown schema");
+    }
 }
 
-UnitsApi::UnitsApi(const std::string& filter)
+UnitsSchemaPtr UnitsApi::createSchema(UnitSystem system)
 {
+    switch (system) {
+    case UnitSystem::SI1:
+        return std::make_unique<UnitsSchemaInternal>();
+    case UnitSystem::SI2:
+        return std::make_unique<UnitsSchemaMKS>();
+    case UnitSystem::Imperial1:
+        return std::make_unique<UnitsSchemaImperial1>();
+    case UnitSystem::ImperialDecimal:
+        return std::make_unique<UnitsSchemaImperialDecimal>();
+    case UnitSystem::Centimeters:
+        return std::make_unique<UnitsSchemaCentimeters>();
+    case UnitSystem::ImperialBuilding:
+        return std::make_unique<UnitsSchemaImperialBuilding>();
+    case UnitSystem::MmMin:
+        return std::make_unique<UnitsSchemaMmMin>();
+    case UnitSystem::ImperialCivil:
+        return std::make_unique<UnitsSchemaImperialCivil>();
+    case UnitSystem::FemMilliMeterNewton:
+        return std::make_unique<UnitsSchemaFemMilliMeterNewton>();
+    default:
+        break;
+    }
+
+    return nullptr;
 }
 
-UnitsApi::~UnitsApi()
-{
-}
-
-void UnitsApi::setSchema(UnitSystem s)
+void UnitsApi::setSchema(UnitSystem system)
 {
     if (UserPrefSystem) {
         UserPrefSystem->resetSchemaUnits(); // for schemas changed the Quantity constants
-        delete UserPrefSystem;
-        UserPrefSystem = 0;
-    }
-    switch (s) {
-        case SI1 : UserPrefSystem = new UnitsSchemaInternal(); break;
-        case SI2 : UserPrefSystem = new UnitsSchemaMKS(); break;
-        case Imperial1: UserPrefSystem = new UnitsSchemaImperial1(); break;
-        case ImperialDecimal: UserPrefSystem = new UnitsSchemaImperialDecimal(); break;
-        default  : UserPrefSystem = new UnitsSchemaInternal(); s = SI1; break;
     }
 
-    actSystem = s;
-    UserPrefSystem->setSchemaUnits(); // if necesarry a unit schema can change the constants in Quantity (e.g. mi=1.8km rather then 1.6km).
+    UserPrefSystem = createSchema(system);
+    currentSystem = system;
+
+    // for wrong value fall back to standard schema
+    if (!UserPrefSystem) {
+        UserPrefSystem = std::make_unique<UnitsSchemaInternal>();
+        currentSystem = UnitSystem::SI1;
+    }
+
+    UserPrefSystem->setSchemaUnits(); // if necessary a unit schema can change the constants in Quantity (e.g. mi=1.8km rather then 1.6km).
 }
 
-
-//double UnitsApi::translateUnit(const char* str)
-//{
-//    bool temp;
-//    return parse(str,temp );
-//}
-//
-//double UnitsApi::translateUnit(const QString & str)
-//{
-//    bool temp;
-//    return parse(str.toUtf8() ,temp);
-//}
-//
-
-// === static translation methodes ==========================================
-
-QString UnitsApi::schemaTranslate(Base::Quantity quant,double &factor,QString &unitString)
+QString UnitsApi::toString(const Base::Quantity& quantity, const QuantityFormat& format)
 {
-	return UserPrefSystem->schemaTranslate(quant,factor,unitString);
+    QString value = QString::fromLatin1("'%1 %2'").arg(quantity.getValue(), 0, format.toFormat(), format.precision)
+                                                  .arg(quantity.getUnit().getString());
+    return value;
 }
 
-
-//QString UnitsApi::toStrWithUserPrefs(QuantityType t,double Value)
-//{
-//    return UserPrefSystem->toStrWithUserPrefs(t,Value);
-//    //double UnitValue = Value/UserPrefFactor[t];
-//    //return QString::fromAscii("%1 %2").arg(UnitValue).arg(UserPrefUnit[t]);
-//}
-//
-//void UnitsApi::toStrWithUserPrefs(QuantityType t,double Value,QString &outValue,QString &outUnit)
-//{
-//    UserPrefSystem->toStrWithUserPrefs(t,Value,outValue,outUnit);
-//}
-//
-//PyObject *UnitsApi::toPyWithUserPrefs(QuantityType t,double Value)
-//{
-//    return PyFloat_FromDouble(Value * UserPrefFactor[t]);
-//}
-//
-
-double UnitsApi::toDbl(PyObject *ArgObj, const Base::Unit &u)
+QString UnitsApi::toNumber(const Base::Quantity& quantity, const QuantityFormat& format)
 {
-    if (PyString_Check(ArgObj)) {
+    return toNumber(quantity.getValue(), format);
+}
+
+QString UnitsApi::toNumber(double value, const QuantityFormat& format)
+{
+    QString number = QString::fromLatin1("%1").arg(value, 0, format.toFormat(), format.precision);
+    return number;
+}
+
+//return true if the current user schema uses multiple units for length (ex. Ft/In)
+bool UnitsApi::isMultiUnitLength()
+{
+    return UserPrefSystem->isMultiUnitLength();
+}
+
+//return true if the current user schema uses multiple units for angles (ex. DMS)
+bool UnitsApi::isMultiUnitAngle()
+{
+    return UserPrefSystem->isMultiUnitAngle();
+}
+
+std::string UnitsApi::getBasicLengthUnit()
+{
+    return UserPrefSystem->getBasicLengthUnit();
+}
+
+// === static translation methods ==========================================
+
+QString UnitsApi::schemaTranslate(const Base::Quantity& quant, double &factor, QString &unitString)
+{
+    return UserPrefSystem->schemaTranslate(quant,factor,unitString);
+}
+
+double UnitsApi::toDouble(PyObject *ArgObj, const Base::Unit &u)
+{
+    if (PyUnicode_Check(ArgObj)) {
+        QString str = QString::fromUtf8(PyUnicode_AsUTF8(ArgObj));
         // Parse the string
-        QString str = QString::fromLatin1(PyString_AsString(ArgObj));
         Quantity q = Quantity::parse(str);
         if (q.getUnit() == u)
             return q.getValue();
-        throw Base::Exception("Wrong unit type!");
+        throw Base::UnitsMismatchError("Wrong unit type!");
     }
     else if (PyFloat_Check(ArgObj)) {
         return PyFloat_AsDouble(ArgObj);
     }
-    else if (PyInt_Check(ArgObj)) {
-        return static_cast<double>(PyInt_AsLong(ArgObj));
+    else if (PyLong_Check(ArgObj)) {
+        return static_cast<double>(PyLong_AsLong(ArgObj));
     }
     else {
-        throw Base::Exception("Wrong parameter type!");
+        throw Base::UnitsMismatchError("Wrong parameter type!");
     }
 }
 
 Quantity UnitsApi::toQuantity(PyObject *ArgObj, const Base::Unit &u)
 {
-    double d;
-    if (PyString_Check(ArgObj)) {
+    double d{};
+    if (PyUnicode_Check(ArgObj)) {
+        QString str = QString::fromUtf8(PyUnicode_AsUTF8(ArgObj));
         // Parse the string
-        QString str = QString::fromLatin1(PyString_AsString(ArgObj));
         Quantity q = Quantity::parse(str);
         d = q.getValue();
     }
     else if (PyFloat_Check(ArgObj)) {
         d = PyFloat_AsDouble(ArgObj);
     }
-    else if (PyInt_Check(ArgObj)) {
-        d = static_cast<double>(PyInt_AsLong(ArgObj));
+    else if (PyLong_Check(ArgObj)) {
+        d = static_cast<double>(PyLong_AsLong(ArgObj));
     }
     else {
-        throw Base::Exception("Wrong parameter type!");
+        throw Base::UnitsMismatchError("Wrong parameter type!");
     }
 
     return Quantity(d,u);
@@ -189,4 +227,3 @@ int UnitsApi::getDecimals()
 {
     return UserPrefDecimals;
 }
-

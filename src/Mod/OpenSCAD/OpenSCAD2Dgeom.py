@@ -1,5 +1,4 @@
 #***************************************************************************
-#*                                                                         *
 #*   Copyright (c) 2012 Sebastian Hoogen <github@sebastianhoogen.de>       *
 #*                                                                         *
 #*   This program is free software; you can redistribute it and/or modify  *
@@ -20,13 +19,15 @@
 #*                                                                         *
 #***************************************************************************
 
-__title__="FreeCAD OpenSCAD Workbench - 2D helper fuctions"
+__title__ = "FreeCAD OpenSCAD Workbench - 2D helper functions"
 __author__ = "Sebastian Hoogen"
-__url__ = ["http://www.freecadweb.org"]
+__url__ = ["https://www.freecad.org"]
 
 '''
 This Script includes python functions to convert imported dxf geometry to Faces
 '''
+
+from functools import reduce
 
 class Overlappingfaces():
     '''combines overlapping faces together'''
@@ -52,6 +53,11 @@ class Overlappingfaces():
         return vertsinface(bigface,smallface.Vertexes)
 
     @staticmethod
+    def dofacesoverlapproximity(bigface,smallface):
+        l1,l2 = bigface.proximity(smallface)
+        return len(l1) > 0 or len(l2) > 0
+
+    @staticmethod
     def dofacesoverlapboolean(bigface,smallface):
         #import FreeCAD,FreeCADGui
         #FreeCAD.Console.PrintLog('intersecting %d %d\n'%(bigfacei,smallfacei))
@@ -64,13 +70,20 @@ class Overlappingfaces():
         #isinsidelist = []
         self.isinsidedict = {}
         #for bigface, smallface in itertools.combinations(sortedfaces,2):
-        for bigfacei, smallfacei in itertools.combinations(range(len(self.sortedfaces)),2):
+        for bigfacei, smallfacei in\
+                itertools.combinations(range(len(self.sortedfaces)),2):
             try:
-                overlap = Overlappingfaces.dofacesoverlapboolean(\
+                overlap = Overlappingfaces.dofacesoverlapproximity(\
                         self.sortedfaces[bigfacei],self.sortedfaces[smallfacei])
-            except Part.OCCError:
-                overlap = Overlappingfaces.dofacesoverlapallverts(\
-                        self.sortedfaces[bigfacei],self.sortedfaces[smallfacei])
+            except (NotImplementedError, Part.OCCError) as e:
+                try:
+                    overlap = Overlappingfaces.dofacesoverlapboolean(\
+                            self.sortedfaces[bigfacei],\
+                            self.sortedfaces[smallfacei])
+                except Part.OCCError:
+                    overlap = Overlappingfaces.dofacesoverlapallverts(\
+                            self.sortedfaces[bigfacei],\
+                            self.sortedfaces[smallfacei])
             if overlap:
                 #isinsidelist.append((bigfacei,smallfacei))
                 smallinbig = self.isinsidedict.get(bigfacei,[])
@@ -83,7 +96,7 @@ class Overlappingfaces():
         if faceidx not in dict1:
             return curdepth+1
         else:
-        #print dict1[faceidx],[(finddepth(dict1,childface,curdepth)) for childface in dict1[faceidx]]
+        #print(dict1[faceidx],[(finddepth(dict1,childface,curdepth)) for childface in dict1[faceidx]])
             return max([(Overlappingfaces.finddepth(dict1,childface,curdepth+1)) for childface in dict1[faceidx]])
 
     def findrootdepth(self):
@@ -94,7 +107,7 @@ class Overlappingfaces():
 
     @staticmethod
     def hasnoparentstatic(isinsidedict,faceindex):
-        for smalllist in isinsidedict.itervalues():
+        for smalllist in isinsidedict.values():
             if faceindex in smalllist:
                 return False
         return True
@@ -112,7 +125,7 @@ class Overlappingfaces():
         dchildren=[]
         for child in isinsidedict.get(parent,[]):
             direct = True
-            for key, value in isinsidedict.iteritems():
+            for key, value in isinsidedict.items():
                 if key != parent and child in value and parent not in value:
                     direct = False
             if direct:
@@ -127,12 +140,12 @@ class Overlappingfaces():
     def printtree(isinsidedict,facenum):
         def printtreechild(isinsidedict,facenum,parent):
             children=Overlappingfaces.directchildren(isinsidedict,parent)
-            print 'parent %d directchild %s' % (parent,children)
+            print('parent %d directchild %s' % (parent,children))
             if children:
                 subdict=isinsidedict.copy()
                 del subdict[parent]
                 for child in children:
-                        printtreechild(subdict,facenum,child)
+                    printtreechild(subdict,facenum,child)
 
         rootitems=[fi for fi in range(facenum) if Overlappingfaces.hasnoparentstatic(isinsidedict,fi)]
         for rootitem in rootitems:
@@ -156,11 +169,13 @@ class Overlappingfaces():
                 obj=doc.addObject("Part::Cut","facesfromedges_%d" % faceindex)
                 obj.Base= addshape(faceindex) #we only do subtraction
                 if len(directchildren) == 1:
-                        obj.Tool = addfeature(directchildren[0],subdict)
+                    obj.Tool = addfeature(directchildren[0],subdict)
                 else:
-                        obj.Tool = doc.addObject("Part::MultiFuse","facesfromedges_union")
-                        obj.Tool.Shapes = [addfeature(child,subdict) for child in directchildren]
-                        obj.Tool.ViewObject.hide()
+                    obj.Tool = doc.addObject("Part::MultiFuse",\
+                            "facesfromedges_union")
+                    obj.Tool.Shapes = [addfeature(child,subdict)\
+                            for child in directchildren]
+                    obj.Tool.ViewObject.hide()
             obj.ViewObject.hide()
             return obj
 
@@ -176,14 +191,14 @@ class Overlappingfaces():
                 #del faces[tfi]
                 if tfi in isinsidedict:
                     del isinsidedict[tfi]
-                for key,value in isinsidedict.iteritems():
+                for key,value in isinsidedict.items():
                     if tfi in value:
                         newlist=value[:] #we work on a shallow copy of isinsidedict
                         newlist.remove(tfi)
                         isinsidedict[key]=newlist
 
         def hasnoparent(faceindex):
-            for smalllist in self.isinsidedict.itervalues():
+            for smalllist in self.isinsidedict.values():
                 if faceindex in smalllist:
                     return False
             return True
@@ -192,22 +207,22 @@ class Overlappingfaces():
         isinsidedict=self.isinsidedict.copy()
         finishedwith=[]
         while not all([Overlappingfaces.hasnoparentstatic(isinsidedict,fi) for fi in range(len(faces))]):
-            #print [(Overlappingfaces.hasnoparentstatic(isinsidedict,fi),\
-                #Overlappingfaces.directchildren(isinsidedict,fi)) for fi in range(len(faces))]
+            #print([(Overlappingfaces.hasnoparentstatic(isinsidedict,fi),\
+                #Overlappingfaces.directchildren(isinsidedict,fi)) for fi in range(len(faces))])
             for fi in range(len(faces))[::-1]:
                 directchildren = Overlappingfaces.directchildren(isinsidedict,fi)
                 if not directchildren:
                     continue
                 elif len(directchildren) == 1:
                     faces[fi]=faces[fi].cut(faces[directchildren[0]])
-                    #print fi,'-' ,directchildren[0], faces[fi],faces[directchildren[0]]
+                    #print(fi,'-' ,directchildren[0], faces[fi],faces[directchildren[0]])
                     removefaces(directchildren)
                 else:
                     toolface=fusefaces([faces[tfi] for tfi in directchildren])
                     faces[fi]=faces[fi].cut(toolface)
-                    #print fi, '- ()', directchildren, [faces[tfi] for tfi in directchildren]
+                    #print(fi, '- ()', directchildren, [faces[tfi] for tfi in directchildren])
                     removefaces(directchildren)
-                #print fi,directchildren
+                #print(fi,directchildren)
         faces =[face for index,face in enumerate(faces) if index not in finishedwith]
 #        return faces
         return fusefaces(faces)
@@ -255,19 +270,19 @@ def findConnectedEdges(edgelist,eps=1e-6,debug=False):
         #we are finished for this edge
         debuglist.append(newedge)
         retlist.append([item[0] for item in newedge]) #strip off direction
-    #print debuglist
+    #print(debuglist)
     if debug:
         return retlist,debuglist
     else:
         return retlist
 
 def endpointdistance(edges):
-    '''return the distance of of vertices in path (list of edges) as
-    maximum, mininum and distance between start and endpoint
-    it expects the edges to be traversed forward from starting from Vertex 0'''
+    '''return the distance of vertices in path (list of edges) as
+    maximum, minimum and distance between start and endpoint
+    it expects the edges to be traversed forward starting from Vertex 0'''
     numedges=len(edges)
     if numedges == 1 and len(edges[0].Vertexes) == 1:
-            return 0.0,0.0,0.0
+        return 0.0,0.0,0.0
     outerdistance = edges[0].Vertexes[0].Point.sub(\
         edges[-1].Vertexes[-1].Point).Length
     if numedges > 1:
@@ -278,12 +293,12 @@ def endpointdistance(edges):
         return 0.0,0.0,outerdistance
 
 def endpointdistancedebuglist(debuglist):
-    '''return the distance of of vertices in path (list of edges) as
-    maximum, mininum and distance between start and endpoint
-    it it expects a 'not reversed' flag for every edge'''
+    '''return the distance of vertices in path (list of edges) as
+    maximum, minimum and distance between start and endpoint
+    it expects a 'not reversed' flag for every edge'''
     numedges=len(debuglist)
     if numedges == 1 and len(debuglist[0][0].Vertexes) == 1:
-            return 0.0,0.0,0.0
+        return 0.0,0.0,0.0
     outerdistance = debuglist[0][0].Vertexes[(not debuglist[0][1])*-1].\
             Point.sub(debuglist[-1][0].Vertexes[(debuglist[-1][1])*-1].\
             Point).Length
@@ -297,15 +312,16 @@ def endpointdistancedebuglist(debuglist):
 
 def edgestowires(edgelist,eps=0.001):
     '''takes list of edges and returns a list of wires'''
-    import Part, Draft
-    # todo remove double edges
+    import Part
+    import Draft
+    # TODO remove double edges
     wirelist=[]
     #for path in findConnectedEdges(edgelist,eps=eps):
     for path,debug in zip(*findConnectedEdges(edgelist,eps=eps,debug=True)):
         maxd,mind,outerd = endpointdistancedebuglist(debug)
         assert(maxd <= eps*2) # Assume the input to be broken
-        if maxd < eps*2 and maxd > 0.000001: #OCC wont like it if maxd > 0.02:
-            print 'endpointdistance max:%f min:%f, ends:%f' %(maxd,mind,outerd)
+        if maxd < eps*2 and maxd > 0.000001: # OCC won't like it if maxd > 0.02:
+            print('endpointdistance max:%f min:%f, ends:%f' %(maxd,mind,outerd))
 
             if True:
                 tobeclosed = outerd < eps*2
@@ -371,20 +387,20 @@ def edgestofaces(edges,algo=3,eps=0.001):
             p1 = w.Vertexes[-1].Point
             edges2 = w.Edges[:]
             try:
-                edges2.append(Part.Line(p1,p0).toShape())
+                edges2.append(Part.LineSegment(p1,p0).toShape())
                 w = Part.Wire(edges2)
                 #w = Part.Wire(fcgeo.sortEdges(edges2))
             except OCCError:
                 comp=Part.Compound(edges2)
                 w = comp.connectEdgesToWires(False,eps).Wires[0]
         facel.append(Part.Face(w))
-        #if w.isValid: #debuging
+        #if w.isValid: #debugging
         #    facel.append(Part.Face(w))
         #else:
         #    Part.show(w)
     if algo is None:
         return facel
-    elif algo == 1: #stabale behavior
+    elif algo == 1: #stable behavior
         return subtractfaces(facel)
     elif algo == 0: #return all faces
         return Part.Compound(facel)
@@ -397,7 +413,7 @@ def superWireReverse(debuglist,closed=False):
     '''superWireReverse(debuglist,[closed]): forces a wire between edges
     that don't necessarily have coincident endpoints. If closed=True, wire
     will always be closed. debuglist has a tuple for every edge.The first
-    entry is the edge, the second is the flag 'does not nedd to be inverted'
+    entry is the edge, the second is the flag 'does not need to be inverted'
     '''
     #taken from draftlibs
     def median(v1,v2):
@@ -410,7 +426,7 @@ def superWireReverse(debuglist,closed=False):
         from draftlibs.fcgeo import findMidpoint #workaround for Version 0.12
     import Part
     #edges = sortEdges(edgeslist)
-    print debuglist
+    print(debuglist)
     newedges = []
     for i in range(len(debuglist)):
         curr = debuglist[i]
@@ -428,7 +444,7 @@ def superWireReverse(debuglist,closed=False):
                 nexte = None
         else:
             nexte = debuglist[i+1]
-        print i,prev,curr,nexte
+        print(i,prev,curr,nexte)
         if prev:
             if curr[0].Vertexes[-1*(not curr[1])].Point == \
                     prev[0].Vertexes[-1*prev[1]].Point:
@@ -447,23 +463,27 @@ def superWireReverse(debuglist,closed=False):
                         nexte[0].Vertexes[-1*(not nexte[1])].Point)
         else:
             p2 = curr[0].Vertexes[-1*(curr[1])].Point
-        if isinstance(curr[0].Curve,Part.Line):
-            print "line",p1,p2
-            newedges.append(Part.Line(p1,p2).toShape())
+        if isinstance(curr[0].Curve,(Part.LineSegment, Part.Line)):
+            print("line",p1,p2)
+            newedges.append(Part.LineSegment(p1,p2).toShape())
         elif isinstance(curr[0].Curve,Part.Circle):
             p3 = findMidpoint(curr[0])
-            print "arc",p1,p3,p2
+            print("arc",p1,p3,p2)
             newedges.append(Part.Arc(p1,p3,p2).toShape())
         else:
-            print "Cannot superWire edges that are not lines or arcs"
+            print("Cannot superWire edges that are not lines or arcs")
             return None
-    print newedges
+    print(newedges)
     return Part.Wire(newedges)
 
 def importDXFface(filename,layer=None,doc=None):
-    import FreeCAD,importDXF
+    import FreeCAD
+    import importDXF
+    importDXF.readPreferences()
+    importDXF.getDXFlibs()
+    importDXF.dxfMakeBlocks = False
     doc = doc or FreeCAD.activeDocument()
-    layers = importDXF.processdxf(doc,filename) or importDXF.layers
+    layers = importDXF.processdxf(doc,filename,False,False) or importDXF.layers
     for l in layers:
         if FreeCAD.GuiUp:
             for o in l.Group:
@@ -472,17 +492,21 @@ def importDXFface(filename,layer=None,doc=None):
     groupobj=[go for go in layers if (not layer) or go.Label == layer]
     edges=[]
     if not groupobj:
-        raise ValueError, 'import of layer %s failed' % layer
+        raise ValueError('import of layer %s failed' % layer)
     for shapeobj in groupobj[0].Group:
         edges.extend(shapeobj.Shape.Edges)
     faces = edgestofaces(edges)
-        # in order to allow multiple import with the same layer name
-        # we need to remove used objects from the layer group
-        #shapeobj.Document.removeObject(shapeobj.Name)
-    #groupobj[0].Document.removeObject(groupobj[0].Name)
+    # in order to allow multiple import with the same layer name
+    # we need to remove used objects from the layer group
+    container = None
     for layer in layers: #remove everything that has been imported
-        layer.removeObjectsFromDocument()
-        #for obj in layer.Group:
-        #    obj.Document.removeObject(obj.Name)
+        if container is None:
+            container = layer.getParentGroup()
+        removeOp = getattr(layer, "removeObjectsFromDocument", None)
+        if callable(removeOp):
+            layer.removeObjectsFromDocument()
+        for obj in layer.Group:
+            obj.Document.removeObject(obj.Name)
         layer.Document.removeObject(layer.Name)
+    container.Document.removeObject(container.Name)
     return faces

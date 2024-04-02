@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,42 +24,47 @@
 #ifndef GUI_DIALOG_DlgActivateWindowImp_H
 #define GUI_DIALOG_DlgActivateWindowImp_H
 
-#include "ui_DlgUnitsCalculator.h"
+#include <QDialog>
+#include <memory>
+#include <Base/Quantity.h>
+#include <Base/Unit.h>
 
 namespace Gui {
 namespace Dialog {
+class Ui_DlgUnitCalculator;
 
 /**
  * The DlgUnitsCalculator provides a unit conversion dialog
- * \author Juergen Riegel 
+ * \author Juergen Riegel
  */
-class DlgUnitsCalculator : public QDialog, public Ui_DlgUnitCalculator
+class DlgUnitsCalculator : public QDialog
 {
     Q_OBJECT
 
 public:
-    DlgUnitsCalculator( QWidget* parent = 0, Qt::WFlags fl = 0 );
-    ~DlgUnitsCalculator();
+    explicit DlgUnitsCalculator(QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
+    ~DlgUnitsCalculator() override;
 
 protected:
-    void accept();
-    void reject();
+    void accept() override;
+    void reject() override;
 
-protected Q_SLOTS:
-    void unitValueChanged(const Base::Quantity&);
+protected:
+    void textChanged(const QString);
     void valueChanged(const Base::Quantity&);
+    void onUnitsBoxActivated(int);
+    void onComboBoxSchemeActivated(int);
+    void onSpinBoxDecimalsValueChanged(int);
 
-    void copy(void);
-    void help(void);
-    void returnPressed(void);
+    void copy();
+    void returnPressed();
 
     void parseError(const QString& errorText);
 
 private:
     Base::Quantity actValue;
-    Base::Quantity actUnit;
-
- 
+    std::unique_ptr<Ui_DlgUnitCalculator> ui;
+    QList<Base::Unit> units;
 };
 
 } // namespace Dialog

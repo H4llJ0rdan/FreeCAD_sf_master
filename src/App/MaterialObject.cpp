@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,25 +23,18 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
 #include "MaterialObject.h"
-#include "DocumentObjectPy.h"
+
 
 using namespace App;
 
 PROPERTY_SOURCE(App::MaterialObject, App::DocumentObject)
 
 
-MaterialObject::MaterialObject() 
+MaterialObject::MaterialObject()
 {
-    ADD_PROPERTY_TYPE(Material,(),"Material",Prop_None,"Material key/valu map");
+    ADD_PROPERTY_TYPE(Material,(),"Material",Prop_None,"Material key/value map");
 
-}
-
-MaterialObject::~MaterialObject()
-{
 }
 
 // Python feature ---------------------------------------------------------
@@ -49,7 +42,7 @@ MaterialObject::~MaterialObject()
 namespace App {
 /// @cond DOXERR
 PROPERTY_SOURCE_TEMPLATE(App::MaterialObjectPython, App::MaterialObject)
-template<> const char* App::MaterialObjectPython::getViewProviderName(void) const {
+template<> const char* App::MaterialObjectPython::getViewProviderName() const {
     return "Gui::ViewProviderMaterialObjectPython";
 }
 /// @endcond

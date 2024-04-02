@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,38 +20,33 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 #ifndef PART_FEATUREPARTIMPORTSTEP_H
 #define PART_FEATUREPARTIMPORTSTEP_H
-
 
 #include <App/PropertyStandard.h>
 
 #include "PartFeature.h"
 
 
-
 namespace Part
 {
 
-
 class ImportStep :public Part::Feature
 {
-    PROPERTY_HEADER(Part::FeaturePartImportStep);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::FeaturePartImportStep);
 
 public:
     ImportStep();
 
     App::PropertyString FileName;
 
-    /** @name methods overide Feature */
+    /** @name methods override Feature */
     //@{
     /// recalculate the Feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderImport";
     }
     //@}

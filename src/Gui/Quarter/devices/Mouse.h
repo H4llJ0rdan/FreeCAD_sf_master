@@ -43,10 +43,11 @@ namespace SIM { namespace Coin3D { namespace Quarter {
 
 class QUARTER_DLL_API Mouse : public InputDevice {
 public:
-  Mouse(void);
-  virtual ~Mouse();
+  Mouse(QuarterWidget* quarter);
+  Mouse();
+  ~Mouse() override;
 
-  virtual const SoEvent * translateEvent(QEvent * event);
+  const SoEvent * translateEvent(QEvent * event) override;
 
 private:
   friend class MouseP;

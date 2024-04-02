@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2002 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,19 +20,14 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <QFileDialog>
-# include <QMessageBox>
 #endif
 
-#include "Application.h"
-#include "MainWindow.h"
 #include "DlgRunExternal.h"
-#include "FileDialog.h"
-
 #include "ui_DlgRunExternal.h"
+#include "FileDialog.h"
 
 
 using namespace Gui::Dialog;
@@ -40,38 +35,42 @@ using namespace Gui::Dialog;
 /* TRANSLATOR Gui::Dialog::DlgRunExternal */
 
 /**
- *  Constructs a DlgRunExternal which is a child of 'parent', with the 
- *  name 'name' and widget flags set to 'f' 
+ *  Constructs a DlgRunExternal which is a child of 'parent', with the
+ *  name 'name' and widget flags set to 'f'
  *
  *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
+ *  true to construct a modal dialog.
  */
-DlgRunExternal::DlgRunExternal( QWidget* parent, Qt::WFlags fl )
-    : QDialog(parent, fl),process(this),advancedHidden(true)
+DlgRunExternal::DlgRunExternal( QWidget* parent, Qt::WindowFlags fl )
+    : QDialog(parent, fl)
+    , process(this)
+    , advancedHidden(true)
+    , ui(new Ui_DlgRunExternal)
 {
-    ui = new Ui_DlgRunExternal();
     ui->setupUi(this);
-    connect(&process,SIGNAL(finished(int, QProcess::ExitStatus)),
-            this,SLOT(finished(int, QProcess::ExitStatus)));
-    connect(ui->buttonAccept,SIGNAL(clicked()),this,SLOT(accept()));
-    connect(ui->buttonDiscard,SIGNAL(clicked()),this,SLOT(reject()));
-    connect(ui->buttonAbort,SIGNAL(clicked()),this,SLOT(abort()));
-    connect(ui->buttonAdvanced,SIGNAL(clicked()),this,SLOT(advanced()));
+    connect(ui->chooseProgram, &QPushButton::clicked, this, &DlgRunExternal::onChooseProgramClicked);
+    connect(&process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
+            this, qOverload<int, QProcess::ExitStatus>(&DlgRunExternal::finished));
+    connect(ui->buttonAccept, &QPushButton::clicked, this, &DlgRunExternal::accept);
+    connect(ui->buttonDiscard, &QPushButton::clicked, this, &DlgRunExternal::reject);
+    connect(ui->buttonAbort, &QPushButton::clicked, this, &DlgRunExternal::abort);
+    connect(ui->buttonAdvanced, &QPushButton::clicked, this, &DlgRunExternal::advanced);
 
     ui->gridLayout->setSizeConstraint(QLayout::SetFixedSize);
     ui->extensionWidget->hide();
 }
 
-/** 
+/**
  *  Destroys the object and frees any allocated resources
  */
-DlgRunExternal::~DlgRunExternal()
+DlgRunExternal::~DlgRunExternal() = default;
+
+void DlgRunExternal::addArgument(const QString& arg)
 {
-    // no need to delete child widgets, Qt does it all for us
-    delete ui;
+    arguments.append(arg);
 }
 
-int DlgRunExternal::Do(void)
+int DlgRunExternal::runProcess()
 {
     QFileInfo ifo (ProcName);
 
@@ -84,23 +83,23 @@ int DlgRunExternal::Do(void)
     return exec();
 }
 
-void DlgRunExternal::reject (void)
+void DlgRunExternal::reject ()
 {
     QDialog::reject();
 }
 
-void DlgRunExternal::accept (void)
+void DlgRunExternal::accept ()
 {
     QDialog::accept();
 }
 
-void DlgRunExternal::abort (void)
+void DlgRunExternal::abort ()
 {
     process.terminate();
     DlgRunExternal::reject();
 }
 
-void DlgRunExternal::advanced (void)
+void DlgRunExternal::advanced ()
 {
     if (advancedHidden){
         ui->extensionWidget->show();
@@ -114,12 +113,14 @@ void DlgRunExternal::advanced (void)
 
 void DlgRunExternal::finished (int exitCode, QProcess::ExitStatus exitStatus)
 {
+    Q_UNUSED(exitCode);
+    Q_UNUSED(exitStatus);
     ui->buttonAccept->setEnabled(true);
     ui->buttonDiscard->setEnabled(true);
     ui->buttonAbort->setEnabled(false);
 }
 
-void DlgRunExternal::on_chooseProgram_clicked()
+void DlgRunExternal::onChooseProgramClicked()
 {
     QString fn;
     fn = QFileDialog::getOpenFileName(this, tr("Select a file"), ui->programPath->text());

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Riegel         <juergen.riegel@web.de>                  *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,27 +23,18 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-# include <xercesc/sax/SAXParseException.hpp>
-# include <xercesc/sax/SAXException.hpp>
-# include <xercesc/sax2/XMLReaderFactory.hpp>
+#include <qglobal.h>
+#if QT_VERSION < 0x060000
+#include <QTextCodec>
+#else
+#include <QByteArray>
+#include <QStringDecoder>
+#include <QStringEncoder>
 #endif
 
-// ---------------------------------------------------------------------------
-//  Includes
-// ---------------------------------------------------------------------------
-#include <xercesc/util/Janitor.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/util/XMLExceptMsgs.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/XMLUniDefs.hpp>
-
-/// Here the FreeCAD includes sorted by Base,App,Gui......
 #include "InputSource.h"
-#include "Exception.h"
 #include "XMLTools.h"
+
 
 XERCES_CPP_NAMESPACE_USE
 
@@ -54,125 +45,96 @@ using namespace std;
 // ---------------------------------------------------------------------------
 //  StdInputStream: Constructors and Destructor
 // ---------------------------------------------------------------------------
-StdInputStream::StdInputStream( std::istream& Stream, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager ) 
-  : stream(Stream), fMemoryManager(manager)
+
+#if QT_VERSION < 0x060000
+struct StdInputStream::TextCodec
 {
+    QTextCodec::ConverterState state;
+    TextCodec() {
+        state.flags |= QTextCodec::IgnoreHeader;
+        state.flags |= QTextCodec::ConvertInvalidToNull;
+    }
+
+    void validateBytes(XMLByte* const  toFill, std::streamsize len) {
+        QTextCodec *textCodec = QTextCodec::codecForName("UTF-8");
+        if (textCodec) {
+            const QString text = textCodec->toUnicode(reinterpret_cast<char *>(toFill), static_cast<int>(len), &state);
+            if (state.invalidChars > 0) {
+                // In case invalid characters were found decode back to 'utf-8' and replace
+                // them with '?'
+                // First, Qt replaces invalid characters with '\0' (see ConvertInvalidToNull)
+                // but Xerces doesn't like this because it handles this as termination. Thus,
+                // we have to go through the array and replace '\0' with '?'.
+                std::streamsize pos = 0;
+                QByteArray ba = textCodec->fromUnicode(text);
+                for (int i=0; i<ba.length(); i++, pos++) {
+                    if (pos < len && ba[i] == '\0') {
+                        toFill[i] = '?';
+                    }
+                }
+            }
+        }
+    }
+};
+#else
+struct StdInputStream::TextCodec
+{
+    void validateBytes(XMLByte* const  toFill, std::streamsize len) {
+        QByteArray encodedString(reinterpret_cast<char *>(toFill), static_cast<int>(len));
+        auto toUtf16 = QStringDecoder(QStringDecoder::Utf8);
+        QString text = toUtf16(encodedString);
+        if (toUtf16.hasError()) {
+            // In case invalid characters were found decode back to 'utf-8' and replace
+            // them with '?'
+            // First, Qt replaces invalid characters with '\0'
+            // but Xerces doesn't like this because it handles this as termination. Thus,
+            // we have to go through the array and replace '\0' with '?'.
+            std::streamsize pos = 0;
+            auto fromUtf16 = QStringEncoder(QStringEncoder::Utf8);
+            QByteArray ba = fromUtf16(text);
+            for (int i=0; i<ba.length(); i++, pos++) {
+                if (pos < len && ba[i] == '\0') {
+                    toFill[i] = '?';
+                }
+            }
+        }
+    }
+};
+#endif
+
+StdInputStream::StdInputStream( std::istream& Stream, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager )
+  : stream(Stream)
+  , codec(new TextCodec)
+{
+    (void)manager;
 }
 
 
-StdInputStream::~StdInputStream()
-{
-}
+StdInputStream::~StdInputStream() = default;
 
 
 // ---------------------------------------------------------------------------
 //  StdInputStream: Implementation of the input stream interface
 // ---------------------------------------------------------------------------
-#if (XERCES_VERSION_MAJOR == 2)
-unsigned int StdInputStream::curPos() const
-{
-  return stream.tellg();
-}
-
-unsigned int StdInputStream::readBytes( XMLByte* const  toFill, const unsigned int maxToRead )
-{
-  //
-  //  Read up to the maximum bytes requested. We return the number
-  //  actually read.
-  //
-  
-  stream.read((char *)toFill,maxToRead);
-  XMLSize_t len = stream.gcount();
-
-  // See http://de.wikipedia.org/wiki/UTF-8#Kodierung
-  for (XMLSize_t i=0; i<len; i++) {
-      XMLByte& b = toFill[i];
-      int seqlen = 0;
-
-      if ((b & 0x80) == 0) {
-          seqlen = 1;
-      }
-      else if ((b & 0xE0) == 0xC0) {
-          seqlen = 2;
-          if (b == 0xC0 || b == 0xC1)
-              b = '?'; // these both values are not allowed
-      }
-      else if ((b & 0xF0) == 0xE0) {
-          seqlen = 3;
-      }
-      else if ((b & 0xF8) == 0xF0) {
-          seqlen = 4;
-      }
-      else {
-          b = '?';
-      }
-
-      for(int j = 1; j < seqlen; ++j) {
-          i++;
-          XMLByte& c = toFill[i];
-          // range of second, third or fourth byte
-          if ((c & 0xC0) != 0x80) {
-              b = '?';
-              c = '?';
-          }
-      }
-  }
-
-  return len;
-}
-#else
 XMLFilePos StdInputStream::curPos() const
 {
-  return stream.tellg();
+  return static_cast<XMLFilePos>(stream.tellg());
 }
 
-XMLSize_t StdInputStream::readBytes( XMLByte* const  toFill, const XMLSize_t maxToRead )
+XMLSize_t StdInputStream::readBytes(XMLByte* const  toFill, const XMLSize_t maxToRead)
 {
   //
   //  Read up to the maximum bytes requested. We return the number
   //  actually read.
   //
-  
-  stream.read((char *)toFill,maxToRead);
-  XMLSize_t len = stream.gcount();
 
-  // See http://de.wikipedia.org/wiki/UTF-8#Kodierung
-  for (XMLSize_t i=0; i<len; i++) {
-      XMLByte& b = toFill[i];
-      int seqlen = 0;
+  stream.read(reinterpret_cast<char *>(toFill), static_cast<std::streamsize>(maxToRead));
+  std::streamsize len = stream.gcount();
 
-      if ((b & 0x80) == 0) {
-          seqlen = 1;
-      }
-      else if ((b & 0xE0) == 0xC0) {
-          seqlen = 2;
-          if (b == 0xC0 || b == 0xC1)
-              b = '?'; // these both values are not allowed
-      }
-      else if ((b & 0xF0) == 0xE0) {
-          seqlen = 3;
-      }
-      else if ((b & 0xF8) == 0xF0) {
-          seqlen = 4;
-      }
-      else {
-          b = '?';
-      }
+  codec->validateBytes(toFill, len);
 
-      for(int j = 1; j < seqlen; ++j) {
-          i++;
-          XMLByte& c = toFill[i];
-          // range of second, third or fourth byte
-          if ((c & 0xC0) != 0x80) {
-              b = '?';
-              c = '?';
-          }
-      }
-  }
-
-  return len;
+  return static_cast<XMLSize_t>(len);
 }
-#endif
 
 
 // ---------------------------------------------------------------------------
@@ -187,9 +149,7 @@ StdInputSource::StdInputSource ( std::istream& Stream, const char* filePath, XER
 }
 
 
-StdInputSource::~StdInputSource()
-{
-}
+StdInputSource::~StdInputSource() = default;
 
 
 // ---------------------------------------------------------------------------

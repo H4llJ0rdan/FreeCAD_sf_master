@@ -23,16 +23,18 @@
 #ifndef GUI_PLACEMENT_H
 #define GUI_PLACEMENT_H
 
-#include <Gui/InputVector.h>
+#include <QDialog>
+#include <Base/Placement.h>
+#include <Gui/SelectionObject.h>
 #include <Gui/TaskView/TaskDialog.h>
 #include <Gui/TaskView/TaskView.h>
-#include <Base/Placement.h>
 
-#include <boost/signals.hpp>
-#include <boost/bind.hpp>
 
 class QSignalMapper;
 
+namespace App {
+class DocumentObject;
+}
 namespace Gui {
 class Document;
 
@@ -40,57 +42,117 @@ namespace Dialog {
 
 class Ui_Placement;
 class TaskPlacement;
-class GuiExport Placement : public Gui::LocationDialog
+
+class GuiExport PlacementHandler : public QObject
 {
     Q_OBJECT
 
 public:
-    Placement(QWidget* parent = 0, Qt::WFlags fl = 0);
-    ~Placement();
-    void accept();
-    void reject();
+    PlacementHandler();
+    void openTransactionIfNeeded();
+    void setPropertyName(const std::string&);
+    const std::string& getPropertyName() const;
+    void appendDocument(const std::string&);
+    void activatedDocument(const std::string&);
+    void revertTransformation();
+    void applyPlacement(const Base::Placement& p, bool incremental);
+    void applyPlacement(const QString& p, bool incremental);
 
+private:
+    std::vector<App::DocumentObject*> getObjects(Gui::Document*) const;
+    std::vector<App::DocumentObject*> getSelectedObjects(Gui::Document*) const;
+    void revertTransformationOfViewProviders(Gui::Document*);
+    void tryRecompute(Gui::Document*);
+    void applyPlacement(Gui::Document*, App::DocumentObject*, const Base::Placement& p, bool incremental);
+    void applyPlacement(App::DocumentObject*, const QString& p, bool incremental);
+    QString getIncrementalPlacement(App::DocumentObject*, const QString&) const;
+    QString getSimplePlacement(App::DocumentObject*, const QString&) const;
+
+private Q_SLOTS:
+    void openTransaction();
+
+private:
+    std::string propertyName; // the name of the placement property
+    std::set<std::string> documents;
+    /** If false apply the placement directly to the transform nodes,
+     * otherwise change the placement property.
+     */
+    bool changeProperty;
+};
+
+class GuiExport Placement : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit Placement(QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
+    ~Placement() override;
+    void open() override;
+    void accept() override;
+    void reject() override;
+
+    void setPropertyName(const std::string&);
+    void setSelection(const std::vector<SelectionObject>&);
+    void bindObject();
     Base::Vector3d getDirection() const;
     void setPlacement(const Base::Placement&);
     Base::Placement getPlacement() const;
     void showDefaultButtons(bool);
 
 protected:
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent *e) override;
+    void keyPressEvent(QKeyEvent*) override;
+
+public Q_SLOTS:
+    void onApplyButtonClicked();
 
 private Q_SLOTS:
-    void on_applyButton_clicked();
-    void on_applyIncrementalPlacement_toggled(bool);
+    void onApplyIncrementalPlacementToggled(bool);
     void onPlacementChanged(int);
-    void on_resetButton_clicked();
+    void onResetButtonClicked();
+    void onCenterOfMassToggled(bool);
+    void onSelectedVertexClicked();
+    void onApplyAxialClicked();
 
 private:
+    void setupUi();
+    void setupConnections();
+    void setupUnits();
+    void setupSignalMapper();
+    void setupDocument();
+    void setupRotationMethod();
+
     bool onApply();
     void setPlacementData(const Base::Placement&);
     Base::Placement getPlacementData() const;
+    Base::Rotation getRotationData() const;
+    Base::Vector3d getPositionData() const;
+    Base::Vector3d getAnglesData() const;
+    Base::Vector3d getCenterData() const;
+    Base::Vector3d getCenterOfMass() const;
     QString getPlacementString() const;
-    void directionActivated(int);
-    void applyPlacement(const Base::Placement& p, bool incremental);
-    void applyPlacement(const QString& p, bool incremental);
-    void revertTransformation();
+    QString getPlacementFromEulerAngles() const;
+    QString getPlacementFromAxisWithAngle() const;
     void slotActiveDocument(const Gui::Document&);
     QWidget* getInvalidInput() const;
+    void showErrorMessage();
 
 Q_SIGNALS:
     void placementChanged(const QVariant &, bool, bool);
-    void directionChanged();
 
 private:
-    typedef Gui::LocationInterfaceComp<Ui_Placement> Ui_PlacementComp;
-    typedef boost::BOOST_SIGNALS_NAMESPACE::connection Connection;
-    Ui_PlacementComp* ui;
+    using Connection = boost::signals2::connection;
+    Ui_Placement* ui;
     QSignalMapper* signalMapper;
     Connection connectAct;
+    PlacementHandler handler;
     Base::Placement ref;
-    std::string propertyName; // the name of the placement property
-    std::set<std::string> documents;
-
-    friend class TaskPlacement;
+    Base::Vector3d cntOfMass;
+    /**
+     * store these so we can reselect original object
+     * after user selects points and clicks Selected point(s)
+     */
+    std::vector<SelectionObject> selectionObjects;
 };
 
 class GuiExport DockablePlacement : public Placement
@@ -98,11 +160,11 @@ class GuiExport DockablePlacement : public Placement
     Q_OBJECT
 
 public:
-    DockablePlacement(QWidget* parent = 0, Qt::WFlags fl = 0);
-    ~DockablePlacement();
+    explicit DockablePlacement(QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
+    ~DockablePlacement() override;
 
-    void accept();
-    void reject();
+    void accept() override;
+    void reject() override;
 };
 
 class TaskPlacement : public Gui::TaskView::TaskDialog
@@ -111,22 +173,25 @@ class TaskPlacement : public Gui::TaskView::TaskDialog
 
 public:
     TaskPlacement();
-    ~TaskPlacement();
+    ~TaskPlacement() override;
 
 public:
     void setPropertyName(const QString&);
     void setPlacement(const Base::Placement&);
-    bool accept();
-    bool reject();
-    void clicked(int id);
+    void setSelection(const std::vector<SelectionObject>&);
+    void bindObject();
+    bool accept() override;
+    bool reject() override;
+    void clicked(int id) override;
 
-    bool isAllowedAlterDocument(void) const
+    void open() override;
+    bool isAllowedAlterDocument() const override
     { return true; }
-    bool isAllowedAlterView(void) const
+    bool isAllowedAlterView() const override
     { return true; }
-    bool isAllowedAlterSelection(void) const
+    bool isAllowedAlterSelection() const override
     { return true; }
-    QDialogButtonBox::StandardButtons getStandardButtons() const;
+    QDialogButtonBox::StandardButtons getStandardButtons() const override;
 
 public Q_SLOTS:
     void slotPlacementChanged(const QVariant &, bool, bool);

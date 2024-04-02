@@ -1,2683 +1,2601 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="sk" sourcelanguage="en">
+<TS version="2.1" language="sk" sourcelanguage="en">
   <context>
-    <name>Draft_AddPoint</name>
+    <name>Dialog</name>
     <message>
-      <location filename="DraftTools.py" line="3749"/>
-      <source>Add Point</source>
-      <translation type="unfinished">Pridá bod</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="14"/>
+      <source>Annotation Styles Editor</source>
+      <translation>Editor štýlu popisov</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="3750"/>
-      <source>Adds a point to an existing wire/bspline</source>
-      <translation type="unfinished">Pridá bod do existujúceho drôtu/bspline</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="20"/>
+      <source>Style name</source>
+      <translation>Meno štýlu</translation>
     </message>
-  </context>
-  <context>
-    <name>Draft_AddToGroup</name>
     <message>
-      <location filename="DraftTools.py" line="3702"/>
-      <source>Add to group...</source>
-      <translation type="unfinished">Pridať do skupiny...</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="38"/>
+      <source>The name of your style. Existing style names can be edited.</source>
+      <translation type="unfinished">The name of your style. Existing style names can be edited.</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="3703"/>
-      <source>Adds the selected object(s) to an existing group</source>
-      <translation type="unfinished">Pridá vybraté objekty do existujúcej skupiny</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="50"/>
+      <source>Add new...</source>
+      <translation>Pridať nový...</translation>
     </message>
-  </context>
-  <context>
-    <name>Draft_ApplyStyle</name>
     <message>
-      <location filename="DraftTools.py" line="2177"/>
-      <source>Apply Current Style</source>
-      <translation type="unfinished">Použi aktuálny štýl</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="79"/>
+      <source>Renames the selected style</source>
+      <translation>Premenovať vybraný štýl</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="2178"/>
-      <source>Applies current line width and color to selected objects</source>
-      <translation type="unfinished">Na vybraté objekty použiť aktuálnu hrúbku čiary aj farbu</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="82"/>
+      <source>Rename</source>
+      <translation>Premenovať</translation>
     </message>
-  </context>
-  <context>
-    <name>Draft_Arc</name>
     <message>
-      <location filename="DraftTools.py" line="961"/>
-      <source>Arc</source>
-      <translation type="unfinished">Oblúk</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="110"/>
+      <source>Deletes the selected style</source>
+      <translation>Odstrániť vybraný štýl</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="962"/>
-      <source>Creates an arc. CTRL to snap, SHIFT to constrain</source>
-      <translation type="unfinished">Vytvorí oblúk. CTRL pre uchopenie, SHIFT pre vynútenie</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="113"/>
+      <source>Delete</source>
+      <translation>Odstrániť</translation>
     </message>
-  </context>
-  <context>
-    <name>Draft_Array</name>
     <message>
-      <location filename="DraftTools.py" line="3969"/>
-      <source>Array</source>
-      <translation type="unfinished">Pole</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="120"/>
+      <source>Import styles from json file</source>
+      <translation>Importovať štýly zo súboru json</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="3970"/>
-      <source>Creates a polar or rectangular array from a selected object</source>
-      <translation type="unfinished">Vytvára polárne alebo obdĺžnikové pole z vybratého objektu</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="130"/>
+      <source>Export styles to json file</source>
+      <translation>Exportovať štýly do súboru json</translation>
     </message>
-  </context>
-  <context>
-    <name>Draft_BSpline</name>
     <message>
-      <location filename="DraftTools.py" line="592"/>
-      <source>B-Spline</source>
-      <translation type="unfinished">B-vlnovka</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="593"/>
-      <source>Creates a multiple-point b-spline. CTRL to snap, SHIFT to constrain</source>
-      <translation type="unfinished">Vytvára viac bodovú vlnovku. CTRL pre uchopenie, SHIFT pre vynútenie</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_BezCurve</name>
-    <message>
-      <location filename="DraftTools.py" line="688"/>
-      <source>BezCurve</source>
-      <translation type="unfinished">BezCurve</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="689"/>
-      <source>Creates a Bezier curve. CTRL to snap, SHIFT to constrain</source>
-      <translation type="unfinished">Creates a Bezier curve. CTRL to snap, SHIFT to constrain</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Circle</name>
-    <message>
-      <location filename="DraftTools.py" line="1261"/>
-      <source>Circle</source>
-      <translation type="unfinished">Kružnica</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1262"/>
-      <source>Creates a circle. CTRL to snap, ALT to select tangent objects</source>
-      <translation type="unfinished">Vytvorí kruh. CTRL pre prichytenie, ALT vyberie tangent</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Clone</name>
-    <message>
-      <location filename="DraftTools.py" line="4123"/>
-      <source>Clone</source>
-      <translation type="unfinished">Klonuj</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4124"/>
-      <source>Clones the selected object(s)</source>
-      <translation type="unfinished">Klonuj vybraný objekt(y)</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_CloseLine</name>
-    <message>
-      <location filename="DraftTools.py" line="811"/>
-      <source>Close Line</source>
-      <translation type="unfinished">Ukončiť čiaru</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="812"/>
-      <source>Closes the line being drawn</source>
-      <translation type="unfinished">Ukončiť rozpracovanú čiaru</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_DelPoint</name>
-    <message>
-      <location filename="DraftTools.py" line="3774"/>
-      <source>Remove Point</source>
-      <translation type="unfinished">Odstráni bod</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3775"/>
-      <source>Removes a point from an existing wire or bspline</source>
-      <translation type="unfinished">Odstráni bod z existujúceho drôtu alebo bspline</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Dimension</name>
-    <message>
-      <location filename="DraftTools.py" line="1641"/>
-      <source>Dimension</source>
-      <translation type="unfinished">Kóta</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1642"/>
-      <source>Creates a dimension. CTRL to snap, SHIFT to constrain, ALT to select a segment</source>
-      <translation type="unfinished">Vytvorí kótu. CTRL uchopiť, SHIFT obmedziť, ALT vybrať časť</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Downgrade</name>
-    <message>
-      <location filename="DraftTools.py" line="2589"/>
-      <source>Downgrade</source>
-      <translation type="unfinished">Degradácia</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2590"/>
-      <source>Explodes the selected objects into simpler objects, or subtract faces</source>
-      <translation type="unfinished">Rozloží vybraté objekty na jednoduchšie objekty, alebo odoberie plochy</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Draft2Sketch</name>
-    <message>
-      <location filename="DraftTools.py" line="3912"/>
-      <source>Draft to Sketch</source>
-      <translation type="unfinished">Návrh do Náčrtu</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Drawing</name>
-    <message>
-      <location filename="DraftTools.py" line="3092"/>
-      <source>Drawing</source>
-      <translation type="unfinished">Kreslenie</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3093"/>
-      <source>Puts the selected objects on a Drawing sheet.</source>
-      <translation type="unfinished">Umiestní vybraté objekty na výkres.</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Edit</name>
-    <message>
-      <location filename="DraftTools.py" line="3181"/>
-      <source>Edit</source>
-      <translation type="unfinished">Upraviť</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3182"/>
-      <source>Edits the active object</source>
-      <translation type="unfinished">Upraviť aktívny objekt</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Ellipse</name>
-    <message>
-      <location filename="DraftTools.py" line="1451"/>
-      <source>Ellipse</source>
-      <translation type="unfinished">Ellipse</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1452"/>
-      <source>Creates an ellipse. CTRL to snap</source>
-      <translation type="unfinished">Creates an ellipse. CTRL to snap</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Facebinder</name>
-    <message>
-      <location filename="DraftTools.py" line="4193"/>
-      <source>Facebinder</source>
-      <translation type="unfinished">Facebinder</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4194"/>
-      <source>Creates a facebinder object from selected face(s)</source>
-      <translation type="unfinished">Creates a facebinder object from selected face(s)</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_FinishLine</name>
-    <message>
-      <location filename="DraftTools.py" line="791"/>
-      <source>Finish line</source>
-      <translation type="unfinished">Dokončiť čiaru</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="792"/>
-      <source>Finishes a line without closing it</source>
-      <translation type="unfinished">Ukončiť čiaru bez jej uzatvorenia</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_FlipDimension</name>
-    <message>
-      <location filename="DraftTools.py" line="4221"/>
-      <source>Flip Dimension</source>
-      <translation type="unfinished">Flip Dimension</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4222"/>
-      <source>Flip the normal direction of a dimension</source>
-      <translation type="unfinished">Flip the normal direction of a dimension</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Heal</name>
-    <message>
-      <location filename="DraftTools.py" line="4174"/>
-      <source>Heal</source>
-      <translation type="unfinished">Heal</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4175"/>
-      <source>Heal faultly Draft objects saved from an earlier FreeCAD version</source>
-      <translation type="unfinished">Heal faultly Draft objects saved from an earlier FreeCAD version</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Layer</name>
-    <message>
-      <location filename="DraftTools.py" line="4236"/>
-      <source>Layer</source>
-      <translation type="unfinished">Layer</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4237"/>
-      <source>Adds a layer</source>
-      <translation type="unfinished">Adds a layer</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Line</name>
-    <message>
-      <location filename="DraftTools.py" line="434"/>
-      <source>Line</source>
-      <translation type="unfinished">čiara</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="435"/>
-      <source>Creates a 2-point line. CTRL to snap, SHIFT to constrain</source>
-      <translation type="unfinished">Vytvoriť 2-bodovú čiaru. CTRL uchopiť, SHIFT obmedziť</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Move</name>
-    <message>
-      <location filename="DraftTools.py" line="2052"/>
-      <source>Move</source>
-      <translation type="unfinished">Presunúť</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2053"/>
-      <source>Moves the selected objects between 2 points. CTRL to snap, SHIFT to constrain, ALT to copy</source>
-      <translation type="unfinished">Presunie vybraté objekty medzi 2 body. CTRL pre prichytenie, SHIFT pre obmedzenie, ALT pre skopírovanie</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Offset</name>
-    <message>
-      <location filename="DraftTools.py" line="2397"/>
-      <source>Offset</source>
-      <translation type="unfinished">Odsadenie</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2398"/>
-      <source>Offsets the active object. CTRL to snap, SHIFT to constrain, ALT to copy</source>
-      <translation type="unfinished">Odsadí aktívny objekt. CTRL pre prichytenie, SHIFT pre obmedzenie, ALT pre kopírovanie</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_PathArray</name>
-    <message>
-      <location filename="DraftTools.py" line="3998"/>
-      <source>PathArray</source>
-      <translation type="unfinished">PathArray</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3999"/>
-      <source>Creates copies of a selected object along a selected path.</source>
-      <translation type="unfinished">Creates copies of a selected object along a selected path.</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Point</name>
-    <message>
-      <location filename="DraftTools.py" line="4034"/>
-      <source>Point</source>
-      <translation type="unfinished">Bod</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4035"/>
-      <source>Creates a point object</source>
-      <translation type="unfinished">Vytvor bodový objekt</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Polygon</name>
-    <message>
-      <location filename="DraftTools.py" line="1271"/>
-      <source>Polygon</source>
-      <translation type="unfinished">Polygón</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1272"/>
-      <source>Creates a regular polygon. CTRL to snap, SHIFT to constrain</source>
-      <translation type="unfinished">Vytvára pravidelný polygón. CTRL prichytiť, SHIFT obmedziť</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Rectangle</name>
-    <message>
-      <location filename="DraftTools.py" line="847"/>
-      <source>Rectangle</source>
-      <translation type="unfinished">Obdĺžnik</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="848"/>
-      <source>Creates a 2-point rectangle. CTRL to snap</source>
-      <translation type="unfinished">Vytvorí 2-bodový obdĺžnik. CTRL pre uchopenie</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Rotate</name>
-    <message>
-      <location filename="DraftTools.py" line="2213"/>
-      <source>Rotate</source>
-      <translation type="unfinished">Otočiť</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2214"/>
-      <source>Rotates the selected objects. CTRL to snap, SHIFT to constrain, ALT creates a copy</source>
-      <translation type="unfinished">Otočí vybraté objekty. CTRL pre prichytenie, SHIFT pre obmedzenie, ALT vytvorí kópiu</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Scale</name>
-    <message>
-      <location filename="DraftTools.py" line="2945"/>
-      <source>Scale</source>
-      <translation type="unfinished">Škála, zmena veľkosti</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2946"/>
-      <source>Scales the selected objects from a base point. CTRL to snap, SHIFT to constrain, ALT to copy</source>
-      <translation type="unfinished">Zmení veľkosť vybratých objektov zo základného bodu. CTRL pre prichytenie, SHIFT pre obmedzenie, ALT pre kopírovanie</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_SelectGroup</name>
-    <message>
-      <location filename="DraftTools.py" line="3841"/>
-      <source>Select group</source>
-      <translation type="unfinished">Vyberte skupinu</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3842"/>
-      <source>Selects all objects with the same parents as this group</source>
-      <translation type="unfinished">Vyberie všetky objekty s rovnakými rodičmi ako má táto skupina</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_SelectPlane</name>
-    <message>
-      <location filename="DraftTools.py" line="317"/>
-      <source>SelectPlane</source>
-      <translation type="unfinished">Vybrať rovinu</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="318"/>
-      <source>Select a working plane for geometry creation</source>
-      <translation type="unfinished">Vyberať pracovnú rovinu na vytvorenie geometrie</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Shape2DView</name>
-    <message>
-      <location filename="DraftTools.py" line="3873"/>
-      <source>Shape 2D view</source>
-      <translation type="unfinished">Tvary 2D</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3874"/>
-      <source>Creates Shape 2D views of selected objects</source>
-      <translation type="unfinished">Vytvorí 2D pohľady vybratých objektov</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3913"/>
-      <source>Convert bidirectionally between Draft and Sketch objects</source>
-      <translation type="unfinished">Previesť obojsmerne medzi Návrhom a Náčrt objektov</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_ShapeString</name>
-    <message>
-      <location filename="DraftTools.py" line="1932"/>
-      <source>Shape from text...</source>
-      <translation type="unfinished">Shape from text...</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1933"/>
-      <source>Creates text string in shapes.</source>
-      <translation type="unfinished">Creates text string in shapes.</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_ShowSnapBar</name>
-    <message>
-      <location filename="DraftTools.py" line="4109"/>
-      <source>Show Snap Bar</source>
-      <translation type="unfinished">Show Snap Bar</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4110"/>
-      <source>Shows Draft snap toolbar</source>
-      <translation type="unfinished">Shows Draft snap toolbar</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Angle</name>
-    <message>
-      <location filename="DraftTools.py" line="4344"/>
-      <source>Angles</source>
-      <translation type="unfinished">Angles</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4345"/>
-      <source>Snaps to 45 and 90 degrees points on arcs and circles</source>
-      <translation type="unfinished">Snaps to 45 and 90 degrees points on arcs and circles</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Center</name>
-    <message>
-      <location filename="DraftTools.py" line="4356"/>
-      <source>Center</source>
-      <translation type="unfinished">Center</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4357"/>
-      <source>Snaps to center of circles and arcs</source>
-      <translation type="unfinished">Snaps to center of circles and arcs</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Dimensions</name>
-    <message>
-      <location filename="DraftTools.py" line="4404"/>
-      <source>Dimensions</source>
-      <translation type="unfinished">Dimensions</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4405"/>
-      <source>Shows temporary dimensions when snapping to Arch objects</source>
-      <translation type="unfinished">Shows temporary dimensions when snapping to Arch objects</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Endpoint</name>
-    <message>
-      <location filename="DraftTools.py" line="4332"/>
-      <source>Endpoint</source>
-      <translation type="unfinished">Endpoint</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4333"/>
-      <source>Snaps to endpoints of edges</source>
-      <translation type="unfinished">Snaps to endpoints of edges</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Extension</name>
-    <message>
-      <location filename="DraftTools.py" line="4368"/>
-      <source>Extension</source>
-      <translation type="unfinished">Extension</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4369"/>
-      <source>Snaps to extension of edges</source>
-      <translation type="unfinished">Snaps to extension of edges</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Grid</name>
-    <message>
-      <location filename="DraftTools.py" line="4296"/>
-      <source>Grid</source>
-      <translation type="unfinished">Grid</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4297"/>
-      <source>Snaps to grid points</source>
-      <translation type="unfinished">Snaps to grid points</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Intersection</name>
-    <message>
-      <location filename="DraftTools.py" line="4308"/>
-      <source>Intersection</source>
-      <translation type="unfinished">Priesečník</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4309"/>
-      <source>Snaps to edges intersections</source>
-      <translation type="unfinished">Snaps to edges intersections</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Lock</name>
-    <message>
-      <location filename="DraftTools.py" line="4262"/>
-      <source>Toggle On/Off</source>
-      <translation type="unfinished">Toggle On/Off</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4263"/>
-      <source>Activates/deactivates all snap tools at once</source>
-      <translation type="unfinished">Activates/deactivates all snap tools at once</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Midpoint</name>
-    <message>
-      <location filename="DraftTools.py" line="4272"/>
-      <source>Midpoint</source>
-      <translation type="unfinished">Midpoint</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4273"/>
-      <source>Snaps to midpoints of edges</source>
-      <translation type="unfinished">Snaps to midpoints of edges</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Near</name>
-    <message>
-      <location filename="DraftTools.py" line="4380"/>
-      <source>Nearest</source>
-      <translation type="unfinished">Nearest</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4381"/>
-      <source>Snaps to nearest point on edges</source>
-      <translation type="unfinished">Snaps to nearest point on edges</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Ortho</name>
-    <message>
-      <location filename="DraftTools.py" line="4392"/>
-      <source>Ortho</source>
-      <translation type="unfinished">Ortho</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4393"/>
-      <source>Snaps to orthogonal and 45 degrees directions</source>
-      <translation type="unfinished">Snaps to orthogonal and 45 degrees directions</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Parallel</name>
-    <message>
-      <location filename="DraftTools.py" line="4320"/>
-      <source>Parallel</source>
-      <translation type="unfinished">Parallel</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4321"/>
-      <source>Snaps to parallel directions of edges</source>
-      <translation type="unfinished">Snaps to parallel directions of edges</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_Perpendicular</name>
-    <message>
-      <location filename="DraftTools.py" line="4284"/>
-      <source>Perpendicular</source>
-      <translation type="unfinished">Perpendicular</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4285"/>
-      <source>Snaps to perpendicular points on edges</source>
-      <translation type="unfinished">Snaps to perpendicular points on edges</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Snap_WorkingPlane</name>
-    <message>
-      <location filename="DraftTools.py" line="4416"/>
-      <source>Working Plane</source>
-      <translation type="unfinished">Working Plane</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4417"/>
-      <source>Restricts the snapped point to the current working plane</source>
-      <translation type="unfinished">Restricts the snapped point to the current working plane</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Text</name>
-    <message>
-      <location filename="DraftTools.py" line="1564"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="164"/>
       <source>Text</source>
-      <translation type="unfinished">Text</translation>
+      <translation>Text</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="1565"/>
-      <source>Creates an annotation. CTRL to snap</source>
-      <translation type="unfinished">Vytvorí poznámky. CTRL na prichytenie</translation>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="170"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="192"/>
+      <source>The font to use for texts and dimensions</source>
+      <translation>Font použitý pre texty a kóty</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="173"/>
+      <source>Font name</source>
+      <translation>Názov písma</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="199"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="209"/>
+      <source>Font size in the system units</source>
+      <translation>Veľkosť písma v jednotkách systému</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="202"/>
+      <source>Font size</source>
+      <translation>Veľkosť písma</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="219"/>
+      <source>Line spacing in system units</source>
+      <translation>Rozstup čiar v jednotkách systému</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="222"/>
+      <source>Line spacing</source>
+      <translation>Rozstup čiar</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="239"/>
+      <source>Units</source>
+      <translation>Jednotky</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="245"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="255"/>
+      <source>A multiplier factor that affects the size of texts and markers</source>
+      <translation type="unfinished">A multiplier factor that affects the size of texts and markers</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="248"/>
+      <source>Scale multiplier</source>
+      <translation>Násobiteľ mierky</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="268"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="278"/>
+      <source>If it is checked it will show the unit next to the dimension value</source>
+      <translation type="unfinished">If it is checked it will show the unit next to the dimension value</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="271"/>
+      <source>Show unit</source>
+      <translation>Zobraziť jednotku</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="291"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="301"/>
+      <source>Specify a valid length unit like mm, m, in, ft, to force displaying the dimension value in this unit</source>
+      <translation type="unfinished">Specify a valid length unit like mm, m, in, ft, to force displaying the dimension value in this unit</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="294"/>
+      <source>Unit override</source>
+      <translation>Prepis jednotky</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="308"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="318"/>
+      <source>The number of decimals to show for dimension values</source>
+      <translation type="unfinished">The number of decimals to show for dimension values</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="311"/>
+      <source>Decimals</source>
+      <translation>Desatinné miesta</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="331"/>
+      <source>Line and arrows</source>
+      <translation>Čiara a šípky</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="337"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="347"/>
+      <source>If it is checked it will display the dimension line</source>
+      <translation type="unfinished">If it is checked it will display the dimension line</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="340"/>
+      <source>Show lines</source>
+      <translation>Zobraziť čiary</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="363"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="373"/>
+      <source>The width of the dimension lines</source>
+      <translation>Šírka kótovacích čiar</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="366"/>
+      <source>Line width</source>
+      <translation>Hrúbka čiary</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="376"/>
+      <source>px</source>
+      <translation>px</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="386"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="396"/>
+      <source>The color of dimension lines, arrows and texts</source>
+      <translation>Farba kótovacích čiar, šípiek a textov</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="389"/>
+      <source>Line / text color</source>
+      <translation>Farba čiary / textu</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="410"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="432"/>
+      <source>The type of arrows or markers to use at the end of dimension lines</source>
+      <translation type="unfinished">The type of arrows or markers to use at the end of dimension lines</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="413"/>
+      <source>Arrow type</source>
+      <translation>Typ šípky</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="436"/>
+      <source>Dot</source>
+      <translation>Bodka</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="441"/>
+      <source>Circle</source>
+      <translation>Kružnica</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="446"/>
+      <source>Arrow</source>
+      <translation>Šípka</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="451"/>
+      <source>Tick</source>
+      <translation type="unfinished">Tick</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="456"/>
+      <source>Tick-2</source>
+      <translation type="unfinished">Tick-2</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="464"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="474"/>
+      <source>The size of the dimension arrows or markers in system units</source>
+      <translation type="unfinished">The size of the dimension arrows or markers in system units</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="467"/>
+      <source>Arrow size</source>
+      <translation>Veľkosť šípky</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="484"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="494"/>
+      <source>The distance that the dimension line is additionally extended</source>
+      <translation type="unfinished">The distance that the dimension line is additionally extended</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="487"/>
+      <source>Dimension overshoot</source>
+      <translation>Predĺženie kóty</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="504"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="514"/>
+      <source>The length of the extension lines</source>
+      <translation type="unfinished">The length of the extension lines</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="507"/>
+      <source>Extension lines</source>
+      <translation>Predĺžovacie čiary</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="524"/>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="534"/>
+      <source>The distance that the extension lines are additionally extended beyond the dimension line</source>
+      <translation type="unfinished">The distance that the extension lines are additionally extended beyond the dimension line</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialog_AnnotationStyleEditor.ui" line="527"/>
+      <source>Extension overshoot</source>
+      <translation>Dĺžka predĺženia</translation>
     </message>
   </context>
   <context>
-    <name>Draft_ToggleConstructionMode</name>
+    <name>DraftCircularArrayTaskPanel</name>
     <message>
-      <location filename="DraftTools.py" line="3066"/>
-      <source>Toggle construcion Mode</source>
-      <translation type="unfinished">Prepnúť konštrukčný režim</translation>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="26"/>
+      <source>Circular array</source>
+      <translation type="unfinished">Circular array</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="3068"/>
-      <source>Toggles the Construction Mode for next objects.</source>
-      <translation type="unfinished">Prepnúť režim konštrukcie pre ďalšie objekty.</translation>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="44"/>
+      <source>(Placeholder for the icon)</source>
+      <translation type="unfinished">(Placeholder for the icon)</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="53"/>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="63"/>
+      <source>Distance from one layer of objects to the next layer of objects.</source>
+      <translation>Vzdialenosť od jednej vrstvy objektov k ďalšej vrstve objektov.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="56"/>
+      <source>Radial distance</source>
+      <translation type="unfinished">Radial distance</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="76"/>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="87"/>
+      <source>Distance from one element in one ring of the array to the next element in the same ring.
+It cannot be zero.</source>
+      <translation>Vzdialenosť od jedného prvku v kruhu poľa k ďalšiemu prvku v tom istom kruhu. Nemôže byť nula.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="80"/>
+      <source>Tangential distance</source>
+      <translation type="unfinished">Tangential distance</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="101"/>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="112"/>
+      <source>Number of circular layers or rings to create, including a copy of the original object.
+It must be at least 2.</source>
+      <translation>Počet kruhových vrstiev alebo kruhov pre vytvorenie, vrátane kópie pôvodného objektu. Musí byť aspoň 2.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="105"/>
+      <source>Number of circular layers</source>
+      <translation type="unfinished">Number of circular layers</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="126"/>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="136"/>
+      <source>The number of symmetry lines in the circular array.</source>
+      <translation>Počet osí symetrie v kruhovom poli.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="129"/>
+      <source>Symmetry</source>
+      <translation>Symetria</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="151"/>
+      <source>The coordinates of the point through which the axis of rotation passes.
+Change the direction of the axis itself in the property editor.</source>
+      <translation>Súradnice bodu, cez ktorý prechádza os rotácie.
+Meniť smer vlastnej osi je možné v editore vlastností.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="155"/>
+      <source>Center of rotation</source>
+      <translation>Stred rotácie</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="163"/>
+      <source>X</source>
+      <translation>X</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="183"/>
+      <source>Y</source>
+      <translation>Y</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="203"/>
+      <source>Z</source>
+      <translation>Z</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="225"/>
+      <source>Reset the coordinates of the center of rotation.</source>
+      <translation>Znovu nastaviť (resetovať) súradnice stredu rotácie.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="228"/>
+      <source>Reset point</source>
+      <translation type="unfinished">Reset point</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="240"/>
+      <source>If checked, the resulting objects in the array will be fused if they touch each other.
+This only works if "Link array" is off.</source>
+      <translation>Ak je vybrané, výsledné objekty v poli budú zlúčené, ak sa navzájom dotýkajú.
+Toto funguje iba ak možnosť "Spojiť pole" je vypnutá.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="244"/>
+      <source>Fuse</source>
+      <translation>Zlúčiť</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="251"/>
+      <source>If checked, the resulting object will be a "Link array" instead of a regular array.
+A Link array is more efficient when creating multiple copies, but it cannot be fused together.</source>
+      <translation>Ak je vybrané, výsledný objekt bude "Spojené pole" namiesto obyčajného poľa. Spojené pole je efektívnejšie pri vytváraní mnohonásobných kópií, avšak nemôže byť spolu zlúčené.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_CircularArray.ui" line="255"/>
+      <source>Link array</source>
+      <translation>Spojené pole</translation>
     </message>
   </context>
   <context>
-    <name>Draft_ToggleContinueMode</name>
+    <name>DraftOrthoArrayTaskPanel</name>
     <message>
-      <location filename="DraftTools.py" line="3079"/>
-      <source>Toggle Continue Mode</source>
-      <translation type="unfinished">Toggle Continue Mode</translation>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="26"/>
+      <source>Orthogonal array</source>
+      <translation type="unfinished">Orthogonal array</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="3080"/>
-      <source>Toggles the Continue Mode for next commands.</source>
-      <translation type="unfinished">Prepne mód Pokračovania na ďalšie príkazy.</translation>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="44"/>
+      <source>(Placeholder for the icon)</source>
+      <translation type="unfinished">(Placeholder for the icon)</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="51"/>
+      <source>Number of elements in the array in the specified direction, including a copy of the original object.
+The number must be at least 1 in each direction.</source>
+      <translation>Počet prvkov poľa v danom smere, vrátane kópie objektu.
+Číslo musí byť aspoň 1 v každom smere.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="55"/>
+      <source>Number of elements</source>
+      <translation type="unfinished">Number of elements</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="63"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="132"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="223"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="314"/>
+      <source>X</source>
+      <translation>X</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="80"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="155"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="243"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="334"/>
+      <source>Y</source>
+      <translation>Y</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="97"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="175"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="266"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="354"/>
+      <source>Z</source>
+      <translation>Z</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="119"/>
+      <source>Distance between the elements in the X direction.
+Normally, only the X value is necessary; the other two values can give an additional shift in their respective directions.
+Negative values will result in copies produced in the negative direction.</source>
+      <translation>Vzdialenosť medzi prvkami v smere osi X.
+Normálne, len hodnota X je potrebná, ďalšie dve hodnoty môžu určiť dodatočný posun v daných smeroch.
+Záporné hodnoty vytvoria kópie v opačných smeroch.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="124"/>
+      <source>X intervals</source>
+      <translation>X rozsahy</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="197"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="288"/>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="379"/>
+      <source>Reset the distances.</source>
+      <translation>Znovu nastaviť vzdialenosti.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="200"/>
+      <source>Reset X</source>
+      <translation type="unfinished">Reset X</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="210"/>
+      <source>Distance between the elements in the Y direction.
+Normally, only the Y value is necessary; the other two values can give an additional shift in their respective directions.
+Negative values will result in copies produced in the negative direction.</source>
+      <translation>Vzdialenosť medzi prvkami v smere osi Y.
+Normálne, len hodnota Y je potrebná, ďalšie dve hodnoty môžu určiť dodatočný posun v daných smeroch.
+Záporné hodnoty vytvoria kópie v opačných smeroch.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="215"/>
+      <source>Y intervals</source>
+      <translation>Y rozsahy</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="291"/>
+      <source>Reset Y</source>
+      <translation type="unfinished">Reset Y</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="301"/>
+      <source>Distance between the elements in the Z direction.
+Normally, only the Z value is necessary; the other two values can give an additional shift in their respective directions.
+Negative values will result in copies produced in the negative direction.</source>
+      <translation>Vzdialenosť medzi prvkami v smere osi Z.
+Normálne, len hodnota Z je potrebná, ďalšie dve hodnoty môžu určiť dodatočný posun v daných smeroch.
+Záporné hodnoty vytvoria kópie v opačných smeroch.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="306"/>
+      <source>Z intervals</source>
+      <translation>Z rozsahy</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="382"/>
+      <source>Reset Z</source>
+      <translation type="unfinished">Reset Z</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="394"/>
+      <source>If checked, the resulting objects in the array will be fused if they touch each other.
+This only works if "Link array" is off.</source>
+      <translation>Ak je vybrané, výsledné objekty v poli budú zlúčené, ak sa navzájom dotýkajú.
+Toto funguje iba ak možnosť "Spojiť pole" je vypnutá.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="398"/>
+      <source>Fuse</source>
+      <translation>Zlúčiť</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="405"/>
+      <source>If checked, the resulting object will be a "Link array" instead of a regular array.
+A Link array is more efficient when creating multiple copies, but it cannot be fused together.</source>
+      <translation>Ak je vybrané, výsledný objekt bude "Spojené pole" namiesto obyčajného poľa. Spojené pole je efektívnejšie pri vytváraní mnohonásobných kópií, avšak nemôže byť spolu zlúčené.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_OrthoArray.ui" line="409"/>
+      <source>Link array</source>
+      <translation>Spojené pole</translation>
     </message>
   </context>
   <context>
-    <name>Draft_ToggleDisplayMode</name>
+    <name>DraftPolarArrayTaskPanel</name>
     <message>
-      <location filename="DraftTools.py" line="3152"/>
-      <source>Toggle display mode</source>
-      <translation type="unfinished">Prepnúť režim zobrazenia</translation>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="26"/>
+      <source>Polar array</source>
+      <translation type="unfinished">Polar array</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="3153"/>
-      <source>Swaps display mode of selected objects between wireframe and flatlines</source>
-      <translation type="unfinished">Prepína režim zobrazenia vybratých objektov medzi drôtovým modelom a plochami</translation>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="44"/>
+      <source>(Placeholder for the icon)</source>
+      <translation type="unfinished">(Placeholder for the icon)</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="53"/>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="65"/>
+      <source>Sweeping angle of the polar distribution.
+A negative angle produces a polar pattern in the opposite direction.
+The maximum absolute value is 360 degrees.</source>
+      <translation>Uhol polárnej distribúcie.
+Záporný uhol vytvorí polárny vzor v opačnom smere.
+Maximálna absolútna hodnota je 360 stupňov.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="58"/>
+      <source>Polar angle</source>
+      <translation type="unfinished">Polar angle</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="86"/>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="97"/>
+      <source>Number of elements in the array, including a copy of the original object.
+It must be at least 2.</source>
+      <translation>Počet prvkov poľa, vrátane kópie pôvodného objektu.
+Musí byť aspoň 2.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="90"/>
+      <source>Number of elements</source>
+      <translation type="unfinished">Number of elements</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="113"/>
+      <source>The coordinates of the point through which the axis of rotation passes.
+Change the direction of the axis itself in the property editor.</source>
+      <translation>Súradnice bodu, cez ktorý prechádza os rotácie.
+Meniť smer vlastnej osi je možné v editore vlastností.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="117"/>
+      <source>Center of rotation</source>
+      <translation>Stred rotácie</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="125"/>
+      <source>X</source>
+      <translation>X</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="145"/>
+      <source>Y</source>
+      <translation>Y</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="165"/>
+      <source>Z</source>
+      <translation>Z</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="187"/>
+      <source>Reset the coordinates of the center of rotation.</source>
+      <translation>Znovu nastaviť (resetovať) súradnice stredu rotácie.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="190"/>
+      <source>Reset point</source>
+      <translation type="unfinished">Reset point</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="202"/>
+      <source>If checked, the resulting objects in the array will be fused if they touch each other.
+This only works if "Link array" is off.</source>
+      <translation>Ak je vybrané, výsledné objekty v poli budú zlúčené, ak sa navzájom dotýkajú.
+Toto funguje iba ak možnosť "Spojiť pole" je vypnutá.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="206"/>
+      <source>Fuse</source>
+      <translation>Zlúčiť</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="213"/>
+      <source>If checked, the resulting object will be a "Link array" instead of a regular array.
+A Link array is more efficient when creating multiple copies, but it cannot be fused together.</source>
+      <translation>Ak je vybrané, výsledný objekt bude "Spojené pole" namiesto obyčajného poľa. Spojené pole je efektívnejšie pri vytváraní mnohonásobných kópií, avšak nemôže byť spolu zlúčené.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_PolarArray.ui" line="217"/>
+      <source>Link array</source>
+      <translation>Spojené pole</translation>
     </message>
   </context>
   <context>
-    <name>Draft_ToggleGrid</name>
+    <name>DraftShapeStringGui</name>
     <message>
-      <location filename="DraftTools.py" line="4154"/>
-      <source>Toggle Grid</source>
-      <translation type="unfinished">Toggle Grid</translation>
+      <location filename="../ui/TaskShapeString.ui" line="26"/>
+      <source>ShapeString</source>
+      <translation type="unfinished">ShapeString</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="4155"/>
-      <source>Toggles the Draft gid on/off</source>
-      <translation type="unfinished">Toggles the Draft gid on/off</translation>
+      <location filename="../ui/TaskShapeString.ui" line="46"/>
+      <source>X</source>
+      <translation>X</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="53"/>
+      <location filename="../ui/TaskShapeString.ui" line="70"/>
+      <location filename="../ui/TaskShapeString.ui" line="87"/>
+      <source>Enter coordinates or select point with mouse.</source>
+      <translation type="unfinished">Enter coordinates or select point with mouse.</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="63"/>
+      <source>Y</source>
+      <translation>Y</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="80"/>
+      <source>Z</source>
+      <translation>Z</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="114"/>
+      <source>Reset 3d point selection</source>
+      <translation type="unfinished">Reset 3d point selection</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="120"/>
+      <source>Reset Point</source>
+      <translation type="unfinished">Reset Point</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="131"/>
+      <source>String</source>
+      <translation>Reťazec</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="138"/>
+      <source>Text to be made into ShapeString</source>
+      <translation type="unfinished">Text to be made into ShapeString</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="149"/>
+      <source>Height</source>
+      <translation>Výška</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="156"/>
+      <source>Height of the result</source>
+      <translation type="unfinished">Height of the result</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskShapeString.ui" line="176"/>
+      <source>Font file</source>
+      <translation type="unfinished">Font file</translation>
     </message>
   </context>
   <context>
-    <name>Draft_Trimex</name>
+    <name>Form</name>
     <message>
-      <location filename="DraftTools.py" line="2621"/>
-      <source>Trimex</source>
-      <translation type="unfinished">Orezať/Rozšíriť</translation>
+      <location filename="../ui/TaskSelectPlane.ui" line="14"/>
+      <source>Working plane setup</source>
+      <translation type="unfinished">Working plane setup</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="2622"/>
-      <source>Trims or extends the selected object, or extrudes single faces. CTRL snaps, SHIFT constrains to current segment or to normal, ALT inverts</source>
-      <translation type="unfinished">Odreže alebo rozširuje vybraný objekt alebo vysunie jednotlivé plochy. CTRL zachytiť, SHIFT obmedziť na aktuálny alebo na Normálny segment, ALT invertovať</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_UndoLine</name>
-    <message>
-      <location filename="DraftTools.py" line="831"/>
-      <source>Undo last segment</source>
-      <translation type="unfinished">Vrátiť späť posledný segment</translation>
+      <location filename="../ui/TaskSelectPlane.ui" line="20"/>
+      <source>Select a face or working plane proxy or 3 vertices.
+Or choose one of the options below</source>
+      <translation type="unfinished">Select a face or working plane proxy or 3 vertices.
+Or choose one of the options below</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="832"/>
-      <source>Undoes the last drawn segment of the line being drawn</source>
-      <translation type="unfinished">Vrátiť späť posledný segment rozpracovanej čiary</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Upgrade</name>
-    <message>
-      <location filename="DraftTools.py" line="2560"/>
-      <source>Upgrade</source>
-      <translation type="unfinished">Aktualizácia</translation>
+      <location filename="../ui/TaskSelectPlane.ui" line="31"/>
+      <source>Sets the working plane to the XY plane (ground plane)</source>
+      <translation type="unfinished">Sets the working plane to the XY plane (ground plane)</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="2561"/>
-      <source>Joins the selected objects into one, or converts closed wires to filled faces, or unite faces</source>
-      <translation type="unfinished">Spojí vybraté objekty alebo konvertuje uzavreté obrysy na plné plochy, alebo zjednotí plochy</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_Wire</name>
-    <message>
-      <location filename="DraftTools.py" line="577"/>
-      <source>DWire</source>
-      <translation type="unfinished">Návrhová krivka</translation>
+      <location filename="../ui/TaskSelectPlane.ui" line="34"/>
+      <source>Top (XY)</source>
+      <translation type="unfinished">Top (XY)</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="578"/>
-      <source>Creates a multiple-point DraftWire (DWire). CTRL to snap, SHIFT to constrain</source>
-      <translation type="unfinished">Vytvára viacbodovú Návrhovú Krivku (Návrhová Krivka). CTRL bude prichytávať, SHIFT obmedzovať</translation>
-    </message>
-  </context>
-  <context>
-    <name>Draft_WireToBSpline</name>
-    <message>
-      <location filename="DraftTools.py" line="3799"/>
-      <source>Wire to BSpline</source>
-      <translation type="unfinished">Drôt na BSpline (drážku)</translation>
+      <location filename="../ui/TaskSelectPlane.ui" line="41"/>
+      <source>Sets the working plane to the XZ plane (front plane)</source>
+      <translation type="unfinished">Sets the working plane to the XZ plane (front plane)</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="3800"/>
-      <source>Converts between Wire and BSpline</source>
-      <translation type="unfinished">Konvertuje medzi drôtom a BSpline (drážkovanie)</translation>
+      <location filename="../ui/TaskSelectPlane.ui" line="44"/>
+      <source>Front (XZ)</source>
+      <translation type="unfinished">Front (XZ)</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="51"/>
+      <source>Sets the working plane to the YZ plane (side plane)</source>
+      <translation type="unfinished">Sets the working plane to the YZ plane (side plane)</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="54"/>
+      <source>Side (YZ)</source>
+      <translation type="unfinished">Side (YZ)</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="61"/>
+      <source>Sets the working plane facing the current view</source>
+      <translation type="unfinished">Sets the working plane facing the current view</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="64"/>
+      <source>Align to view</source>
+      <translation type="unfinished">Align to view</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="71"/>
+      <source>The working plane will align to the current
+view each time a command is started</source>
+      <translation type="unfinished">The working plane will align to the current
+view each time a command is started</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="78"/>
+      <source>Automatic</source>
+      <translation type="unfinished">Automatic</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="87"/>
+      <source>Offset</source>
+      <translation>Odsadenie</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="94"/>
+      <source>An optional offset to give to the working plane
+above its base position. Use this together with one
+of the buttons above</source>
+      <translation type="unfinished">An optional offset to give to the working plane
+above its base position. Use this together with one
+of the buttons above</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="106"/>
+      <location filename="../ui/TaskSelectPlane.ui" line="118"/>
+      <source>If this is selected, the working plane will be
+centered on the current view when pressing one
+of the buttons above</source>
+      <translation type="unfinished">If this is selected, the working plane will be
+centered on the current view when pressing one
+of the buttons above</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="111"/>
+      <source>Center plane on view</source>
+      <translation type="unfinished">Center plane on view</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="135"/>
+      <source>Or select a single vertex to move the current
+working plane without changing its orientation.
+Then, press the button below</source>
+      <translation type="unfinished">Or select a single vertex to move the current
+working plane without changing its orientation.
+Then, press the button below</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="147"/>
+      <source>Moves the working plane without changing its
+orientation. If no point is selected, the plane
+will be moved to the center of the view</source>
+      <translation type="unfinished">Moves the working plane without changing its
+orientation. If no point is selected, the plane
+will be moved to the center of the view</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="152"/>
+      <source>Move working plane</source>
+      <translation type="unfinished">Move working plane</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="161"/>
+      <location filename="../ui/TaskSelectPlane.ui" line="171"/>
+      <source>The spacing between the smaller grid lines</source>
+      <translation type="unfinished">The spacing between the smaller grid lines</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="164"/>
+      <source>Grid spacing</source>
+      <translation>Rozstup mriežky</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="181"/>
+      <location filename="../ui/TaskSelectPlane.ui" line="191"/>
+      <source>The number of squares between each main line of the grid</source>
+      <translation type="unfinished">The number of squares between each main line of the grid</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="184"/>
+      <source>Main line every</source>
+      <translation type="unfinished">Main line every</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="198"/>
+      <source>Grid extension</source>
+      <translation type="unfinished">Grid extension</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="205"/>
+      <source> lines</source>
+      <translation type="unfinished"> lines</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="218"/>
+      <location filename="../ui/TaskSelectPlane.ui" line="230"/>
+      <source>The distance at which a point can be snapped to
+when approaching the mouse. You can also change this
+value by using the [ and ] keys while drawing</source>
+      <translation type="unfinished">The distance at which a point can be snapped to
+when approaching the mouse. You can also change this
+value by using the [ and ] keys while drawing</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="223"/>
+      <source>Snapping radius</source>
+      <translation type="unfinished">Snapping radius</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="241"/>
+      <source>Centers the view on the current working plane</source>
+      <translation type="unfinished">Centers the view on the current working plane</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="244"/>
+      <source>Center view</source>
+      <translation type="unfinished">Center view</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="251"/>
+      <source>Resets the working plane to its previous position</source>
+      <translation type="unfinished">Resets the working plane to its previous position</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskSelectPlane.ui" line="254"/>
+      <source>Previous</source>
+      <translation type="unfinished">Previous</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="14"/>
+      <source>Style settings</source>
+      <translation type="unfinished">Style settings</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="22"/>
+      <source>Fills the values below with a stored style preset</source>
+      <translation type="unfinished">Fills the values below with a stored style preset</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="26"/>
+      <source>Load preset</source>
+      <translation type="unfinished">Load preset</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="40"/>
+      <source>Save current style as a preset...</source>
+      <translation type="unfinished">Save current style as a preset...</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="57"/>
+      <source>Lines and faces</source>
+      <translation>Čiary a plochy</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="66"/>
+      <source>Line color</source>
+      <translation>Farba čiary</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="73"/>
+      <source>The color of lines</source>
+      <translation type="unfinished">The color of lines</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="80"/>
+      <source>Line width</source>
+      <translation>Hrúbka čiary</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="87"/>
+      <source> px</source>
+      <translation> px</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="94"/>
+      <source>Draw style</source>
+      <translation>Štýl kreslenia</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="101"/>
+      <source>The line style</source>
+      <translation type="unfinished">The line style</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="105"/>
+      <source>Solid</source>
+      <translation>Teleso</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="110"/>
+      <source>Dashed</source>
+      <translation type="unfinished">Dashed</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="115"/>
+      <source>Dotted</source>
+      <translation type="unfinished">Dotted</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="120"/>
+      <source>DashDot</source>
+      <translation type="unfinished">DashDot</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="128"/>
+      <source>Display mode</source>
+      <translation type="unfinished">Display mode</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="135"/>
+      <source>The display mode for faces</source>
+      <translation type="unfinished">The display mode for faces</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="139"/>
+      <source>Flat Lines</source>
+      <translation type="unfinished">Flat Lines</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="144"/>
+      <source>Wireframe</source>
+      <translation>Drôtový model</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="149"/>
+      <source>Shaded</source>
+      <translation type="unfinished">Shaded</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="154"/>
+      <source>Points</source>
+      <translation>Body</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="162"/>
+      <source>Shape color</source>
+      <translation type="unfinished">Shape color</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="169"/>
+      <source>The color of faces</source>
+      <translation>Farba stien</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="176"/>
+      <source>Transparency</source>
+      <translation type="unfinished">Transparency</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="183"/>
+      <source>The transparency of faces</source>
+      <translation>Priehľadnosť stien</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="199"/>
+      <source>Annotations</source>
+      <translation>Poznámky</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="205"/>
+      <source>Text font</source>
+      <translation type="unfinished">Text font</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="218"/>
+      <source>The font to use for texts and dimensions</source>
+      <translation>Font použitý pre texty a kóty</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="225"/>
+      <source>Text size</source>
+      <translation type="unfinished">Text size</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="232"/>
+      <source>The size of texts and dimension texts</source>
+      <translation type="unfinished">The size of texts and dimension texts</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="242"/>
+      <source>Text spacing</source>
+      <translation type="unfinished">Text spacing</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="249"/>
+      <source>The space between the text and the dimension line</source>
+      <translation type="unfinished">The space between the text and the dimension line</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="259"/>
+      <source>Text color</source>
+      <translation>Farba textu</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="266"/>
+      <source>The color of texts and dimension texts</source>
+      <translation type="unfinished">The color of texts and dimension texts</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="273"/>
+      <source>Line spacing</source>
+      <translation>Rozstup čiar</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="280"/>
+      <source>The spacing between different lines of text</source>
+      <translation type="unfinished">The spacing between different lines of text</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="287"/>
+      <source>Arrow style</source>
+      <translation type="unfinished">Arrow style</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="294"/>
+      <source>The type of dimension arrows</source>
+      <translation type="unfinished">The type of dimension arrows</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="298"/>
+      <source>Dot</source>
+      <translation>Bodka</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="303"/>
+      <source>Circle</source>
+      <translation>Kružnica</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="308"/>
+      <source>Arrow</source>
+      <translation>Šípka</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="313"/>
+      <source>Tick</source>
+      <translation type="unfinished">Tick</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="318"/>
+      <source>Tick-2</source>
+      <translation type="unfinished">Tick-2</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="326"/>
+      <source>Arrow size</source>
+      <translation>Veľkosť šípky</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="333"/>
+      <source>The size of dimension arrows</source>
+      <translation type="unfinished">The size of dimension arrows</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="343"/>
+      <source>Show unit</source>
+      <translation>Zobraziť jednotku</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="350"/>
+      <source>If the unit suffix is shown on dimension texts or not</source>
+      <translation>Či je prípona jednotky zobrazená s textom kóty alebo nie</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="363"/>
+      <source>Unit override</source>
+      <translation>Prepis jednotky</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="370"/>
+      <source>The unit to use for dimensions. Leave blank to use current FreeCAD unit</source>
+      <translation type="unfinished">The unit to use for dimensions. Leave blank to use current FreeCAD unit</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="382"/>
+      <source>Apply above style to selected object(s)</source>
+      <translation type="unfinished">Apply above style to selected object(s)</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="385"/>
+      <source>Selected</source>
+      <translation type="unfinished">Selected</translation>
+    </message>
+    <message>
+      <location filename="../ui/TaskPanel_SetStyle.ui" line="397"/>
+      <source>Texts/dims</source>
+      <translation type="unfinished">Texts/dims</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialogHatch.ui" line="14"/>
+      <source>Hatch</source>
+      <translation type="unfinished">Hatch</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialogHatch.ui" line="20"/>
+      <source>PAT file:</source>
+      <translation type="unfinished">PAT file:</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialogHatch.ui" line="27"/>
+      <source>pattern files (*.pat)</source>
+      <translation type="unfinished">pattern files (*.pat)</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialogHatch.ui" line="34"/>
+      <source>Pattern:</source>
+      <translation type="unfinished">Pattern:</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialogHatch.ui" line="44"/>
+      <source>Scale:</source>
+      <translation type="unfinished">Scale:</translation>
+    </message>
+    <message>
+      <location filename="../ui/dialogHatch.ui" line="64"/>
+      <source>Rotation:</source>
+      <translation>Otočenie:</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettingsDraft</name>
     <message>
-      <location filename="userprefs-base.ui" line="26"/>
+      <location filename="../ui/preferences-draft.ui" line="14"/>
+      <source>General settings</source>
+      <translation>Základné nastavenia</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="32"/>
       <source>General Draft Settings</source>
-      <translation type="unfinished">Všeobecné nastavenie návrhu</translation>
+      <translation>Všeobecné nastavenie návrhu</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="54"/>
-      <source>the default color for new objects</source>
-      <translation type="unfinished">predvolená farba pre nové objekty</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="98"/>
-      <source>the default linewidth for new objects</source>
-      <translation type="unfinished">východzia šírka čiary pre nové objekty</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="171"/>
-      <source>the default color for snap symbols</source>
-      <translation type="unfinished">Východzia farba pre prichytené symboly</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="439"/>
-      <source>This is the default color for objects being drawn while in construction mode.</source>
-      <translation type="unfinished">Toto je predvolená farba pre kreslené objekty počas počas konštrukčného módu.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="399"/>
-      <source>This is the default group name for construction geometry</source>
-      <translation type="unfinished">Toto je predvolený názov konštrukčnej geometrie</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="402"/>
-      <source>Construction</source>
-      <translation type="unfinished">Konštrukcia</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="195"/>
-      <source>check this if you want to use the color/linewidth from the toolbar as default</source>
-      <translation type="unfinished">začiarknite, ak chcete použiť farbu/ŠírkuČiary z panela nástrojov ako predvolenú</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="198"/>
-      <source>Save current color and linewidth across sessions</source>
-      <translation type="unfinished">Uložiť aktuálnu farbu a šírku čiary okolo relácie</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="107"/>
-      <source>If this is checked, copy mode will be kept across command, otherwise commands will always start in no-copy mode</source>
-      <translation type="unfinished">Ak je toto začiarknuté, bude uchovaný režim kopírovania, inak budú príkazy spúšťané v móde ne-kopírovať</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="110"/>
-      <source>Global copy mode</source>
-      <translation type="unfinished">Všeobecný mód kopírovania</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="363"/>
-      <source>If this is checked, objects will appear as filled as default. Otherwise, they will appear as wireframe</source>
-      <translation type="unfinished">Ak je toto začiarknuté,predvolenou farbou objektov bude sivá. V opačnom prípade sa zobrazia ako drôtový model</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="150"/>
+      <location filename="../ui/preferences-draft.ui" line="40"/>
       <source>Default working plane</source>
-      <translation type="unfinished">Predvolená pracovná rovina</translation>
+      <translation>Predvolená pracovná rovina</translation>
     </message>
     <message>
-      <location filename="userprefs-base.ui" line="177"/>
+      <location filename="../ui/preferences-draft.ui" line="67"/>
       <source>None</source>
-      <translation type="unfinished">Žiadny</translation>
+      <translation>Žiadny</translation>
     </message>
     <message>
-      <location filename="userprefs-base.ui" line="182"/>
+      <location filename="../ui/preferences-draft.ui" line="72"/>
       <source>XY (Top)</source>
-      <translation type="unfinished">XY (hore)</translation>
+      <translation>XY (hore)</translation>
     </message>
     <message>
-      <location filename="userprefs-base.ui" line="187"/>
+      <location filename="../ui/preferences-draft.ui" line="77"/>
       <source>XZ (Front)</source>
-      <translation type="unfinished">XZ (Predok)</translation>
+      <translation>XZ (Predok)</translation>
     </message>
     <message>
-      <location filename="userprefs-base.ui" line="192"/>
+      <location filename="../ui/preferences-draft.ui" line="82"/>
       <source>YZ (Side)</source>
-      <translation type="unfinished">YZ (Bok)</translation>
+      <translation>YZ (Bok)</translation>
     </message>
     <message>
-      <location filename="userprefs-base.ui" line="230"/>
-      <source>The number of decimals in internal coordinates operations (for ex. 3 = 0.001)</source>
-      <translation type="unfinished">Počet desatinných miest vnútorných súradníc pri operáciach (napr. 3 = 0,001)</translation>
+      <location filename="../ui/preferences-draft.ui" line="94"/>
+      <source>Internal precision level</source>
+      <translation>Úroveň internej precíznosti</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="441"/>
-      <source>Default height for texts and dimensions</source>
-      <translation type="unfinished">Predvolená výška pre texty a rozmery</translation>
+      <location filename="../ui/preferences-draft.ui" line="120"/>
+      <source>The number of decimals in internal coordinates operations (for ex. 3 = 0.001). Values between 6 and 8 are usually considered the best trade-off among FreeCAD users.</source>
+      <translation type="unfinished">The number of decimals in internal coordinates operations (for ex. 3 = 0.001). Values between 6 and 8 are usually considered the best trade-off among FreeCAD users.</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="403"/>
+      <location filename="../ui/preferences-draft.ui" line="143"/>
+      <source>Tolerance</source>
+      <translation>Tolerancia</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="169"/>
+      <source>This is the value used by functions that use a tolerance.
+Values with differences below this value will be treated as same. This value will be obsoleted soon so the precision level above controls both.</source>
+      <translation type="unfinished">This is the value used by functions that use a tolerance.
+Values with differences below this value will be treated as same. This value will be obsoleted soon so the precision level above controls both.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="194"/>
+      <source>If this option is checked, the layers drop-down list will also show groups, allowing you to automatically add objects to groups too.</source>
+      <translation type="unfinished">If this option is checked, the layers drop-down list will also show groups, allowing you to automatically add objects to groups too.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="197"/>
+      <source>Show groups in layers list drop-down button</source>
+      <translation type="unfinished">Show groups in layers list drop-down button</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="216"/>
+      <source>Draft tools options</source>
+      <translation>Možnosti nástrojov návrhu</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="230"/>
+      <source>When drawing lines, set focus on Length instead of X coordinate.
+This allows to point the direction and type the distance.</source>
+      <translation>Pri kreslení čiar nastaviť zameranie na dĺžku namiesto súradnice X.
+To umožní určovať smer a zadávať dĺžku.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="234"/>
+      <source>Set focus on Length instead of X coordinate</source>
+      <translation>Nastaviť zameranie na dĺžku namiesto súradnice X</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="247"/>
+      <source>Normally, after copying objects, the copies get selected.
+If this option is checked, the base objects will be selected instead.</source>
+      <translation type="unfinished">Normally, after copying objects, the copies get selected.
+If this option is checked, the base objects will be selected instead.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="251"/>
+      <source>Select base objects after copying</source>
+      <translation>Po kopírovaní vyberať základné objekty</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="264"/>
+      <source>If this option is set, when creating Draft objects on top of an existing face of another object, the "Support" property of the Draft object will be set to the base object. This was the standard behaviour before FreeCAD 0.19</source>
+      <translation type="unfinished">If this option is set, when creating Draft objects on top of an existing face of another object, the "Support" property of the Draft object will be set to the base object. This was the standard behaviour before FreeCAD 0.19</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="267"/>
+      <source>Set the Support property when possible</source>
+      <translation type="unfinished">Set the Support property when possible</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="280"/>
+      <source>If this is checked, objects will appear as filled by default.
+Otherwise, they will appear as wireframe</source>
+      <translation>Ak je vybrané, objekty za zobrazia štandardne ako vyplnené.
+Inak sa zobrazia ako drôtený rám</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="284"/>
+      <source>Fill objects with faces whenever possible</source>
+      <translation type="unfinished">Fill objects with faces whenever possible</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="300"/>
+      <source>If this is checked, copy mode will be kept across command,
+otherwise commands will always start in no-copy mode</source>
+      <translation type="unfinished">If this is checked, copy mode will be kept across command,
+otherwise commands will always start in no-copy mode</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="304"/>
+      <source>Global copy mode</source>
+      <translation>Všeobecný mód kopírovania</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="320"/>
+      <source>Force Draft Tools to create Part primitives instead of Draft objects.
+Note that this is not fully supported, and many object will be not editable with Draft Modifiers.</source>
+      <translation type="unfinished">Force Draft Tools to create Part primitives instead of Draft objects.
+Note that this is not fully supported, and many object will be not editable with Draft Modifiers.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="324"/>
+      <source>Use Part Primitives when available</source>
+      <translation type="unfinished">Use Part Primitives when available</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="341"/>
+      <source>Prefix labels of Clones with:</source>
+      <translation type="unfinished">Prefix labels of Clones with:</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="372"/>
+      <source>Construction Geometry</source>
+      <translation type="unfinished">Construction Geometry</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="380"/>
+      <source>Construction group name</source>
+      <translation>Názov Konštrukčnej skupiny</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="387"/>
+      <source>This is the default group name for construction geometry</source>
+      <translation>Toto je predvolený názov konštrukčnej geometrie</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="390"/>
+      <source>Construction</source>
+      <translation>Konštrukcia</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="407"/>
+      <source>Construction geometry color</source>
+      <translation type="unfinished">Construction geometry color</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draft.ui" line="427"/>
+      <source>This is the default color for objects being drawn while in construction mode.</source>
+      <translation>Toto je predvolená farba pre kreslené objekty počas počas konštrukčného módu.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="14"/>
+      <source>Visual settings</source>
+      <translation>Vizuálne nastavenia</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="26"/>
+      <source>Visual Settings</source>
+      <translation>Vizuálne nastavenia</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="34"/>
+      <source>Snap symbols style</source>
+      <translation type="unfinished">Snap symbols style</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="54"/>
+      <source>Draft classic style</source>
+      <translation type="unfinished">Draft classic style</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="59"/>
+      <source>Bitsnpieces style</source>
+      <translation type="unfinished">Bitsnpieces style</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="80"/>
+      <source>Color</source>
+      <translation>Farba</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="87"/>
+      <source>The default color for snap symbols</source>
+      <translation type="unfinished">The default color for snap symbols</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="111"/>
+      <source>Check this if you want to use the color/linewidth from the toolbar as default</source>
+      <translation type="unfinished">Check this if you want to use the color/linewidth from the toolbar as default</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="114"/>
+      <source>Save current color and linewidth across sessions</source>
+      <translation>Uložiť aktuálnu farbu a šírku čiary okolo relácie</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="131"/>
+      <source>If checked, a widget indicating the current working plane orientation appears during drawing operations</source>
+      <translation type="unfinished">If checked, a widget indicating the current working plane orientation appears during drawing operations</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="134"/>
+      <source>Show Working Plane tracker</source>
+      <translation type="unfinished">Show Working Plane tracker</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="151"/>
+      <source>Default template sheet</source>
+      <translation>Predvolená šablóna listu</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="177"/>
+      <source>The default template to use when creating a new drawing sheet</source>
+      <translation>Predvolená šablóna použitá pri vytvorení nového listu Návrhu</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="194"/>
+      <source>Alternate SVG patterns location</source>
+      <translation type="unfinished">Alternate SVG patterns location</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="220"/>
+      <source>Here you can specify a directory with custom SVG files containing &lt;pattern&gt; definitions to be added to the standard patterns</source>
+      <translation type="unfinished">Here you can specify a directory with custom SVG files containing &lt;pattern&gt; definitions to be added to the standard patterns</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="237"/>
+      <source>SVG pattern resolution</source>
+      <translation>Rozlíšenie vzoru SVG</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="257"/>
+      <source>The resolution to draw the patterns in. Default value is 128. Higher values give better resolutions, lower values make drawing faster</source>
+      <translation type="unfinished">The resolution to draw the patterns in. Default value is 128. Higher values give better resolutions, lower values make drawing faster</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="280"/>
+      <source>SVG pattern default size</source>
+      <translation type="unfinished">SVG pattern default size</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="300"/>
+      <source>The default size for SVG patterns</source>
+      <translation type="unfinished">The default size for SVG patterns</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="326"/>
+      <source>Check this if you want to preserve colors of faces while doing downgrade and upgrade (splitFaces and makeShell only)</source>
+      <translation type="unfinished">Check this if you want to preserve colors of faces while doing downgrade and upgrade (splitFaces and makeShell only)</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="329"/>
+      <source>Preserve colors of faces during downgrade/upgrade</source>
+      <translation type="unfinished">Preserve colors of faces during downgrade/upgrade</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="346"/>
+      <source>Check this if you want the face names to derive from the originating object name and vice versa while doing downgrade/upgrade (splitFaces and makeShell only)</source>
+      <translation type="unfinished">Check this if you want the face names to derive from the originating object name and vice versa while doing downgrade/upgrade (splitFaces and makeShell only)</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="349"/>
+      <source>Preserve names of faces during downgrade/upgrade</source>
+      <translation type="unfinished">Preserve names of faces during downgrade/upgrade</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="367"/>
+      <source>Drawing view line definitions</source>
+      <translation type="unfinished">Drawing view line definitions</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="375"/>
+      <source>Dashed line definition</source>
+      <translation type="unfinished">Dashed line definition</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="395"/>
+      <location filename="../ui/preferences-draftvisual.ui" line="438"/>
+      <location filename="../ui/preferences-draftvisual.ui" line="481"/>
+      <source>An SVG linestyle definition</source>
+      <translation type="unfinished">An SVG linestyle definition</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="418"/>
+      <source>Dashdot line definition</source>
+      <translation type="unfinished">Dashdot line definition</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftvisual.ui" line="461"/>
+      <source>Dotted line definition</source>
+      <translation type="unfinished">Dotted line definition</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="14"/>
+      <source>Texts and dimensions</source>
+      <translation>Texty a rozmery</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="26"/>
+      <source>Text settings</source>
+      <translation type="unfinished">Text settings</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="34"/>
+      <source>Font family</source>
+      <translation type="unfinished">Font family</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="47"/>
       <source>This is the default font name for all Draft texts and dimensions.
 It can be a font name such as "Arial", a default style such as "sans", "serif"
 or "mono", or a family such as "Arial,Helvetica,sans" or a name with a style
 such as "Arial:Bold"</source>
-      <translation type="unfinished">Toto je predvolený font textov a rozmerov Návrhu.
+      <translation>Toto je predvolený font textov a rozmerov Návrhu.
 Môže ním byť názov fontu napr. "Arial" a predvoleným štýlom napr. "sans","serif"
 alebo "mono", alebo skupina napr. "Arial,Helvetica,sans" alebo názov a štýl ako
 napríklad "Arial:Bold"</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="235"/>
-      <source>Default template sheet</source>
-      <translation type="unfinished">Predvolená šablóna listu</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="261"/>
-      <source>The default template to use when creating a new drawing sheet</source>
-      <translation type="unfinished">Predvolená šablóna použitá pri vytvorení nového listu Návrhu</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="46"/>
-      <source>Import style</source>
-      <translation type="unfinished">Importovať štýl</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="66"/>
-      <source>None (fastest)</source>
-      <translation type="unfinished">Žiadne (najrýchlejšia)</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="71"/>
-      <source>Use default color and linewidth</source>
-      <translation type="unfinished">Použiť predvolenú farbu a šírkuČiary</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="76"/>
-      <source>Original color and linewidth</source>
-      <translation type="unfinished">Pôvodné farby a šírkaČiary</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="76"/>
-      <source>if this is checked, paper space objects will be imported too</source>
-      <translation type="unfinished">ak je začiarknuté, budú importované aj objekty priestoru výkresu</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="47"/>
-      <source>if this is unchecked, texts/mtexts won't be imported</source>
-      <translation type="unfinished">ak nie je začiarknuté, texty/mtexty nebudú importované</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="389"/>
-      <source>When exporting splines to DXF, they are transformed in polylines. This value is the maximum length of each of the polyline segments. If 0, then the whole spline is treated as a straight segment.</source>
-      <translation type="unfinished">Keď sa exportujú drážky do DXF, tak sú transformované do kriviek. Táto hodnota je max dĺžka každej krivky segmentu. Ak je 0, tak sa s celou drážkou zaobchádza ako s rovným segmentom.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="53"/>
-      <source>This is the method choosed for importing SVG object color into FreeCAD.</source>
-      <translation type="unfinished">Toto je metóda vybratá pre import SVG objektových farieb do FreeCAD.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="169"/>
-      <source>Check this if you want the areas (3D faces) to be imported too.</source>
-      <translation type="unfinished">Začiarknite, ak chcete importovať aj oblasti (3D).</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="172"/>
-      <source>Import OCA areas</source>
-      <translation type="unfinished">Importovať OCA oblastí</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="14"/>
-      <source>General settings</source>
-      <translation type="unfinished">Základné nastavenia</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="392"/>
-      <source>Construction group name</source>
-      <translation type="unfinished">Názov Konštrukčnej skupiny</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="290"/>
-      <source>Tolerance</source>
-      <translation type="unfinished">Tolerancia</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="316"/>
-      <source>This is the value used by functions that use a tolerance.
-Values with differences below this value will be treated as same.</source>
-      <translation type="unfinished">Toto je hodnota použitá funkciou využívajúcou toleranciu.
-Hodnoty s nižším rozdielom ako táto hodnota sa bude zaobchádzať akoby nebol.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="26"/>
-      <source>DXF format options</source>
-      <translation type="unfinished">Nastavenia formátu DXF</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="92"/>
-      <source>Check this if you want the non-named blocks (beginning with a *) to be imported too</source>
-      <translation type="unfinished">Začiarknite, ak chcete aby boli importované aj nepomenované bloky (začínajúce *)</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="194"/>
-      <source>If checked, freecad will try to joint coincident objects into wires. Beware, this can take a while...</source>
-      <translation type="unfinished">Ak je začiarknité, freecad sa pokúsi spojiť zhodné objekty do drôtov. Pozor, môže to chvíľu trvať...</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="197"/>
-      <source>Join geometry</source>
-      <translation type="unfinished">Spojiť geometriu</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="26"/>
-      <source>SVG format options</source>
-      <translation type="unfinished">Nastavenia formátu SVG</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="149"/>
-      <source>OCA format options</source>
-      <translation type="unfinished">Nastavenia formátu OCA</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="278"/>
-      <source>Alternate SVG Patterns location</source>
-      <translation type="unfinished">Alternatívne umiestnenie SVG vzorov</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="304"/>
-      <source>Here you can specify a directory containing SVG files containing &lt;pattern&gt; definitions that can be added to the standard Draft hatch patterns</source>
-      <translation type="unfinished">Tu môžete určiť adresár obsahujúci SVG súbory obsahujúce definície &lt;šablóna&gt;, ktoré môžu byť pridané medzi štandardné šrafovacie vzory Návrhu</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="54"/>
-      <source>Draft interface mode</source>
-      <translation type="unfinished">Režim rozhrania Návrhu</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="77"/>
-      <source>This is the UI mode in which the Draft module will work: Toolbar mode will place all Draft settings in a separate toolbar, while taskbar mode will use the FreeCAD Taskview system for all its user interaction</source>
-      <translation type="unfinished">Toto je UI režim, v ktorom bude modul Návrhu pracovať: Panel nástrojov premietne všetky nastavenia Návrhu do samostatných Panelov nástrojov dovtedy, pokiaľ bude FreeCAD používať systém Zobrazenia úloh pre všetky užívateľské interakcie</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="90"/>
-      <source>Toolbar</source>
-      <translation type="unfinished">Panel nástrojov</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="95"/>
-      <source>Taskview</source>
-      <translation type="unfinished">Zobrazenie úloh</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="57"/>
-      <source>Constrain mod</source>
-      <translation type="unfinished">Vynucovací mód</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="77"/>
-      <source>The Constraining modifier key</source>
-      <translation type="unfinished">Klávesa vynucovacieho modifikátora</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="197"/>
-      <source>shift</source>
-      <translation type="unfinished">shift</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="202"/>
-      <source>ctrl</source>
-      <translation type="unfinished">ctrl</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="207"/>
-      <source>alt</source>
-      <translation type="unfinished">alt</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="109"/>
-      <source>Snap mod</source>
-      <translation type="unfinished">Prichytávací mód</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="129"/>
-      <source>The snap modifier key</source>
-      <translation type="unfinished">Kláves prichytávacieho modifikátora</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="164"/>
-      <source>Alt mod</source>
-      <translation type="unfinished">ALT mód</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="184"/>
-      <source>The alt modifier key</source>
-      <translation type="unfinished">Klávesa alternatívneho modifikátora</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="130"/>
-      <source>Normally, after copying objects, the copies get selected. If this option is checked, the base objects will be selected instead.</source>
-      <translation type="unfinished">Normálne sú po kopírovaní vybraté kópie. Ak vyberiete túto možnosť, budú namiesto nich vyberané pôvodné objekty.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="133"/>
-      <source>Select base objects after copying</source>
-      <translation type="unfinished">Po kopírovaní vyberať základné objekty</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="395"/>
-      <source>If checked, a grid will appear when drawing</source>
-      <translation type="unfinished">Ak je začiarknuté, pri kreslení použije mriežku</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="398"/>
-      <source>Use grid</source>
-      <translation type="unfinished">Použiť mriežku</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="320"/>
-      <source>Grid spacing</source>
-      <translation type="unfinished">Rozostup mriežky</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="343"/>
-      <source>The spacing between each grid line</source>
-      <translation type="unfinished">Rozstupy medzi riadkami mriežky</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="274"/>
-      <source>Main lines every</source>
-      <translation type="unfinished">Vždy Hlavné čiary</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="297"/>
-      <source>Mainlines will be drawn thicker. Specify here how many squares between mainlines.</source>
-      <translation type="unfinished">Hlavné čiary budú hrubšie. Určite koľko štvorcov bude medzi hlavnými čiarami.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="204"/>
-      <source>Internal precision level</source>
-      <translation type="unfinished">Úroveň internej precíznosti</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="250"/>
-      <source>Dimensions precision level</source>
-      <translation type="unfinished">Stupeň precíznosti rozmerov</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="650"/>
-      <source>This is the orientation of the dimension texts when those dimensions are vertical. Default is left, which is the ISO standard.</source>
-      <translation type="unfinished">Toto je operácia s vertikálnymi textami rozmerov. Štandardne je podľa ISO vľavo.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="660"/>
-      <source>Left (ISO standard)</source>
-      <translation type="unfinished">Vľavo (ISO štandard)</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="665"/>
-      <source>Right</source>
-      <translation type="unfinished">Vpravo</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="214"/>
-      <source>if this is checked, objects from the same layers will be joined into Draft Blocks, turning the display faster, but making them less easily editable</source>
-      <translation type="unfinished">Ak je začiarknuté, objekty tej istej úrovne spojí do Návrhových blokov, čím bude zobrazenie rýchlejšie ale ich editácia pomalšia</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="217"/>
-      <source>Group layers into blocks</source>
-      <translation type="unfinished">Zoskupenie úrovní do blokov</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="234"/>
-      <source>If this is checked, all objects containing faces will be exported as 3d polyfaces</source>
-      <translation type="unfinished">Ak je začiarknuté, všetky plochy exportuje do 3D mriežky</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="237"/>
-      <source>Export 3D objects as polyface meshes</source>
-      <translation type="unfinished">Exportuje 3D objekty ako mriežky jednotlivých plôch</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="34"/>
-      <source>If this is checked, the Draft workbench won't appear. Useful since all of the Draft tools are also in the Arch workbench.</source>
-      <translation type="unfinished">If this is checked, the Draft workbench won't appear. Useful since all of the Draft tools are also in the Arch workbench.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="37"/>
-      <source>Hide Draft workbench</source>
-      <translation type="unfinished">Hide Draft workbench</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="219"/>
-      <source>If checked, the Snap toolbar will be shown whenever you use snapping</source>
-      <translation type="unfinished">If checked, the Snap toolbar will be shown whenever you use snapping</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="222"/>
-      <source>Show Draft Snap toolbar</source>
-      <translation type="unfinished">Show Draft Snap toolbar</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="242"/>
-      <source>Hide Draft snap toolbar after use</source>
-      <translation type="unfinished">Hide Draft snap toolbar after use</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="215"/>
-      <source>if checked, a widget indicating the current working plane orientation appears during drawing operations</source>
-      <translation type="unfinished">if checked, a widget indicating the current working plane orientation appears during drawing operations</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="218"/>
-      <source>Show Working Plane tracker</source>
-      <translation type="unfinished">Show Working Plane tracker</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="372"/>
-      <source>If checked, the Draft grid will always be visible when the Draft workbench is active. Otherwise only when using a command</source>
-      <translation type="unfinished">If checked, the Draft grid will always be visible when the Draft workbench is active. Otherwise only when using a command</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="274"/>
-      <source>If this is checked, imported texts will get the standard Draft text size, instead of the size they have in the DXF document</source>
-      <translation type="unfinished">If this is checked, imported texts will get the standard Draft text size, instead of the size they have in the DXF document</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="277"/>
-      <source>Use standard font size for texts</source>
-      <translation type="unfinished">Use standard font size for texts</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="314"/>
-      <source>If this is checked, hatches will be converted into simple wires</source>
-      <translation type="unfinished">If this is checked, hatches will be converted into simple wires</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="317"/>
-      <source>Import hatch boundaries as wires</source>
-      <translation type="unfinished">Import hatch boundaries as wires</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="334"/>
-      <source>If this is checked, when polylines have a width defined, they will be rendered as closed wires with the correct width</source>
-      <translation type="unfinished">If this is checked, when polylines have a width defined, they will be rendered as closed wires with the correct width</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="337"/>
-      <source>Render polylines with width</source>
-      <translation type="unfinished">Render polylines with width</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="95"/>
-      <source>Style of SVG file to write when exporting a Sketch.</source>
-      <translation type="unfinished">Style of SVG file to write when exporting a Sketch.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="108"/>
-      <source>Translated (for print &amp; display)</source>
-      <translation type="unfinished">Translated (for print &amp; display)</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="113"/>
-      <source>Raw (for CAM)</source>
-      <translation type="unfinished">Raw (for CAM)</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="125"/>
-      <source>When exporting SVG views, make all white linework appear in black, for better readability against white backgrounds</source>
-      <translation type="unfinished">When exporting SVG views, make all white linework appear in black, for better readability against white backgrounds</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="128"/>
-      <source>Translate white line color to black</source>
-      <translation type="unfinished">Translate white line color to black</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="343"/>
-      <source>When this is checked, the Draft tools will create Part primitives instead of Draft objects, when available.</source>
-      <translation type="unfinished">When this is checked, the Draft tools will create Part primitives instead of Draft objects, when available.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="346"/>
-      <source>Use Part Primitives when available</source>
-      <translation type="unfinished">Use Part Primitives when available</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="26"/>
-      <source>Snapping</source>
-      <translation type="unfinished">Snapping</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="34"/>
-      <source>If this is checked, snapping is activated without the need to press the snap mod key</source>
-      <translation type="unfinished">If this is checked, snapping is activated without the need to press the snap mod key</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="37"/>
-      <source>Always snap (disable snap mod)</source>
-      <translation type="unfinished">Always snap (disable snap mod)</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="384"/>
-      <source>Construction geometry</source>
-      <translation type="unfinished">Konštrukčná geometria</translation>
-    </message>
-    <message>
-      <location filename="userprefs-base.ui" line="419"/>
-      <source>Construction geometry color</source>
-      <translation type="unfinished">Construction geometry color</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="40"/>
-      <source>Import</source>
-      <translation type="unfinished">Import</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="50"/>
-      <source>texts and dimensions</source>
-      <translation type="unfinished">texts and dimensions</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="63"/>
-      <source>points</source>
-      <translation type="unfinished">points</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="79"/>
-      <source>layouts</source>
-      <translation type="unfinished">layouts</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="95"/>
-      <source>*blocks</source>
-      <translation type="unfinished">*blocks</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="254"/>
-      <source>If this is checked, the exported objects will be projected to reflect the current view direction</source>
-      <translation type="unfinished">If this is checked, the exported objects will be projected to reflect the current view direction</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="257"/>
-      <source>Project exported objects along current view direction</source>
-      <translation type="unfinished">Project exported objects along current view direction</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="354"/>
-      <source>Ellipse export is badly supported. Use this to export them as polylines instead.</source>
-      <translation type="unfinished">Ellipse export is badly supported. Use this to export them as polylines instead.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="410"/>
-      <source>DWG format options</source>
-      <translation type="unfinished">DWG format options</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="418"/>
-      <source>Path to Teigha File Converter</source>
-      <translation type="unfinished">Path to Teigha File Converter</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="425"/>
-      <source>The path to your Teigha File Converter executable</source>
-      <translation type="unfinished">The path to your Teigha File Converter executable</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="14"/>
-      <source>Visual settings</source>
-      <translation type="unfinished">Visual settings</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="26"/>
-      <source>Visual Settings</source>
-      <translation type="unfinished">Visual Settings</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="34"/>
-      <source>Default line color</source>
-      <translation type="unfinished">Predvolená farba čiary</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="78"/>
-      <source>Default line width</source>
-      <translation type="unfinished">Default line width</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="118"/>
-      <source>Snap symbols style</source>
-      <translation type="unfinished">Snap symbols style</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="138"/>
-      <source>Draft classic style</source>
-      <translation type="unfinished">Draft classic style</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="143"/>
-      <source>Bitsnpieces style</source>
-      <translation type="unfinished">Bitsnpieces style</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="164"/>
-      <source>Color</source>
-      <translation type="unfinished">Color</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="321"/>
-      <source>Hatch patterns resolution</source>
-      <translation type="unfinished">Hatch patterns resolution</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="263"/>
-      <source>Grid</source>
-      <translation type="unfinished">Grid</translation>
-    </message>
-    <message>
-      <location filename="userprefs-snap.ui" line="375"/>
-      <source>Always show the grid</source>
-      <translation type="unfinished">Always show the grid</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="362"/>
-      <source>Texts and dimensions</source>
-      <translation type="unfinished">Texts and dimensions</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="370"/>
-      <source>Texts</source>
-      <translation type="unfinished">Texts</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="390"/>
-      <source>font</source>
-      <translation type="unfinished">font</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="415"/>
+      <location filename="../ui/preferences-drafttexts.ui" line="59"/>
       <source>Internal font</source>
-      <translation type="unfinished">Internal font</translation>
+      <translation>Interný typ písma</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="596"/>
-      <source>size</source>
-      <translation type="unfinished">size</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="76"/>
+      <source>Font size</source>
+      <translation>Veľkosť písma</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="464"/>
-      <source>Dimensions arrows</source>
-      <translation type="unfinished">Dimensions arrows</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="89"/>
+      <source>Default height for texts and dimensions</source>
+      <translation>Predvolená výška pre texty a rozmery</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="563"/>
-      <source>style</source>
-      <translation type="unfinished">style</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="92"/>
+      <location filename="../ui/preferences-drafttexts.ui" line="211"/>
+      <location filename="../ui/preferences-drafttexts.ui" line="247"/>
+      <location filename="../ui/preferences-drafttexts.ui" line="283"/>
+      <location filename="../ui/preferences-drafttexts.ui" line="365"/>
+      <location filename="../ui/preferences-drafttexts.ui" line="432"/>
+      <location filename="../ui/preferences-dxf.ui" line="535"/>
+      <location filename="../ui/preferences-svg.ui" line="209"/>
+      <source>mm</source>
+      <translation>mm</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="498"/>
-      <source>Dot</source>
-      <translation type="unfinished">Dot</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="116"/>
+      <source>Dimension settings</source>
+      <translation type="unfinished">Dimension settings</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="503"/>
-      <source>Circle</source>
-      <translation type="unfinished">Kružnica</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="124"/>
+      <source>Display mode</source>
+      <translation type="unfinished">Display mode</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="508"/>
-      <source>Arrow</source>
-      <translation type="unfinished">Arrow</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="144"/>
+      <source>text above (2D)</source>
+      <translation type="unfinished">text above (2D)</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="523"/>
-      <source>The default size of arrows</source>
-      <translation type="unfinished">The default size of arrows</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="149"/>
+      <source> text inside (3D)</source>
+      <translation type="unfinished"> text inside (3D)</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="543"/>
-      <source>Dimensions lines</source>
-      <translation type="unfinished">Dimensions lines</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="161"/>
+      <source>Number of decimals</source>
+      <translation type="unfinished">Number of decimals</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="583"/>
-      <source>text above</source>
-      <translation type="unfinished">text above</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="201"/>
+      <source>Extension lines size</source>
+      <translation type="unfinished">Extension lines size</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="588"/>
-      <source>text inside</source>
-      <translation type="unfinished">text inside</translation>
-    </message>
-    <message>
-      <location filename="userprefs-visual.ui" line="603"/>
+      <location filename="../ui/preferences-drafttexts.ui" line="208"/>
       <source>The default size of dimensions extension lines</source>
-      <translation type="unfinished">The default size of dimensions extension lines</translation>
+      <translation>Predvolená veľkosť pomocných čiar rozmerov</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="623"/>
-      <source>Dimensions text</source>
-      <translation type="unfinished">Dimensions text</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="237"/>
+      <source>Extension line overshoot</source>
+      <translation type="unfinished">Extension line overshoot</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="643"/>
-      <source>orientation</source>
-      <translation type="unfinished">orientation</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="244"/>
+      <source>The default length of extension line above dimension line</source>
+      <translation type="unfinished">The default length of extension line above dimension line</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="673"/>
-      <source>spacing</source>
-      <translation type="unfinished">spacing</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="273"/>
+      <source>Dimension line overshoot</source>
+      <translation type="unfinished">Dimension line overshoot</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="680"/>
+      <location filename="../ui/preferences-drafttexts.ui" line="280"/>
+      <source>The default distance the dimension line is extended past extension lines</source>
+      <translation type="unfinished">The default distance the dimension line is extended past extension lines</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="309"/>
+      <source>Arrows style</source>
+      <translation type="unfinished">Arrows style</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="323"/>
+      <source>Dot</source>
+      <translation>Bodka</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="328"/>
+      <source>Circle</source>
+      <translation>Kružnica</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="333"/>
+      <source>Arrow</source>
+      <translation>Šípka</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="338"/>
+      <source>Tick</source>
+      <translation type="unfinished">Tick</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="343"/>
+      <source>Tick-2</source>
+      <translation type="unfinished">Tick-2</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="355"/>
+      <source>Arrows size</source>
+      <translation type="unfinished">Arrows size</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="362"/>
+      <source>The default size of arrows</source>
+      <translation>Predvolená veľkosť šípky</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="388"/>
+      <source>Text orientation</source>
+      <translation type="unfinished">Text orientation</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="395"/>
+      <source>This is the orientation of the dimension texts when those dimensions are vertical. Default is left, which is the ISO standard.</source>
+      <translation>Toto je operácia s vertikálnymi textami rozmerov. Štandardne je podľa ISO vľavo.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="405"/>
+      <source>Left (ISO standard)</source>
+      <translation>Vľavo (ISO štandard)</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="410"/>
+      <source>Right</source>
+      <translation>Vpravo</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="422"/>
+      <source>Text spacing</source>
+      <translation type="unfinished">Text spacing</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="429"/>
       <source>The space between the dimension line and the dimension text</source>
       <translation type="unfinished">The space between the dimension line and the dimension text</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="720"/>
-      <source>Default ShapeString Font File</source>
-      <translation type="unfinished">Default ShapeString Font File</translation>
+      <location filename="../ui/preferences-drafttexts.ui" line="455"/>
+      <source>Show the unit suffix in dimensions</source>
+      <translation type="unfinished">Show the unit suffix in dimensions</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="746"/>
+      <location filename="../ui/preferences-drafttexts.ui" line="475"/>
+      <source>Override unit</source>
+      <translation type="unfinished">Override unit</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="495"/>
+      <source>By leaving this field blank, the dimension measurements will be shown in the current unit defined in FreeCAD. By indicating a unit here such as m or cm, you can force new dimensions to be shown in that unit.</source>
+      <translation type="unfinished">By leaving this field blank, the dimension measurements will be shown in the current unit defined in FreeCAD. By indicating a unit here such as m or cm, you can force new dimensions to be shown in that unit.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="513"/>
+      <source>ShapeString settings</source>
+      <translation type="unfinished">ShapeString settings</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="521"/>
+      <source>Default ShapeString font file</source>
+      <translation type="unfinished">Default ShapeString font file</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-drafttexts.ui" line="534"/>
       <source>Select a font file</source>
       <translation type="unfinished">Select a font file</translation>
     </message>
     <message>
-      <location filename="userprefs-base.ui" line="366"/>
-      <source>Fill objects with faces whenever possible</source>
-      <translation type="unfinished">Fill objects with faces whenever possible</translation>
+      <location filename="../ui/preferences-svg.ui" line="14"/>
+      <source>SVG</source>
+      <translation type="unfinished">SVG</translation>
     </message>
     <message>
-      <location filename="userprefs-import1.ui" line="14"/>
-      <source>DXF / DWG options</source>
-      <translation type="unfinished">DXF / DWG options</translation>
+      <location filename="../ui/preferences-svg.ui" line="40"/>
+      <source>Import style</source>
+      <translation>Importovať štýl</translation>
     </message>
     <message>
-      <location filename="userprefs-import1.ui" line="112"/>
-      <source>Create</source>
-      <translation type="unfinished">Vytvoriť</translation>
+      <location filename="../ui/preferences-svg.ui" line="47"/>
+      <source>Method chosen for importing SVG object color to FreeCAD</source>
+      <translation type="unfinished">Method chosen for importing SVG object color to FreeCAD</translation>
     </message>
     <message>
-      <location filename="userprefs-import1.ui" line="119"/>
-      <source>If thi sis checked, only standard Part objects will be created (fastest)</source>
-      <translation type="unfinished">If thi sis checked, only standard Part objects will be created (fastest)</translation>
+      <location filename="../ui/preferences-svg.ui" line="60"/>
+      <source>None (fastest)</source>
+      <translation>Žiadne (najrýchlejšia)</translation>
     </message>
     <message>
-      <location filename="userprefs-import1.ui" line="122"/>
-      <source>simple Part shapes</source>
-      <translation type="unfinished">simple Part shapes</translation>
+      <location filename="../ui/preferences-svg.ui" line="65"/>
+      <source>Use default color and linewidth</source>
+      <translation>Použiť predvolenú farbu a šírkuČiary</translation>
     </message>
     <message>
-      <location filename="userprefs-import1.ui" line="138"/>
-      <source>If this is checked, parametric Draft objects will be created whenever possible</source>
-      <translation type="unfinished">If this is checked, parametric Draft objects will be created whenever possible</translation>
+      <location filename="../ui/preferences-svg.ui" line="70"/>
+      <source>Original color and linewidth</source>
+      <translation>Pôvodné farby a šírkaČiary</translation>
     </message>
     <message>
-      <location filename="userprefs-import1.ui" line="141"/>
-      <source>Draft objects</source>
-      <translation type="unfinished">Draft objects</translation>
+      <location filename="../ui/preferences-svg.ui" line="82"/>
+      <source>If checked, no units conversion will occur.
+One unit in the SVG file will translate as one millimeter. </source>
+      <translation type="unfinished">If checked, no units conversion will occur.
+One unit in the SVG file will translate as one millimeter. </translation>
     </message>
     <message>
-      <location filename="userprefs-import1.ui" line="154"/>
-      <source>If this is checked, sketches will be created whenever possible</source>
-      <translation type="unfinished">If this is checked, sketches will be created whenever possible</translation>
+      <location filename="../ui/preferences-svg.ui" line="86"/>
+      <source>Disable units scaling</source>
+      <translation type="unfinished">Disable units scaling</translation>
     </message>
     <message>
-      <location filename="userprefs-import1.ui" line="157"/>
-      <source>Sketches</source>
-      <translation type="unfinished">Sketches</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="174"/>
-      <source>If this is checked, colors will be retrieved from the DXF objects whenever possible. Otherwise default colors will be applied.</source>
-      <translation type="unfinished">If this is checked, colors will be retrieved from the DXF objects whenever possible. Otherwise default colors will be applied.</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="177"/>
-      <source>Get original colors from the DXF file</source>
-      <translation type="unfinished">Get original colors from the DXF file</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="294"/>
-      <source>If this is checked, DXF layers will be imported as Draft layers</source>
-      <translation type="unfinished">If this is checked, DXF layers will be imported as Draft layers</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="297"/>
-      <source>Use Draft Layers</source>
-      <translation type="unfinished">Use Draft Layers</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="357"/>
-      <source>Treat ellipses and splines as polylines</source>
-      <translation type="unfinished">Treat ellipses and splines as polylines</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import1.ui" line="373"/>
-      <source>Max Spline Segment: </source>
-      <translation type="unfinished">Max Spline Segment: </translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="14"/>
-      <source>SVG / OCA options</source>
-      <translation type="unfinished">SVG / OCA options</translation>
-    </message>
-    <message>
-      <location filename="userprefs-import2.ui" line="88"/>
+      <location filename="../ui/preferences-svg.ui" line="121"/>
       <source>Export style</source>
       <translation type="unfinished">Export style</translation>
     </message>
     <message>
-      <location filename="userprefs-snap.ui" line="14"/>
-      <source>Snapping settings</source>
-      <translation type="unfinished">Snapping settings</translation>
+      <location filename="../ui/preferences-svg.ui" line="128"/>
+      <source>Style of SVG file to write when exporting a sketch</source>
+      <translation type="unfinished">Style of SVG file to write when exporting a sketch</translation>
     </message>
     <message>
-      <location filename="userprefs-visual.ui" line="700"/>
-      <source>Show the unit suffix in dimensions</source>
-      <translation type="unfinished">Show the unit suffix in dimensions</translation>
+      <location filename="../ui/preferences-svg.ui" line="141"/>
+      <source>Translated (for print &amp; display)</source>
+      <translation type="unfinished">Translated (for print &amp; display)</translation>
     </message>
-  </context>
-  <context>
-    <name>Workbench</name>
     <message>
-      <location filename="DraftSnap.py" line="1058"/>
-      <source>Draft Snap</source>
-      <translation type="unfinished">Draft Snap</translation>
+      <location filename="../ui/preferences-svg.ui" line="146"/>
+      <source>Raw (for CAM)</source>
+      <translation type="unfinished">Raw (for CAM)</translation>
     </message>
     <message>
-      <location filename="InitGui.py" line="128"/>
-      <source>Draft creation tools</source>
-      <translation type="unfinished">Draft creation tools</translation>
+      <location filename="../ui/preferences-svg.ui" line="158"/>
+      <source>All white lines will appear in black in the SVG for better readability against white backgrounds</source>
+      <translation type="unfinished">All white lines will appear in black in the SVG for better readability against white backgrounds</translation>
     </message>
     <message>
-      <location filename="InitGui.py" line="129"/>
-      <source>Draft modification tools</source>
-      <translation type="unfinished">Draft modification tools</translation>
+      <location filename="../ui/preferences-svg.ui" line="161"/>
+      <source>Translate white line color to black</source>
+      <translation type="unfinished">Translate white line color to black</translation>
     </message>
-  </context>
-  <context>
-    <name>draft</name>
     <message>
-      <location filename="DraftGui.py" line="257"/>
-      <source>Draft Command Bar</source>
-      <translation type="unfinished">Draft Command Bar</translation>
+      <location filename="../ui/preferences-svg.ui" line="181"/>
+      <source>Max segment length for discretized arcs</source>
+      <translation type="unfinished">Max segment length for discretized arcs</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="558"/>
-      <source>active command:</source>
-      <translation type="unfinished">aktívny príkaz:</translation>
+      <location filename="../ui/preferences-svg.ui" line="204"/>
+      <source>Versions of Open CASCADE older than version 6.8 don't support arc projection.
+In this case arcs will be discretized into small line segments.
+This value is the maximum segment length. </source>
+      <translation type="unfinished">Versions of Open CASCADE older than version 6.8 don't support arc projection.
+In this case arcs will be discretized into small line segments.
+This value is the maximum segment length. </translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="779"/>
-      <source>None</source>
-      <translation type="unfinished">Žiadny</translation>
+      <location filename="../ui/preferences-oca.ui" line="14"/>
+      <source>OCA</source>
+      <translation type="unfinished">OCA</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="560"/>
-      <source>Active Draft command</source>
-      <translation type="unfinished">Aktívny príkaz návrhu</translation>
+      <location filename="../ui/preferences-oca.ui" line="46"/>
+      <source>Check this if you want the areas (3D faces) to be imported too.</source>
+      <translation>Začiarknite, ak chcete importovať aj oblasti (3D).</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="561"/>
-      <source>X coordinate of next point</source>
-      <translation type="unfinished">X-ová súradnica ďalšieho bodu</translation>
+      <location filename="../ui/preferences-oca.ui" line="49"/>
+      <source>Import OCA areas</source>
+      <translation>Importovať OCA oblastí</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="780"/>
-      <source>X</source>
-      <translation type="unfinished">X</translation>
+      <location filename="../ui/preferences-dxf.ui" line="14"/>
+      <source>DXF</source>
+      <translation type="unfinished">DXF</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="563"/>
-      <source>Y</source>
-      <translation type="unfinished">Y</translation>
+      <location filename="../ui/preferences-dxf.ui" line="35"/>
+      <source>This preferences dialog will be shown when importing/ exporting DXF files</source>
+      <translation type="unfinished">This preferences dialog will be shown when importing/ exporting DXF files</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="564"/>
-      <source>Z</source>
-      <translation type="unfinished">Z</translation>
+      <location filename="../ui/preferences-dxf.ui" line="38"/>
+      <source>Show this dialog when importing and exporting</source>
+      <translation type="unfinished">Show this dialog when importing and exporting</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="565"/>
-      <source>Y coordinate of next point</source>
-      <translation type="unfinished">Y-ová súradnica ďalšieho bodu</translation>
+      <location filename="../ui/preferences-dxf.ui" line="51"/>
+      <source>Python importer is used, otherwise the newer C++ is used.
+Note: C++ importer is faster, but is not as featureful yet</source>
+      <translation type="unfinished">Python importer is used, otherwise the newer C++ is used.
+Note: C++ importer is faster, but is not as featureful yet</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="566"/>
-      <source>Z coordinate of next point</source>
-      <translation type="unfinished">Z-ová súradnica ďalšieho bodu</translation>
+      <location filename="../ui/preferences-dxf.ui" line="55"/>
+      <source>Use legacy python importer</source>
+      <translation type="unfinished">Use legacy python importer</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="828"/>
-      <source>Radius</source>
-      <translation type="unfinished">Polomer</translation>
+      <location filename="../ui/preferences-dxf.ui" line="71"/>
+      <source>Python exporter is used, otherwise the newer C++ is used.
+Note: C++ exporter is faster, but is not as featureful yet</source>
+      <translation type="unfinished">Python exporter is used, otherwise the newer C++ is used.
+Note: C++ exporter is faster, but is not as featureful yet</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="568"/>
-      <source>Radius of Circle</source>
-      <translation type="unfinished">Polomer kruhu</translation>
+      <location filename="../ui/preferences-dxf.ui" line="75"/>
+      <source>Use legacy python exporter</source>
+      <translation type="unfinished">Use legacy python exporter</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="569"/>
-      <source>&amp;Relative</source>
-      <translation type="unfinished">&amp;Relatívne</translation>
+      <location filename="../ui/preferences-dxf.ui" line="88"/>
+      <source>Automatic update (legacy importer only)</source>
+      <translation type="unfinished">Automatic update (legacy importer only)</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="570"/>
-      <source>Coordinates relative to last point or absolute (SPACE)</source>
-      <translation type="unfinished">Súradnice vzhľadom na posledný bod alebo absolútny (priestor)</translation>
+      <location filename="../ui/preferences-dxf.ui" line="96"/>
+      <source>Allow FreeCAD to download the Python converter for DXF import and export.
+You can also do this manually by installing the "dxf_library" workbench
+from the Addon Manager.</source>
+      <translation type="unfinished">Allow FreeCAD to download the Python converter for DXF import and export.
+You can also do this manually by installing the "dxf_library" workbench
+from the Addon Manager.</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="571"/>
-      <source>F&amp;illed</source>
-      <translation type="unfinished">V&amp;ýplň</translation>
+      <location filename="../ui/preferences-dxf.ui" line="101"/>
+      <source>Allow FreeCAD to automatically download and update the DXF libraries</source>
+      <translation type="unfinished">Allow FreeCAD to automatically download and update the DXF libraries</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="572"/>
-      <source>Check this if the object should appear as filled, otherwise it will appear as wireframe (i)</source>
-      <translation type="unfinished">Začiarknite, ak má objekt zobraziť vyplnený, inak sa zobrazí ako drôtový model (i)</translation>
+      <location filename="../ui/preferences-dxf.ui" line="119"/>
+      <location filename="../ui/preferences-oca.ui" line="26"/>
+      <location filename="../ui/preferences-svg.ui" line="26"/>
+      <source>Import options</source>
+      <translation type="unfinished">Import options</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="573"/>
-      <source>&amp;Finish</source>
-      <translation type="unfinished">Hotovo</translation>
+      <location filename="../ui/preferences-dxf.ui" line="140"/>
+      <source>Note: Not all the options below are used by the new importer yet</source>
+      <translation type="unfinished">Note: Not all the options below are used by the new importer yet</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="574"/>
-      <source>Finishes the current drawing or editing operation (F)</source>
-      <translation type="unfinished">Ukončí aktuálne kreslenie alebo editovanie (F)</translation>
+      <location filename="../ui/preferences-dxf.ui" line="149"/>
+      <source>Import</source>
+      <translation>Importovať</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="575"/>
-      <source>If checked, command will not finish until you press the command button again</source>
-      <translation type="unfinished">Ak je začiarknuté, príkaz sa neskončí kým znova nestlačíte tlačítko</translation>
+      <location filename="../ui/preferences-dxf.ui" line="156"/>
+      <source>If unchecked, texts and mtexts won't be imported</source>
+      <translation type="unfinished">If unchecked, texts and mtexts won't be imported</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="576"/>
-      <source>&amp;Continue</source>
-      <translation type="unfinished">&amp;Pokračovať</translation>
+      <location filename="../ui/preferences-dxf.ui" line="159"/>
+      <source>texts and dimensions</source>
+      <translation type="unfinished">texts and dimensions</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="577"/>
-      <source>If checked, an OCC-style offset will be performed instead of the classic offset</source>
-      <translation type="unfinished">Ak je začiarknuté, tak sa namiesto klasického použije OCC štýl odchýlky</translation>
+      <location filename="../ui/preferences-dxf.ui" line="172"/>
+      <source>If unchecked, points won't be imported</source>
+      <translation type="unfinished">If unchecked, points won't be imported</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="578"/>
-      <source>&amp;OCC-style offset</source>
-      <translation type="unfinished">&amp;OCC-štýl odchýlky</translation>
+      <location filename="../ui/preferences-dxf.ui" line="175"/>
+      <source>points</source>
+      <translation>body</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="579"/>
-      <source>Add points to the current object</source>
-      <translation type="unfinished">Pridá body do aktuálneho objektu</translation>
+      <location filename="../ui/preferences-dxf.ui" line="188"/>
+      <source>If checked, paper space objects will be imported too</source>
+      <translation type="unfinished">If checked, paper space objects will be imported too</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="580"/>
-      <source>Remove points from the current object</source>
-      <translation type="unfinished">Odstráni body z aktuálneho objektu</translation>
+      <location filename="../ui/preferences-dxf.ui" line="191"/>
+      <source>layouts</source>
+      <translation type="unfinished">layouts</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="581"/>
-      <source>Make Bezier node sharp</source>
-      <translation type="unfinished">Make Bezier node sharp</translation>
+      <location filename="../ui/preferences-dxf.ui" line="204"/>
+      <source>If you want the non-named blocks (beginning with a *) to be imported too</source>
+      <translation type="unfinished">If you want the non-named blocks (beginning with a *) to be imported too</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="582"/>
-      <source>Make Bezier node tangent</source>
-      <translation type="unfinished">Make Bezier node tangent</translation>
+      <location filename="../ui/preferences-dxf.ui" line="207"/>
+      <source>*blocks</source>
+      <translation>*bloky</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="583"/>
-      <source>Make Bezier node symmetric</source>
-      <translation type="unfinished">Make Bezier node symmetric</translation>
+      <location filename="../ui/preferences-dxf.ui" line="224"/>
+      <source>Create</source>
+      <translation>Vytvoriť</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="584"/>
-      <source>&amp;Undo</source>
-      <translation type="unfinished">&amp;Späť</translation>
+      <location filename="../ui/preferences-dxf.ui" line="231"/>
+      <source>Only standard Part objects will be created (fastest)</source>
+      <translation type="unfinished">Only standard Part objects will be created (fastest)</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="585"/>
-      <source>Undo the last segment (CTRL+Z)</source>
-      <translation type="unfinished">Vrátiť späť posledný segment (CTRL + Z)</translation>
+      <location filename="../ui/preferences-dxf.ui" line="234"/>
+      <source>simple Part shapes</source>
+      <translation type="unfinished">simple Part shapes</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="586"/>
-      <source>&amp;Close</source>
-      <translation type="unfinished">&amp;Zavrieť</translation>
+      <location filename="../ui/preferences-dxf.ui" line="250"/>
+      <source>Parametric Draft objects will be created whenever possible</source>
+      <translation type="unfinished">Parametric Draft objects will be created whenever possible</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="587"/>
-      <source>Finishes and closes the current line (C)</source>
-      <translation type="unfinished">Dokončiť a uzavrieť aktuálnu čiaru (C)</translation>
+      <location filename="../ui/preferences-dxf.ui" line="253"/>
+      <source>Draft objects</source>
+      <translation type="unfinished">Draft objects</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="588"/>
-      <source>&amp;Wipe</source>
-      <translation type="unfinished">Zotrieť</translation>
+      <location filename="../ui/preferences-dxf.ui" line="266"/>
+      <source>Sketches will be created whenever possible</source>
+      <translation type="unfinished">Sketches will be created whenever possible</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="589"/>
-      <source>Wipes the existing segments of this line and starts again from the last point (W)</source>
-      <translation type="unfinished">Vymaže existujúce segmenty tejto čiary a začne znovu od posledného bodu (W)</translation>
+      <location filename="../ui/preferences-dxf.ui" line="269"/>
+      <source>Sketches</source>
+      <translation type="unfinished">Sketches</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="591"/>
-      <source>Number of sides</source>
-      <translation type="unfinished">Počet strán</translation>
+      <location filename="../ui/preferences-dxf.ui" line="289"/>
+      <source>Scale factor to apply to imported files</source>
+      <translation type="unfinished">Scale factor to apply to imported files</translation>
     </message>
     <message>
-      <location filename="DraftTools.py" line="2547"/>
-      <source>Offset</source>
-      <translation type="unfinished">Odsadenie</translation>
+      <location filename="../ui/preferences-dxf.ui" line="309"/>
+      <source>Scale factor to apply to DXF files on import.
+The factor is the conversion between the unit of your DXF file and millimeters.
+Example: for files in millimeters: 1, in centimeters: 10,
+                             in meters: 1000, in inches: 25.4, in feet: 304.8</source>
+      <translation type="unfinished">Scale factor to apply to DXF files on import.
+The factor is the conversion between the unit of your DXF file and millimeters.
+Example: for files in millimeters: 1, in centimeters: 10,
+                             in meters: 1000, in inches: 25.4, in feet: 304.8</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="593"/>
-      <source>XY</source>
-      <translation type="unfinished">XY</translation>
+      <location filename="../ui/preferences-dxf.ui" line="338"/>
+      <source>Colors will be retrieved from the DXF objects whenever possible.
+Otherwise default colors will be applied. </source>
+      <translation type="unfinished">Colors will be retrieved from the DXF objects whenever possible.
+Otherwise default colors will be applied. </translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="594"/>
-      <source>Select XY plane</source>
-      <translation type="unfinished">Vybrať rovinu XY</translation>
+      <location filename="../ui/preferences-dxf.ui" line="342"/>
+      <source>Get original colors from the DXF file</source>
+      <translation type="unfinished">Get original colors from the DXF file</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="595"/>
-      <source>XZ</source>
-      <translation type="unfinished">XZ</translation>
+      <location filename="../ui/preferences-dxf.ui" line="359"/>
+      <source>FreeCAD will try to join coincident objects into wires.
+Note that this can take a while!</source>
+      <translation type="unfinished">FreeCAD will try to join coincident objects into wires.
+Note that this can take a while!</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="596"/>
-      <source>Select XZ plane</source>
-      <translation type="unfinished">Vybrať rovinu XZ</translation>
+      <location filename="../ui/preferences-dxf.ui" line="363"/>
+      <source>Join geometry</source>
+      <translation>Spojiť geometriu</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="597"/>
-      <source>YZ</source>
-      <translation type="unfinished">YZ</translation>
+      <location filename="../ui/preferences-dxf.ui" line="380"/>
+      <source>Objects from the same layers will be joined into Draft Blocks,
+turning the display faster, but making them less easily editable </source>
+      <translation type="unfinished">Objects from the same layers will be joined into Draft Blocks,
+turning the display faster, but making them less easily editable </translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="598"/>
-      <source>Select YZ plane</source>
-      <translation type="unfinished">Vybrať rovinu YZ</translation>
+      <location filename="../ui/preferences-dxf.ui" line="384"/>
+      <source>Group layers into blocks</source>
+      <translation>Zoskupenie úrovní do blokov</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="599"/>
-      <source>View</source>
-      <translation type="unfinished">Pohľad</translation>
+      <location filename="../ui/preferences-dxf.ui" line="401"/>
+      <source>Imported texts will get the standard Draft Text size,
+instead of the size they have in the DXF document</source>
+      <translation type="unfinished">Imported texts will get the standard Draft Text size,
+instead of the size they have in the DXF document</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="600"/>
-      <source>Select plane perpendicular to the current view</source>
-      <translation type="unfinished">Vyberte rovinu kolmú na aktuálny pohľad</translation>
+      <location filename="../ui/preferences-dxf.ui" line="405"/>
+      <source>Use standard font size for texts</source>
+      <translation type="unfinished">Use standard font size for texts</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="602"/>
-      <source>Do not project points to a drawing plane</source>
-      <translation type="unfinished">Nepremietať body do kresliacej roviny</translation>
+      <location filename="../ui/preferences-dxf.ui" line="422"/>
+      <source>If this is checked, DXF layers will be imported as Draft Layers</source>
+      <translation type="unfinished">If this is checked, DXF layers will be imported as Draft Layers</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="603"/>
-      <source>&amp;Copy</source>
-      <translation type="unfinished">&amp;Kopírovať</translation>
+      <location filename="../ui/preferences-dxf.ui" line="425"/>
+      <source>Use Layers</source>
+      <translation type="unfinished">Use Layers</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="604"/>
-      <source>If checked, objects will be copied instead of moved (C)</source>
-      <translation type="unfinished">Ak je začiarknuté, objekty nebudú presúvané, ale skopírované (C)</translation>
+      <location filename="../ui/preferences-dxf.ui" line="445"/>
+      <source>Hatches will be converted into simple wires</source>
+      <translation type="unfinished">Hatches will be converted into simple wires</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="605"/>
-      <source>Text string to draw</source>
-      <translation type="unfinished">Text string to draw</translation>
+      <location filename="../ui/preferences-dxf.ui" line="448"/>
+      <source>Import hatch boundaries as wires</source>
+      <translation type="unfinished">Import hatch boundaries as wires</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="606"/>
-      <source>String</source>
-      <translation type="unfinished">Reťazec</translation>
+      <location filename="../ui/preferences-dxf.ui" line="465"/>
+      <source>If polylines have a width defined, they will be rendered
+as closed wires with correct width</source>
+      <translation type="unfinished">If polylines have a width defined, they will be rendered
+as closed wires with correct width</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="607"/>
-      <source>Height of text</source>
-      <translation type="unfinished">Height of text</translation>
+      <location filename="../ui/preferences-dxf.ui" line="469"/>
+      <source>Render polylines with width</source>
+      <translation type="unfinished">Render polylines with width</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="608"/>
-      <source>Height</source>
-      <translation type="unfinished">Height</translation>
+      <location filename="../ui/preferences-dxf.ui" line="486"/>
+      <source>Ellipse export is poorly supported. Use this to export them as polylines instead.</source>
+      <translation type="unfinished">Ellipse export is poorly supported. Use this to export them as polylines instead.</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="609"/>
-      <source>Intercharacter spacing</source>
-      <translation type="unfinished">Intercharacter spacing</translation>
+      <location filename="../ui/preferences-dxf.ui" line="489"/>
+      <source>Treat ellipses and splines as polylines</source>
+      <translation type="unfinished">Treat ellipses and splines as polylines</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="610"/>
-      <source>Tracking</source>
-      <translation type="unfinished">Tracking</translation>
+      <location filename="../ui/preferences-dxf.ui" line="518"/>
+      <source>Max Spline Segment:</source>
+      <translation type="unfinished">Max Spline Segment:</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="611"/>
-      <source>Full path to font file:</source>
-      <translation type="unfinished">Full path to font file:</translation>
+      <location filename="../ui/preferences-dxf.ui" line="528"/>
+      <source>Maximum length of each of the polyline segments.
+If it is set to '0' the whole spline is treated as a straight segment.</source>
+      <translation type="unfinished">Maximum length of each of the polyline segments.
+If it is set to '0' the whole spline is treated as a straight segment.</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="612"/>
-      <source>Open a FileChooser for font file</source>
-      <translation type="unfinished">Open a FileChooser for font file</translation>
+      <location filename="../ui/preferences-dxf.ui" line="559"/>
+      <location filename="../ui/preferences-svg.ui" line="107"/>
+      <source>Export options</source>
+      <translation type="unfinished">Export options</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="632"/>
-      <source>Set/unset a working plane</source>
-      <translation type="unfinished">Set/unset a working plane</translation>
+      <location filename="../ui/preferences-dxf.ui" line="567"/>
+      <source>All objects containing faces will be exported as 3D polyfaces</source>
+      <translation type="unfinished">All objects containing faces will be exported as 3D polyfaces</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="633"/>
-      <source>Line Color</source>
-      <translation type="unfinished">Farba čiary</translation>
+      <location filename="../ui/preferences-dxf.ui" line="570"/>
+      <source>Export 3D objects as polyface meshes</source>
+      <translation>Exportuje 3D objekty ako mriežky jednotlivých plôch</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="634"/>
-      <source>Face Color</source>
-      <translation type="unfinished">Farba predného panelu</translation>
+      <location filename="../ui/preferences-dxf.ui" line="587"/>
+      <source>Drawing Views will be exported as blocks.
+This might fail for post DXF R12 templates.</source>
+      <translation type="unfinished">Drawing Views will be exported as blocks.
+This might fail for post DXF R12 templates.</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="635"/>
-      <source>Line Width</source>
-      <translation type="unfinished">Hrúbka čiary</translation>
+      <location filename="../ui/preferences-dxf.ui" line="591"/>
+      <source>Export Drawing Views as blocks</source>
+      <translation type="unfinished">Export Drawing Views as blocks</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="636"/>
-      <source>Font Size</source>
-      <translation type="unfinished">Veľkosť písma</translation>
+      <location filename="../ui/preferences-dxf.ui" line="611"/>
+      <source>Exported objects will be projected to reflect the current view direction</source>
+      <translation type="unfinished">Exported objects will be projected to reflect the current view direction</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="637"/>
-      <source>Apply to selected objects</source>
-      <translation type="unfinished">Aplikovať na vybrané objekty</translation>
+      <location filename="../ui/preferences-dxf.ui" line="614"/>
+      <source>Project exported objects along current view direction</source>
+      <translation type="unfinished">Project exported objects along current view direction</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="638"/>
-      <source>Toggles Construction Mode</source>
-      <translation type="unfinished">Prepína konštrukčný režim</translation>
+      <location filename="../ui/preferences-draftsnap.ui" line="14"/>
+      <source>Grid and snapping</source>
+      <translation type="unfinished">Grid and snapping</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="684"/>
-      <source>Select Plane</source>
-      <translation type="unfinished">Vybrať rovinu</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="437"/>
-      <source>Line</source>
-      <translation type="unfinished">čiara</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="580"/>
-      <source>DWire</source>
-      <translation type="unfinished">Návrhová krivka</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="729"/>
-      <source>Circle</source>
-      <translation type="unfinished">Kružnica</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="736"/>
-      <source>Center X</source>
-      <translation type="unfinished">Stredové X</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="735"/>
-      <source>Arc</source>
-      <translation type="unfinished">Oblúk</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="739"/>
-      <source>Point</source>
-      <translation type="unfinished">Bod</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="821"/>
-      <source>Distance</source>
-      <translation type="unfinished">Vzdialenosť</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="818"/>
-      <source>Trim</source>
-      <translation type="unfinished">Odrezať</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="909"/>
-      <source>Pick Object</source>
-      <translation type="unfinished">Vybrať objekt</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="914"/>
-      <source>Edit</source>
-      <translation type="unfinished">Upraviť</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="948"/>
-      <source>Global X</source>
-      <translation type="unfinished">Global X</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="949"/>
-      <source>Global Y</source>
-      <translation type="unfinished">Global Y</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="950"/>
-      <source>Global Z</source>
-      <translation type="unfinished">Global Z</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="953"/>
-      <source>Local X</source>
-      <translation type="unfinished">Local X</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="954"/>
-      <source>Local Y</source>
-      <translation type="unfinished">Local Y</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="955"/>
-      <source>Local Z</source>
-      <translation type="unfinished">Local Z</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="1148"/>
-      <source>Invalid Size value. Using 200.0.</source>
-      <translation type="unfinished">Invalid Size value. Using 200.0.</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="1156"/>
-      <source>Invalid Tracking value. Using 0.</source>
-      <translation type="unfinished">Invalid Tracking value. Using 0.</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="1170"/>
-      <source>Please enter a text string.</source>
-      <translation type="unfinished">Please enter a text string.</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="1178"/>
-      <source>Select a Font file</source>
-      <translation type="unfinished">Select a Font file</translation>
-    </message>
-    <message>
-      <location filename="DraftGui.py" line="1208"/>
-      <source>Please enter a font file.</source>
-      <translation type="unfinished">Please enter a font file.</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="809"/>
-      <source>Draft.makeBSpline: not enough points
-</source>
-      <translation type="unfinished">Draft.makeBSpline: not enough points
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="815"/>
-      <source>Draft.makeBSpline: Equal endpoints forced Closed
-</source>
-      <translation type="unfinished">Draft.makeBSpline: Equal endpoints forced Closed
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="817"/>
-      <source>Draft.makeBSpline: Invalid pointslist
-</source>
-      <translation type="unfinished">Draft.makeBSpline: Invalid pointslist
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2528"/>
-      <source>Found groups: closing each open object inside
-</source>
-      <translation type="unfinished">Nájdené skupiny: uzatváram v nich každý otvorený objekt </translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2533"/>
-      <source>Found mesh(es): turning into Part shapes
-</source>
-      <translation type="unfinished">Found mesh(es): turning into Part shapes
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2541"/>
-      <source>Found 1 solidificable object: solidifying it
-</source>
-      <translation type="unfinished">Našiel som 1 upevniteľný objekt: upevňujem ho </translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2546"/>
-      <source>Found 2 objects: fusing them
-</source>
-      <translation type="unfinished">Nájdené 2 objekty: zaisťujem ich </translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2551"/>
-      <source>Found several objects: making a shell
-</source>
-      <translation type="unfinished">Found several objects: making a shell
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2556"/>
-      <source>Found several coplanar objects or faces: making one face
-</source>
-      <translation type="unfinished">Found several coplanar objects or faces: making one face
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2561"/>
-      <source>Found 1 non-parametric objects: draftifying it
-</source>
-      <translation type="unfinished">Nájdený 1 objekt bez parametrov: navrhujem ho </translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2569"/>
-      <source>Found 1 closed sketch object: making a face from it
-</source>
-      <translation type="unfinished">Nájdený 1 uzatvorený náčrt: vytváram jeho plochy </translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2574"/>
-      <source>Found closed wires: making faces
-</source>
-      <translation type="unfinished">Found closed wires: making faces
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2579"/>
-      <source>Found 1 open wire: closing it
-</source>
-      <translation type="unfinished">Nájdený 1 otvorený drôt: uzatváram ho </translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2584"/>
-      <source>Found several open wires: joining them
-</source>
-      <translation type="unfinished">Found several open wires: joining them
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2589"/>
-      <source>Found several edges: wiring them
-</source>
-      <translation type="unfinished">Nájdených niekoľko hrán: pripájam ich </translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2594"/>
-      <source>Found several non-treatable objects: making compound
-</source>
-      <translation type="unfinished">Nájdených niekoľko nepriradených objektov: tvorím väzby </translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2598"/>
-      <source>Unable to upgrade these objects.
-</source>
-      <translation type="unfinished">Unable to upgrade these objects.
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2753"/>
-      <source>Found 1 block: exploding it
-</source>
-      <translation type="unfinished">Found 1 block: exploding it
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2765"/>
-      <source>Found 1 parametric object: breaking its dependencies
-</source>
-      <translation type="unfinished">Nájdený 1 parametrický objekt: zastavujem jeho väzby </translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2772"/>
-      <source>Found 2 objects: subtracting them
-</source>
-      <translation type="unfinished">Nájdené 2 objekty: rozdeľujem ich</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2779"/>
-      <source>Found several faces: splitting them
-</source>
-      <translation type="unfinished">Nájdených viacero plôch: rozdeľujem ich</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2784"/>
-      <source>Found several objects: subtracting them from the first one
-</source>
-      <translation type="unfinished">Nájdených viacero objektov: rozdeľujem ich od prvého</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2789"/>
-      <source>Found 1 face: extracting its wires
-</source>
-      <translation type="unfinished">Nájdená 1 plocha: získavam jeho drôty</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2794"/>
-      <source>Found only wires: extracting their edges
-</source>
-      <translation type="unfinished">Nájdene iba drôty: získavam ich okraje</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="2798"/>
-      <source>No more downgrade possible
-</source>
-      <translation type="unfinished">No more downgrade possible
-</translation>
-    </message>
-    <message>
-      <location filename="Draft.py" line="4061"/>
-      <source>_BSpline.createGeometry: Closed with same first/last Point. Geometry not updated.
-</source>
-      <translation type="unfinished">_BSpline.createGeometry: Closed with same first/last Point. Geometry not updated.
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="341"/>
-      <source>Pick a face to define the drawing plane
-</source>
-      <translation type="unfinished">Vybrať líc na definovanie kresliacej roviny </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1673"/>
-      <source>Pick first point:
-</source>
-      <translation type="unfinished">Vyberte prvý bod: </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="463"/>
-      <source>Create Line</source>
-      <translation type="unfinished">Create Line</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="474"/>
-      <source>Create DWire</source>
-      <translation type="unfinished">Vytvoriť Návrhovú Krivku</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="511"/>
-      <source>DWire has been closed
-</source>
-      <translation type="unfinished">Návrhová Krivka bola uzavretá </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="735"/>
-      <source>Last point has been removed
-</source>
-      <translation type="unfinished">Posledný bod bol odstránený</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="742"/>
-      <source>Pick next point:
-</source>
-      <translation type="unfinished">Vyberte daľší bod:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="745"/>
-      <source>Pick next point, or (F)inish or (C)lose:
-</source>
-      <translation type="unfinished">Vyberte další bod, alebo (F) pre koniec alebo (C) pro zatvorenie:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="596"/>
-      <source>BSpline</source>
-      <translation type="unfinished">B-Čiara</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="630"/>
-      <source>Spline has been closed
-</source>
-      <translation type="unfinished">Vlnovka bola uzatvorená </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="668"/>
-      <source>Create BSpline</source>
-      <translation type="unfinished">Vytvoriť BSpline</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="692"/>
-      <source>BezCurve</source>
-      <translation type="unfinished">BezCurve</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="727"/>
-      <source>Bezier curve has been closed
-</source>
-      <translation type="unfinished">Bezier curve has been closed
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="770"/>
-      <source>Create BezCurve</source>
-      <translation type="unfinished">Create BezCurve</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="851"/>
-      <source>Rectangle</source>
-      <translation type="unfinished">Obdĺžnik</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="894"/>
-      <source>Create Plane</source>
-      <translation type="unfinished">Create Plane</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="903"/>
-      <source>Create Rectangle</source>
-      <translation type="unfinished">Vytvorte obdĺžnik</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1550"/>
-      <source>Pick opposite point:
-</source>
-      <translation type="unfinished">Výber protiľahlého bodu:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1291"/>
-      <source>Pick center point:
-</source>
-      <translation type="unfinished">Výber stredového bodu: </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1425"/>
-      <source>Pick radius:
-</source>
-      <translation type="unfinished">Vyberte polomer:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1232"/>
-      <source>Pick start angle:
-</source>
-      <translation type="unfinished">Vyberte počiatočný uhol: </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1138"/>
-      <source>Pick aperture:
-</source>
-      <translation type="unfinished">Vybrať otvor: </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1159"/>
-      <source>Create Circle</source>
-      <translation type="unfinished">Vytvoriť kruh</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1185"/>
-      <source>Create Arc</source>
-      <translation type="unfinished">Vytvoriť oblúk</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1227"/>
-      <source>Start Angle</source>
-      <translation type="unfinished">Úvodný uhol</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1234"/>
-      <source>Aperture</source>
-      <translation type="unfinished">Clona</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1243"/>
-      <source>Aperture angle:
-</source>
-      <translation type="unfinished">Uhol otvoru: </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1275"/>
-      <source>Polygon</source>
-      <translation type="unfinished">Polygón</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1407"/>
-      <source>Create Polygon</source>
-      <translation type="unfinished">Vytvoriť mnohouholník</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1455"/>
-      <source>Ellipse</source>
-      <translation type="unfinished">Ellipse</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1510"/>
-      <source>Create Ellipse</source>
-      <translation type="unfinished">Create Ellipse</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1568"/>
-      <source>Text</source>
-      <translation type="unfinished">Text</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1579"/>
-      <source>Pick location point:
-</source>
-      <translation type="unfinished">Vyberte umiestnenie bodu: </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1598"/>
-      <source>Create Text</source>
-      <translation type="unfinished">Vytvoriť Text</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1645"/>
-      <source>Dimension</source>
-      <translation type="unfinished">Kóta</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1727"/>
-      <source>Create Dimension</source>
-      <translation type="unfinished">Vytvoriť rozmer</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1883"/>
-      <source>Edges don't intersect!
-</source>
-      <translation type="unfinished">Okraje nie sú spojené!</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1936"/>
-      <source>ShapeString</source>
-      <translation type="unfinished">ShapeString</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1949"/>
-      <source>Pick ShapeString location point:
-</source>
-      <translation type="unfinished">Pick ShapeString location point:
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="1969"/>
-      <source>Create ShapeString</source>
-      <translation type="unfinished">Create ShapeString</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2109"/>
-      <source>Move</source>
-      <translation type="unfinished">Presunúť</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2062"/>
-      <source>Select an object to move
-</source>
-      <translation type="unfinished">Vyberte objekt, ktorý chcete presunúť</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2084"/>
-      <source>Pick start point:
-</source>
-      <translation type="unfinished">Vyberať východiskový bod: </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2990"/>
-      <source>Copy</source>
-      <translation type="unfinished">Kópia</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2162"/>
-      <source>Pick end point:
-</source>
-      <translation type="unfinished">Vyberať koncový bod:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2197"/>
-      <source>Change Style</source>
-      <translation type="unfinished">Zmeniť štýl</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2223"/>
-      <source>Select an object to rotate
-</source>
-      <translation type="unfinished">Vyberte objekt, ktorý chcete otočiť</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2240"/>
-      <source>Pick rotation center:
-</source>
-      <translation type="unfinished">Vyberte stred otáčania:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2269"/>
-      <source>Rotate</source>
-      <translation type="unfinished">Otočiť</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2373"/>
-      <source>Pick base angle:
-</source>
-      <translation type="unfinished">Vyberte základný uhol:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2385"/>
-      <source>Pick rotation angle:
-</source>
-      <translation type="unfinished">Vyberte uhol natočenia:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2409"/>
-      <source>Select an object to offset
-</source>
-      <translation type="unfinished">Vyberte objekt na odsadenie</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2412"/>
-      <source>Offset only works on one object at a time
-</source>
-      <translation type="unfinished">Naraz je možné odsadiť len jeden objekt</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2420"/>
-      <source>Cannot offset this object type
-</source>
-      <translation type="unfinished">Tento typ objektu sa nedá odsadiť</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2695"/>
-      <source>Pick distance:
-</source>
-      <translation type="unfinished">Vyberte vzdialenosť: </translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2597"/>
-      <source>Select an object to upgrade
-</source>
-      <translation type="unfinished">Vyberte objekt aktualizácie</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2577"/>
-      <source>Upgrade</source>
-      <translation type="unfinished">Aktualizácia</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2606"/>
-      <source>Downgrade</source>
-      <translation type="unfinished">Degradácia</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2633"/>
-      <source>Select an object to trim/extend
-</source>
-      <translation type="unfinished">Vyberte objekt na orezanie/rozšírenie</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2994"/>
-      <source>Scale</source>
-      <translation type="unfinished">Škála, zmena veľkosti</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2955"/>
-      <source>Select an object to scale
-</source>
-      <translation type="unfinished">Vyberte objekt ku zmene veľkosti</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="2970"/>
-      <source>Pick base point:
-</source>
-      <translation type="unfinished">Vyberte základný bod:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3051"/>
-      <source>Pick scale factor:
-</source>
-      <translation type="unfinished">Vyberte merítko:</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3881"/>
-      <source>Select an object to project
-</source>
-      <translation type="unfinished">Select an object to project
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3197"/>
-      <source>Select a Draft object to edit
-</source>
-      <translation type="unfinished">Select a Draft object to edit
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3282"/>
-      <source>This object type is not editable
-</source>
-      <translation type="unfinished">Tento typ objektu sa nedá editovať</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3567"/>
-      <source>Active object must have more than two points/nodes
-</source>
-      <translation type="unfinished">Aktívny objekt musí mať viac ako dva body/uzly</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3616"/>
-      <source>Selection is not a Knot
-</source>
-      <translation type="unfinished">Selection is not a Knot
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3641"/>
-      <source>Endpoint of BezCurve can't be smoothed
-</source>
-      <translation type="unfinished">Endpoint of BezCurve can't be smoothed
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3920"/>
-      <source>Select an object to convert
-</source>
-      <translation type="unfinished">Select an object to convert
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="3977"/>
-      <source>Select an object to array
-</source>
-      <translation type="unfinished">Select an object to array
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4006"/>
-      <source>Please select base and path objects
-</source>
-      <translation type="unfinished">Please select base and path objects
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4091"/>
-      <source>Create Point</source>
-      <translation type="unfinished">Create Point</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4131"/>
-      <source>Select an object to clone
-</source>
-      <translation type="unfinished">Select an object to clone
-</translation>
-    </message>
-    <message>
-      <location filename="DraftTools.py" line="4201"/>
-      <source>Select face(s) on existing object(s)
-</source>
-      <translation type="unfinished">Select face(s) on existing object(s)
-</translation>
-    </message>
-    <message>
-      <location filename="importDWG.py" line="82"/>
-      <source>Teigha File Converter not found, DWG support is disabled.
-</source>
-      <translation type="unfinished">Teigha File Converter not found, DWG support is disabled.
-</translation>
-    </message>
-    <message>
-      <location filename="InitGui.py" line="102"/>
-      <source>Installed Macros</source>
-      <translation type="unfinished">Nainštalované makrá</translation>
-    </message>
-    <message>
-      <location filename="InitGui.py" line="133"/>
-      <source>&amp;Draft</source>
-      <translation type="unfinished">&amp;Draft</translation>
-    </message>
-    <message>
-      <location filename="InitGui.py" line="131"/>
-      <source>Utilities</source>
-      <translation type="unfinished">Utilities</translation>
-    </message>
-    <message>
-      <location filename="InitGui.py" line="132"/>
-      <source>Wire tools</source>
-      <translation type="unfinished">Drôtové nástroje</translation>
-    </message>
-    <message>
-      <location filename="InitGui.py" line="133"/>
+      <location filename="../ui/preferences-draftsnap.ui" line="35"/>
       <source>Snapping</source>
       <translation type="unfinished">Snapping</translation>
     </message>
     <message>
-      <location filename="Draft.py" line="2759"/>
-      <source>Found 1 multi-solids compound: exploding it
-</source>
-      <translation type="unfinished">Found 1 multi-solids compound: exploding it
-</translation>
+      <location filename="../ui/preferences-draftsnap.ui" line="43"/>
+      <source>If this is checked, snapping is activated without the need to press the snap mod key</source>
+      <translation type="unfinished">If this is checked, snapping is activated without the need to press the snap mod key</translation>
     </message>
     <message>
-      <location filename="DraftGui.py" line="590"/>
-      <source>Sides</source>
-      <translation type="unfinished">Sides</translation>
+      <location filename="../ui/preferences-draftsnap.ui" line="46"/>
+      <source>Always snap (disable snap mod)</source>
+      <translation type="unfinished">Always snap (disable snap mod)</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="66"/>
+      <source>Constrain mod</source>
+      <translation>Vynucovací mód</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="86"/>
+      <source>The Constraining modifier key</source>
+      <translation>Klávesa vynucovacieho modifikátora</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="96"/>
+      <location filename="../ui/preferences-draftsnap.ui" line="151"/>
+      <location filename="../ui/preferences-draftsnap.ui" line="206"/>
+      <source>Shift</source>
+      <translation type="unfinished">Shift</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="101"/>
+      <location filename="../ui/preferences-draftsnap.ui" line="156"/>
+      <location filename="../ui/preferences-draftsnap.ui" line="211"/>
+      <source>Ctrl</source>
+      <translation type="unfinished">Ctrl</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="106"/>
+      <location filename="../ui/preferences-draftsnap.ui" line="161"/>
+      <location filename="../ui/preferences-draftsnap.ui" line="216"/>
+      <source>Alt</source>
+      <translation type="unfinished">Alt</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="118"/>
+      <source>Snap mod</source>
+      <translation>Prichytávací mód</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="138"/>
+      <source>The snap modifier key</source>
+      <translation>Kláves prichytávacieho modifikátora</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="173"/>
+      <source>Alt mod</source>
+      <translation>ALT mód</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="193"/>
+      <source>The Alt modifier key</source>
+      <translation type="unfinished">The Alt modifier key</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="228"/>
+      <source>If checked, the Snap toolbar will be shown whenever you use snapping</source>
+      <translation type="unfinished">If checked, the Snap toolbar will be shown whenever you use snapping</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="231"/>
+      <source>Show Draft Snap toolbar</source>
+      <translation type="unfinished">Show Draft Snap toolbar</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="251"/>
+      <source>Hide Draft snap toolbar after use</source>
+      <translation type="unfinished">Hide Draft snap toolbar after use</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="272"/>
+      <source>Grid</source>
+      <translation>Mriežka</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="278"/>
+      <source>If checked, a grid will appear when drawing</source>
+      <translation>Ak je začiarknuté, pri kreslení použije mriežku</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="281"/>
+      <source>Use grid</source>
+      <translation>Použiť mriežku</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="300"/>
+      <source>If checked, the Draft grid will always be visible when the Draft workbench is active. Otherwise only when using a command</source>
+      <translation type="unfinished">If checked, the Draft grid will always be visible when the Draft workbench is active. Otherwise only when using a command</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="303"/>
+      <source>Always show the grid</source>
+      <translation>Vždy zobraziť mriežku</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="319"/>
+      <source>If checked, an additional border is displayed around the grid, showing the main square size in the bottom left border</source>
+      <translation type="unfinished">If checked, an additional border is displayed around the grid, showing the main square size in the bottom left border</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="322"/>
+      <source>Show grid border</source>
+      <translation type="unfinished">Show grid border</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="338"/>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, the outline of a human figure is displayed at the bottom left corner of the grid. This option is only effective if the BIM workbench is installed and if &amp;quot;Show grid border&amp;quot; option is enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, the outline of a human figure is displayed at the bottom left corner of the grid. This option is only effective if the BIM workbench is installed and if &amp;quot;Show grid border&amp;quot; option is enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="341"/>
+      <source>Show human figure</source>
+      <translation type="unfinished">Show human figure</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="357"/>
+      <source>If set, the grid will have its two main axes colored in red, green or blue when they match global axes</source>
+      <translation>Ak je nastavené, tak mriežka bude mať jej dve hlavné osi vo farbe červenej, zelenej alebo modrej, a to vtedy, keď sa zhodujú s globálnymi osami</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="360"/>
+      <source>Use colored axes</source>
+      <translation>Použiť farebné osi</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="381"/>
+      <source>Main lines every</source>
+      <translation>Vždy Hlavné čiary</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="404"/>
+      <source>Mainlines will be drawn thicker. Specify here how many squares between mainlines.</source>
+      <translation>Hlavné čiary budú hrubšie. Určite koľko štvorcov bude medzi hlavnými čiarami.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="430"/>
+      <source>Grid spacing</source>
+      <translation>Rozstup mriežky</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="453"/>
+      <source>The spacing between each grid line</source>
+      <translation>Rozstup medzi každou čiarou mriežky</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="485"/>
+      <source>Grid size</source>
+      <translation type="unfinished">Grid size</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="505"/>
+      <source>The number of horizontal or vertical lines of the grid</source>
+      <translation type="unfinished">The number of horizontal or vertical lines of the grid</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="511"/>
+      <source> lines</source>
+      <translation type="unfinished"> lines</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="534"/>
+      <source>Grid color and transparency</source>
+      <translation>Farba a priehľadnosť mriežky</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="554"/>
+      <source>The color of the grid</source>
+      <translation>Farba mriežky</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="574"/>
+      <source>The overall transparency of the grid</source>
+      <translation>Celková priehľadnosť mriežky</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="595"/>
+      <source>Draft Edit preferences</source>
+      <translation type="unfinished">Draft Edit preferences</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="598"/>
+      <source>Edit</source>
+      <translation>Upraviť</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="621"/>
+      <source>Maximum number of contemporary edited objects</source>
+      <translation type="unfinished">Maximum number of contemporary edited objects</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="644"/>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sets the maximum number of objects Draft Edit&lt;/p&gt;&lt;p&gt;can process at the same time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sets the maximum number of objects Draft Edit&lt;/p&gt;&lt;p&gt;can process at the same time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="691"/>
+      <source>Draft edit pick radius</source>
+      <translation type="unfinished">Draft edit pick radius</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftsnap.ui" line="714"/>
+      <source>Controls pick radius of edit nodes</source>
+      <translation type="unfinished">Controls pick radius of edit nodes</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="14"/>
+      <source>DWG</source>
+      <translation type="unfinished">DWG</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="26"/>
+      <source>DWG conversion</source>
+      <translation type="unfinished">DWG conversion</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="34"/>
+      <source>Conversion method:</source>
+      <translation type="unfinished">Conversion method:</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="41"/>
+      <source>This is the method FreeCAD will use to convert DWG files to DXF. If "Automatic" is chosen, FreeCAD will try to find one of the following converters in the same order as they are shown here. If FreeCAD is unable to find any, you might need to choose a specific converter and indicate its path here under. Choose the "dwg2dxf" utility if using LibreDWG, "ODAFileConverter" if using the ODA file converter, or the "dwg2dwg" utility if using the pro version of QCAD.</source>
+      <translation type="unfinished">This is the method FreeCAD will use to convert DWG files to DXF. If "Automatic" is chosen, FreeCAD will try to find one of the following converters in the same order as they are shown here. If FreeCAD is unable to find any, you might need to choose a specific converter and indicate its path here under. Choose the "dwg2dxf" utility if using LibreDWG, "ODAFileConverter" if using the ODA file converter, or the "dwg2dwg" utility if using the pro version of QCAD.</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="51"/>
+      <source>Automatic</source>
+      <translation type="unfinished">Automatic</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="56"/>
+      <source>LibreDWG</source>
+      <translation type="unfinished">LibreDWG</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="61"/>
+      <source>ODA Converter</source>
+      <translation type="unfinished">ODA Converter</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="66"/>
+      <source>QCAD pro</source>
+      <translation type="unfinished">QCAD pro</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="78"/>
+      <source>Path to file converter</source>
+      <translation type="unfinished">Path to file converter</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="85"/>
+      <source>The path to your DWG file converter executable</source>
+      <translation type="unfinished">The path to your DWG file converter executable</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-dwg.ui" line="100"/>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Note:&lt;/span&gt; DXF options apply to DWG files as well.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Note:&lt;/span&gt; DXF options apply to DWG files as well.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="14"/>
+      <source>User interface settings</source>
+      <translation>Nastavenie používateľského rozhrania</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="26"/>
+      <source>In-Command Shortcuts</source>
+      <translation type="unfinished">In-Command Shortcuts</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="37"/>
+      <source>Relative</source>
+      <translation>Relatívna</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="59"/>
+      <source>R</source>
+      <translation type="unfinished">R</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="88"/>
+      <source>Continue</source>
+      <translation>Pokračovať</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="110"/>
+      <source>T</source>
+      <translation type="unfinished">T</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="139"/>
+      <source>Close</source>
+      <translation>Zavrieť</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="161"/>
+      <source>O</source>
+      <translation type="unfinished">O</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="190"/>
+      <source>Copy</source>
+      <translation>Kópia</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="212"/>
+      <source>P</source>
+      <translation type="unfinished">P</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="234"/>
+      <source>Subelement Mode</source>
+      <translation type="unfinished">Subelement Mode</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="256"/>
+      <source>D</source>
+      <translation type="unfinished">D</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="278"/>
+      <source>Fill</source>
+      <translation type="unfinished">Fill</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="300"/>
+      <source>L</source>
+      <translation type="unfinished">L</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="322"/>
+      <source>Exit</source>
+      <translation type="unfinished">Exit</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="344"/>
+      <source>A</source>
+      <translation>A</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="366"/>
+      <source>Select Edge</source>
+      <translation>Vybrať hranu</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="388"/>
+      <source>E</source>
+      <translation type="unfinished">E</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="410"/>
+      <source>Add Hold</source>
+      <translation type="unfinished">Add Hold</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="432"/>
+      <source>Q</source>
+      <translation type="unfinished">Q</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="454"/>
+      <source>Length</source>
+      <translation>Dĺžka</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="476"/>
+      <source>H</source>
+      <translation type="unfinished">H</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="498"/>
+      <source>Wipe</source>
+      <translation type="unfinished">Wipe</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="520"/>
+      <source>W</source>
+      <translation type="unfinished">W</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="542"/>
+      <source>Set WP</source>
+      <translation type="unfinished">Set WP</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="564"/>
+      <source>U</source>
+      <translation type="unfinished">U</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="586"/>
+      <source>Cycle Snap</source>
+      <translation type="unfinished">Cycle Snap</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="630"/>
+      <source>Global</source>
+      <translation>Všeobecné</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="652"/>
+      <source>G</source>
+      <translation type="unfinished">G</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="674"/>
+      <source>Undo</source>
+      <translation type="unfinished">Undo</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="718"/>
+      <source>Snap</source>
+      <translation type="unfinished">Snap</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="740"/>
+      <source>S</source>
+      <translation type="unfinished">S</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="762"/>
+      <source>Increase Radius</source>
+      <translation type="unfinished">Increase Radius</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="806"/>
+      <source>Decrease Radius</source>
+      <translation type="unfinished">Decrease Radius</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="850"/>
+      <source>Restrict X</source>
+      <translation type="unfinished">Restrict X</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="872"/>
+      <source>X</source>
+      <translation>X</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="894"/>
+      <source>Restrict Y</source>
+      <translation type="unfinished">Restrict Y</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="916"/>
+      <source>Y</source>
+      <translation>Y</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="938"/>
+      <source>Restrict Z</source>
+      <translation type="unfinished">Restrict Z</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="960"/>
+      <source>Z</source>
+      <translation>Z</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="993"/>
+      <source>Draft Statusbar</source>
+      <translation type="unfinished">Draft Statusbar</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="1004"/>
+      <source>Enable snap statusbar widget</source>
+      <translation type="unfinished">Enable snap statusbar widget</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="1007"/>
+      <source>Draft snap widget</source>
+      <translation type="unfinished">Draft snap widget</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="1023"/>
+      <source>Enable draft statusbar annotation scale widget</source>
+      <translation type="unfinished">Enable draft statusbar annotation scale widget</translation>
+    </message>
+    <message>
+      <location filename="../ui/preferences-draftinterface.ui" line="1026"/>
+      <source>Annotation scale widget</source>
+      <translation type="unfinished">Annotation scale widget</translation>
     </message>
   </context>
 </TS>

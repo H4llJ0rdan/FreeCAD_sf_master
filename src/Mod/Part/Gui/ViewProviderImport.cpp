@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,28 +20,12 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-
-#ifndef _PreComp_
-#endif
-
-#include <Mod/Part/App/PartFeature.h>
-
-/// Here the FreeCAD includes sorted by Base,App,Gui......
-#include <Base/Console.h>
-#include <Base/Parameter.h>
-#include <Base/Exception.h>
-#include <Base/Sequencer.h>
-#include <Gui/View3DInventorViewer.h>
-#include <Gui/SoFCSelection.h>
-#include <App/Application.h>
 
 #include "ViewProviderImport.h"
 
 
 using namespace PartGui;
-
 
 //**************************************************************************
 // Construction/Destruction
@@ -50,13 +34,10 @@ PROPERTY_SOURCE(PartGui::ViewProviderImport,PartGui::ViewProviderPart)
 
 ViewProviderImport::ViewProviderImport()
 {
-    sPixmap = "PartFeatureImport";
+    sPixmap = "Part_FeatureImport";
 }
 
-ViewProviderImport::~ViewProviderImport()
-{
-
-}
+ViewProviderImport::~ViewProviderImport() = default;
 
 // **********************************************************************************
 

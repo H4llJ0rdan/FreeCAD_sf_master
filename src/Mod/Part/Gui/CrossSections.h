@@ -23,11 +23,13 @@
 #ifndef PARTGUI_CROSSSECTIONS_H
 #define PARTGUI_CROSSSECTIONS_H
 
-#include <Gui/TaskView/TaskDialog.h>
-#include <Gui/TaskView/TaskView.h>
-#include <Base/BoundBox.h>
 #include <QDialog>
 #include <QPointer>
+
+#include <Base/BoundBox.h>
+#include <Gui/TaskView/TaskDialog.h>
+#include <Gui/TaskView/TaskView.h>
+
 
 namespace Gui {
 class View3DInventor;
@@ -44,23 +46,25 @@ class CrossSections : public QDialog
     enum Plane { XY, XZ, YZ };
 
 public:
-    CrossSections(const Base::BoundBox3d& bb, QWidget* parent = 0, Qt::WFlags fl = 0);
-    ~CrossSections();
-    void accept();
+    explicit CrossSections(const Base::BoundBox3d& bb, QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
+    ~CrossSections() override;
+    void accept() override;
     void apply();
 
 protected:
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent *e) override;
+    void keyPressEvent(QKeyEvent*) override;
 
-private Q_SLOTS:
-    void on_xyPlane_clicked();
-    void on_xzPlane_clicked();
-    void on_yzPlane_clicked();
-    void on_position_valueChanged(double);
-    void on_distance_valueChanged(double);
-    void on_countSections_valueChanged(int);
-    void on_checkBothSides_toggled(bool);
-    void on_sectionsBox_toggled(bool);
+private:
+    void setupConnections();
+    void xyPlaneClicked();
+    void xzPlaneClicked();
+    void yzPlaneClicked();
+    void positionValueChanged(double);
+    void distanceValueChanged(double);
+    void countSectionsValueChanged(int);
+    void checkBothSidesToggled(bool);
+    void sectionsBoxToggled(bool);
 
 private:
     std::vector<double> getPlanes() const;
@@ -70,7 +74,7 @@ private:
     Plane plane() const;
 
 private:
-    Ui_CrossSections* ui;
+    std::unique_ptr<Ui_CrossSections> ui;
     Base::BoundBox3d bbox;
     ViewProviderCrossSections* vp;
     QPointer<Gui::View3DInventor> view;
@@ -81,14 +85,13 @@ class TaskCrossSections : public Gui::TaskView::TaskDialog
     Q_OBJECT
 
 public:
-    TaskCrossSections(const Base::BoundBox3d& bb);
-    ~TaskCrossSections();
+    explicit TaskCrossSections(const Base::BoundBox3d& bb);
 
 public:
-    bool accept();
-    void clicked(int id);
+    bool accept() override;
+    void clicked(int id) override;
 
-    virtual QDialogButtonBox::StandardButtons getStandardButtons() const
+    QDialogButtonBox::StandardButtons getStandardButtons() const override
     { return QDialogButtonBox::Ok | QDialogButtonBox::Apply | QDialogButtonBox::Cancel; }
 
 private:

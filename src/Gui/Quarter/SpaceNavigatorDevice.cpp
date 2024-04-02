@@ -30,24 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \**************************************************************************/
 
-#include <Quarter/devices/SpaceNavigatorDevice.h>
+#ifdef _MSC_VER
+#pragma warning(disable : 4267)
+#endif
 
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
-#include <QtCore/QEvent>
+#include <QEvent>
+#include <QWidget>
 
 #include <Inventor/events/SoEvent.h>
 #include <Inventor/events/SoMotion3Event.h>
 #include <Inventor/events/SoSpaceballButtonEvent.h>
 
-#include "NativeEvent.h"
-
 #ifdef HAVE_SPACENAV_LIB
 #include <QX11Info>
 #include <spnav.h>
-#endif //HAVE_SPACENAV_LIB
+#endif
 
-#include <cstdio>
+#include "NativeEvent.h"
+#include "devices/SpaceNavigatorDevice.h"
 
 
 namespace SIM { namespace Coin3D { namespace Quarter {
@@ -97,6 +97,22 @@ SpaceNavigatorDevice::SpaceNavigatorDevice()
 #endif // HAVE_SPACENAV_LIB
 }
 
+SpaceNavigatorDevice::SpaceNavigatorDevice(QuarterWidget *quarter) :
+    InputDevice(quarter)
+{
+    PRIVATE(this) = new SpaceNavigatorDeviceP(this);
+
+#ifdef HAVE_SPACENAV_LIB
+    PRIVATE(this)->hasdevice =
+            spnav_x11_open(QX11Info::display(), PRIVATE(this)->windowid) == -1 ? false : true;
+
+    // FIXME: Use a debugmessage mechanism instead? (20101020 handegar)
+    if (!PRIVATE(this)->hasdevice) {
+        fprintf(stderr, "Quarter:: Could not hook up to Spacenav device.\n");
+    }
+
+#endif // HAVE_SPACENAV_LIB
+}
 
 SpaceNavigatorDevice::~SpaceNavigatorDevice()
 {
@@ -107,7 +123,8 @@ SpaceNavigatorDevice::~SpaceNavigatorDevice()
 const SoEvent *
 SpaceNavigatorDevice::translateEvent(QEvent * event)
 {
-  SoEvent * ret = NULL;
+  Q_UNUSED(event); 
+  SoEvent * ret = nullptr;
 
 #ifdef HAVE_SPACENAV_LIB
   NativeEvent * ce = dynamic_cast<NativeEvent *>(event);

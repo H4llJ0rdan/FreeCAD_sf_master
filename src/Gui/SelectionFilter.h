@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Juergen Riegel  (FreeCAD@juergen-riegel.net>       *
+ *   Copyright (c) 2009 Jürgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,6 +24,7 @@
 #ifndef GUI_SelectionFilter_H
 #define GUI_SelectionFilter_H
 
+#include <memory>
 #include <string>
 #include <CXX/Extensions.hxx>
 #include "Selection.h"
@@ -34,65 +35,67 @@ namespace App {
 
 namespace Gui {
     struct Node_Block;
-    
+    class SelectionFilterPy;
 
-/** Selection filter definition 
+/** Selection filter definition
  *  This class builds up a type/count tree out of a string
- *  to test very fast a selection or object/subelement type 
- *  against it. 
+ *  to test very fast a selection or object/subelement type
+ *  against it.
  *
  *  Example strings are:
- *  "SELECT Part::Feature SUBELEMENT Edge", 
- *  "SELECT Robot::RobotObject", 
+ *  "SELECT Part::Feature SUBELEMENT Edge",
+ *  "SELECT Robot::RobotObject",
  *  "SELECT Robot::RobotObject COUNT 1..5"
  */
-class GuiExport SelectionFilter 
+class GuiExport SelectionFilter
 {
 
 public:
     /** Constructs a SelectionFilter object. */
-    SelectionFilter(const char* filter);
-    SelectionFilter(const std::string& filter);
+    explicit SelectionFilter(const char* filter);
+    explicit SelectionFilter(const std::string& filter);
     virtual ~SelectionFilter();
 
-    /// Set a new filter string 
+    /// Set a new filter string
     void setFilter(const char* filter);
+    const std::string& getFilter() const {
+        return Filter;
+    }
     /** Test to current selection
      *  This method tests the current selection set
-     *  against the filter and returns true if the 
+     *  against the filter and returns true if the
      *  described object(s) are selected.
      */
-    bool match(void);
+    bool match();
     /** Test objects
-     *  This method tests if a given object is described in the 
+     *  This method tests if a given object is described in the
      *  filter. If SubName is not NULL the Subelement gets also
      *  tested.
      */
     bool test(App::DocumentObject*pObj, const char*sSubName);
 
     void addError(const char* e);
- 
+
     friend class SelectionSingleton;
 
     std::vector<std::vector<SelectionObject> > Result;
 
     /// true if a valid filter is set
-    bool isValid(void) const {return Ast ? true : false;}
+    bool isValid() const {return Ast ? true : false;}
 
 protected:
     std::string Filter;
     std::string Errors;
-    bool parse(void);
+    bool parse();
 
-    Node_Block *Ast;
-
+    std::shared_ptr<Node_Block> Ast;
 };
 
 /** Filter object for the SelectionSengleton
- * This object is a link between the selection 
- * filter class and the selection singleton. Created with a 
- * filter string and registered in the selection it will only 
- * allow the descibed object types to be selected.
+ * This object is a link between the selection
+ * filter class and the selection singleton. Created with a
+ * filter string and registered in the selection it will only
+ * allow the described object types to be selected.
  * @see SelectionFilter
  * @see SelectionSingleton
  */
@@ -100,10 +103,20 @@ class GuiExport SelectionFilterGate: public SelectionGate
 {
 public:
     /// construct with the filter string
-    SelectionFilterGate(const char* filter);
-    SelectionFilterGate(SelectionFilter* filter);
-    ~SelectionFilterGate();
-    virtual bool allow(App::Document*,App::DocumentObject*, const char*);
+    explicit SelectionFilterGate(const char* filter);
+    explicit SelectionFilterGate(SelectionFilter* filter);
+    ~SelectionFilterGate() override;
+    bool allow(App::Document*,App::DocumentObject*, const char*) override;
+
+protected:
+    static SelectionFilter* nullPointer() {
+        return nullptr;
+    }
+
+    static const char* nullString() {
+        return nullptr;
+    }
+    SelectionFilterGate();
 
 protected:
     SelectionFilter *Filter;
@@ -117,53 +130,39 @@ class SelectionGatePython : public SelectionGate
 {
 public:
     /// Constructor
-    SelectionGatePython(const Py::Object& obj);
-    virtual ~SelectionGatePython();
+    explicit SelectionGatePython(const Py::Object& obj);
+    ~SelectionGatePython() override;
 
-    bool allow(App::Document*, App::DocumentObject*, const char*);
+    bool allow(App::Document*, App::DocumentObject*, const char*) override;
 
 private:
     Py::Object gate;
 };
 
 /**
- * Python binding for SelectionFilter class.
- * @see SelectionFilter
- * @author Werner Mayer
- */
-class SelectionFilterPy : public Py::PythonExtension<SelectionFilterPy> 
-{
-public:
-    SelectionFilter filter;
-
-public:
-    static void init_type(void);    // announce properties and methods
-
-    SelectionFilterPy(const std::string&);
-    ~SelectionFilterPy();
-
-    Py::Object repr();
-    Py::Object match(const Py::Tuple&);
-    Py::Object result(const Py::Tuple&);
-    Py::Object test(const Py::Tuple&);
-    Py::Object setFilter(const Py::Tuple&);
-
-private:
-    static PyObject *PyMake(struct _typeobject *, PyObject *, PyObject *);
-};
-
-/**
  * A Python wrapper around SelectionFilterPy to implement the SelectionGate interface
+ * \code
+ * class SelectionGate(object):
+ *   def allow(self, doc, obj, sub):
+ *     if not obj.isDerivedFrom("Part::Feature"):
+ *       return False
+ *     if not str(sub).startswith("Edge"):
+ *       return False
+ *     return True
+ *
+ * gate=SelectionGate()
+ * Gui.Selection.addSelectionGate(gate)
+ * \endcode
  * @author Werner Mayer
  */
 class SelectionFilterGatePython : public SelectionGate
 {
 public:
     /// Constructor
-    SelectionFilterGatePython(SelectionFilterPy* obj);
-    virtual ~SelectionFilterGatePython();
+    explicit SelectionFilterGatePython(SelectionFilterPy* obj);
+    ~SelectionFilterGatePython() override;
 
-    bool allow(App::Document*, App::DocumentObject*, const char*);
+    bool allow(App::Document*, App::DocumentObject*, const char*) override;
 
 private:
     SelectionFilterPy* filter;
@@ -171,24 +170,22 @@ private:
 
 // === Abstract syntax tree (AST) ===========================================
 
-struct Node_Slice 
+struct Node_Slice
 {
-    Node_Slice(int min=1,int max=INT_MAX):Min(min),Max(max){}
+    explicit Node_Slice(int min=1,int max=INT_MAX):Min(min),Max(max){}
     int Min,Max;
 
 };
 
 
-struct Node_Object 
+struct Node_Object
 {
     Node_Object(std::string *type,std::string *subname,Node_Slice* slc )
         :Slice(slc)
     {
         ObjectType = Base::Type::fromName(type->c_str());
-        delete (type);
-        if(subname){
+        if (subname) {
             SubName = *subname;
-            delete subname;
         }
     }
     ~Node_Object(){
@@ -198,11 +195,14 @@ struct Node_Object
     Node_Slice  *Slice;
     std::string SubName;
 };
+using Node_ObjectPtr = std::shared_ptr<Node_Object>;
 
-struct Node_Block 
+struct Node_Block
 {
-    Node_Block(Node_Object* obj){Objects.push_back(obj);}
-    std::vector< Node_Object *> Objects;
+    explicit Node_Block(Node_Object* obj){
+        Objects.emplace_back(obj);
+    }
+    std::vector<Node_ObjectPtr> Objects;
 };
 
 

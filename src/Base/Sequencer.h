@@ -24,11 +24,8 @@
 #ifndef BASE_SEQUENCER_H
 #define BASE_SEQUENCER_H
 
-#include <vector>
-#include <memory>
-#include <CXX/Extensions.hxx>
-
 #include "Exception.h"
+
 
 namespace Base
 {
@@ -46,7 +43,7 @@ class SequencerLauncher;
  *  #include <Base/Sequencer.h>
  *
  *  //first example
- *  Base::SequencerLauncher seq("my text", 10))
+ *  Base::SequencerLauncher seq("my text", 10)
  *  for (int i=0; i<10; i++)
  *  {
  *    // do something
@@ -54,7 +51,7 @@ class SequencerLauncher;
  *  }
  *
  *  //second example
- *  Base::SequencerLauncher seq("my text", 10))
+ *  Base::SequencerLauncher seq("my text", 10)
  *  do
  *  {
  *    // do something
@@ -65,12 +62,12 @@ class SequencerLauncher;
  *
  * The implementation of this class also supports several nested instances
  * at a time. But note, that only the first instance has an effect. Any further
- * sequencer instance doesn't influence the total numer of iteration steps. This
+ * sequencer instance doesn't influence the total number of iteration steps. This
  * is simply because it's impossible to get the exact number of iteration steps
- * for nested instances and thus we have either too few steps estimated then the 
+ * for nested instances and thus we have either too few steps estimated then the
  * sequencer may indicate 100% but the algorithm still running or we have too many
  * steps estimated so that the an algorithm may stop long before the sequencer
- * reaches 100%. 
+ * reaches 100%.
  *
  *  \code
  *  try {
@@ -150,6 +147,9 @@ public:
      */
     bool wasCanceled() const;
 
+    /// Check if the  operation is aborted by user
+    virtual void checkAbort() {}
+
 protected:
     /**
      * Starts a new operation, returns false if there is already a pending operation,
@@ -203,6 +203,8 @@ protected:
 protected:
     /** construction */
     SequencerBase();
+    SequencerBase(const SequencerBase&) = default;
+    SequencerBase& operator=(const SequencerBase&) = default;
     /** Destruction */
     virtual ~SequencerBase();
     /**
@@ -228,19 +230,21 @@ protected:
     virtual void setProgress(size_t);
     /**
      * Resets internal data.
-     * If you want to reimplement this method, it is very important to call it ín
+     * If you want to reimplement this method, it is very important to call it in
      * the re-implemented method.
      */
     virtual void resetData();
 
 protected:
-    size_t nProgress; /**< Stores the current amount of progress.*/
-    size_t nTotalSteps; /**< Stores the total number of steps */
+    //NOLINTBEGIN
+    size_t nProgress{0}; /**< Stores the current amount of progress.*/
+    size_t nTotalSteps{0}; /**< Stores the total number of steps */
+    //NOLINTEND
 
 private:
-    bool _bLocked; /**< Lock/unlock sequencer. */
-    bool _bCanceled; /**< Is set to true if the last pending operation was canceled */
-    int _nLastPercentage; /**< Progress in percent. */
+    bool _bLocked{false}; /**< Lock/unlock sequencer. */
+    bool _bCanceled{false}; /**< Is set to true if the last pending operation was canceled */
+    int _nLastPercentage{-1}; /**< Progress in percent. */
 };
 
 /** This special sequencer might be useful if you want to suppress any indication
@@ -250,9 +254,7 @@ class BaseExport EmptySequencer : public Base::SequencerBase
 {
 public:
     /** construction */
-    EmptySequencer();
-    /** Destruction */
-    ~EmptySequencer();
+    EmptySequencer() = default;
 };
 
 /**
@@ -262,21 +264,19 @@ class BaseExport ConsoleSequencer : public SequencerBase
 {
 public:
     /** construction */
-    ConsoleSequencer ();
-    /** Destruction */
-    ~ConsoleSequencer ();
+    ConsoleSequencer () = default;
 
 protected:
     /** Starts the sequencer */
-    void startStep();
+    void startStep() override;
     /** Writes the current progress to the console window. */
-    void nextStep(bool canAbort);
+    void nextStep(bool canAbort) override;
 
 private:
     /** Puts text to the console window */
-    void setText (const char* pszTxt);
+    void setText (const char* pszTxt) override;
     /** Resets the sequencer */
-    void resetData();
+    void resetData() override;
 };
 
 /** The SequencerLauncher class is provided for convenience. It allows you to run an instance of the
@@ -371,6 +371,9 @@ public:
     bool next(bool canAbort = false);
     void setProgress(size_t);
     bool wasCanceled() const;
+
+    SequencerLauncher(const SequencerLauncher&) = delete;
+    void operator=(const SequencerLauncher&) = delete;
 };
 
 /** Access to the only SequencerBase instance */
@@ -378,27 +381,6 @@ inline SequencerBase& Sequencer ()
 {
     return SequencerBase::Instance();
 }
-
-class BaseExport ProgressIndicatorPy : public Py::PythonExtension<ProgressIndicatorPy>
-{
-public:
-    static void init_type(void);    // announce properties and methods
-
-    ProgressIndicatorPy();
-    ~ProgressIndicatorPy();
-
-    Py::Object repr();
-
-    Py::Object start(const Py::Tuple&);
-    Py::Object next(const Py::Tuple&);
-    Py::Object stop(const Py::Tuple&);
-
-private:
-    static PyObject *PyMake(struct _typeobject *, PyObject *, PyObject *);
-
-private:
-    std::auto_ptr<SequencerLauncher> _seq;
-};
 
 } // namespace Base
 

@@ -20,20 +20,21 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PART_FEATURES_H
 #define PART_FEATURES_H
 
 #include <App/PropertyStandard.h>
 #include <App/PropertyUnits.h>
-#include <Mod/Part/App/PartFeature.h>
+
+#include "PartFeature.h"
+
 
 namespace Part
 {
 
 class RuledSurface : public Part::Feature
 {
-    PROPERTY_HEADER(Part::RuledSurface);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::RuledSurface);
 
 public:
     RuledSurface();
@@ -45,15 +46,18 @@ public:
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
-    const char* getViewProviderName(void) const {
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderRuledSurface";
     }
     //@}
 
 protected:
-    void onChanged (const App::Property* prop);
+    void onChanged (const App::Property* prop) override;
+
+private:
+    App::DocumentObjectExecReturn* getShape(const App::PropertyLinkSub& link, TopoDS_Shape&) const;
 
 private:
     static const char* OrientationEnums[];
@@ -61,7 +65,7 @@ private:
 
 class Loft : public Part::Feature
 {
-    PROPERTY_HEADER(Part::Loft);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Loft);
 
 public:
     Loft();
@@ -70,24 +74,28 @@ public:
     App::PropertyBool Solid;
     App::PropertyBool Ruled;
     App::PropertyBool Closed;
+    App::PropertyIntegerConstraint MaxDegree;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
-    const char* getViewProviderName(void) const {
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderLoft";
     }
     //@}
 
 protected:
-    void onChanged (const App::Property* prop);
+    void onChanged (const App::Property* prop) override;
+
+private:
+    static App::PropertyIntegerConstraint::Constraints Degrees;
 };
 
 class Sweep : public Part::Feature
 {
-    PROPERTY_HEADER(Part::Sweep);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Sweep);
 
 public:
     Sweep();
@@ -101,77 +109,88 @@ public:
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
-    const char* getViewProviderName(void) const {
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderSweep";
     }
     //@}
 
 protected:
-    void onChanged (const App::Property* prop);
+    void onChanged (const App::Property* prop) override;
 
 private:
     static const char* TransitionEnums[];
 };
 
-class Offset : public Part::Feature
+class Thickness : public Part::Feature
 {
-    PROPERTY_HEADER(Part::Offset);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Thickness);
 
 public:
-    Offset();
+    Thickness();
 
-    App::PropertyLink  Source;
-    App::PropertyFloat Value;
+    App::PropertyLinkSub Faces;
+    App::PropertyQuantity Value;
     App::PropertyEnumeration Mode;
     App::PropertyEnumeration Join;
     App::PropertyBool Intersection;
     App::PropertyBool SelfIntersection;
-    App::PropertyBool Fill;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
-    const char* getViewProviderName(void) const {
-        return "PartGui::ViewProviderOffset";
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
+    const char* getViewProviderName() const override {
+        return "PartGui::ViewProviderThickness";
     }
     //@}
+
+protected:
+    void handleChangedPropertyType(Base::XMLReader &reader, const char *TypeName, App::Property *prop) override;
 
 private:
     static const char* ModeEnums[];
     static const char* JoinEnums[];
 };
 
-class Thickness : public Part::Feature
+class Refine : public Part::Feature
 {
-    PROPERTY_HEADER(Part::Thickness);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Refine);
 
 public:
-    Thickness();
+    Refine();
 
-    App::PropertyLinkSub Faces;
-    App::PropertyFloat Value;
-    App::PropertyEnumeration Mode;
-    App::PropertyEnumeration Join;
-    App::PropertyBool Intersection;
-    App::PropertyBool SelfIntersection;
+    App::PropertyLink Source;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
-    const char* getViewProviderName(void) const {
-        return "PartGui::ViewProviderThickness";
+    App::DocumentObjectExecReturn *execute() override;
+    const char* getViewProviderName() const override {
+        return "PartGui::ViewProviderRefine";
     }
     //@}
+};
 
-private:
-    static const char* ModeEnums[];
-    static const char* JoinEnums[];
+class Reverse : public Part::Feature
+{
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Reverse);
+
+public:
+    Reverse();
+
+    App::PropertyLink Source;
+
+    /** @name methods override feature */
+    //@{
+    /// recalculate the feature
+    App::DocumentObjectExecReturn* execute() override;
+    const char* getViewProviderName() const override {
+        return "PartGui::ViewProviderReverse";
+    }
+    //@}
 };
 
 } //namespace Part

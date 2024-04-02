@@ -24,14 +24,14 @@
 #ifndef GUI_WORKBENCHFACTORY_H
 #define GUI_WORKBENCHFACTORY_H
 
-#include <Base/Factory.h>
-#include <string>
 #include <list>
+#include <string>
+#include <Base/Factory.h>
 
 namespace Gui {
 class Workbench;
 
-/** 
+/**
  * The workbench factory provides methods for the dynamic creation of
  * special workbenches for each module. To create these workbenches once
  * they must be registered through a subclass of WorkbenchProducer.
@@ -47,7 +47,7 @@ public:
   static void destruct ();
 
   /** Creates the workbench with \a name. If no such workbench is registered
-   * 0 is returned. 
+   * 0 is returned.
    */
   Workbench* createWorkbench ( const char* sName ) const;
   /** Returns a list of all registered workbench classes. */
@@ -56,8 +56,8 @@ public:
 private:
   static WorkbenchFactoryInst* _pcSingleton;
 
-  WorkbenchFactoryInst(){}
-  ~WorkbenchFactoryInst(){}
+  WorkbenchFactoryInst() = default;
+  ~WorkbenchFactoryInst() override = default;
 };
 
 inline GuiExport WorkbenchFactoryInst& WorkbenchFactory()
@@ -68,7 +68,7 @@ inline GuiExport WorkbenchFactoryInst& WorkbenchFactory()
 // --------------------------------------------------------------------
 
 /**
- * The WorkbenchProducer template class allos the registration and the creation of workbench 
+ * The WorkbenchProducer template class allows the registration and the creation of workbench
  * classes.
  * @author Werner Mayer
  */
@@ -76,18 +76,16 @@ template <class CLASS>
 class WorkbenchProducer: public Base::AbstractProducer
 {
 public:
-  WorkbenchProducer ()
-  {
-  }
+  WorkbenchProducer()   = default;
 
-  virtual ~WorkbenchProducer (){}
+  ~WorkbenchProducer () override = default;
 
-  virtual void* Produce () const
+  void* Produce () const override
   {
-    return (void*)(new CLASS);
+    return (new CLASS);
   }
 };
 
-} // namespace Gui 
+} // namespace Gui
 
-#endif // GUI_WORKBENCHFACTORY_H 
+#endif // GUI_WORKBENCHFACTORY_H

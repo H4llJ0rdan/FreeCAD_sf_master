@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -23,41 +23,25 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
 #include "ViewProviderScaled.h"
 #include "TaskScaledParameters.h"
-#include <Mod/PartDesign/App/FeatureScaled.h>
-#include <Mod/Sketcher/App/SketchObject.h>
-#include <Gui/Control.h>
-#include <Gui/Command.h>
-#include <Gui/Application.h>
 
 using namespace PartDesignGui;
 
-PROPERTY_SOURCE(PartDesignGui::ViewProviderScaled,PartDesignGui::ViewProvider)
+PROPERTY_SOURCE(PartDesignGui::ViewProviderScaled,PartDesignGui::ViewProviderTransformed)
 
-bool ViewProviderScaled::setEdit(int ModNum)
+TaskDlgFeatureParameters *ViewProviderScaled::getEditDialog() {
+    return new TaskDlgScaledParameters (this);
+}
+
+void ViewProviderScaled::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
 {
-    ViewProviderTransformed::setEdit(ModNum);
+    addDefaultAction(menu, QObject::tr("Edit scaled"));
+    PartDesignGui::ViewProvider::setupContextMenu(menu, receiver, member);
+}
 
-    if (ModNum == ViewProvider::Default ) {
-        TaskDlgScaledParameters *scaledDlg = NULL;
-
-        if (checkDlgOpen(scaledDlg)) {
-            // start the edit dialog
-            if (scaledDlg)
-                Gui::Control().showDialog(scaledDlg);
-            else
-                Gui::Control().showDialog(new TaskDlgScaledParameters(this));
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-    else {
-        return ViewProviderPart::setEdit(ModNum);
-    }
+const std::string & ViewProviderScaled::featureName() const
+{
+    static const std::string name = "Scaled";
+    return name;
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,111 +20,78 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PARTGUI_PRECOMPILED_H
 #define PARTGUI_PRECOMPILED_H
 
 #include <FCConfig.h>
 
-// Importing of App classes
-#ifdef FC_OS_WIN32
-# define PartExport    __declspec(dllimport)
-# define PartGuiExport __declspec(dllexport)
-#else // for Linux
-# define PartExport
-# define PartGuiExport
-#endif
+#include <Mod/Part/PartGlobal.h>
 
-#ifdef _PreComp_
-// here get the warnings of too long specifiers disabled (needed for VC6)
+// point at which warnings of overly long specifiers disabled (needed for VC6)
 #ifdef _MSC_VER
 # pragma warning( disable : 4251 )
 # pragma warning( disable : 4503 )
 # pragma warning( disable : 4786 )  // specifier longer then 255 chars
+# pragma warning( disable : 4273 )
 #endif
 
-
-
-
-// standard
-#include <iostream>
-//#include <stdio.h>
-#include <cassert>
-#include <cfloat>
-//#include <io.h>
-//#include <fcntl.h>
-//#include <ctype.h>
-
-// STL
-#include <vector>
-#include <list>
-#include <map>
-#include <string>
-#include <set>
-#include <algorithm>
-#include <stack>
-#include <queue>
-#include <bitset>
-
 #ifdef FC_OS_WIN32
+# ifndef NOMINMAX
+#  define NOMINMAX
+# endif
 # include <windows.h>
 #endif
 
-// OpenCasCade Base
-#include <Standard_Failure.hxx>
+#ifdef _PreComp_
 
-#include <BRepMesh.hxx>
-#include <BRepMesh_IncrementalMesh.hxx>
-#include <Poly_Polygon3D.hxx>
-#include <Poly_PolygonOnTriangulation.hxx>
-#include <Poly_Triangulation.hxx>
+// standard
+#include <cfloat>
+#include <cmath>
 
-#include <gp_Pnt.hxx>
-#include <gp_Sphere.hxx>
-#include <gp_Trsf.hxx>
+// STL
+#include <algorithm>
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
-#include <Geom_BezierCurve.hxx>
-#include <Geom_BSplineCurve.hxx>
-#include <Geom_BezierSurface.hxx>
-#include <Geom_BSplineSurface.hxx>
-#include <Geom_SphericalSurface.hxx>
-#include <GeomAPI_ProjectPointOnSurf.hxx>
-#include <GeomLProp_SLProps.hxx>
+// OpenCasCade
+#include <Mod/Part/App/OpenCascadeAll.h>
 
-#include <TopoDS.hxx>
-#include <TopoDS_Edge.hxx>
-#include <TopoDS_Face.hxx>
-#include <TopoDS_Iterator.hxx>
-#include <TopExp.hxx>
-#include <TopExp_Explorer.hxx>
-#include <TopLoc_Location.hxx>
-
-#include <BRep_Tool.hxx>
-#include <BRepTools.hxx>
-#include <BRepAdaptor_Surface.hxx>
-#include <BRepAdaptor_Curve.hxx>
-#include <BRepBndLib.hxx>
-#include <BRepBuilderAPI_MakeFace.hxx>
-#include <BRepPrimAPI_MakeSphere.hxx>
-
-#include <Bnd_Box.hxx>
-#include <GCPnts_UniformDeflection.hxx>
-#include <TColStd_Array1OfInteger.hxx>
-
-#include <Python.h>
+// Boost
+#include <boost/regex.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 // Qt Toolkit
-#ifndef __Qt4All__
-# include <Gui/Qt4All.h>
+#ifndef __QtAll__
+# include <Gui/QtAll.h>
 #endif
 
-// Inventor
+// GL
+// Include glext before InventorAll
+#ifdef FC_OS_WIN32
+# include <GL/gl.h>
+# include <GL/glext.h>
+#else
+# ifdef FC_OS_MACOSX
+#  include <OpenGL/gl.h>
+#  include <OpenGL/glext.h>
+# else
+#  ifndef GL_GLEXT_PROTOTYPES
+#   define GL_GLEXT_PROTOTYPES 1
+#  endif
+#  include <GL/gl.h>
+#  include <GL/glext.h>
+# endif //FC_OS_MACOSX
+#endif //FC_OS_WIN32
+// Should come after glext.h to avoid warnings
+#include <Inventor/C/glue/gl.h>
+
+// Inventor includes OpenGL
 #ifndef __InventorAll__
 # include <Gui/InventorAll.h>
 #endif
 
-#elif defined(FC_OS_WIN32)
-#include <windows.h>
 #endif  //_PreComp_
 
-#endif
+#endif // PARTGUI_PRECOMPILED_H

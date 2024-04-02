@@ -20,29 +20,31 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_DIALOG_DLGSETTINGSIMAGE_IMP_H
 #define GUI_DIALOG_DLGSETTINGSIMAGE_IMP_H
 
-#include <Inventor/SoOffscreenRenderer.h> 
-#include <Inventor/SbMatrix.h> 
+#include <Inventor/SbMatrix.h>
+#include <Inventor/SoOffscreenRenderer.h>
 
-#include "ui_DlgSettingsImage.h"
+#include <QWidget>
+#include <memory>
 
 namespace Gui {
 namespace Dialog {
+class Ui_DlgSettingsImage;
+
 /**
- * The DlgSettings3DViewImp class implements a preference page to change settings
+ * The DlgSettingsImageImp class implements a preference page to change settings
  * for the Inventor viewer.
  * @author Werner Mayer
  */
-class DlgSettingsImageImp : public QWidget, public Ui::DlgSettingsImage
+class DlgSettingsImageImp : public QWidget
 {
     Q_OBJECT
 
 public:
-    DlgSettingsImageImp( QWidget* parent = 0 );
-    ~DlgSettingsImageImp();
+    explicit DlgSettingsImageImp( QWidget* parent = nullptr );
+    ~DlgSettingsImageImp() override;
 
     /** @name Image dimensions */
     //@{
@@ -55,27 +57,34 @@ public:
 
     /** @name Image meta information */
     //@{
+    void setMethod(const QByteArray&);
+    QByteArray method() const;
     QString comment() const;
     int backgroundType() const;
+    void setBackgroundType( int );
+    bool addWatermark() const;
     //@}
 
 public Q_SLOTS:
     void onSelectedFilter( const QString& );
 
-protected Q_SLOTS:
-    void on_buttonRatioScreen_clicked();
-    void on_buttonRatio4x3_clicked();
-    void on_buttonRatio16x9_clicked();
-    void on_buttonRatio1x1_clicked();
-    void on_standardSizeBox_activated(int);
+protected:
+    void setupConnections();
+    void onButtonRatioScreenClicked();
+    void onButtonRatio4x3Clicked();
+    void onButtonRatio16x9Clicked();
+    void onButtonRatio1x1Clicked();
+    void onStandardSizeBoxActivated(int);
+    void onComboMethodActivated(int);
 
 protected:
     // helper to force an aspect ratio
     void adjustImageSize(float fRatio);
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent *e) override;
 
 
 private:
+    std::unique_ptr<Ui_DlgSettingsImage> ui;
     float _fRatio;
     int _width, _height;
     SbMatrix _Matrix;

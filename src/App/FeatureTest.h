@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2006     *
+ *   Copyright (c) 2006 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -21,15 +21,15 @@
  ***************************************************************************/
 
 
-
 #ifndef APP_FEATURETEST_H
 #define APP_FEATURETEST_H
 
-
 #include "DocumentObject.h"
-#include "PropertyUnits.h"
 #include "PropertyGeo.h"
 #include "PropertyLinks.h"
+#include "PropertyPythonObject.h"
+#include "PropertyUnits.h"
+
 
 namespace App
 {
@@ -37,14 +37,14 @@ namespace App
 /// The testing feature
 class FeatureTest : public DocumentObject
 {
-  PROPERTY_HEADER(App::FeatureTest);
+  PROPERTY_HEADER_WITH_OVERRIDE(App::FeatureTest);
 
 public:
   FeatureTest();
 
-  ~FeatureTest();
+  ~FeatureTest() override;
 
-  // Standard Properties (PorpertyStandard.h)
+  // Standard Properties (PropertyStandard.h)
   App::PropertyInteger      Integer;
   App::PropertyFloat        Float;
   App::PropertyBool         Bool;
@@ -55,6 +55,8 @@ public:
 
   App::PropertyColor        Colour;
   App::PropertyColorList    ColourList;
+  App::PropertyMaterial     Material;
+  App::PropertyMaterialList MaterialList;
 
   // special types
   App::PropertyDistance     Distance;
@@ -64,15 +66,16 @@ public:
   App::PropertyEnumeration       Enum;
   App::PropertyIntegerConstraint ConstraintInt;
   App::PropertyFloatConstraint   ConstraintFloat;
- 
-  // Standard Properties (PorpertyStandard.h)
+
+  // Standard Properties (PrppertyStandard.h)
   App::PropertyIntegerList IntegerList;
   App::PropertyFloatList   FloatList;
 
   // Standard Properties (PropertyLinks.h)
-  App::PropertyLink     Link;
-  App::PropertyLinkSub  LinkSub;
-  App::PropertyLinkList LinkList;
+  App::PropertyLink        Link;
+  App::PropertyLinkSub     LinkSub;
+  App::PropertyLinkList    LinkList;
+  App::PropertyLinkSubList LinkSubList;
 
   // Standard Properties (PropertyGeo.h)
   App::PropertyMatrix     Matrix;
@@ -87,24 +90,27 @@ public:
   App::PropertyString   ExecResult;
   App::PropertyInteger  ExceptionType;
   App::PropertyInteger  ExecCount;
-  
+
   App::PropertyInteger   TypeHidden;
   App::PropertyInteger   TypeReadOnly;
   App::PropertyInteger   TypeOutput;
   App::PropertyInteger   TypeAll;
   App::PropertyInteger   TypeTransient;
-  
+  App::PropertyInteger   TypeNoRecompute;
+
   App::PropertyQuantity  QuantityLength;
+  App::PropertyQuantity  QuantityOther;
   //App::PropertyQuantity  QuantityMass;
   //App::PropertyQuantity  QuantityAngle;
 
-  /** @name methods overide Feature */
+  /** @name methods override Feature */
   //@{
+  short mustExecute() const override;
   /// recalculate the Feature
-  virtual DocumentObjectExecReturn *execute(void);
+  DocumentObjectExecReturn *execute() override;
   /// returns the type name of the ViewProvider
-  //FIXME: Propably it makes sense to have a view provider for unittests (e.g. Gui::ViewProviderTest)
-  virtual const char* getViewProviderName(void) const {
+  //Hint: Probably it makes sense to have a view provider for unittests (e.g. Gui::ViewProviderTest)
+  const char* getViewProviderName() const override {
     return "Gui::ViewProviderFeature";
   }
   //@}
@@ -113,7 +119,7 @@ public:
 /// The exception testing feature
 class FeatureTestException :public FeatureTest
 {
-  PROPERTY_HEADER(App::FeatureTestException);
+  PROPERTY_HEADER_WITH_OVERRIDE(App::FeatureTestException);
 
 public:
   FeatureTestException();
@@ -121,14 +127,93 @@ public:
   /// this property defines which kind of exceptio the feature throw on you
   App::PropertyInteger ExceptionType;
 
-  /// recalculate the Feature and throw an exeption
-  virtual DocumentObjectExecReturn *execute(void);
+  /// recalculate the Feature and throw an exception
+  DocumentObjectExecReturn *execute() override;
   /// returns the type name of the ViewProvider
-  virtual const char* getViewProviderName(void) const {
+  const char* getViewProviderName() const override {
     return "Gui::ViewProviderFeature";
   }
 };
 
+class FeatureTestColumn : public DocumentObject
+{
+    PROPERTY_HEADER_WITH_OVERRIDE(App::FeatureTestColumn);
+
+public:
+    FeatureTestColumn();
+
+    // Standard Properties (PropertyStandard.h)
+    App::PropertyString  Column;
+    App::PropertyBool    Silent;
+    App::PropertyInteger Value;
+
+    /** @name methods override Feature */
+    //@{
+    DocumentObjectExecReturn *execute() override;
+    //@}
+};
+
+class FeatureTestRow : public DocumentObject
+{
+    PROPERTY_HEADER_WITH_OVERRIDE(App::FeatureTestRow);
+
+public:
+    FeatureTestRow();
+
+    // Standard Properties (PropertyStandard.h)
+    App::PropertyString  Row;
+    App::PropertyBool    Silent;
+    App::PropertyInteger Value;
+
+    /** @name methods override Feature */
+    //@{
+    DocumentObjectExecReturn *execute() override;
+    //@}
+};
+
+class FeatureTestAbsAddress : public DocumentObject
+{
+    PROPERTY_HEADER_WITH_OVERRIDE(App::FeatureTestAbsAddress);
+
+public:
+    FeatureTestAbsAddress();
+    DocumentObjectExecReturn *execute() override;
+
+    App::PropertyString Address;
+    App::PropertyBool Valid;
+};
+
+class FeatureTestPlacement : public DocumentObject
+{
+    PROPERTY_HEADER_WITH_OVERRIDE(App::FeatureTestPlacement);
+
+public:
+    FeatureTestPlacement();
+
+    // Standard Properties (PropertyStandard.h)
+    App::PropertyPlacement Input1;
+    App::PropertyPlacement Input2;
+    App::PropertyPlacement MultLeft;
+    App::PropertyPlacement MultRight;
+
+    /** @name methods override Feature */
+    //@{
+    DocumentObjectExecReturn *execute() override;
+    //@}
+};
+
+class FeatureTestAttribute : public DocumentObject
+{
+    PROPERTY_HEADER_WITH_OVERRIDE(App::FeatureTestAttribute);
+
+public:
+    FeatureTestAttribute();
+    ~FeatureTestAttribute() override;
+    DocumentObjectExecReturn *execute() override;
+
+    App::PropertyPythonObject Object;
+    App::PropertyString Attribute;
+};
 
 
 } //namespace App

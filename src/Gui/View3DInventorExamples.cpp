@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,45 +20,31 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-# include <Inventor/nodes/SoMaterial.h>
-# include <Inventor/nodes/SoShapeHints.h>
+# include <cstring>
 # include <Inventor/SbClip.h>
-# include <Inventor/nodes/SoCoordinate3.h>
 # include <Inventor/nodes/SoComplexity.h>
+# include <Inventor/nodes/SoCoordinate3.h>
+# include <Inventor/nodes/SoFaceSet.h>
 # include <Inventor/nodes/SoMaterial.h>
 # include <Inventor/nodes/SoTexture3.h>
 # include <Inventor/nodes/SoTextureCoordinate3.h>
-# include <Inventor/nodes/SoFaceSet.h>
-# include <Inventor/nodes/SoLineSet.h>
-# include <Inventor/nodes/SoBaseColor.h>
-# include <Inventor/draggers/SoTransformerDragger.h>
-
-# include <float.h>
-# include <cstring>
 #endif
 
-#include "../Base/Console.h"
-
-
-#include "View3DInventorExamples.h"
-
-#include <Inventor/SbPlane.h>
 #include <Inventor/SoDB.h>
+#include <Inventor/SbPlane.h>
 #include <Inventor/actions/SoSearchAction.h>
-#include <Inventor/manips/SoPointLightManip.h>
-#include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/draggers/SoTransformerDragger.h>
-#include <Inventor/SbBasic.h>
-#include <Inventor/nodes/SoShapeHints.h>
-#include <Inventor/nodes/SoSeparator.h>
-#include <Inventor/nodes/SoTexture2.h>
+#include <Inventor/manips/SoPointLightManip.h>
 #include <Inventor/nodes/SoCube.h>
+#include <Inventor/nodes/SoSeparator.h>
+#include <Inventor/nodes/SoShapeHints.h>
+#include <Inventor/nodes/SoTexture2.h>
 #include <Inventor/sensors/SoTimerSensor.h>
 
+#include "View3DInventorExamples.h"
 
 
 unsigned char * generateTexture(int w, int h, int d)
@@ -66,7 +52,7 @@ unsigned char * generateTexture(int w, int h, int d)
   int val;
   float x,y,z;
 //  unsigned char pixval;
-  unsigned char * bitmap = new unsigned char[w*h*d];
+  auto bitmap = new unsigned char[w*h*d];
 
   for (int k = 0;k<d;k++) {
     z = k*360/d;
@@ -82,7 +68,7 @@ unsigned char * generateTexture(int w, int h, int d)
     }
   }
 
-  
+
   return bitmap;
 }
 
@@ -117,11 +103,11 @@ void doClipping(SbVec3f trans, SbRotation rot)
   // Clip box against plane
 
   SbClip clip;
-  SoMFVec3f * globalVerts = 
+  SoMFVec3f * globalVerts =
     (SoMFVec3f *)SoDB::getGlobalField(SbName("globalVerts"));
-  SoMFVec3f * globalTVerts = 
+  SoMFVec3f * globalTVerts =
     (SoMFVec3f *)SoDB::getGlobalField(SbName("globalTVerts"));
-  SoMFInt32 * globalnv = 
+  SoMFInt32 * globalnv =
     (SoMFInt32 *)SoDB::getGlobalField(SbName("globalnv"));
   globalVerts->startEditing();
   globalVerts->setNum(0);
@@ -154,7 +140,7 @@ void doClipping(SbVec3f trans, SbRotation rot)
   globalnv->finishEditing();
 
   // Close hole in clipped box by clipping against all 6 planes
-  
+
   const SbVec3f planecoords[] = {
     SbVec3f(-10,0,-10),
     SbVec3f(10,0,-10),
@@ -162,7 +148,7 @@ void doClipping(SbVec3f trans, SbRotation rot)
     SbVec3f(-10,0,10)
   };
 
-  
+
   clip.reset();
   for (i = 0;i<4;i++) {
     SbVec3f v;
@@ -176,9 +162,9 @@ void doClipping(SbVec3f trans, SbRotation rot)
     clip.clip(p);
   }
   int numVerts = clip.getNumVertices();
-  SoMFVec3f * planeVerts = 
+  SoMFVec3f * planeVerts =
     (SoMFVec3f *)SoDB::getGlobalField(SbName("planeVerts"));
-  SoMFVec3f * planeTVerts = 
+  SoMFVec3f * planeTVerts =
     (SoMFVec3f *)SoDB::getGlobalField(SbName("planeTVerts"));
   planeVerts->startEditing();
   planeVerts->setNum(0);
@@ -196,9 +182,9 @@ void doClipping(SbVec3f trans, SbRotation rot)
   planeTVerts->finishEditing();
 }
 
-void draggerCB(void * data, SoDragger * dragger)
+void draggerCB(void * /*data*/, SoDragger * dragger)
 {
-  SoTransformerDragger * drag = (SoTransformerDragger *)dragger;
+  auto drag = (SoTransformerDragger *)dragger;
   doClipping(drag->translation.getValue(), drag->rotation.getValue());
 }
 
@@ -216,11 +202,11 @@ void Texture3D(SoSeparator * root)
 //  SoSeparator * root = new SoSeparator;
 //  root->ref();
 
-  SoComplexity * comp = new SoComplexity;
+  auto comp = new SoComplexity;
   comp->textureQuality.setValue((float)0.9);
   root->addChild(comp);
 
-  SoTexture3 * texture = new SoTexture3;
+  auto texture = new SoTexture3;
   texture->wrapR.setValue(SoTexture3::CLAMP);
   texture->wrapS.setValue(SoTexture3::CLAMP);
   texture->wrapT.setValue(SoTexture3::CLAMP);
@@ -232,37 +218,37 @@ void Texture3D(SoSeparator * root)
   texture->images.setValue(SbVec3s(256,256,256), 1, img);
   root->addChild(texture);
 
-  SoMaterial * mat = new SoMaterial;
+  auto mat = new SoMaterial;
   mat->emissiveColor.setValue(1,1,1);
   root->addChild(mat);
-    
-  SoTransformerDragger * dragger = new SoTransformerDragger;
+
+  auto dragger = new SoTransformerDragger;
   dragger->scaleFactor.setValue(5,5,5);
-  dragger->addValueChangedCallback(draggerCB, NULL);
+  dragger->addValueChangedCallback(draggerCB, nullptr);
   root->addChild(dragger);
 
-  SoCoordinate3 * clippedCoords = new SoCoordinate3;
+  auto clippedCoords = new SoCoordinate3;
   clippedCoords->point.connectFrom((SoMFVec3f *)
                                    SoDB::getGlobalField("globalVerts"));
   root->addChild(clippedCoords);
-  SoTextureCoordinate3 * clippedTCoords = new SoTextureCoordinate3;
+  auto clippedTCoords = new SoTextureCoordinate3;
   clippedTCoords->point.connectFrom((SoMFVec3f *)
                                     SoDB::getGlobalField("globalTVerts"));
   root->addChild(clippedTCoords);
-  SoFaceSet * clippedFS = new SoFaceSet;
+  auto clippedFS = new SoFaceSet;
   clippedFS->numVertices.connectFrom((SoMFInt32 *)
                                      SoDB::getGlobalField("globalnv"));
   root->addChild(clippedFS);
 
-  SoCoordinate3 * planeCoords = new SoCoordinate3;
+  auto planeCoords = new SoCoordinate3;
   planeCoords->point.connectFrom((SoMFVec3f *)
                                  SoDB::getGlobalField("planeVerts"));
   root->addChild(planeCoords);
-  SoTextureCoordinate3 * planeTCoords = new SoTextureCoordinate3;
+  auto planeTCoords = new SoTextureCoordinate3;
   planeTCoords->point.connectFrom((SoMFVec3f *)
                                   SoDB::getGlobalField("planeTVerts"));
   root->addChild(planeTCoords);
-  SoFaceSet * planeFS = new SoFaceSet;
+  auto planeFS = new SoFaceSet;
   root->addChild(planeFS);
 }
 
@@ -290,27 +276,29 @@ void LightManip(SoSeparator * root)
   SoInput in;
   in.setBuffer((void *)scenegraph, std::strlen(scenegraph));
   SoSeparator * _root = SoDB::readAll( &in );
+  if (!_root) // Shouldn't happen.
+      return;
   root->addChild(_root);
-  if ( root == NULL ) return; // Shouldn't happen.
   root->ref();
 
   const char * pointlightnames[3] = { "RedLight", "GreenLight", "BlueLight" };
   SoSearchAction sa;
 
-  for (int i = 0; i < 3; i++) {
-    sa.setName( pointlightnames[i] );
+  for (const char* name : pointlightnames) {
+    sa.setName(name);
     sa.setInterest( SoSearchAction::FIRST );
-    sa.setSearchingAll( FALSE );
+    sa.setSearchingAll( false );
     sa.apply( root );
     SoPath * path = sa.getPath();
-    if ( path == NULL) return; // Shouldn't happen.
+    if (!path) // Shouldn't happen.
+        return;
 
-    SoPointLightManip * manip = new SoPointLightManip;
+    auto manip = new SoPointLightManip;
     manip->replaceNode( path );
   }
 
 
-} 
+}
 
 
 
@@ -323,8 +311,8 @@ const int texturewidth = 128;
 const int textureheight = 128;
 
 // Global variables
-double cr = 0.33;
-double ci = 0.43;
+double global_cr = 0.33;
+double global_ci = 0.43;
 
 // Global pointer
 //unsigned char * bitmap = new unsigned char[texturewidth*textureheight];
@@ -334,14 +322,14 @@ unsigned char bitmap[texturewidth*textureheight];
 // Parameters:
 //  double cr   - real part of the julia set point
 //  double ci   - imaginary part of the julia set point
-//  float zoon  - lenth of the square to display (zoom*zoom), center (0,0)
+//  float zoom  - length of the square to display (zoom*zoom), center (0,0)
 //  int width   - width of the bitmap
 //  int height  - height of the bitmap
 //  int mult    - number to multiply each color by.
 //  unsigned char * bmp - pointer to the bitmap
-//  int n       - number of itterations 
+//  int n       - number of iterations
 void
-julia(double crr, double cii, float zoom, int width, int height, int mult, 
+julia(double crr, double cii, float zoom, int width, int height, int mult,
       unsigned char * bmp, int n)
 {
   double zr, zr_old, zi;
@@ -368,65 +356,66 @@ julia(double crr, double cii, float zoom, int width, int height, int mult,
 SoTexture2 *
 texture()
 {
-  SoTexture2 * texture = new SoTexture2;
+    auto texture = new SoTexture2;
   texture->image.setValue(SbVec2s(texturewidth, textureheight), 1, bitmap);
   texture->model = SoTexture2::MODULATE;
   texture->blendColor.setValue(1.0, 0.0, 0.0);
   return texture;
 }
 
-// This function is called 20 times each second. 
+// This function is called 20 times each second.
 static void
 timersensorcallback(void * data, SoSensor *)
 {
-  static SbBool direction = FALSE;
+  static SbBool direction = false;
 
-  SoTexture2 * texnode = (SoTexture2*) data;
+  auto texnode = (SoTexture2*) data;
 
   if (!direction) {
-    cr -= 0.0005;
-    ci += 0.0005;
+    global_cr -= 0.0005;
+    global_ci += 0.0005;
   }
   else {
-    cr += 0.0005;
-    ci -= 0.0005;
+    global_cr += 0.0005;
+    global_ci -= 0.0005;
   }
 
-  if (ci<0.30)
+  if (global_ci<0.30)
     direction = !direction;
-  else if (ci>0.83)
+  else if (global_ci>0.83)
     direction = !direction;
 
   SbVec2s size;
   int nc;
   unsigned char * image = texnode->image.startEditing(size, nc);
   // Generate a julia set to use as a texturemap
-  julia(cr, ci, 2.5, size[0], size[1], 4, image, 64);
+  julia(global_cr, global_ci, 2.5, size[0], size[1], 4, image, 64);
   texnode->image.finishEditing();
 }
 
 void AnimationTexture(SoSeparator * root)
 {
+  // Scene graph
+  if (!root) // Shouldn't happen.
+      return;
 
   // Generate a julia set to use as a texturemap
-  julia(cr, ci, 2.5, texturewidth, textureheight, 4, bitmap, 64);
+  julia(global_cr, global_ci, 2.5, texturewidth, textureheight, 4, bitmap, 64);
 
- 
+
   SoTexture2 * texnode = texture();
 
   // Enable backface culling
-  SoShapeHints * hints = new SoShapeHints;
+  auto hints = new SoShapeHints;
 
   hints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
   hints->shapeType = SoShapeHints::SOLID;
 
   // Timer sensor
-  SoTimerSensor * texturetimer = new SoTimerSensor(timersensorcallback, texnode);
+  auto texturetimer = new SoTimerSensor(timersensorcallback, texnode);
   texturetimer->setInterval(0.05);
   texturetimer->schedule();
 
-  // Scene graph
-  if ( root == NULL ) return; // Shouldn't happen.
   root->ref(); // prevent from being deleted because of the still running timer sensor
 //  SoSeparator * root = new SoSeparator;
 //  root->ref();
@@ -434,6 +423,4 @@ void AnimationTexture(SoSeparator * root)
   root->addChild(hints);
   root->addChild(texnode);
   root->addChild(new SoCube);
-
- }
-
+}

@@ -1,3 +1,4 @@
 /** \defgroup IMPORT Import
- *  \ingroup WORKBENCHES */
-
+ *  \ingroup UTILITIES
+ *  brief Utilities to import various file formats using OpenCasCade OCAF
+ */

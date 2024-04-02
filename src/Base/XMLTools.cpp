@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Riegel         <juergen.riegel@web.de>                  *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,15 +23,84 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-# include <assert.h>
-#endif
-
-/// Here the FreeCAD includes sorted by Base,App,Gui......
 #include "XMLTools.h"
 
 using namespace Base;
+XERCES_CPP_NAMESPACE_USE
 
-std::auto_ptr<XERCES_CPP_NAMESPACE::XMLTranscoder> StrXUTF8::transcoder;
-std::auto_ptr<XERCES_CPP_NAMESPACE::XMLTranscoder> XUTF8Str::transcoder;
+std::unique_ptr<XMLTranscoder> XMLTools::transcoder;
 
+void XMLTools::initialize()
+{
+    if (!transcoder.get()) {
+        XMLTransService::Codes res{};
+        transcoder.reset(XMLPlatformUtils::fgTransService->makeNewTranscoderFor(XMLRecognizer::UTF_8, res, 4096, XMLPlatformUtils::fgMemoryManager));
+        if (res != XMLTransService::Ok)
+            throw Base::UnicodeError("Can\'t create transcoder");
+    }
+}
+
+std::string XMLTools::toStdString(const XMLCh* const toTranscode)
+{
+    std::string str;
+
+    initialize();
+
+    //char outBuff[128];
+    static XMLByte outBuff[128];
+    XMLSize_t outputLength = 0;
+    XMLSize_t eaten = 0;
+    XMLSize_t offset = 0;
+    XMLSize_t inputLength = XMLString::stringLen(toTranscode);
+
+    while (inputLength)
+    {
+        outputLength = transcoder->transcodeTo(toTranscode + offset, inputLength, outBuff, 128, eaten, XMLTranscoder::UnRep_RepChar);
+        str.append(reinterpret_cast<const char*>(outBuff), outputLength);
+        offset += eaten;
+        inputLength -= eaten;
+
+        //  Bail out if nothing more was produced
+        if (outputLength == 0)
+            break;
+    }
+
+    return str;
+}
+
+std::basic_string<XMLCh> XMLTools::toXMLString(const char* const fromTranscode)
+{
+    std::basic_string<XMLCh> str;
+    if (!fromTranscode)
+        return str;
+	
+    initialize();
+
+    static XMLCh outBuff[128];
+    const XMLByte* xmlBytes = reinterpret_cast<const XMLByte*>(fromTranscode);
+    XMLSize_t outputLength = 0;
+    XMLSize_t eaten = 0;
+    XMLSize_t offset = 0;
+    XMLSize_t inputLength = std::string(fromTranscode).size();
+
+    unsigned char* charSizes = new unsigned char[inputLength];
+    while (inputLength)
+    {
+        outputLength = transcoder->transcodeFrom(xmlBytes + offset, inputLength, outBuff, 128, eaten, charSizes);
+        str.append(outBuff, outputLength);
+        offset += eaten;
+        inputLength -= eaten;
+
+        //  Bail out if nothing more was produced
+        if (outputLength == 0)
+            break;
+    }
+
+    delete[] charSizes;
+    return str;
+}
+
+void XMLTools::terminate()
+{
+    transcoder.reset();
+}

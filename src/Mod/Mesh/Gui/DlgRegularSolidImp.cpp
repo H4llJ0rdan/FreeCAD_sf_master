@@ -20,87 +20,93 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-# include <float.h>
-# include <qcheckbox.h>
-# include <qcombobox.h>
-# include <qmessagebox.h>
+#include <cfloat>
+#include <qmessagebox.h>
 #endif
 
-#include <Base/PyObjectBase.h>
+#include <App/Document.h>
 #include <Base/Interpreter.h>
+#include <Base/PyObjectBase.h>
 #include <Base/UnitsApi.h>
 #include <Gui/Application.h>
 #include <Gui/Command.h>
 #include <Gui/Document.h>
-#include <Gui/MainWindow.h>
-#include <Gui/PrefWidgets.h>
 #include <Gui/WaitCursor.h>
 
 #include "DlgRegularSolidImp.h"
+#include "ui_DlgRegularSolid.h"
+
 
 using namespace MeshGui;
 
-/**
- *  Constructs a MeshGui::DlgRegularSolidImp as a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'.
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
- */
-MeshGui::DlgRegularSolidImp::DlgRegularSolidImp(QWidget* parent, Qt::WFlags fl)
-  : QDialog( parent, fl )
+/* TRANSLATOR MeshGui::DlgRegularSolidImp */
+
+// clang-format off
+DlgRegularSolidImp::DlgRegularSolidImp(QWidget* parent, Qt::WindowFlags fl)
+    : QDialog(parent, fl)
+    , ui(new Ui_DlgRegularSolid)
 {
-    this->setupUi(this);
-    QList<QDoubleSpinBox*> list = this->findChildren<QDoubleSpinBox*>();
-    for (QList<QDoubleSpinBox*>::iterator it = list.begin(); it != list.end(); ++it)
-        (*it)->setDecimals(Base::UnitsApi::getDecimals());
+    ui->setupUi(this);
+    connect(ui->createSolidButton, &QPushButton::clicked,
+            this, &DlgRegularSolidImp::onCreateSolidButtonClicked);
     Gui::Command::doCommand(Gui::Command::Doc, "import Mesh,BuildRegularGeoms");
 
     // set limits
     // Box
-    boxLength->setMaximum(DBL_MAX);
-    boxWidth->setMaximum(DBL_MAX);
-    boxHeight->setMaximum(DBL_MAX);
+    ui->boxLength->setMaximum(DBL_MAX);
+    ui->boxLength->setMinimum(0);
+    ui->boxWidth->setMaximum(DBL_MAX);
+    ui->boxWidth->setMinimum(0);
+    ui->boxHeight->setMaximum(DBL_MAX);
+    ui->boxHeight->setMinimum(0);
     // Cylinder
-    cylinderRadius->setMaximum(DBL_MAX);
-    cylinderLength->setMaximum(DBL_MAX);
-    cylinderEdgeLength->setMaximum(DBL_MAX);
-    cylinderCount->setMaximum(1000);
+    ui->cylinderRadius->setMaximum(DBL_MAX);
+    ui->cylinderRadius->setMinimum(0);
+    ui->cylinderLength->setMaximum(DBL_MAX);
+    ui->cylinderLength->setMinimum(0);
+    ui->cylinderEdgeLength->setMaximum(DBL_MAX);
+    ui->cylinderEdgeLength->setMinimum(0);
+    ui->cylinderCount->setMaximum(1000);
     // Cone
-    coneRadius1->setMaximum(DBL_MAX);
-    coneRadius2->setMaximum(DBL_MAX);
-    coneLength->setMaximum(DBL_MAX);
-    coneEdgeLength->setMaximum(DBL_MAX);
-    coneCount->setMaximum(1000);
+    ui->coneRadius1->setMaximum(DBL_MAX);
+    ui->coneRadius1->setMinimum(0);
+    ui->coneRadius2->setMaximum(DBL_MAX);
+    ui->coneRadius2->setMinimum(0);
+    ui->coneLength->setMaximum(DBL_MAX);
+    ui->coneLength->setMinimum(0);
+    ui->coneEdgeLength->setMaximum(DBL_MAX);
+    ui->coneEdgeLength->setMinimum(0);
+    ui->coneCount->setMaximum(1000);
     // Sphere
-    sphereRadius->setMaximum(DBL_MAX);
-    sphereCount->setMaximum(1000);
+    ui->sphereRadius->setMaximum(DBL_MAX);
+    ui->sphereRadius->setMinimum(0);
+    ui->sphereCount->setMaximum(1000);
     // Ellipsoid
-    ellipsoidRadius1->setMaximum(DBL_MAX);
-    ellipsoidRadius2->setMaximum(DBL_MAX);
-    ellipsoidCount->setMaximum(1000);
+    ui->ellipsoidRadius1->setMaximum(DBL_MAX);
+    ui->ellipsoidRadius1->setMinimum(0);
+    ui->ellipsoidRadius2->setMaximum(DBL_MAX);
+    ui->ellipsoidRadius2->setMinimum(0);
+    ui->ellipsoidCount->setMaximum(1000);
     // Torus
-    toroidRadius1->setMaximum(DBL_MAX);
-    toroidRadius2->setMaximum(DBL_MAX);
-    toroidCount->setMaximum(1000);
+    ui->toroidRadius1->setMaximum(DBL_MAX);
+    ui->toroidRadius1->setMinimum(0);
+    ui->toroidRadius2->setMaximum(DBL_MAX);
+    ui->toroidRadius2->setMinimum(0);
+    ui->toroidCount->setMaximum(1000);
 }
 
 /**
  *  Destroys the object and frees any allocated resources
  */
-MeshGui::DlgRegularSolidImp::~DlgRegularSolidImp()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
+DlgRegularSolidImp::~DlgRegularSolidImp() = default;
 
-void MeshGui::DlgRegularSolidImp::changeEvent(QEvent *e)
+void DlgRegularSolidImp::changeEvent(QEvent *e)
 {
     if (e->type() == QEvent::LanguageChange) {
-        this->retranslateUi(this);
+        ui->retranslateUi(this);
     }
     QDialog::changeEvent(e);
 }
@@ -108,29 +114,29 @@ void MeshGui::DlgRegularSolidImp::changeEvent(QEvent *e)
 /**
  * Builds a mesh solid from the currently active solid type.
  */
-void MeshGui::DlgRegularSolidImp::on_createSolidButton_clicked()
+void DlgRegularSolidImp::onCreateSolidButtonClicked()
 {
     try {
         Gui::WaitCursor wc;
         QString cmd; std::string name;
         App::Document* doc = App::GetApplication().getActiveDocument();
         if (!doc) {
-            QMessageBox::warning(this, tr("Create %1").arg(comboBox1->currentText()), tr("No active document"));
+            QMessageBox::warning(this, tr("Create %1").arg(ui->comboBox1->currentText()), tr("No active document"));
             return;
         }
-        if (comboBox1->currentIndex() == 0) {         // cube
+        if (ui->comboBox1->currentIndex() == 0) {         // cube
             name = doc->getUniqueObjectName("Cube");
             cmd = QString(QLatin1String(
                 "App.ActiveDocument.addObject(\"Mesh::Cube\",\"%1\")\n"
                 "App.ActiveDocument.%1.Length=%2\n"
                 "App.ActiveDocument.%1.Width=%3\n"
                 "App.ActiveDocument.%1.Height=%4\n"))
-                .arg(QLatin1String(name.c_str()))
-                .arg(boxLength->value(),0,'f',2)
-                .arg(boxWidth->value(),0,'f',2)
-                .arg(boxHeight->value(),0,'f',2);
+                .arg(QLatin1String(name.c_str()),
+                     Base::UnitsApi::toNumber(ui->boxLength->value()),
+                     Base::UnitsApi::toNumber(ui->boxWidth->value()),
+                     Base::UnitsApi::toNumber(ui->boxHeight->value()));
         }
-        else if (comboBox1->currentIndex() == 1) {  // cylinder
+        else if (ui->comboBox1->currentIndex() == 1) {  // cylinder
             name = doc->getUniqueObjectName("Cylinder");
             cmd = QString(QLatin1String(
                 "App.ActiveDocument.addObject(\"Mesh::Cylinder\",\"%1\")\n"
@@ -139,14 +145,14 @@ void MeshGui::DlgRegularSolidImp::on_createSolidButton_clicked()
                 "App.ActiveDocument.%1.EdgeLength=%4\n"
                 "App.ActiveDocument.%1.Closed=%5\n"
                 "App.ActiveDocument.%1.Sampling=%6\n"))
-                .arg(QLatin1String(name.c_str()))
-                .arg(cylinderRadius->value(),0,'f',2)
-                .arg(cylinderLength->value(),0,'f',2)
-                .arg(cylinderEdgeLength->value(),0,'f',2)
-                .arg(QLatin1String((cylinderClosed->isChecked()?"True":"False")))
-                .arg(cylinderCount->value());
+                .arg(QLatin1String(name.c_str()),
+                     Base::UnitsApi::toNumber(ui->cylinderRadius->value()),
+                     Base::UnitsApi::toNumber(ui->cylinderLength->value()),
+                     Base::UnitsApi::toNumber(ui->cylinderEdgeLength->value()),
+                     QLatin1String((ui->cylinderClosed->isChecked()?"True":"False")))
+                .arg(ui->cylinderCount->value());
         }
-        else if (comboBox1->currentIndex() == 2) {  // cone
+        else if (ui->comboBox1->currentIndex() == 2) {  // cone
             name = doc->getUniqueObjectName("Cone");
             cmd = QString(QLatin1String(
                 "App.ActiveDocument.addObject(\"Mesh::Cone\",\"%1\")\n"
@@ -156,107 +162,62 @@ void MeshGui::DlgRegularSolidImp::on_createSolidButton_clicked()
                 "App.ActiveDocument.%1.EdgeLength=%5\n"
                 "App.ActiveDocument.%1.Closed=%6\n"
                 "App.ActiveDocument.%1.Sampling=%7\n"))
-                .arg(QLatin1String(name.c_str()))
-                .arg(coneRadius1->value(),0,'f',2)
-                .arg(coneRadius2->value(),0,'f',2)
-                .arg(coneLength->value(),0,'f',2)
-                .arg(coneEdgeLength->value(),0,'f',2)
-                .arg(QLatin1String((coneClosed->isChecked()?"True":"False")))
-                .arg(coneCount->value());
+                .arg(QLatin1String(name.c_str()),
+                     Base::UnitsApi::toNumber(ui->coneRadius1->value()),
+                     Base::UnitsApi::toNumber(ui->coneRadius2->value()),
+                     Base::UnitsApi::toNumber(ui->coneLength->value()),
+                     Base::UnitsApi::toNumber(ui->coneEdgeLength->value()),
+                     QLatin1String((ui->coneClosed->isChecked()?"True":"False")))
+                .arg(ui->coneCount->value());
         }
-        else if (comboBox1->currentIndex() == 3) {  // sphere
+        else if (ui->comboBox1->currentIndex() == 3) {  // sphere
             name = doc->getUniqueObjectName("Sphere");
             cmd = QString(QLatin1String(
                 "App.ActiveDocument.addObject(\"Mesh::Sphere\",\"%1\")\n"
                 "App.ActiveDocument.%1.Radius=%2\n"
                 "App.ActiveDocument.%1.Sampling=%3\n"))
-                .arg(QLatin1String(name.c_str()))
-                .arg(sphereRadius->value(),0,'f',2)
-                .arg(sphereCount->value());
+                .arg(QLatin1String(name.c_str()),
+                     Base::UnitsApi::toNumber(ui->sphereRadius->value()))
+                .arg(ui->sphereCount->value());
         }
-        else if (comboBox1->currentIndex() == 4) {  // ellipsoid
+        else if (ui->comboBox1->currentIndex() == 4) {  // ellipsoid
             name = doc->getUniqueObjectName("Ellipsoid");
             cmd = QString(QLatin1String(
                 "App.ActiveDocument.addObject(\"Mesh::Ellipsoid\",\"%1\")\n"
                 "App.ActiveDocument.%1.Radius1=%2\n"
                 "App.ActiveDocument.%1.Radius2=%3\n"
                 "App.ActiveDocument.%1.Sampling=%4\n"))
-                .arg(QLatin1String(name.c_str()))
-                .arg(ellipsoidRadius1->value(),0,'f',2)
-                .arg(ellipsoidRadius2->value(),0,'f',2)
-                .arg(ellipsoidCount->value());
+                .arg(QLatin1String(name.c_str()),
+                     Base::UnitsApi::toNumber(ui->ellipsoidRadius1->value()),
+                     Base::UnitsApi::toNumber(ui->ellipsoidRadius2->value()))
+                .arg(ui->ellipsoidCount->value());
         }
-        else if (comboBox1->currentIndex() == 5) {  // toroid
+        else if (ui->comboBox1->currentIndex() == 5) {  // toroid
             name = doc->getUniqueObjectName("Torus");
             cmd = QString(QLatin1String(
                 "App.ActiveDocument.addObject(\"Mesh::Torus\",\"%1\")\n"
                 "App.ActiveDocument.%1.Radius1=%2\n"
                 "App.ActiveDocument.%1.Radius2=%3\n"
                 "App.ActiveDocument.%1.Sampling=%4\n"))
-                .arg(QLatin1String(name.c_str()))
-                .arg(toroidRadius1->value(),0,'f',2)
-                .arg(toroidRadius2->value(),0,'f',2)
-                .arg(toroidCount->value());
+                .arg(QLatin1String(name.c_str()),
+                     Base::UnitsApi::toNumber(ui->toroidRadius1->value()),
+                     Base::UnitsApi::toNumber(ui->toroidRadius2->value()))
+                .arg(ui->toroidCount->value());
         }
 
         // Execute the Python block
-        QString solid = tr("Create %1").arg(comboBox1->currentText());
+        QString solid = tr("Create %1").arg(ui->comboBox1->currentText());
         Gui::Application::Instance->activeDocument()->openCommand(solid.toUtf8());
-        Gui::Command::doCommand(Gui::Command::Doc, (const char*)cmd.toAscii());
+        Gui::Command::doCommand(Gui::Command::Doc, (const char*)cmd.toLatin1());
         Gui::Application::Instance->activeDocument()->commitCommand();
         Gui::Command::doCommand(Gui::Command::Doc, "App.activeDocument().recompute()");
         Gui::Command::doCommand(Gui::Command::Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
     }
     catch (const Base::PyException& e) {
-        QMessageBox::warning(this, tr("Create %1").arg(comboBox1->currentText()),
+        QMessageBox::warning(this, tr("Create %1").arg(ui->comboBox1->currentText()),
             QString::fromLatin1(e.what()));
     }
 }
-
-// -------------------------------------------------------------
-
-SingleDlgRegularSolidImp* SingleDlgRegularSolidImp::_instance=0;
-
-SingleDlgRegularSolidImp* SingleDlgRegularSolidImp::instance()
-{
-    // not initialized?
-    if(!_instance) {
-        _instance = new SingleDlgRegularSolidImp( Gui::getMainWindow());
-        _instance->setAttribute(Qt::WA_DeleteOnClose);
-    }
-
-    return _instance;
-}
-
-void SingleDlgRegularSolidImp::destruct ()
-{
-    if (_instance != 0) {
-        SingleDlgRegularSolidImp *pTmp = _instance;
-        _instance = 0;
-        delete pTmp;
-    }
-}
-
-bool SingleDlgRegularSolidImp::hasInstance()
-{
-    return _instance != 0;
-}
-
-/**
- *  Constructs a SingleDlgRegularSolidImp which is a child of 'parent', with the
- *  name 'name' and widget flags set to 'f'
- */
-SingleDlgRegularSolidImp::SingleDlgRegularSolidImp(QWidget* parent, Qt::WFlags fl)
-  : DlgRegularSolidImp(parent, fl)
-{
-}
-
-/**
- *  Destroys the object and frees any allocated resources
- */
-SingleDlgRegularSolidImp::~SingleDlgRegularSolidImp()
-{
-    _instance = 0;
-}
+// clang-format on
 
 #include "moc_DlgRegularSolidImp.cpp"

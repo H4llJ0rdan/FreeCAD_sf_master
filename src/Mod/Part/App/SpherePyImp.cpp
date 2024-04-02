@@ -20,12 +20,8 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <gp_Circ.hxx>
-# include <gp_Sphere.hxx>
-# include <Geom_Circle.hxx>
 # include <Geom_SphericalSurface.hxx>
 # include <Standard_Failure.hxx>
 #endif
@@ -33,18 +29,17 @@
 #include <Base/GeometryPyCXX.h>
 #include <Base/VectorPy.h>
 
-#include "Geometry.h"
-#include "CirclePy.h"
 #include "SpherePy.h"
 #include "SpherePy.cpp"
 #include "OCCError.h"
 
+
 using namespace Part;
 
 // returns a string which represents the object e.g. when printed in python
-std::string SpherePy::representation(void) const
+std::string SpherePy::representation() const
 {
-    Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
+    Handle(Geom_SphericalSurface) sphere = Handle(Geom_SphericalSurface)::DownCast
         (getGeomSpherePtr()->handle());
     gp_Ax1 axis = sphere->Axis();
     gp_Dir dir = axis.Direction();
@@ -53,9 +48,9 @@ std::string SpherePy::representation(void) const
 
     std::stringstream str;
     str << "Sphere (";
-    str << "Radius : " << fRad << ", "; 
-    str << "Center : (" << loc.X() << ", "<< loc.Y() << ", "<< loc.Z() << "), "; 
-    str << "Direction : (" << dir.X() << ", "<< dir.Y() << ", "<< dir.Z() << ")"; 
+    str << "Radius : " << fRad << ", ";
+    str << "Center : (" << loc.X() << ", "<< loc.Y() << ", "<< loc.Z() << "), ";
+    str << "Direction : (" << dir.X() << ", "<< dir.Y() << ", "<< dir.Z() << ")";
     str << ")";
 
     return str.str();
@@ -63,7 +58,7 @@ std::string SpherePy::representation(void) const
 
 PyObject *SpherePy::PyMake(struct _typeobject *, PyObject *, PyObject *)  // Python wrapper
 {
-    // create a new instance of SpherePy and the Twin object 
+    // create a new instance of SpherePy and the Twin object
     return new SpherePy(new GeomSphere);
 }
 
@@ -71,7 +66,7 @@ PyObject *SpherePy::PyMake(struct _typeobject *, PyObject *, PyObject *)  // Pyt
 int SpherePy::PyInit(PyObject* args, PyObject* /*kwd*/)
 {
     if (PyArg_ParseTuple(args, "")) {
-        Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
+        Handle(Geom_SphericalSurface) sphere = Handle(Geom_SphericalSurface)::DownCast
             (getGeomSpherePtr()->handle());
         sphere->SetRadius(1.0);
         return 0;
@@ -80,37 +75,37 @@ int SpherePy::PyInit(PyObject* args, PyObject* /*kwd*/)
     return -1;
 }
 
-Py::Float SpherePy::getRadius(void) const
+Py::Float SpherePy::getRadius() const
 {
-    Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
+    Handle(Geom_SphericalSurface) sphere = Handle(Geom_SphericalSurface)::DownCast
         (getGeomSpherePtr()->handle());
-    return Py::Float(sphere->Radius()); 
+    return Py::Float(sphere->Radius());
 }
 
 void  SpherePy::setRadius(Py::Float arg)
 {
-    Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
+    Handle(Geom_SphericalSurface) sphere = Handle(Geom_SphericalSurface)::DownCast
         (getGeomSpherePtr()->handle());
     sphere->SetRadius((double)arg);
 }
 
-Py::Float SpherePy::getArea(void) const
+Py::Float SpherePy::getArea() const
 {
-    Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
+    Handle(Geom_SphericalSurface) sphere = Handle(Geom_SphericalSurface)::DownCast
         (getGeomSpherePtr()->handle());
-    return Py::Float(sphere->Area()); 
+    return Py::Float(sphere->Area());
 }
 
-Py::Float SpherePy::getVolume(void) const
+Py::Float SpherePy::getVolume() const
 {
-    Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
+    Handle(Geom_SphericalSurface) sphere = Handle(Geom_SphericalSurface)::DownCast
         (getGeomSpherePtr()->handle());
-    return Py::Float(sphere->Volume()); 
+    return Py::Float(sphere->Volume());
 }
 
-Py::Object SpherePy::getCenter(void) const
+Py::Object SpherePy::getCenter() const
 {
-    Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
+    Handle(Geom_SphericalSurface) sphere = Handle(Geom_SphericalSurface)::DownCast
         (getGeomSpherePtr()->handle());
     gp_Pnt loc = sphere->Location();
     return Py::Vector(Base::Vector3d(loc.X(), loc.Y(), loc.Z()));
@@ -121,13 +116,13 @@ void SpherePy::setCenter(Py::Object arg)
     PyObject* p = arg.ptr();
     if (PyObject_TypeCheck(p, &(Base::VectorPy::Type))) {
         Base::Vector3d loc = static_cast<Base::VectorPy*>(p)->value();
-        Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
+        Handle(Geom_SphericalSurface) sphere = Handle(Geom_SphericalSurface)::DownCast
             (getGeomSpherePtr()->handle());
         sphere->SetLocation(gp_Pnt(loc.x, loc.y, loc.z));
     }
     else if (PyObject_TypeCheck(p, &PyTuple_Type)) {
         Base::Vector3d loc = Base::getVectorFromTuple<double>(p);
-        Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
+        Handle(Geom_SphericalSurface) sphere = Handle(Geom_SphericalSurface)::DownCast
             (getGeomSpherePtr()->handle());
         sphere->SetLocation(gp_Pnt(loc.x, loc.y, loc.z));
     }
@@ -138,9 +133,9 @@ void SpherePy::setCenter(Py::Object arg)
     }
 }
 
-Py::Object SpherePy::getAxis(void) const
+Py::Object SpherePy::getAxis() const
 {
-    Handle_Geom_ElementarySurface s = Handle_Geom_ElementarySurface::DownCast
+    Handle(Geom_ElementarySurface) s = Handle(Geom_ElementarySurface)::DownCast
         (getGeometryPtr()->handle());
     gp_Dir dir = s->Axis().Direction();
     return Py::Vector(Base::Vector3d(dir.X(), dir.Y(), dir.Z()));
@@ -169,62 +164,24 @@ void SpherePy::setAxis(Py::Object arg)
     }
 
     try {
-        Handle_Geom_ElementarySurface this_surf = Handle_Geom_ElementarySurface::DownCast
+        Handle(Geom_ElementarySurface) this_surf = Handle(Geom_ElementarySurface)::DownCast
             (this->getGeometryPtr()->handle());
         gp_Ax1 axis;
         axis.SetLocation(this_surf->Location());
         axis.SetDirection(gp_Dir(dir_x, dir_y, dir_z));
         this_surf->SetAxis(axis);
     }
-    catch (Standard_Failure) {
-        throw Py::Exception("cannot set axis");
-    }
-}
-
-PyObject *SpherePy::uIso(PyObject *args)
-{
-    double v;
-    if (!PyArg_ParseTuple(args, "d", &v))
-        return 0;
-
-    try {
-        Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
-            (getGeomSpherePtr()->handle());
-        Handle_Geom_Curve c = sphere->UIso(v);
-        return new CirclePy(new GeomCircle(Handle_Geom_Circle::DownCast(c)));
-    }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
-        return 0;
-    }
-}
-
-PyObject *SpherePy::vIso(PyObject *args)
-{
-    double v;
-    if (!PyArg_ParseTuple(args, "d", &v))
-        return 0;
-
-    try {
-        Handle_Geom_SphericalSurface sphere = Handle_Geom_SphericalSurface::DownCast
-            (getGeomSpherePtr()->handle());
-        Handle_Geom_Curve c = sphere->VIso(v);
-        return new CirclePy(new GeomCircle(Handle_Geom_Circle::DownCast(c)));
-    }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
-        return 0;
+    catch (Standard_Failure&) {
+        throw Py::RuntimeError("cannot set axis");
     }
 }
 
 PyObject *SpherePy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int SpherePy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }

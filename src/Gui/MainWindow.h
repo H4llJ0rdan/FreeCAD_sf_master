@@ -24,25 +24,15 @@
 #ifndef GUI_MAINWINDOW_H
 #define GUI_MAINWINDOW_H
 
-//#define NO_USE_QT_MDI_AREA
+#include <QEvent>
+#include <QMainWindow>
+#include <QMdiArea>
 
 #include "Window.h"
-#include <Base/Console.h>
-#include <string>
-#include <vector>
-
-#include <QMainWindow>
-#ifndef NO_USE_QT_MDI_AREA
-#include <QMdiArea>
-#else
-#include <QWorkspace>
-#endif
 
 class QMimeData;
 class QUrl;
-#if !defined (NO_USE_QT_MDI_AREA)
 class QMdiSubWindow;
-#endif
 
 namespace App {
 class Document;
@@ -60,8 +50,20 @@ namespace DockWnd {
     class HelpView;
 } //namespace DockWnd
 
+class GuiExport UrlHandler : public QObject
+{
+    Q_OBJECT
 
-/** 
+public:
+    explicit UrlHandler(QObject* parent = nullptr)
+        : QObject(parent){
+    }
+    ~UrlHandler() override = default;
+    virtual void openUrl(App::Document*, const QUrl&) {
+    }
+};
+
+/**
  * The MainWindow class provides a main window with menu bar, toolbars, dockable windows,
  * a status bar and mainly a workspace for the MDI windows.
  * @author Werner Mayer
@@ -69,19 +71,26 @@ namespace DockWnd {
 class GuiExport MainWindow : public QMainWindow
 {
     Q_OBJECT
- 
+
 public:
+    enum ConfirmSaveResult {
+        Cancel = 0,
+        Save,
+        SaveAll,
+        Discard,
+        DiscardAll
+    };
     /**
      * Constructs an empty main window. For default \a parent is 0, as there usually is
      * no toplevel window there.
      */
-    MainWindow(QWidget * parent = 0, Qt::WFlags f = Qt::Window);
+    explicit MainWindow(QWidget * parent = nullptr, Qt::WindowFlags f = Qt::Window);
     /** Destroys the object and frees any allocated resources. */
-    ~MainWindow();
+    ~MainWindow() override;
     /**
      * Filters events if this object has been installed as an event filter for the watched object.
      */
-    bool eventFilter(QObject* o, QEvent* e);
+    bool eventFilter(QObject* o, QEvent* e) override;
     /**
      * Adds an MDI window \a view to the main window's workspace and adds a new tab
      * to the tab bar.
@@ -91,15 +100,11 @@ public:
      * Removes an MDI window from the main window's workspace and its associated tab without
      * deleting the widget. If the main windows does not have such a window nothing happens.
      */
-    void removeWindow(MDIView* view);
+    void removeWindow(MDIView* view, bool close=true);
     /**
      * Returns a list of all MDI windows in the worpspace.
      */
-#if !defined(NO_USE_QT_MDI_AREA) 
     QList<QWidget*> windows(QMdiArea::WindowOrder order = QMdiArea::CreationOrder) const;
-#else
-    QList<QWidget*> windows(QWorkspace::WindowOrder order = QWorkspace::CreationOrder) const;
-#endif
     /**
      * Can be called after the caption of an MDIView has changed to update the tab's caption.
      */
@@ -117,33 +122,48 @@ public:
      */
     void appendRecentFile(const QString& filename);
     /**
+     * MRU: Appends \a macro to the list of recent macros.
+     */
+    void appendRecentMacro(const QString& filename);
+    /**
      * Returns true that the context menu contains the 'Customize...' menu item.
      */
-    QMenu * createPopupMenu();
+    QMenu * createPopupMenu() override;
 
     /** @name Splasher and access methods */
     //@{
     /** Gets the one and only instance. */
     static MainWindow* getInstance();
     /** Starts the splasher at startup. */
-    void startSplasher(void);
+    void startSplasher();
     /** Stops the splasher after startup. */
-    void stopSplasher(void);
+    void stopSplasher();
+    /* The image of the About dialog, it might be empty. */
+    QPixmap aboutImage() const;
     /* The image of the splash screen of the application. */
     QPixmap splashImage() const;
-    /** Shows the Tip-of-the-day dialog after startup. */
-    void showTipOfTheDay(bool force=false);
     /** Shows the online documentation. */
     void showDocumentation(const QString& help);
     //@}
 
-    /** @name Layout Methods 
+    /** @name Layout Methods
      */
     //@{
     /// Loads the main window settings.
     void loadWindowSettings();
     /// Saves the main window settings.
     void saveWindowSettings();
+    //@}
+
+    /** @name Menu
+     */
+    //@{
+    /// Set menu for dock windows.
+    void setDockWindowMenu(QMenu*);
+    /// Set menu for toolbars.
+    void setToolBarMenu(QMenu*);
+    /// Set menu for sub-windows
+    void setWindowsMenu(QMenu*);
     //@}
 
     /** @name MIME data handling
@@ -160,19 +180,38 @@ public:
     /**
      * Load files from the given URLs into the given document. If the document is 0
      * one gets created automatically if needed.
+     *
+     * If a url handler is registered that supports its scheme it will be delegated
+     * to this handler. This mechanism allows to change the default behaviour.
      */
     void loadUrls(App::Document*, const QList<QUrl>&);
+    /**
+     * Sets the \a handler for the given \a scheme.
+     * If setUrlHandler() is used to set a new handler for a scheme which already has a handler,
+     * the existing handler is simply replaced with the new one. Since MainWindow does not take
+     * ownership of handlers, no objects are deleted when a handler is replaced.
+     */
+    void setUrlHandler(const QString &scheme, UrlHandler* handler);
+    /**
+     * Removes a previously set URL handler for the specified \a scheme.
+     */
+    void unsetUrlHandler(const QString &scheme);
     //@}
 
+    void updateActions(bool delay = false);
+
+    enum StatusType {None, Err, Wrn, Pane, Msg, Log, Tmp, Critical};
+    void showStatus(int type, const QString & message);
+
 public Q_SLOTS:
+    /**
+     * Updates the standard actions of a text editor such as Cut, Copy, Paste, Undo and Redo.
+     */
+    void updateEditorActions();
     /**
      * Sets text to the pane in the status bar.
      */
     void setPaneText(int i, QString text);
-    /**
-     * Arranges all child windows in a horizontal tile pattern.
-     */
-    void arrangeIcons();
     /**
      * Arranges all child windows in a tile pattern.
      */
@@ -186,11 +225,12 @@ public Q_SLOTS:
      */
     void closeActiveWindow ();
     /**
-     * Closes all child windows. 
-     * The windows are closed in random order. The operation stops
-     * if a window does not accept the close event.
+     * Closes all document window.
      */
-    void closeAllWindows ();
+    bool closeAllDocuments (bool close=true);
+    /** Pop up a message box asking for saving document
+     */
+    int confirmSave(const char *docName, QWidget *parent=nullptr, bool addCheckBox=false);
     /**
      * Activates the next window in the child window chain.
      */
@@ -209,35 +249,52 @@ public Q_SLOTS:
     void whatsThis();
     void switchToTopLevelMode();
     void switchToDockedMode();
+
+    void statusMessageChanged();
+
     void showMessage (const QString & message, int timeout = 0);
 
 protected:
     /**
      * This method checks if the main window can be closed by checking all open documents and views.
      */
-    void closeEvent (QCloseEvent * e);
-    void showEvent  (QShowEvent  * e);
-    void hideEvent  (QHideEvent  * e);
-    void timerEvent (QTimerEvent *  ){ timeEvent();}
-    void customEvent(QEvent      * e);
-    bool event      (QEvent      * e);
+    void closeEvent (QCloseEvent * e) override;
+    void showEvent  (QShowEvent  * e) override;
+    void hideEvent  (QHideEvent  * e) override;
+    void timerEvent (QTimerEvent *  ) override {
+        Q_EMIT timeEvent();
+    }
+    void customEvent(QEvent      * e) override;
+    bool event      (QEvent      * e) override;
     /**
      * Try to interpret dropped elements.
      */
-    void dropEvent  (QDropEvent  * e);
+    void dropEvent  (QDropEvent  * e) override;
     /**
      * Checks if a mime source object can be interpreted.
      */
-    void dragEnterEvent(QDragEnterEvent * e);
+    void dragEnterEvent(QDragEnterEvent * e) override;
     /**
      * This method is called from the Qt framework automatically whenever a
      * QTranslator object has been installed. This allows to translate all
      * relevant user visible text.
      */
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent *e) override;
+
+private:
+    void setupDockWindows();
+    bool setupTreeView(const std::string&);
+    bool setupTaskView(const std::string&);
+    bool setupPropertyView(const std::string&);
+    bool setupSelectionView(const std::string&);
+    bool setupComboView(const std::string&);
+    bool setupDAGView(const std::string&);
+    bool setupReportView(const std::string&);
+    bool setupPythonConsole(const std::string&);
+
+    static void renderDevBuildWarning(QPainter &painter, const QPoint startPosition, const QSize maxSize);
 
 private Q_SLOTS:
-#if !defined (NO_USE_QT_MDI_AREA)
     /**
      * \internal
      */
@@ -250,20 +307,6 @@ private Q_SLOTS:
      * Close tab at position index.
      */
     void tabCloseRequested(int index);
-#else
-    /**
-     * Activates the associated tab to this widget.
-     */
-    void onWindowActivated(QWidget*);
-    /**
-     * Activates the associated window to the tab with \a id.
-     */
-    void onTabSelected(int i);
-    /**
-     * Removes the associated tab to the window when it gets destroyed from outside.
-     */
-    void onWindowDestroyed();
-#endif
     /**
      * Fills up the menu with the current windows in the workspace.
      */
@@ -276,22 +319,26 @@ private Q_SLOTS:
      * Fills up the menu with the current dock windows.
      */
     void onDockWindowMenuAboutToShow();
-    /** 
+    /**
      * This method gets frequently activated and test the commands if they are still active.
      */
-    void updateActions();
-    /**
-     * \internal
-     */
-    void showMainWindow();
+    void _updateActions();
     /**
      * \internal
      */
     void delayedStartup();
+    /**
+     * \internal
+     */
+    void processMessages(const QList<QByteArray> &);
+    /**
+     * \internal
+     */
+    void clearStatus();
 
 Q_SIGNALS:
     void timeEvent();
-    void windowStateChanged(MDIView*);
+    void windowStateChanged(Gui::MDIView*);
     void workbenchActivated(const QString&);
     void mainWindowClosed();
 
@@ -313,31 +360,45 @@ inline MainWindow* getMainWindow()
  * error messages are in red. Log messages are completely ignored.
  * The class is implemented to be thread-safe.
  * @see Console
- * @see ConsoleObserver
+ * @see ILogger
  * @author Werner Mayer
  */
-class StatusBarObserver: public WindowParameter, public Base::ConsoleObserver
+class StatusBarObserver: public WindowParameter, public Base::ILogger
 {
 public:
     StatusBarObserver();
-    virtual ~StatusBarObserver();
+    ~StatusBarObserver() override;
 
     /** Observes its parameter group. */
-    void OnChange(Base::Subject<const char*> &rCaller, const char * sReason);
+    void OnChange(Base::Subject<const char*> &rCaller, const char * sReason) override;
 
-    /// get called when a Warning is issued
-    void Warning(const char *m);
-    /// get called when a Message is issued
-    void Message(const char * m);
-    /// get called when a Error is issued
-    void Error  (const char *m);
-    /// get called when a Log Message is issued
-    void Log    (const char *);
+    void SendLog(const std::string& notifiername, const std::string& msg, Base::LogStyle level,
+                 Base::IntendedRecipient recipient, Base::ContentType content) override;
+
     /// name of the observer
-    const char *Name(void){return "StatusBar";}
+    const char *Name() override {return "StatusBar";}
+
+    friend class MainWindow;
+private:
+    QString msg, wrn, err, critical;
+};
+
+// -------------------------------------------------------------
+
+/** This is a helper class needed when a style sheet is restored or cleared.
+ * @author Werner Mayer
+ */
+class ActionStyleEvent : public QEvent
+{
+public:
+    static int EventType;
+    enum Style {Restore, Clear};
+
+    explicit ActionStyleEvent(Style type);
+    Style getType() const;
 
 private:
-    QString msg, wrn, err;
+    Style type;
 };
 
 } // namespace Gui

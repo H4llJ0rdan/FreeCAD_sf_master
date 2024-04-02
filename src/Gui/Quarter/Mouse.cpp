@@ -37,16 +37,24 @@
   QuarterWidget.
 */
 
-#include <Quarter/devices/Mouse.h>
+#include "PreCompiled.h"
 
-#include <QtCore/QEvent>
-#include <QtCore/QSize>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QWheelEvent>
+#ifdef _MSC_VER
+#pragma warning(disable : 4267)
+#endif
 
+#include <QEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
+
+#include <Gui/SoMouseWheelEvent.h>
 #include <Inventor/SbVec2s.h>
-#include <Inventor/events/SoEvents.h>
 #include <Inventor/errors/SoDebugError.h>
+#include <Inventor/events/SoEvents.h>
+
+#include "QuarterWidget.h"
+#include "devices/Mouse.h"
+
 
 namespace SIM { namespace Coin3D { namespace Quarter {
 
@@ -56,11 +64,13 @@ public:
     this->publ = publ;
     this->location2 = new SoLocation2Event;
     this->mousebutton = new SoMouseButtonEvent;
+    this->wheel = new SoMouseWheelEvent;
   }
 
   ~MouseP() {
     delete this->location2;
     delete this->mousebutton;
+    delete this->wheel;
   }
 
   const SoEvent * mouseMoveEvent(QMouseEvent * event);
@@ -71,6 +81,7 @@ public:
 
   class SoLocation2Event * location2;
   class SoMouseButtonEvent * mousebutton;
+  class SoMouseWheelEvent * wheel;
   SbVec2s windowsize;
   Mouse * publ;
 };
@@ -82,9 +93,15 @@ using namespace SIM::Coin3D::Quarter;
 #define PRIVATE(obj) obj->pimpl
 #define PUBLIC(obj) obj->publ
 
-Mouse::Mouse(void)
+Mouse::Mouse()
 {
   PRIVATE(this) = new MouseP(this);
+}
+
+Mouse::Mouse(QuarterWidget *quarter) :
+    InputDevice(quarter)
+{
+    PRIVATE(this) = new MouseP(this);
 }
 
 Mouse::~Mouse()
@@ -112,9 +129,9 @@ Mouse::translateEvent(QEvent * event)
     return PRIVATE(this)->mouseWheelEvent((QWheelEvent *) event);
   case QEvent::Resize:
     PRIVATE(this)->resizeEvent((QResizeEvent *) event);
-    return NULL;
+    return nullptr;
   default:
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -132,6 +149,8 @@ MouseP::mouseMoveEvent(QMouseEvent * event)
 
   assert(this->windowsize[1] != -1);
   SbVec2s pos(event->pos().x(), this->windowsize[1] - event->pos().y() - 1);
+  // the following corrects for high-dpi displays (e.g. mac retina)
+  pos *= publ->quarter->devicePixelRatio();
   this->location2->setPosition(pos);
   this->mousebutton->setPosition(pos);
   return this->location2;
@@ -140,22 +159,27 @@ MouseP::mouseMoveEvent(QMouseEvent * event)
 const SoEvent *
 MouseP::mouseWheelEvent(QWheelEvent * event)
 {
-  PUBLIC(this)->setModifiers(this->mousebutton, event);
+  PUBLIC(this)->setModifiers(this->wheel, event);
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
+  QPoint pnt = event->position().toPoint();
+  SbVec2s pos(pnt.x(), PUBLIC(this)->windowsize[1] - pnt.y() - 1);
+#else
   SbVec2s pos(event->pos().x(), PUBLIC(this)->windowsize[1] - event->pos().y() - 1);
-  this->location2->setPosition(pos);
-  this->mousebutton->setPosition(pos);
+#endif
+  // the following corrects for high-dpi displays (e.g. mac retina)
+  pos *= publ->quarter->devicePixelRatio();
+  this->location2->setPosition(pos); //I don't know why location2 is assigned here, I assumed it important  --DeepSOIC
+  this->wheel->setPosition(pos);
 
   // QWheelEvent::delta() returns the distance that the wheel is
   // rotated, in eights of a degree. A positive value indicates that
   // the wheel was rotated forwards away from the user; a negative
   // value indicates that the wheel was rotated backwards toward the
-  // user.
-  (event->delta() > 0) ?
-    this->mousebutton->setButton(SoMouseButtonEvent::BUTTON4) :
-    this->mousebutton->setButton(SoMouseButtonEvent::BUTTON5);
+  // user. A typical wheel click is 120, but values coming from touchpad
+  // can be a lot lower
+  this->wheel->setDelta(event->angleDelta().y());
 
-  this->mousebutton->setState(SoButtonEvent::DOWN);
-  return this->mousebutton;
+  return this->wheel;
 }
 
 const SoEvent *
@@ -163,6 +187,8 @@ MouseP::mouseButtonEvent(QMouseEvent * event)
 {
   PUBLIC(this)->setModifiers(this->mousebutton, event);
   SbVec2s pos(event->pos().x(), PUBLIC(this)->windowsize[1] - event->pos().y() - 1);
+  // the following corrects for high-dpi displays (e.g. mac retina)
+  pos *= publ->quarter->devicePixelRatio();
   this->location2->setPosition(pos);
   this->mousebutton->setPosition(pos);
 
@@ -178,7 +204,7 @@ MouseP::mouseButtonEvent(QMouseEvent * event)
   case Qt::RightButton:
     this->mousebutton->setButton(SoMouseButtonEvent::BUTTON2);
     break;
-  case Qt::MidButton:
+  case Qt::MiddleButton:
     this->mousebutton->setButton(SoMouseButtonEvent::BUTTON3);
     break;
   default:

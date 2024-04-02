@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -26,49 +26,37 @@
 
 #include <FCConfig.h>
 
-// Importing of App classes
-#ifdef FC_OS_WIN32
-# define ImportExport  __declspec(dllexport)
-# define PartExport    __declspec(dllimport)
-# define AppPartExport __declspec(dllimport)
-#else // for Linux
-# define ImportExport
-# define PartExport
-# define AppPartExport
-#endif
 
-
-/// here get the warnings of to long specifieres disabled (needet for VC6)
+/// point at which warnings of overly long specifiers disabled (needet for VC6)
 #ifdef _MSC_VER
-# pragma warning( disable : 4251 )
-# pragma warning( disable : 4503 )
-# pragma warning( disable : 4786 )  // specifier longer then 255 chars
+#pragma warning(disable : 4251)
+#pragma warning(disable : 4275)
+#pragma warning(disable : 4503)
+#pragma warning(disable : 4786)  // specifier longer then 255 chars
 #endif
 
 
 #ifdef _PreComp_
 
-// Python
-#include <Python.h>
-
 // standard
-#include <list>
-#include <iostream>
-#include <sstream>
-#include <stdio.h>
-#include <assert.h>
-#include <io.h>
+#include <cassert>
+#include <cstdio>
 #include <fcntl.h>
-#include <vector>
+#include <io.h>
+#include <iostream>
+#include <list>
 #include <map>
+#include <sstream>
+#include <vector>
 
-// Xerces
-#include <xercesc/util/XercesDefs.hpp>
+// boost
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/range/adaptor/indexed.hpp>
 
 // OpenCasCade =====================================================================================
 // Base
-#include "OpenCascadeAll.h"
+#include <Mod/Part/App/OpenCascadeAll.h>
 
-#endif //_PreComp_
+#endif  //_PreComp_
 
 #endif

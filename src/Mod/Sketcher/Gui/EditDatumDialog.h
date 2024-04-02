@@ -1,4 +1,5 @@
 /***************************************************************************
+ *   Copyright (c) 2011 Werner Mayer <wmayer[at]users.sourceforge.net>     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,30 +24,46 @@
 #define SKETCHERGUI_EditDatumDialog_H
 
 #include <QObject>
+#include <memory>
 
-namespace Sketcher {
+
+namespace Sketcher
+{
 class Constraint;
 class SketchObject;
-}
+}  // namespace Sketcher
 
-namespace SketcherGui {
+namespace SketcherGui
+{
 class ViewProviderSketch;
+class Ui_InsertDatum;
 
-class EditDatumDialog : public QObject {
-    Q_DECLARE_TR_FUNCTIONS(SketcherGui::EditDatumDialog)
+class EditDatumDialog: public QObject
+{
+    Q_OBJECT
+
 public:
     EditDatumDialog(ViewProviderSketch* vp, int ConstrNbr);
     EditDatumDialog(Sketcher::SketchObject* pcSketch, int ConstrNbr);
-    ~EditDatumDialog();
+    ~EditDatumDialog() override;
 
-    void exec(bool atCursor=true);
-    void customEvent(QEvent*);
+    int exec(bool atCursor = true);
+    bool isSuccess();
 
 private:
     Sketcher::SketchObject* sketch;
     Sketcher::Constraint* Constr;
     int ConstrNbr;
+    bool success;
+    std::unique_ptr<Ui_InsertDatum> ui_ins_datum;
+
+private Q_SLOTS:
+    void accepted();
+    void rejected();
+    void drivingToggled(bool);
+    void datumChanged();
+    void formEditorOpened(bool);
 };
 
-}
-#endif // SKETCHERGUI_DrawSketchHandler_H
+}  // namespace SketcherGui
+#endif  // SKETCHERGUI_DrawSketchHandler_H

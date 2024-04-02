@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenerateModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="generateMetaModel_Module.xsd">
-  <PythonExport 
-      Father="PyObjectBase" 
-      Name="FacetPy" 
-      Twin="Facet" 
-      TwinPointer="Facet" 
-      Include="Mod/Mesh/App/Facet.h" 
-      FatherInclude="Base/PyObjectBase.h" 
-      Namespace="Mesh" 
+  <PythonExport
+      Father="PyObjectBase"
+      Name="FacetPy"
+      Twin="Facet"
+      TwinPointer="Facet"
+      Include="Mod/Mesh/App/Facet.h"
+      FatherInclude="Base/PyObjectBase.h"
+      Namespace="Mesh"
       Constructor="true"
       Delete="true"
       FatherNamespace="Base">
@@ -34,16 +34,40 @@ work!
 	  </Methode>
 	  <Methode Name="intersect">
 		  <Documentation>
-			  <UserDocu>intersect(Facet) -> list 
+			  <UserDocu>intersect(Facet) -> list
 Get a list of intersection points with another triangle.
 			  </UserDocu>
 		  </Documentation>
 	  </Methode>
-	  <Attribute Name="Index" ReadOnly="true">
+      <Methode Name="isDegenerated">
+          <Documentation>
+              <UserDocu>isDegenerated([float]) -> boolean
+Returns true if the facet is degenerated, otherwise false.
+              </UserDocu>
+          </Documentation>
+      </Methode>
+      <Methode Name="isDeformed">
+          <Documentation>
+              <UserDocu>isDegenerated(MinAngle, MaxAngle) -> boolean
+Returns true if the facet is deformed, otherwise false.
+A triangle is considered deformed if an angle is less than MinAngle
+or higher than MaxAngle.
+The two angles are given in radian.
+              </UserDocu>
+          </Documentation>
+      </Methode>
+      <Methode Name="getEdge">
+          <Documentation>
+              <UserDocu>getEdge(int) -> Edge
+Returns the edge of the facet.
+              </UserDocu>
+          </Documentation>
+      </Methode>
+      <Attribute Name="Index" ReadOnly="true">
 		  <Documentation>
 			  <UserDocu>The index of this facet in the MeshObject</UserDocu>
 		  </Documentation>
-		  <Parameter Name="Index" Type="Int"/>
+		  <Parameter Name="Index" Type="Long"/>
 	  </Attribute>
 	  <Attribute Name="Bound" ReadOnly="true">
 		  <Documentation>
@@ -75,5 +99,41 @@ Get a list of intersection points with another triangle.
 			</Documentation>
 			<Parameter Name="NeighbourIndices" Type="Tuple"/>
 		</Attribute>
-	</PythonExport>
+        <Attribute Name="Area" ReadOnly="true">
+            <Documentation>
+                <UserDocu>The area of the facet</UserDocu>
+            </Documentation>
+            <Parameter Name="Area" Type="Float"/>
+        </Attribute>
+        <Attribute Name="AspectRatio" ReadOnly="true">
+            <Documentation>
+                <UserDocu>The aspect ratio of the facet computed by longest edge and its height</UserDocu>
+            </Documentation>
+            <Parameter Name="AspectRatio" Type="Float"/>
+        </Attribute>
+        <Attribute Name="AspectRatio2" ReadOnly="true">
+            <Documentation>
+                <UserDocu>The aspect ratio of the facet computed by radius of circum-circle and in-circle</UserDocu>
+            </Documentation>
+            <Parameter Name="AspectRatio2" Type="Float"/>
+        </Attribute>
+        <Attribute Name="Roundness" ReadOnly="true">
+            <Documentation>
+                <UserDocu>The roundness of the facet</UserDocu>
+            </Documentation>
+            <Parameter Name="Roundness" Type="Float"/>
+        </Attribute>
+        <Attribute Name="CircumCircle" ReadOnly="true">
+            <Documentation>
+                <UserDocu>The center and radius of the circum-circle</UserDocu>
+            </Documentation>
+            <Parameter Name="CircumCircle" Type="Tuple"/>
+        </Attribute>
+        <Attribute Name="InCircle" ReadOnly="true">
+            <Documentation>
+                <UserDocu>The center and radius of the in-circle</UserDocu>
+            </Documentation>
+            <Parameter Name="InCircle" Type="Tuple"/>
+        </Attribute>
+    </PythonExport>
 </GenerateModel>

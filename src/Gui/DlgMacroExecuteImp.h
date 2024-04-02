@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2002 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,41 +24,59 @@
 #ifndef GUI_DIALOG_DLGMACROEXECUTEIMP_H
 #define GUI_DIALOG_DLGMACROEXECUTEIMP_H
 
-#include "ui_DlgMacroExecute.h"
+#include <QDialog>
+#include <memory>
+#include "PythonTracing.h"
 #include "Window.h"
+
+class QTreeWidgetItem;
 
 namespace Gui {
 namespace Dialog {
+class Ui_DlgMacroExecute;
 
 /**
  * The DlgMacroExecuteImp class implements a dialog to execute or edit a
- * recorded macro. 
- * \author Jürgen Riegel
+ * recorded macro.
+ * \author JÃ¼rgen Riegel
  */
-class DlgMacroExecuteImp : public QDialog, public Ui_DlgMacroExecute, public Gui::WindowParameter
-{ 
+class DlgMacroExecuteImp : public QDialog, public Gui::WindowParameter
+{
     Q_OBJECT
 
 public:
-    DlgMacroExecuteImp( QWidget* parent = 0, Qt::WFlags fl = 0 );
-    ~DlgMacroExecuteImp();
+    explicit DlgMacroExecuteImp(QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
+    ~DlgMacroExecuteImp() override;
 
-    void accept();
+    void accept() override;
 
-public Q_SLOTS:
-    void on_fileChooser_fileNameChanged(const QString&);
-    void on_createButton_clicked();
-    void on_deleteButton_clicked();
-    void on_editButton_clicked();
+private:
+    void setupConnections();
+    void onFileChooserFileNameChanged(const QString&);
+    void onCreateButtonClicked();
+    void onDeleteButtonClicked();
+    void onEditButtonClicked();
+    void onRenameButtonClicked();
+    void onDuplicateButtonClicked();
+    void onToolbarButtonClicked();
+    void onAddonsButtonClicked();
 
-protected Q_SLOTS:
-    void on_macroListBox_currentItemChanged(QTreeWidgetItem*);
+    void onUserMacroListBoxCurrentItemChanged(QTreeWidgetItem*);
+    void onSystemMacroListBoxCurrentItemChanged(QTreeWidgetItem*);
+    void onTabMacroWidgetCurrentChanged(int index);
+    void onLineEditFindTextChanged(const QString&);
+    void onLineEditFindInFilesTextChanged(const QString&);
 
 protected:
-    void fillUpList(void);
+    void fillUpList();
+    QStringList filterFiles(const QString&);
 
 protected:
     QString macroPath;
+
+private:
+    std::unique_ptr<PythonTracingWatcher> watcher;
+    std::unique_ptr<Ui_DlgMacroExecute> ui;
 };
 
 } // namespace Dialog

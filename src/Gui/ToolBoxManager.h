@@ -24,19 +24,21 @@
 #ifndef GUI_TOOLBOXMANAGER_H
 #define GUI_TOOLBOXMANAGER_H
 
+#include <FCGlobal.h>
+
 namespace Gui {
 
 class ToolBarItem;
 
 
-namespace DockWnd 
+namespace DockWnd
 { class ToolBox;}
 
 /**
  * The ToolBoxManager class is responsible for the creation of command bars and appending them
  * to the toolbox window.
  * @see ToolBarManager
- * @see MenuManager 
+ * @see MenuManager
  * @author Werner Mayer
  */
 class GuiExport ToolBoxManager
@@ -55,11 +57,11 @@ protected:
     ~ToolBoxManager();
 
 private:
-    DockWnd::ToolBox* _toolBox;
+    DockWnd::ToolBox* _toolBox{nullptr};
     static ToolBoxManager* _instance;
 };
 
 } // namespace Gui
 
 
-#endif // GUI_TOOLBOXMANAGER_H 
+#endif // GUI_TOOLBOXMANAGER_H

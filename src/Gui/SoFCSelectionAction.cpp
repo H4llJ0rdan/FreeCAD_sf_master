@@ -1,6 +1,5 @@
 /***************************************************************************
- * 
- *   Copyright (c) 2005 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2005 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,84 +23,144 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-#  include <cassert>
-#  include <float.h>
-#  include <Inventor/actions/SoSearchAction.h>
-#  include <Inventor/actions/SoGetBoundingBoxAction.h>
-#  include <Inventor/nodes/SoCallback.h>
-#  include <Inventor/nodes/SoComplexity.h>
-#  include <Inventor/nodes/SoCube.h>
-#  include <Inventor/nodes/SoCamera.h>
-#  include <Inventor/nodes/SoCoordinate3.h>
-#  include <Inventor/nodes/SoCoordinate4.h>
-#  include <Inventor/nodes/SoFont.h>
-#  include <Inventor/nodes/SoMatrixTransform.h>
-#  include <Inventor/nodes/SoProfile.h>
-#  include <Inventor/nodes/SoProfileCoordinate2.h>
-#  include <Inventor/nodes/SoProfileCoordinate3.h>
-#  include <Inventor/nodes/SoSwitch.h>
-#  include <Inventor/nodes/SoTransformation.h>
-#  include <Inventor/nodes/SoIndexedLineSet.h>
-#  include <Inventor/nodes/SoIndexedFaceSet.h>
-#  include <Inventor/nodes/SoPointSet.h>
-#  include <Inventor/nodes/SoDrawStyle.h>
-#  include <Inventor/nodes/SoComplexity.h>
-#  include <Inventor/nodes/SoLightModel.h>
-#  include <Inventor/nodes/SoBaseColor.h>
+# include <Inventor/actions/SoSearchAction.h>
+# include <Inventor/actions/SoGetBoundingBoxAction.h>
+# include <Inventor/elements/SoComplexityElement.h>
+# include <Inventor/elements/SoComplexityTypeElement.h>
+# include <Inventor/elements/SoCoordinateElement.h>
+# include <Inventor/elements/SoFontNameElement.h>
+# include <Inventor/elements/SoFontSizeElement.h>
+# include <Inventor/elements/SoModelMatrixElement.h>
+# include <Inventor/elements/SoProfileCoordinateElement.h>
+# include <Inventor/elements/SoProfileElement.h>
+# include <Inventor/elements/SoProjectionMatrixElement.h>
+# include <Inventor/elements/SoShapeStyleElement.h>
+# include <Inventor/elements/SoSwitchElement.h>
+# include <Inventor/elements/SoUnitsElement.h>
+# include <Inventor/elements/SoViewingMatrixElement.h>
+# include <Inventor/elements/SoViewportRegionElement.h>
+# include <Inventor/elements/SoViewVolumeElement.h>
+# include <Inventor/nodes/SoBaseColor.h>
+# include <Inventor/nodes/SoCallback.h>
+# include <Inventor/nodes/SoCamera.h>
+# include <Inventor/nodes/SoComplexity.h>
+# include <Inventor/nodes/SoCoordinate3.h>
+# include <Inventor/nodes/SoCoordinate4.h>
+# include <Inventor/nodes/SoCube.h>
+# include <Inventor/nodes/SoDrawStyle.h>
+# include <Inventor/nodes/SoFont.h>
+# include <Inventor/nodes/SoIndexedLineSet.h>
+# include <Inventor/nodes/SoIndexedFaceSet.h>
+# include <Inventor/nodes/SoLightModel.h>
+# include <Inventor/nodes/SoMatrixTransform.h>
+# include <Inventor/nodes/SoPointSet.h>
+# include <Inventor/nodes/SoProfile.h>
+# include <Inventor/nodes/SoProfileCoordinate2.h>
+# include <Inventor/nodes/SoProfileCoordinate3.h>
+# include <Inventor/nodes/SoSeparator.h>
+# include <Inventor/nodes/SoSwitch.h>
+# include <Inventor/nodes/SoTransformation.h>
 #endif
-
-#include <Base/Console.h>
 
 #include "SoFCSelectionAction.h"
 #include "SoFCSelection.h"
-#include <Inventor/bundles/SoMaterialBundle.h>
-#include <Inventor/elements/SoSwitchElement.h>
-#include "Selection.h"
-
-#include <Inventor/elements/SoComplexityElement.h>
-#include <Inventor/elements/SoComplexityTypeElement.h>
-#include <Inventor/elements/SoCoordinateElement.h>
-#include <Inventor/elements/SoElements.h>
-#include <Inventor/elements/SoFontNameElement.h>
-#include <Inventor/elements/SoFontSizeElement.h>
-#include <Inventor/elements/SoModelMatrixElement.h>
-#include <Inventor/elements/SoShapeStyleElement.h>
-#include <Inventor/elements/SoProfileCoordinateElement.h>
-#include <Inventor/elements/SoProfileElement.h>
-#include <Inventor/elements/SoSwitchElement.h>
-#include <Inventor/elements/SoUnitsElement.h>
-#include <Inventor/elements/SoViewVolumeElement.h>
-#include <Inventor/elements/SoViewingMatrixElement.h>
-#include <Inventor/elements/SoViewportRegionElement.h>
-#include <Inventor/nodes/SoCamera.h>
-#include <Inventor/nodes/SoComplexity.h>
-#include <Inventor/nodes/SoCoordinate3.h>
-#include <Inventor/nodes/SoCoordinate4.h>
-#include <Inventor/nodes/SoCube.h>
-#include <Inventor/nodes/SoFont.h>
-#include <Inventor/nodes/SoGroup.h>
-#include <Inventor/nodes/SoSeparator.h>
-#include <Inventor/nodes/SoProfile.h>
-#include <Inventor/nodes/SoProfileCoordinate2.h>
-#include <Inventor/nodes/SoProfileCoordinate3.h>
-#include <Inventor/nodes/SoSphere.h>
-#include <Inventor/nodes/SoTransformation.h>
-
-
-
 
 
 using namespace Gui;
 
 
-SO_ACTION_SOURCE(SoFCSelectionAction);
+SO_ACTION_SOURCE(SoFCHighlightAction)
 
 /**
- * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base 
- * classes and afterwards subclasses of them must be listed, otherwise the registered methods 
- * of subclasses will be overridden. For more details see the thread in the Coin3d forum 
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
  * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
- * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after 
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
+ * \c SoSeparator because both classes inherits the others.
+ */
+void SoFCHighlightAction::initClass()
+{
+  SO_ACTION_INIT_CLASS(SoFCHighlightAction,SoAction);
+
+  SO_ENABLE(SoFCHighlightAction, SoSwitchElement);
+
+  SO_ACTION_ADD_METHOD(SoNode,nullAction);
+
+  SO_ENABLE(SoFCHighlightAction, SoModelMatrixElement);
+  SO_ENABLE(SoFCHighlightAction, SoShapeStyleElement);
+  SO_ENABLE(SoFCHighlightAction, SoComplexityElement);
+  SO_ENABLE(SoFCHighlightAction, SoComplexityTypeElement);
+  SO_ENABLE(SoFCHighlightAction, SoCoordinateElement);
+  SO_ENABLE(SoFCHighlightAction, SoFontNameElement);
+  SO_ENABLE(SoFCHighlightAction, SoFontSizeElement);
+  SO_ENABLE(SoFCHighlightAction, SoProfileCoordinateElement);
+  SO_ENABLE(SoFCHighlightAction, SoProfileElement);
+  SO_ENABLE(SoFCHighlightAction, SoSwitchElement);
+  SO_ENABLE(SoFCHighlightAction, SoUnitsElement);
+  SO_ENABLE(SoFCHighlightAction, SoViewVolumeElement);
+  SO_ENABLE(SoFCHighlightAction, SoViewingMatrixElement);
+  SO_ENABLE(SoFCHighlightAction, SoViewportRegionElement);
+
+
+
+
+  SO_ACTION_ADD_METHOD(SoCallback,callDoAction);
+  SO_ACTION_ADD_METHOD(SoComplexity,callDoAction);
+  SO_ACTION_ADD_METHOD(SoCoordinate3,callDoAction);
+  SO_ACTION_ADD_METHOD(SoCoordinate4,callDoAction);
+  SO_ACTION_ADD_METHOD(SoFont,callDoAction);
+  SO_ACTION_ADD_METHOD(SoGroup,callDoAction);
+  SO_ACTION_ADD_METHOD(SoProfile,callDoAction);
+  SO_ACTION_ADD_METHOD(SoProfileCoordinate2,callDoAction);
+  SO_ACTION_ADD_METHOD(SoProfileCoordinate3,callDoAction);
+  SO_ACTION_ADD_METHOD(SoTransformation,callDoAction);
+  SO_ACTION_ADD_METHOD(SoSwitch,callDoAction);
+
+  SO_ACTION_ADD_METHOD(SoSeparator,callDoAction);
+  SO_ACTION_ADD_METHOD(SoFCSelection,callDoAction);
+
+  SO_ACTION_ADD_METHOD(SoIndexedLineSet,callDoAction);
+  SO_ACTION_ADD_METHOD(SoIndexedFaceSet,callDoAction);
+  SO_ACTION_ADD_METHOD(SoPointSet,callDoAction);
+}
+
+void SoFCHighlightAction::finish()
+{
+  atexit_cleanup();
+}
+
+
+SoFCHighlightAction::SoFCHighlightAction (const SelectionChanges &SelCh)
+:SelChange(SelCh)
+{
+  SO_ACTION_CONSTRUCTOR(SoFCHighlightAction);
+}
+
+
+SoFCHighlightAction::~SoFCHighlightAction() = default;
+
+
+void SoFCHighlightAction::beginTraversal(SoNode *node)
+{
+  traverse(node);
+}
+
+void SoFCHighlightAction::callDoAction(SoAction *action,SoNode *node)
+{
+  node->doAction(action);
+}
+
+// ---------------------------------------------------------------
+
+SO_ACTION_SOURCE(SoFCSelectionAction)
+
+/**
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
+ * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
  * \c SoSeparator because both classes inherits the others.
  */
 void SoFCSelectionAction::initClass()
@@ -163,11 +222,9 @@ SoFCSelectionAction::SoFCSelectionAction (const SelectionChanges &SelCh)
 }
 
 
-SoFCSelectionAction::~SoFCSelectionAction()
-{
-}
+SoFCSelectionAction::~SoFCSelectionAction() = default;
 
- 
+
 void SoFCSelectionAction::beginTraversal(SoNode *node)
 {
   traverse(node);
@@ -180,14 +237,14 @@ void SoFCSelectionAction::callDoAction(SoAction *action,SoNode *node)
 
 // ---------------------------------------------------------------
 
-SO_ACTION_SOURCE(SoFCEnableSelectionAction);
+SO_ACTION_SOURCE(SoFCEnableSelectionAction)
 
 /**
- * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base 
- * classes and afterwards subclasses of them must be listed, otherwise the registered methods 
- * of subclasses will be overridden. For more details see the thread in the Coin3d forum 
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
  * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
- * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after 
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
  * \c SoSeparator because both classes inherits the others.
  */
 void SoFCEnableSelectionAction::initClass()
@@ -245,11 +302,9 @@ SoFCEnableSelectionAction::SoFCEnableSelectionAction (const SbBool& sel)
 }
 
 
-SoFCEnableSelectionAction::~SoFCEnableSelectionAction()
-{
-}
+SoFCEnableSelectionAction::~SoFCEnableSelectionAction() = default;
 
- 
+
 void SoFCEnableSelectionAction::beginTraversal(SoNode *node)
 {
   traverse(node);
@@ -262,14 +317,14 @@ void SoFCEnableSelectionAction::callDoAction(SoAction *action,SoNode *node)
 
 // ---------------------------------------------------------------
 
-SO_ACTION_SOURCE(SoFCEnableHighlightAction);
+SO_ACTION_SOURCE(SoFCEnableHighlightAction)
 
 /**
- * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base 
- * classes and afterwards subclasses of them must be listed, otherwise the registered methods 
- * of subclasses will be overridden. For more details see the thread in the Coin3d forum 
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
  * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
- * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after 
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
  * \c SoSeparator because both classes inherits the others.
  */
 void SoFCEnableHighlightAction::initClass()
@@ -327,11 +382,9 @@ SoFCEnableHighlightAction::SoFCEnableHighlightAction (const SbBool& sel)
 }
 
 
-SoFCEnableHighlightAction::~SoFCEnableHighlightAction()
-{
-}
+SoFCEnableHighlightAction::~SoFCEnableHighlightAction() = default;
 
- 
+
 void SoFCEnableHighlightAction::beginTraversal(SoNode *node)
 {
   traverse(node);
@@ -344,14 +397,14 @@ void SoFCEnableHighlightAction::callDoAction(SoAction *action,SoNode *node)
 
 // ---------------------------------------------------------------
 
-SO_ACTION_SOURCE(SoFCSelectionColorAction);
+SO_ACTION_SOURCE(SoFCSelectionColorAction)
 
 /**
- * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base 
- * classes and afterwards subclasses of them must be listed, otherwise the registered methods 
- * of subclasses will be overridden. For more details see the thread in the Coin3d forum 
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
  * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
- * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after 
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
  * \c SoSeparator because both classes inherits the others.
  */
 void SoFCSelectionColorAction::initClass()
@@ -409,11 +462,9 @@ SoFCSelectionColorAction::SoFCSelectionColorAction (const SoSFColor& col)
 }
 
 
-SoFCSelectionColorAction::~SoFCSelectionColorAction()
-{
-}
+SoFCSelectionColorAction::~SoFCSelectionColorAction() = default;
 
- 
+
 void SoFCSelectionColorAction::beginTraversal(SoNode *node)
 {
   traverse(node);
@@ -426,14 +477,14 @@ void SoFCSelectionColorAction::callDoAction(SoAction *action,SoNode *node)
 
 // ---------------------------------------------------------------
 
-SO_ACTION_SOURCE(SoFCHighlightColorAction);
+SO_ACTION_SOURCE(SoFCHighlightColorAction)
 
 /**
- * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base 
- * classes and afterwards subclasses of them must be listed, otherwise the registered methods 
- * of subclasses will be overridden. For more details see the thread in the Coin3d forum 
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
  * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
- * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after 
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
  * \c SoSeparator because both classes inherits the others.
  */
 void SoFCHighlightColorAction::initClass()
@@ -491,11 +542,9 @@ SoFCHighlightColorAction::SoFCHighlightColorAction (const SoSFColor& col)
 }
 
 
-SoFCHighlightColorAction::~SoFCHighlightColorAction()
-{
-}
+SoFCHighlightColorAction::~SoFCHighlightColorAction() = default;
 
- 
+
 void SoFCHighlightColorAction::beginTraversal(SoNode *node)
 {
   traverse(node);
@@ -508,14 +557,14 @@ void SoFCHighlightColorAction::callDoAction(SoAction *action,SoNode *node)
 
 // ---------------------------------------------------------------
 
-SO_ACTION_SOURCE(SoFCDocumentAction);
+SO_ACTION_SOURCE(SoFCDocumentAction)
 
 /**
- * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base 
- * classes and afterwards subclasses of them must be listed, otherwise the registered methods 
- * of subclasses will be overridden. For more details see the thread in the Coin3d forum 
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
  * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
- * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after 
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
  * \c SoSeparator because both classes inherits the others.
  */
 void SoFCDocumentAction::initClass()
@@ -573,11 +622,9 @@ SoFCDocumentAction::SoFCDocumentAction (const SoSFString& docName)
 }
 
 
-SoFCDocumentAction::~SoFCDocumentAction()
-{
-}
+SoFCDocumentAction::~SoFCDocumentAction() = default;
 
- 
+
 void SoFCDocumentAction::beginTraversal(SoNode *node)
 {
   traverse(node);
@@ -591,14 +638,14 @@ void SoFCDocumentAction::callDoAction(SoAction *action,SoNode *node)
 
 // ---------------------------------------------------------------
 
-SO_ACTION_SOURCE(SoFCDocumentObjectAction);
+SO_ACTION_SOURCE(SoFCDocumentObjectAction)
 
 /**
- * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base 
- * classes and afterwards subclasses of them must be listed, otherwise the registered methods 
- * of subclasses will be overridden. For more details see the thread in the Coin3d forum 
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
  * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
- * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after 
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
  * \c SoSeparator because both classes inherits the others.
  */
 void SoFCDocumentObjectAction::initClass()
@@ -645,14 +692,12 @@ void SoFCDocumentObjectAction::finish()
   atexit_cleanup();
 }
 
-SoFCDocumentObjectAction::SoFCDocumentObjectAction () : _handled(FALSE)
+SoFCDocumentObjectAction::SoFCDocumentObjectAction()
 {
   SO_ACTION_CONSTRUCTOR(SoFCDocumentObjectAction);
 }
 
-SoFCDocumentObjectAction::~SoFCDocumentObjectAction()
-{
-}
+SoFCDocumentObjectAction::~SoFCDocumentObjectAction() = default;
 
 void SoFCDocumentObjectAction::beginTraversal(SoNode *node)
 {
@@ -666,7 +711,7 @@ void SoFCDocumentObjectAction::callDoAction(SoAction *action,SoNode *node)
 
 void SoFCDocumentObjectAction::setHandled()
 {
-  this->_handled = TRUE;
+  this->_handled = true;
 }
 
 SbBool SoFCDocumentObjectAction::isHandled() const
@@ -676,14 +721,14 @@ SbBool SoFCDocumentObjectAction::isHandled() const
 
 // ---------------------------------------------------------------
 
-SO_ACTION_SOURCE(SoGLSelectAction);
+SO_ACTION_SOURCE(SoGLSelectAction)
 
 /**
- * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base 
- * classes and afterwards subclasses of them must be listed, otherwise the registered methods 
- * of subclasses will be overridden. For more details see the thread in the Coin3d forum 
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
  * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
- * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after 
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
  * \c SoSeparator because both classes inherits the others.
  */
 void SoGLSelectAction::initClass()
@@ -715,14 +760,12 @@ void SoGLSelectAction::initClass()
 
 SoGLSelectAction::SoGLSelectAction (const SbViewportRegion& region,
                                     const SbViewportRegion& select)
-  : vpregion(region), vpselect(select), _handled(FALSE)
+  : vpregion(region), vpselect(select)
 {
   SO_ACTION_CONSTRUCTOR(SoGLSelectAction);
 }
 
-SoGLSelectAction::~SoGLSelectAction()
-{
-}
+SoGLSelectAction::~SoGLSelectAction() = default;
 
 const SbViewportRegion& SoGLSelectAction::getViewportRegion () const
 {
@@ -742,7 +785,7 @@ void SoGLSelectAction::callDoAction(SoAction *action,SoNode *node)
 
 void SoGLSelectAction::setHandled()
 {
-  this->_handled = TRUE;
+  this->_handled = true;
 }
 
 SbBool SoGLSelectAction::isHandled() const
@@ -752,14 +795,14 @@ SbBool SoGLSelectAction::isHandled() const
 
 // ---------------------------------------------------------------
 
-SO_ACTION_SOURCE(SoVisibleFaceAction);
+SO_ACTION_SOURCE(SoVisibleFaceAction)
 
 /**
- * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base 
- * classes and afterwards subclasses of them must be listed, otherwise the registered methods 
- * of subclasses will be overridden. For more details see the thread in the Coin3d forum 
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
  * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
- * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after 
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
  * \c SoSeparator because both classes inherits the others.
  */
 void SoVisibleFaceAction::initClass()
@@ -790,14 +833,12 @@ void SoVisibleFaceAction::initClass()
   SO_ACTION_ADD_METHOD(SoFCSelection,callDoAction);
 }
 
-SoVisibleFaceAction::SoVisibleFaceAction () : _handled(FALSE)
+SoVisibleFaceAction::SoVisibleFaceAction ()
 {
   SO_ACTION_CONSTRUCTOR(SoVisibleFaceAction);
 }
 
-SoVisibleFaceAction::~SoVisibleFaceAction()
-{
-}
+SoVisibleFaceAction::~SoVisibleFaceAction() = default;
 
 void SoVisibleFaceAction::beginTraversal(SoNode *node)
 {
@@ -811,7 +852,7 @@ void SoVisibleFaceAction::callDoAction(SoAction *action,SoNode *node)
 
 void SoVisibleFaceAction::setHandled()
 {
-  this->_handled = TRUE;
+  this->_handled = true;
 }
 
 SbBool SoVisibleFaceAction::isHandled() const
@@ -821,24 +862,89 @@ SbBool SoVisibleFaceAction::isHandled() const
 
 // ---------------------------------------------------------------
 
+
+SO_ACTION_SOURCE(SoUpdateVBOAction)
+
+/**
+ * The order of the defined SO_ACTION_ADD_METHOD statements is very important. First the base
+ * classes and afterwards subclasses of them must be listed, otherwise the registered methods
+ * of subclasses will be overridden. For more details see the thread in the Coin3d forum
+ * https://www.coin3d.org/pipermail/coin-discuss/2004-May/004346.html.
+ * This means that \c SoSwitch must be listed after \c SoGroup and \c SoFCSelection after
+ * \c SoSeparator because both classes inherits the others.
+ */
+void SoUpdateVBOAction::initClass()
+{
+  SO_ACTION_INIT_CLASS(SoUpdateVBOAction,SoAction);
+
+  SO_ENABLE(SoUpdateVBOAction, SoSwitchElement);
+
+  SO_ACTION_ADD_METHOD(SoNode,nullAction);
+
+  SO_ENABLE(SoUpdateVBOAction, SoModelMatrixElement);
+  SO_ENABLE(SoUpdateVBOAction, SoProjectionMatrixElement);
+  SO_ENABLE(SoUpdateVBOAction, SoCoordinateElement);
+  SO_ENABLE(SoUpdateVBOAction, SoViewVolumeElement);
+  SO_ENABLE(SoUpdateVBOAction, SoViewingMatrixElement);
+  SO_ENABLE(SoUpdateVBOAction, SoViewportRegionElement);
+
+
+  SO_ACTION_ADD_METHOD(SoCamera,callDoAction);
+  SO_ACTION_ADD_METHOD(SoCoordinate3,callDoAction);
+  SO_ACTION_ADD_METHOD(SoCoordinate4,callDoAction);
+  SO_ACTION_ADD_METHOD(SoGroup,callDoAction);
+  SO_ACTION_ADD_METHOD(SoSwitch,callDoAction);
+  SO_ACTION_ADD_METHOD(SoShape,callDoAction);
+  SO_ACTION_ADD_METHOD(SoIndexedFaceSet,callDoAction);
+
+  SO_ACTION_ADD_METHOD(SoSeparator,callDoAction);
+  SO_ACTION_ADD_METHOD(SoFCSelection,callDoAction);
+}
+
+SoUpdateVBOAction::SoUpdateVBOAction ()
+{
+  SO_ACTION_CONSTRUCTOR(SoUpdateVBOAction);
+}
+
+SoUpdateVBOAction::~SoUpdateVBOAction() = default;
+
+void SoUpdateVBOAction::finish()
+{
+  atexit_cleanup();
+}
+
+void SoUpdateVBOAction::beginTraversal(SoNode *node)
+{
+  traverse(node);
+}
+
+void SoUpdateVBOAction::callDoAction(SoAction *action,SoNode *node)
+{
+  node->doAction(action);
+}
+
+// ---------------------------------------------------------------
+
 namespace Gui {
 class SoBoxSelectionRenderActionP {
 public:
-    SoBoxSelectionRenderActionP(SoBoxSelectionRenderAction * master) 
-      : master(master) { }
+    SoBoxSelectionRenderActionP(SoBoxSelectionRenderAction * master)
+      : master(master)
+    {
+    }
 
     SoBoxSelectionRenderAction * master;
-    SoSearchAction * searchaction;
-    SoSearchAction * selectsearch;
-    SoSearchAction * camerasearch;
-    SoGetBoundingBoxAction * bboxaction;
-    SoBaseColor * basecolor;
-    SoTempPath * postprocpath;
-    SoPath * highlightPath;
-    SoSeparator * localRoot;
-    SoMatrixTransform * xform;
-    SoCube * cube;
-    SoDrawStyle * drawstyle;
+    SoSearchAction * searchaction{nullptr};
+    SoSearchAction * selectsearch{nullptr};
+    SoSearchAction * camerasearch{nullptr};
+    SoGetBoundingBoxAction * bboxaction{nullptr};
+    SoBaseColor * basecolor{nullptr};
+    SoTempPath * postprocpath{nullptr};
+    SoPath * highlightPath{nullptr};
+    SoSeparator * localRoot{nullptr};
+    SoMatrixTransform * xform{nullptr};
+    SoCube * cube{nullptr};
+    SoDrawStyle * drawstyle{nullptr};
     SoColorPacker colorpacker;
 
     void initBoxGraph();
@@ -854,7 +960,7 @@ public:
 
 // used to initialize the internal storage class with variables
 void
-SoBoxSelectionRenderActionP::initBoxGraph() 
+SoBoxSelectionRenderActionP::initBoxGraph()
 {
     this->localRoot = new SoSeparator;
     this->localRoot->ref();
@@ -868,10 +974,10 @@ SoBoxSelectionRenderActionP::initBoxGraph()
     this->drawstyle->style = SoDrawStyleElement::LINES;
     this->basecolor = new SoBaseColor;
 
-    SoLightModel * lightmodel = new SoLightModel;
+    auto lightmodel = new SoLightModel;
     lightmodel->model = SoLightModel::BASE_COLOR;
 
-    SoComplexity * complexity = new SoComplexity;
+    auto complexity = new SoComplexity;
     complexity->textureQuality = 0.0f;
     complexity->type = SoComplexityTypeElement::BOUNDING_BOX;
 
@@ -886,11 +992,11 @@ SoBoxSelectionRenderActionP::initBoxGraph()
 }
 
 
-// used to render shape and non-shape nodes (usually SoGroup or SoSeparator). 
-void 
+// used to render shape and non-shape nodes (usually SoGroup or SoSeparator).
+void
 SoBoxSelectionRenderActionP::updateBbox(const SoPath * path)
 {
-    if (this->camerasearch == NULL) {
+    if (!this->camerasearch) {
         this->camerasearch = new SoSearchAction;
     }
 
@@ -898,23 +1004,23 @@ SoBoxSelectionRenderActionP::updateBbox(const SoPath * path)
     this->camerasearch->setFind(SoSearchAction::TYPE);
     this->camerasearch->setInterest(SoSearchAction::LAST);
     this->camerasearch->setType(SoCamera::getClassTypeId());
-    this->camerasearch->apply((SoPath*) path);
-  
+    this->camerasearch->apply(const_cast<SoPath*>(path));
+
     if (!this->camerasearch->getPath()) {
         // if there is no camera there is no point rendering the bbox
         return;
     }
     this->localRoot->insertChild(this->camerasearch->getPath()->getTail(), 0);
     this->camerasearch->reset();
-  
-    if (this->bboxaction == NULL) {
+
+    if (!this->bboxaction) {
         this->bboxaction = new SoGetBoundingBoxAction(SbViewportRegion(100, 100));
     }
     this->bboxaction->setViewportRegion(PUBLIC(this)->getViewportRegion());
-    this->bboxaction->apply((SoPath*) path);
-  
+    this->bboxaction->apply(const_cast<SoPath*>(path));
+
     SbXfBox3f & box = this->bboxaction->getXfBoundingBox();
-  
+
     if (!box.isEmpty()) {
         // set cube size
         float x, y, z;
@@ -922,36 +1028,36 @@ SoBoxSelectionRenderActionP::updateBbox(const SoPath * path)
         this->cube->width  = x;
         this->cube->height  = y;
         this->cube->depth = z;
-    
-        SbMatrix transform = box.getTransform();
-    
+
+        SbMatrix transform = box.getTransform(); // clazy:exclude=rule-of-two-soft
+
         // get center (in the local bbox coordinate system)
         SbVec3f center = box.SbBox3f::getCenter();
-    
+
         // if center != (0,0,0), move the cube
         if (center != SbVec3f(0.0f, 0.0f, 0.0f)) {
             SbMatrix t;
             t.setTranslate(center);
             transform.multLeft(t);
         }
-        this->xform->matrix = transform; 
-    
+        this->xform->matrix = transform;
+
         PUBLIC(this)->SoGLRenderAction::apply(this->localRoot);
     }
     // remove camera
     this->localRoot->removeChild(0);
 }
 
-SO_ACTION_SOURCE(SoBoxSelectionRenderAction);
+SO_ACTION_SOURCE(SoBoxSelectionRenderAction)
 
 // Overridden from parent class.
 void
-SoBoxSelectionRenderAction::initClass(void)
+SoBoxSelectionRenderAction::initClass()
 {
     SO_ACTION_INIT_CLASS(SoBoxSelectionRenderAction, SoGLRenderAction);
 }
 
-SoBoxSelectionRenderAction::SoBoxSelectionRenderAction(void)
+SoBoxSelectionRenderAction::SoBoxSelectionRenderAction()
   : inherited(SbViewportRegion())
 {
     this->constructorCommon();
@@ -967,7 +1073,7 @@ SoBoxSelectionRenderAction::SoBoxSelectionRenderAction(const SbViewportRegion & 
 // private. called by both constructors
 //
 void
-SoBoxSelectionRenderAction::constructorCommon(void)
+SoBoxSelectionRenderAction::constructorCommon()
 {
     SO_ACTION_CONSTRUCTOR(SoBoxSelectionRenderAction);
 
@@ -976,24 +1082,28 @@ SoBoxSelectionRenderAction::constructorCommon(void)
     // Initialize local variables
     PRIVATE(this)->initBoxGraph();
 
-    this->hlVisible = TRUE;
+    this->hlVisible = false;
 
     PRIVATE(this)->basecolor->rgb.setValue(1.0f, 0.0f, 0.0f);
     PRIVATE(this)->drawstyle->linePattern = 0xffff;
     PRIVATE(this)->drawstyle->lineWidth = 1.0f;
-    PRIVATE(this)->searchaction = NULL;
-    PRIVATE(this)->selectsearch = NULL;
-    PRIVATE(this)->camerasearch = NULL;
-    PRIVATE(this)->bboxaction = NULL;
+    PRIVATE(this)->searchaction = nullptr;
+    PRIVATE(this)->selectsearch = nullptr;
+    PRIVATE(this)->camerasearch = nullptr;
+    PRIVATE(this)->bboxaction = nullptr;
 
     // SoBase-derived objects should be dynamically allocated.
     PRIVATE(this)->postprocpath = new SoTempPath(32);
     PRIVATE(this)->postprocpath->ref();
-    PRIVATE(this)->highlightPath = 0;
+    PRIVATE(this)->highlightPath = nullptr;
 }
 
-SoBoxSelectionRenderAction::~SoBoxSelectionRenderAction(void)
+SoBoxSelectionRenderAction::~SoBoxSelectionRenderAction()
 {
+    // clear highlighting node
+    if (PRIVATE(this)->highlightPath) {
+        PRIVATE(this)->highlightPath->unref();
+    }
     PRIVATE(this)->postprocpath->unref();
     PRIVATE(this)->localRoot->unref();
 
@@ -1009,7 +1119,7 @@ SoBoxSelectionRenderAction::apply(SoNode * node)
 {
     SoGLRenderAction::apply(node);
     if (this->hlVisible) {
-        if (PRIVATE(this)->searchaction == NULL) {
+        if (!PRIVATE(this)->searchaction) {
             PRIVATE(this)->searchaction = new SoSearchAction;
         }
         PRIVATE(this)->searchaction->setType(SoFCSelection::getClassTypeId());
@@ -1020,11 +1130,11 @@ SoBoxSelectionRenderAction::apply(SoNode * node)
             for (int i = 0; i < pathlist.getLength(); i++ ) {
                 SoPath * path = pathlist[i];
                 assert(path);
-                SoFCSelection * selection = (SoFCSelection *) path->getTail();
+                auto selection = static_cast<SoFCSelection *>(path->getTail());
                 assert(selection->getTypeId().isDerivedFrom(SoFCSelection::getClassTypeId()));
                 if (selection->selected.getValue() && selection->style.getValue() == SoFCSelection::BOX) {
                     PRIVATE(this)->basecolor->rgb.setValue(selection->colorSelection.getValue());
-                    if (PRIVATE(this)->selectsearch == NULL) {
+                    if (!PRIVATE(this)->selectsearch) {
                         PRIVATE(this)->selectsearch = new SoSearchAction;
                     }
                     PRIVATE(this)->selectsearch->setType(SoShape::getClassTypeId());
@@ -1043,8 +1153,8 @@ SoBoxSelectionRenderAction::apply(SoNode * node)
                          selection->style.getValue() == SoFCSelection::BOX) {
                     PRIVATE(this)->basecolor->rgb.setValue(selection->colorHighlight.getValue());
 
-                    if (PRIVATE(this)->selectsearch == NULL) {
-                      PRIVATE(this)->selectsearch = new SoSearchAction;
+                    if (!PRIVATE(this)->selectsearch) {
+                        PRIVATE(this)->selectsearch = new SoSearchAction;
                     }
                     PRIVATE(this)->selectsearch->setType(SoShape::getClassTypeId());
                     PRIVATE(this)->selectsearch->setInterest(SoSearchAction::FIRST);
@@ -1053,6 +1163,10 @@ SoBoxSelectionRenderAction::apply(SoNode * node)
                     if (shapepath) {
                         SoPathList list;
                         list.append(shapepath);
+                        // clear old highlighting node if still active
+                        if (PRIVATE(this)->highlightPath) {
+                            PRIVATE(this)->highlightPath->unref();
+                        }
                         PRIVATE(this)->highlightPath = path;
                         PRIVATE(this)->highlightPath->ref();
                         this->drawBoxes(path, &list);
@@ -1071,12 +1185,12 @@ SoBoxSelectionRenderAction::apply(SoPath * path)
     SoGLRenderAction::apply(path);
     SoNode* node = path->getTail();
     if (node && node->getTypeId() == SoFCSelection::getClassTypeId()) {
-        SoFCSelection * selection = (SoFCSelection *) node;
+        auto selection = static_cast<SoFCSelection *>(node);
 
         // This happens when dehighlighting the current shape
         if (PRIVATE(this)->highlightPath == path) {
             PRIVATE(this)->highlightPath->unref();
-            PRIVATE(this)->highlightPath = 0;
+            PRIVATE(this)->highlightPath = nullptr;
             // FIXME: Doing a redraw to remove the shown bounding box causes
             // some problems when moving the mouse from one shape to another
             // because this will destroy the box immediately
@@ -1087,8 +1201,8 @@ SoBoxSelectionRenderAction::apply(SoPath * path)
                  selection->style.getValue() == SoFCSelection::BOX) {
             PRIVATE(this)->basecolor->rgb.setValue(selection->colorHighlight.getValue());
 
-            if (PRIVATE(this)->selectsearch == NULL) {
-              PRIVATE(this)->selectsearch = new SoSearchAction;
+            if (!PRIVATE(this)->selectsearch) {
+                PRIVATE(this)->selectsearch = new SoSearchAction;
             }
             PRIVATE(this)->selectsearch->setType(SoShape::getClassTypeId());
             PRIVATE(this)->selectsearch->setInterest(SoSearchAction::FIRST);
@@ -1097,6 +1211,10 @@ SoBoxSelectionRenderAction::apply(SoPath * path)
             if (shapepath) {
                 SoPathList list;
                 list.append(shapepath);
+                // clear old highlighting node if still active
+                if (PRIVATE(this)->highlightPath) {
+                    PRIVATE(this)->highlightPath->unref();
+                }
                 PRIVATE(this)->highlightPath = path;
                 PRIVATE(this)->highlightPath->ref();
                 this->drawBoxes(path, &list);
@@ -1120,7 +1238,7 @@ SoBoxSelectionRenderAction::setColor(const SbColor & color)
 }
 
 const SbColor &
-SoBoxSelectionRenderAction::getColor(void)
+SoBoxSelectionRenderAction::getColor()
 {
     return PRIVATE(this)->basecolor->rgb[0];
 }
@@ -1132,7 +1250,7 @@ SoBoxSelectionRenderAction::setLinePattern(unsigned short pattern)
 }
 
 unsigned short
-SoBoxSelectionRenderAction::getLinePattern(void) const
+SoBoxSelectionRenderAction::getLinePattern() const
 {
     return PRIVATE(this)->drawstyle->linePattern.getValue();
 }
@@ -1144,7 +1262,7 @@ SoBoxSelectionRenderAction::setLineWidth(const float width)
 }
 
 float
-SoBoxSelectionRenderAction::getLineWidth(void) const
+SoBoxSelectionRenderAction::getLineWidth() const
 {
     return PRIVATE(this)->drawstyle->lineWidth.getValue();
 }
@@ -1153,10 +1271,10 @@ void
 SoBoxSelectionRenderAction::drawBoxes(SoPath * pathtothis, const SoPathList * pathlist)
 {
     int i;
-    int thispos = ((SoFullPath *)pathtothis)->getLength()-1;
+    int thispos = static_cast<SoFullPath *>(pathtothis)->getLength()-1;
     assert(thispos >= 0);
     PRIVATE(this)->postprocpath->truncate(0); // reset
-  
+
     for (i = 0; i < thispos; i++)
         PRIVATE(this)->postprocpath->append(pathtothis->getNode(i));
 
@@ -1169,7 +1287,7 @@ SoBoxSelectionRenderAction::drawBoxes(SoPath * pathtothis, const SoPathList * pa
     thestate->push();
 
     for (i = 0; i < pathlist->getLength(); i++) {
-        SoFullPath * path = (SoFullPath *)(*pathlist)[i];
+        auto path = static_cast<SoFullPath *>((*pathlist)[i]);
 
         for (int j = 0; j < path->getLength(); j++) {
             PRIVATE(this)->postprocpath->append(path->getNode(j));

@@ -20,16 +20,17 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_SOFCCOLORBAR_H
 #define GUI_SOFCCOLORBAR_H
 
+#include <QElapsedTimer>
+#include <vector>
 #include <Inventor/SbVec2s.h>
 #include <Inventor/nodes/SoSeparator.h>
-#include <QTime>
-#include <Base/Observer.h>
+
 #include <App/ColorModel.h>
-#include <vector>
+#include <Base/Observer.h>
+
 
 class SoSwitch;
 class SoEventCallback;
@@ -41,19 +42,19 @@ namespace Gui {
 class SoFCColorGradient;
 
 /**
- * The abstract color bar base class to get most important information on how to convert a scalar to an RGB color. 
+ * The abstract color bar base class to get most important information on how to convert a scalar to an RGB color.
  * @author Werner Mayer
  */
 class GuiExport SoFCColorBarBase : public SoSeparator, public App::ValueFloatToRGB {
-  typedef SoSeparator inherited;
+  using inherited = SoSeparator;
 
   SO_NODE_ABSTRACT_HEADER(Gui::SoFCColorBarBase);
 
 public:
-  static void initClass(void);
-  static void finish(void);
+  static void initClass();
+  static void finish();
 
-  virtual void GLRenderBelowPath ( SoGLRenderAction *action );
+  void GLRenderBelowPath ( SoGLRenderAction *action ) override;
 
   /**
    * Sets the range of the colorbar from the maximum \a fMax to the minimum \a fMin.
@@ -67,7 +68,7 @@ public:
    *
    * This method must be implemented in subclasses.
    */
-  virtual App::Color getColor(float fVal) const = 0;
+  App::Color getColor(float fVal) const override = 0;
   /**
    * Returns always true if the color bar is in mode to show colors to arbitrary values of \a fVal,
    * otherwise true is returned if \a fVal is within the specified parameter range, if not false is
@@ -82,59 +83,80 @@ public:
    * This method must be implemented in subclasses.
    */
   virtual void setOutsideGrayed (bool bVal) = 0;
-  /** Returns the current minimum of the parameter range. 
+  /** Returns the current minimum of the parameter range.
    *
    * This method must be implemented in subclasses.
    */
-  virtual float getMinValue (void) const = 0;
-  /** Returns the current maximum of the parameter range. 
+  virtual float getMinValue () const = 0;
+  /** Returns the current maximum of the parameter range.
    *
    * This method must be implemented in subclasses.
    */
-  virtual float getMaxValue (void) const = 0;
+  virtual float getMaxValue () const = 0;
   /**
-   * Opems a dialog to customie the current settings of the color bar.
-   * Returns true if the settings have been changed, false otherwise.
+   * Opens a dialog to customize the current settings of the color bar.
    *
    * This method must be implemented in subclasses.
    */
-  virtual bool customize() = 0;
-  /** Returns the name of the color bar. 
+  virtual void customize(SoFCColorBarBase*) = 0;
+  /**
+   * Forward a triggered change
+   */
+  virtual void triggerChange(SoFCColorBarBase* base) {
+    base->triggerChange(this);
+  }
+  /** Returns the name of the color bar.
    *
    * This method must be implemented in subclasses.
    */
   virtual const char* getColorBarName() const = 0;
 
 protected:
+  /** Computes the dimensions of the color bar and labels in coordinates with
+   * respect to the defined height of the camera.
+   * Returns the width of the bounding box
+   */
+  float getBounds(const SbVec2s& size, float& fMinX, float&fMinY, float& fMaxX, float& fMaxY);
+  /** Returns the width of the color bar and labels
+   *
+   * Computes the occupied width of the color bar and its labels.
+   * It therefore determines the bounding box.
+   */
+  float getBoundingWidth(const SbVec2s& size);
   /**
    * Sets the current viewer size to recalculate the new position.
    *
    * This method must be implemented in subclasses.
    */
   virtual void setViewportSize( const SbVec2s& size ) = 0;
+  /**
+   * Mark the object as modified.
+   */
+  void setModified();
 
-  SoFCColorBarBase (void);
-  virtual ~SoFCColorBarBase ();
+  SoFCColorBarBase ();
+  ~SoFCColorBarBase () override;
 
 private:
+  float _boxWidth{-1.0F};
   SbVec2s _windowSize;
 };
 
 // --------------------------------------------------------------------------
 
 /**
- * The color bar class that redirects all calls to its handled color bars. 
+ * The color bar class that redirects all calls to its handled color bars.
  * @author Werner Mayer
  */
 class GuiExport SoFCColorBar : public SoFCColorBarBase, public Base::Subject<int> {
-  typedef SoFCColorBarBase inherited;
+  using inherited = SoFCColorBarBase;
 
   SO_NODE_HEADER(Gui::SoFCColorBar);
 
 public:
-  static void initClass(void);
-  static void finish(void);
-  SoFCColorBar(void);
+  static void initClass();
+  static void finish();
+  SoFCColorBar();
 
   /**
    * Returns the currently active color bar object.
@@ -143,56 +165,59 @@ public:
   /**
    * Handles the mouse button events and checks if the user has clicked on the area of the currently active color bar.
    */
-  void handleEvent (SoHandleEventAction *action);
+  void handleEvent (SoHandleEventAction *action) override;
   /**
    * Sets the range of all color bars from the maximum \a fMax to the minimum \a fMin.
    * \a prec indicates the post decimal positions, \a prec should be in between 0 and 6.
    */
-  void setRange( float fMin, float fMax, int prec=3 );
+  void setRange( float fMin, float fMax, int prec=3 ) override;
   /**
    * Returns the associated color to the value \a fVal of the currently active color bar.
    */
-  App::Color getColor(float fVal) const;
+  App::Color getColor(float fVal) const override;
   /**
    * Sets whether values outside the range should be in gray,
    */
-  void setOutsideGrayed (bool bVal);
+  void setOutsideGrayed (bool bVal) override;
   /**
    * Returns the return value of the currently active color bar.
    */
-  bool isVisible (float fVal) const;
-  /** 
-   * Returns the current minimum of the parameter range of the currently active color bar. 
+  bool isVisible (float fVal) const override;
+  /**
+   * Returns the current minimum of the parameter range of the currently active color bar.
    */
-  float getMinValue (void) const;
-  /** 
-   * Returns the current maximum of the parameter range of the currently active color bar. 
+  float getMinValue () const override;
+  /**
+   * Returns the current maximum of the parameter range of the currently active color bar.
    */
-  float getMaxValue (void) const;
+  float getMaxValue () const override;
   /**
    * Customizes the currently active color bar.
    */
-  bool customize();
-  /** Returns the name of the color bar. 
+  void customize(SoFCColorBarBase*) override;
+  /**
+   * Notify observers
    */
-  const char* getColorBarName() const { return "Color Bar"; }
+  void triggerChange(SoFCColorBarBase*) override;
+  /** Returns the name of the color bar.
+   */
+  const char* getColorBarName() const override { return "Color Bar"; }
 
 protected:
   /**
    * Sets the current viewer size to all color bars to recalculate their new position.
    */
-  void setViewportSize( const SbVec2s& size );
+  void setViewportSize( const SbVec2s& size ) override;
 
-  virtual ~SoFCColorBar();
+  ~SoFCColorBar() override;
 
 private:
   static void eventCallback(void * userdata, SoEventCallback * node);
 
 private:
-  float _fMaxX, _fMinX, _fMaxY, _fMinY;
-  QTime _timer;
+  QElapsedTimer _timer;
 
-  SoSwitch* pColorMode; 
+  SoSwitch* pColorMode;
   std::vector<SoFCColorBarBase*> _colorBars;
 };
 
@@ -200,4 +225,3 @@ private:
 
 
 #endif // GUI_SOFCCOLORBAR_H
-

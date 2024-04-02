@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,45 +20,50 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
- 
-#include "FeaturePad.h"
-#include "FeaturePocket.h"
-#include "FeatureFillet.h"
-#include "FeatureSketchBased.h"
-#include "FeatureRevolution.h"
-#include "FeatureGroove.h"
+#include <Base/PyObjectBase.h>
+
 #include "Body.h"
-#include "FeatureDressUp.h"
+#include "DatumCS.h"
+#include "DatumLine.h"
+#include "DatumPlane.h"
+#include "DatumPoint.h"
+#include "FeatureBase.h"
+#include "FeatureBoolean.h"
 #include "FeatureChamfer.h"
 #include "FeatureDraft.h"
-#include "FeatureFace.h"
-#include "FeatureSubtractive.h"
-#include "FeatureAdditive.h"
-#include "FeatureTransformed.h"
-#include "FeatureMirrored.h"
-#include "FeatureLinearPattern.h"
-#include "FeaturePolarPattern.h"
-#include "FeatureScaled.h"
-#include "FeatureMultiTransform.h"
+#include "FeatureDressUp.h"
+#include "FeatureFillet.h"
+#include "FeatureGroove.h"
+#include "FeatureHelix.h"
 #include "FeatureHole.h"
+#include "FeatureLinearPattern.h"
+#include "FeatureLoft.h"
+#include "FeatureMirrored.h"
+#include "FeatureMultiTransform.h"
+#include "FeaturePad.h"
+#include "FeaturePipe.h"
+#include "FeaturePocket.h"
+#include "FeaturePolarPattern.h"
+#include "FeaturePrimitive.h"
+#include "FeatureRevolution.h"
+#include "FeatureScaled.h"
+#include "FeatureSketchBased.h"
+#include "FeatureSolid.h"
+#include "FeatureThickness.h"
+#include "FeatureTransformed.h"
+#include "ShapeBinder.h"
 
-extern struct PyMethodDef PartDesign_methods[];
 
-PyDoc_STRVAR(module_PartDesign_doc,
-"This module is the PartDesign module.");
-
+namespace PartDesign {
+extern PyObject* initModule();
+}
 
 /* Python entry */
-extern "C" {
-void PartDesignExport init_PartDesign()
+PyMOD_INIT_FUNC(_PartDesign)
 {
     // load dependent module
     try {
@@ -67,37 +72,86 @@ void PartDesignExport init_PartDesign()
     }
     catch(const Base::Exception& e) {
         PyErr_SetString(PyExc_ImportError, e.what());
-        return;
+        PyMOD_Return(nullptr);
     }
-    Py_InitModule3("_PartDesign", PartDesign_methods, module_PartDesign_doc);   /* mod name, table ptr */
+
+    PyObject* mod = PartDesign::initModule();
     Base::Console().Log("Loading PartDesign module... done\n");
 
 
     // NOTE: To finish the initialization of our own type objects we must
     // call PyType_Ready, otherwise we run into a segmentation fault, later on.
     // This function is responsible for adding inherited slots from a type's base class.
- 
-    PartDesign::Feature            ::init();
-    PartDesign::DressUp            ::init();
-    PartDesign::SketchBased        ::init();
-    PartDesign::Subtractive        ::init();
-    PartDesign::Additive           ::init();
-    PartDesign::Transformed        ::init();
-    PartDesign::Mirrored           ::init();
-    PartDesign::LinearPattern      ::init();
-    PartDesign::PolarPattern       ::init();
-    PartDesign::Scaled             ::init();
-    PartDesign::MultiTransform     ::init();
-    PartDesign::Hole               ::init();
-    PartDesign::Body               ::init();
-    PartDesign::Pad                ::init();
-    PartDesign::Pocket             ::init();
-    PartDesign::Fillet             ::init();
-    PartDesign::Revolution         ::init();
-    PartDesign::Groove             ::init();
-    PartDesign::Chamfer            ::init();
-    PartDesign::Face               ::init();
-    PartDesign::Draft		   ::init();
-}
 
-} // extern "C"
+    PartDesign::Feature                     ::init();
+    PartDesign::FeaturePython               ::init();
+    PartDesign::Solid                       ::init();
+    PartDesign::FeatureAddSub               ::init();
+    PartDesign::FeatureAddSubPython         ::init();
+    PartDesign::FeatureAdditivePython       ::init();
+    PartDesign::FeatureSubtractivePython    ::init();
+    PartDesign::DressUp                     ::init();
+    PartDesign::ProfileBased                ::init();
+    PartDesign::Transformed                 ::init();
+    PartDesign::Mirrored                    ::init();
+    PartDesign::LinearPattern               ::init();
+    PartDesign::PolarPattern                ::init();
+    PartDesign::Scaled                      ::init();
+    PartDesign::MultiTransform              ::init();
+    PartDesign::Hole                        ::init();
+    PartDesign::Body                        ::init();
+    PartDesign::FeatureExtrude              ::init();
+    PartDesign::Pad                         ::init();
+    PartDesign::Pocket                      ::init();
+    PartDesign::Fillet                      ::init();
+    PartDesign::Revolution                  ::init();
+    PartDesign::Groove                      ::init();
+    PartDesign::Chamfer                     ::init();
+    PartDesign::Draft                       ::init();
+    PartDesign::Thickness                   ::init();
+    PartDesign::Pipe                        ::init();
+    PartDesign::AdditivePipe                ::init();
+    PartDesign::SubtractivePipe             ::init();
+    PartDesign::Loft                        ::init();
+    PartDesign::AdditiveLoft                ::init();
+    PartDesign::SubtractiveLoft             ::init();
+    PartDesign::Helix                       ::init();
+    PartDesign::AdditiveHelix               ::init();
+    PartDesign::SubtractiveHelix            ::init();
+    PartDesign::ShapeBinder                 ::init();
+    PartDesign::SubShapeBinder              ::init();
+    PartDesign::SubShapeBinderPython        ::init();
+    PartDesign::Plane                       ::init();
+    PartDesign::Line                        ::init();
+    PartDesign::Point                       ::init();
+    PartDesign::CoordinateSystem            ::init();
+    PartDesign::Boolean                     ::init();
+    PartDesign::FeaturePrimitive            ::init();
+    PartDesign::Box                         ::init();
+    PartDesign::AdditiveBox                 ::init();
+    PartDesign::SubtractiveBox              ::init();
+    PartDesign::Cylinder                    ::init();
+    PartDesign::AdditiveCylinder            ::init();
+    PartDesign::SubtractiveCylinder         ::init();
+    PartDesign::Sphere                      ::init();
+    PartDesign::AdditiveSphere              ::init();
+    PartDesign::SubtractiveSphere           ::init();
+    PartDesign::Cone                        ::init();
+    PartDesign::AdditiveCone                ::init();
+    PartDesign::SubtractiveCone             ::init();
+    PartDesign::Ellipsoid                   ::init();
+    PartDesign::AdditiveEllipsoid           ::init();
+    PartDesign::SubtractiveEllipsoid        ::init();
+    PartDesign::Torus                       ::init();
+    PartDesign::AdditiveTorus               ::init();
+    PartDesign::SubtractiveTorus            ::init();
+    PartDesign::Prism                       ::init();
+    PartDesign::AdditivePrism               ::init();
+    PartDesign::SubtractivePrism            ::init();
+    PartDesign::Wedge                       ::init();
+    PartDesign::AdditiveWedge               ::init();
+    PartDesign::SubtractiveWedge            ::init();
+    PartDesign::FeatureBase                 ::init();
+
+    PyMOD_Return(mod);
+}

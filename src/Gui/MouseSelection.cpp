@@ -20,15 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-# include <qapplication.h>
-# include <qevent.h>
-# include <qpainter.h>
-# include <qpixmap.h>
-# include <QGLFramebufferObject>
+# include <QPixmap>
 # include <QMenu>
 # include <Inventor/SbBox.h>
 # include <Inventor/events/SoEvent.h>
@@ -37,18 +32,19 @@
 # include <Inventor/events/SoMouseButtonEvent.h>
 #endif
 
-#include <Base/Console.h>
-
 #include "MouseSelection.h"
-#include "View3DInventor.h"
 #include "View3DInventorViewer.h"
+
 
 using namespace Gui;
 
-AbstractMouseSelection::AbstractMouseSelection() : _pcView3D(0)
+AbstractMouseSelection::AbstractMouseSelection()
 {
-    m_bInner = true;
-    mustRedraw = false;
+    m_iXold = 0;
+    m_iYold = 0;
+    m_iXnew = 0;
+    m_iYnew = 0;
+    m_selectedRole = SelectionRole::None;
 }
 
 void AbstractMouseSelection::grabMouseModel(Gui::View3DInventorViewer* viewer)
@@ -60,23 +56,20 @@ void AbstractMouseSelection::grabMouseModel(Gui::View3DInventorViewer* viewer)
     initialize();
 }
 
-void AbstractMouseSelection::releaseMouseModel()
+void AbstractMouseSelection::releaseMouseModel(bool abort)
 {
     if (_pcView3D) {
         // do termination of your mousemodel
-        terminate();
+        terminate(abort);
 
         _pcView3D->getWidget()->setCursor(m_cPrevCursor);
-        _pcView3D = 0;
+        _pcView3D = nullptr;
     }
 }
 
 void AbstractMouseSelection::redraw()
 {
-    // Note: For any reason it does not work to do a redraw in the actualRedraw() method of the
-    // viewer class. So, we do the redraw when the user continues moving the cursor. E.g. have
-    // a look to PolyPickerSelection::draw()
-    mustRedraw = true;
+    // obsolete
 }
 
 int AbstractMouseSelection::handleEvent(const SoEvent* const ev, const SbViewportRegion& vp)
@@ -93,8 +86,8 @@ int AbstractMouseSelection::handleEvent(const SoEvent* const ev, const SbViewpor
     y = h-y; // the origin is at the left bottom corner (instead of left top corner)
 
     if (ev->getTypeId().isDerivedFrom(SoMouseButtonEvent::getClassTypeId())) {
-        const SoMouseButtonEvent* const event = (const SoMouseButtonEvent*) ev;
-        const SbBool press = event->getState() == SoButtonEvent::DOWN ? TRUE : FALSE;
+        const auto event = (const SoMouseButtonEvent*) ev;
+        const SbBool press = event->getState() == SoButtonEvent::DOWN ? true : false;
 
         if (press) {
             _clPoly.push_back(ev->getPosition());
@@ -124,87 +117,6 @@ BaseMouseSelection::BaseMouseSelection()
 {
 }
 
-// -----------------------------------------------------------------------------------
-#if 0
-/* XPM */
-static const char* cursor_polypick[]= {
-    "32 32 2 1",
-    "# c #646464",
-    ". c None",
-    "................................",
-    "................................",
-    ".......#........................",
-    ".......#........................",
-    ".......#........................",
-    "................................",
-    ".......#........................",
-    "..###.###.###...................",
-    ".......#...............#........",
-    "......................##........",
-    ".......#..............#.#.......",
-    ".......#.............#..#.......",
-    ".......#............#...#.......",
-    "....................#....#......",
-    "...................#.....#......",
-    "..................#......#......",
-    "............#.....#.......#.....",
-    "...........#.##..#........#.....",
-    "..........#....##.........#.....",
-    ".........#...............#......",
-    "........#................#......",
-    ".......#................#.......",
-    "......#.................#.......",
-    ".....#.................#........",
-    "....#####..............#........",
-    ".........#########....#.........",
-    "..................#####.........",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................................"
-};
-
-/* XPM */
-static const char* cursor_scissors[]= {
-    "32 32 3 1",
-    "# c #000000",
-    "+ c #ffffff",
-    ". c None",
-    "....+...........................",
-    "....+...........................",
-    "....+...........................",
-    "................................",
-    "+++.+.+++.......................",
-    "................................",
-    "....+...........................",
-    "....+...................#####...",
-    "....+.................########..",
-    ".....................#########..",
-    ".....###............##########..",
-    "....##++##.........#####...###..",
-    "...#++++++##.......####...####..",
-    "...##+++++++#......####.######..",
-    ".....#+++++++##....##########...",
-    "......##+++++++##.##########....",
-    "........##+++++++#########......",
-    "..........#+++++++#####.........",
-    "...........##+++++####..........",
-    "...........##+++++###...........",
-    ".........##+++++++########......",
-    "........##+++++++###########....",
-    "......##+++++++##.###########...",
-    "....##+++++++##....##########...",
-    "...#+++++++##......####..#####..",
-    "...#++++++#........#####..####..",
-    "....##++##..........#####..###..",
-    "......#.............##########..",
-    ".....................#########..",
-    ".......................######...",
-    "................................",
-    "................................"
-};
-#endif
 static const char* cursor_cut_scissors[]= {
     "32 32 6 1",
     "a c #800000",
@@ -249,6 +161,17 @@ static const char* cursor_cut_scissors[]= {
 
 PolyPickerSelection::PolyPickerSelection()
 {
+    lastConfirmed = false;
+}
+
+void PolyPickerSelection::setColor(float r, float g, float b, float a)
+{
+    polyline.setColor(r,g,b,a);
+}
+
+void PolyPickerSelection::setLineWidth(float l)
+{
+    polyline.setLineWidth(l);
 }
 
 void PolyPickerSelection::initialize()
@@ -258,15 +181,19 @@ void PolyPickerSelection::initialize()
     _pcView3D->getWidget()->setCursor(cursor);
 
     polyline.setViewer(_pcView3D);
-    polyline.setColor(0.0,0.0,1.0,1.0);
-    
+
     _pcView3D->addGraphicsItem(&polyline);
+    _pcView3D->redraw(); // needed to get an up-to-date image
     _pcView3D->setRenderType(View3DInventorViewer::Image);
     _pcView3D->redraw();
+
+    lastConfirmed = false;
 }
 
-void PolyPickerSelection::terminate()
+void PolyPickerSelection::terminate(bool abort)
 {
+    Q_UNUSED(abort)
+
     _pcView3D->removeGraphicsItem(&polyline);
     _pcView3D->setRenderType(View3DInventorViewer::Native);
     _pcView3D->redraw();
@@ -277,9 +204,7 @@ void PolyPickerSelection::draw()
     _pcView3D->redraw();
 }
 
-PolyPickerSelection::~PolyPickerSelection()
-{
-}
+PolyPickerSelection::~PolyPickerSelection() = default;
 
 int PolyPickerSelection::popupMenu()
 {
@@ -304,9 +229,9 @@ int PolyPickerSelection::popupMenu()
 int PolyPickerSelection::mouseButtonEvent(const SoMouseButtonEvent* const e, const QPoint& pos)
 {
     const int button = e->getButton();
-    const SbBool press = e->getState() == SoButtonEvent::DOWN ? TRUE : FALSE;
+    const SbBool press = e->getState() == SoButtonEvent::DOWN ? true : false;
 
-    if(press) {
+    if (press) {
         switch(button)
         {
         case SoMouseButtonEvent::BUTTON1:
@@ -316,7 +241,7 @@ int PolyPickerSelection::mouseButtonEvent(const SoMouseButtonEvent* const e, con
                 polyline.clear();
             };
             polyline.addNode(pos);
-            polyline.setCoords(pos.x(), pos.y());
+            lastConfirmed = true;
             m_iXnew = pos.x();  m_iYnew = pos.y();
             m_iXold = pos.x();  m_iYold = pos.y();
         }
@@ -370,14 +295,19 @@ int PolyPickerSelection::mouseButtonEvent(const SoMouseButtonEvent* const e, con
     return Continue;
 }
 
-int PolyPickerSelection::locationEvent(const SoLocation2Event* const e, const QPoint& pos)
+int PolyPickerSelection::locationEvent(const SoLocation2Event* const, const QPoint& pos)
 {
     // do all the drawing stuff for us
     QPoint clPoint = pos;
 
     if (polyline.isWorking()) {
         // check the position
+        qreal dpr = _pcView3D->getGLWidget()->devicePixelRatioF();
         QRect r = _pcView3D->getGLWidget()->rect();
+        if (dpr != 1.0) {
+            r.setHeight(r.height()*dpr);
+            r.setWidth(r.width()*dpr);
+        }
 
         if (!r.contains(clPoint)) {
             if (clPoint.x() < r.left())
@@ -397,17 +327,22 @@ int PolyPickerSelection::locationEvent(const SoLocation2Event* const e, const QP
             QCursor::setPos(newPos);
 #endif
         }
-        polyline.setCoords(clPoint.x(), clPoint.y());
+
+        if (!lastConfirmed)
+            polyline.popNode();
+        polyline.addNode(clPoint);
+        lastConfirmed = false;
+
+        draw();
     }
-    
-    draw();
+
     m_iXnew = clPoint.x();
     m_iYnew = clPoint.y();
 
     return Continue;
 }
 
-int PolyPickerSelection::keyboardEvent(const SoKeyboardEvent* const e)
+int PolyPickerSelection::keyboardEvent(const SoKeyboardEvent* const)
 {
     return Continue;
 }
@@ -416,18 +351,23 @@ int PolyPickerSelection::keyboardEvent(const SoKeyboardEvent* const e)
 
 PolyClipSelection::PolyClipSelection()
 {
+    selectionBits.set(1);
+    selectionBits.set(2);
 }
 
-PolyClipSelection::~PolyClipSelection()
-{
-}
+PolyClipSelection::~PolyClipSelection() = default;
 
 int PolyClipSelection::popupMenu()
 {
     QMenu menu;
     QAction* ci = menu.addAction(QObject::tr("Inner"));
     QAction* co = menu.addAction(QObject::tr("Outer"));
+    QAction* cs = menu.addAction(QObject::tr("Split"));
     QAction* ca = menu.addAction(QObject::tr("Cancel"));
+
+    ci->setVisible(testRole(SelectionRole::Inner));
+    co->setVisible(testRole(SelectionRole::Outer));
+    cs->setVisible(testRole(SelectionRole::Split));
 
     if (getPositions().size() < 3) {
         ci->setEnabled(false);
@@ -437,58 +377,50 @@ int PolyClipSelection::popupMenu()
     QAction* id = menu.exec(QCursor::pos());
 
     if (id == ci) {
-        m_bInner = true;
+        m_selectedRole = SelectionRole::Inner;
         return Finish;
     }
     else if (id == co) {
-        m_bInner = false;
+        m_selectedRole = SelectionRole::Outer;
         return Finish;
     }
-    else if (id == ca)
+    else if (id == cs) {
+        m_selectedRole = SelectionRole::Split;
+        return Finish;
+    }
+    else if (id == ca) {
+        m_selectedRole = SelectionRole::None;
         return Cancel;
-    else
+    }
+    else {
+        m_selectedRole = SelectionRole::None;
         return Restart;
+    }
 }
 
 // -----------------------------------------------------------------------------------
 
-BrushSelection::BrushSelection()
+FreehandSelection::FreehandSelection() = default;
+
+FreehandSelection::~FreehandSelection() = default;
+
+void FreehandSelection::setClosed(bool on)
 {
+    polyline.setClosed(on);
+    polyline.setCloseStippled(true);
 }
 
-
-BrushSelection::~BrushSelection()
-{
-
-}
-
-void BrushSelection::setColor(float r, float g, float b, float a)
-{
-    polyline.setColor(r,g,b,a);
-}
-
-void BrushSelection::setLineWidth(float l)
-{
-    polyline.setLineWidth(l);
-}
-
-void BrushSelection::setClosed(bool on)
-{
-   //TODO: closed = false is not supported yet
-}
-
-int BrushSelection::popupMenu()
+int FreehandSelection::popupMenu()
 {
     QMenu menu;
     QAction* fi = menu.addAction(QObject::tr("Finish"));
     menu.addAction(QObject::tr("Clear"));
     QAction* ca = menu.addAction(QObject::tr("Cancel"));
 
-    if(getPositions().size() < 3)
+    if (getPositions().size() < 3)
         fi->setEnabled(false);
 
     QAction* id = menu.exec(QCursor::pos());
-
     if (id == fi)
         return Finish;
     else if (id == ca)
@@ -497,14 +429,92 @@ int BrushSelection::popupMenu()
         return Restart;
 }
 
-int BrushSelection::locationEvent(const SoLocation2Event* const e, const QPoint& pos)
+int FreehandSelection::mouseButtonEvent(const SoMouseButtonEvent* const e, const QPoint& pos)
+{
+    const int button = e->getButton();
+    const SbBool press = e->getState() == SoButtonEvent::DOWN ? true : false;
+
+    if (press) {
+        switch(button) {
+        case SoMouseButtonEvent::BUTTON1:
+            {
+                if (!polyline.isWorking()) {
+                    polyline.setWorking(true);
+                    polyline.clear();
+                }
+
+                polyline.addNode(pos);
+                polyline.setCoords(pos.x(), pos.y());
+                m_iXnew = pos.x();  m_iYnew = pos.y();
+                m_iXold = pos.x();  m_iYold = pos.y();
+            }
+            break;
+
+        case SoMouseButtonEvent::BUTTON2:
+            {
+                 polyline.addNode(pos);
+                 m_iXnew = pos.x();  m_iYnew = pos.y();
+                 m_iXold = pos.x();  m_iYold = pos.y();
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+    // release
+    else {
+        switch(button)
+        {
+        case SoMouseButtonEvent::BUTTON1:
+            if (polyline.isWorking()) {
+                releaseMouseModel();
+                return Finish;
+            }
+            break;
+        case SoMouseButtonEvent::BUTTON2:
+            {
+                QCursor cur = _pcView3D->getWidget()->cursor();
+                _pcView3D->getWidget()->setCursor(m_cPrevCursor);
+
+                // The pop-up menu should be shown when releasing mouse button because
+                // otherwise the navigation style doesn't get the UP event and gets into
+                // an inconsistent state.
+                int id = popupMenu();
+
+                if (id == Finish || id == Cancel) {
+                    releaseMouseModel();
+                }
+                else if (id == Restart) {
+                    _pcView3D->getWidget()->setCursor(cur);
+                }
+
+                polyline.setWorking(false);
+                return id;
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    return Continue;
+}
+
+int FreehandSelection::locationEvent(const SoLocation2Event* const e, const QPoint& pos)
 {
     // do all the drawing stuff for us
     QPoint clPoint = pos;
 
     if (polyline.isWorking()) {
         // check the position
+        qreal dpr = _pcView3D->getGLWidget()->devicePixelRatioF();
         QRect r = _pcView3D->getGLWidget()->rect();
+        if (dpr != 1.0) {
+            r.setHeight(r.height()*dpr);
+            r.setWidth(r.width()*dpr);
+        }
 
         if (!r.contains(clPoint)) {
             if (clPoint.x() < r.left())
@@ -541,41 +551,35 @@ int BrushSelection::locationEvent(const SoLocation2Event* const e, const QPoint&
 
 // -----------------------------------------------------------------------------------
 
-RectangleSelection::RectangleSelection() : RubberbandSelection()
-{
-    rubberband.setColor(0.0,0.0,1.0,1.0);
-}
-
-RectangleSelection::~RectangleSelection()
-{
-}
-
-// -----------------------------------------------------------------------------------
-
 RubberbandSelection::RubberbandSelection()
 {
+    rubberband.setColor(1.0, 1.0, 0.0, 0.5);
 }
 
-RubberbandSelection::~RubberbandSelection()
+RubberbandSelection::~RubberbandSelection() = default;
+
+void RubberbandSelection::setColor(float r, float g, float b, float a)
 {
+    rubberband.setColor(r,g,b,a);
 }
 
 void RubberbandSelection::initialize()
 {
     rubberband.setViewer(_pcView3D);
     rubberband.setWorking(false);
-    rubberband.setColor(1.0, 1.0, 0.0, 0.5);
     _pcView3D->addGraphicsItem(&rubberband);
-    if (QGLFramebufferObject::hasOpenGLFramebufferObjects()) {
+    if (QtGLFramebufferObject::hasOpenGLFramebufferObjects()) {
         _pcView3D->setRenderType(View3DInventorViewer::Image);
     }
     _pcView3D->redraw();
 }
 
-void RubberbandSelection::terminate()
+void RubberbandSelection::terminate(bool abort)
 {
+    Q_UNUSED(abort)
+
     _pcView3D->removeGraphicsItem(&rubberband);
-    if (QGLFramebufferObject::hasOpenGLFramebufferObjects()) {
+    if (QtGLFramebufferObject::hasOpenGLFramebufferObjects()) {
         _pcView3D->setRenderType(View3DInventorViewer::Native);
     }
     _pcView3D->redraw();
@@ -589,7 +593,7 @@ void RubberbandSelection::draw()
 int RubberbandSelection::mouseButtonEvent(const SoMouseButtonEvent* const e, const QPoint& pos)
 {
     const int button = e->getButton();
-    const SbBool press = e->getState() == SoButtonEvent::DOWN ? TRUE : FALSE;
+    const SbBool press = e->getState() == SoButtonEvent::DOWN ? true : false;
 
     int ret = Continue;
 
@@ -629,7 +633,7 @@ int RubberbandSelection::mouseButtonEvent(const SoMouseButtonEvent* const e, con
     return ret;
 }
 
-int RubberbandSelection::locationEvent(const SoLocation2Event* const e, const QPoint& pos)
+int RubberbandSelection::locationEvent(const SoLocation2Event* const, const QPoint& pos)
 {
     m_iXnew = pos.x();
     m_iYnew = pos.y();
@@ -638,30 +642,35 @@ int RubberbandSelection::locationEvent(const SoLocation2Event* const e, const QP
     return Continue;
 }
 
-int RubberbandSelection::keyboardEvent(const SoKeyboardEvent* const e)
+int RubberbandSelection::keyboardEvent(const SoKeyboardEvent* const)
 {
     return Continue;
 }
 
 // -----------------------------------------------------------------------------------
 
-BoxZoomSelection::BoxZoomSelection()
+RectangleSelection::RectangleSelection() : RubberbandSelection()
 {
+    rubberband.setColor(0.0,0.0,1.0,1.0);
 }
 
-BoxZoomSelection::~BoxZoomSelection()
+RectangleSelection::~RectangleSelection() = default;
+
+// -----------------------------------------------------------------------------------
+
+BoxZoomSelection::BoxZoomSelection() = default;
+
+BoxZoomSelection::~BoxZoomSelection() = default;
+
+void BoxZoomSelection::terminate(bool abort)
 {
+    RubberbandSelection::terminate(abort);
+    if (!abort) {
+        int xmin = std::min<int>(m_iXold, m_iXnew);
+        int xmax = std::max<int>(m_iXold, m_iXnew);
+        int ymin = std::min<int>(m_iYold, m_iYnew);
+        int ymax = std::max<int>(m_iYold, m_iYnew);
+        SbBox2s box(xmin, ymin, xmax, ymax);
+        _pcView3D->boxZoom(box);
+    }
 }
-
-void BoxZoomSelection::terminate()
-{
-    RubberbandSelection::terminate();
-
-    int xmin = std::min<int>(m_iXold, m_iXnew);
-    int xmax = std::max<int>(m_iXold, m_iXnew);
-    int ymin = std::min<int>(m_iYold, m_iYnew);
-    int ymax = std::max<int>(m_iYold, m_iYnew);
-    SbBox2s box(xmin, ymin, xmax, ymax);
-    _pcView3D->boxZoom(box);
-}
-

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2014                        *
+ *   Copyright (c) 2014 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,7 +24,7 @@
 #ifndef IMPORT_STEPSHAPE_H
 #define IMPORT_STEPSHAPE_H
 
-
+#include <Mod/Import/ImportGlobal.h>
 
 namespace Import
 {
@@ -34,17 +34,16 @@ namespace Import
  * convenient access to the Mesh data structure. This class should not be used
  * for programming algorithms in C++. Use Mesh Core classes instead!
  */
-class ImportExport StepShape 
+class ImportExport StepShape
 {
 public:
-    StepShape(const char* fileName="");
+    StepShape();
     ~StepShape();
 
     int read(const char* fileName);
-
 };
 
-} // namespace Import
+}  // namespace Import
 
 
-#endif // IMPORT_STEPSHAPE_H
+#endif  // IMPORT_STEPSHAPE_H

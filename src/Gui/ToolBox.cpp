@@ -20,7 +20,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <QEvent>
@@ -30,8 +29,8 @@
 
 #include "ToolBox.h"
 
-using namespace Gui::DockWnd;
 
+using namespace Gui::DockWnd;
 
 /**
  * Constructs a toolbox called \a name with parent \a parent and flags \a f.
@@ -40,9 +39,9 @@ ToolBox::ToolBox( QWidget *parent )
   : QWidget(parent)
 {
   _pToolBox = new QToolBox( this );
-  connect( _pToolBox, SIGNAL( currentChanged(int) ), this, SIGNAL( currentChanged(int) ) );
+  connect(_pToolBox, &QToolBox::currentChanged, this, &ToolBox::currentChanged);
 
-  QGridLayout* pGrid = new QGridLayout(this);
+  auto pGrid = new QGridLayout(this);
   pGrid->addWidget(_pToolBox, 0, 0);
 }
 
@@ -52,7 +51,7 @@ ToolBox::~ToolBox()
 }
 
 /**
- * Adds the widget w in a new tab at bottom of the toolbox. The new tab's label is set to \a label. 
+ * Adds the widget w in a new tab at bottom of the toolbox. The new tab's label is set to \a label.
  * Returns the new tab's index.
  */
 int ToolBox::addItem ( QWidget * w, const QString & label )
@@ -61,7 +60,7 @@ int ToolBox::addItem ( QWidget * w, const QString & label )
 }
 
 /**
- * Adds the widget \a item in a new tab at bottom of the toolbox. The new tab's label is set to \a label, and 
+ * Adds the widget \a item in a new tab at bottom of the toolbox. The new tab's label is set to \a label, and
  * the \a iconSet is displayed to the left of the \a label. Returns the new tab's index.
  */
 int ToolBox::addItem ( QWidget * item, const QIcon & iconSet, const QString & label )
@@ -70,9 +69,9 @@ int ToolBox::addItem ( QWidget * item, const QIcon & iconSet, const QString & la
 }
 
 /**
- * This is an overloaded member function, provided for convenience. It behaves essentially like the above function. 
+ * This is an overloaded member function, provided for convenience. It behaves essentially like the above function.
  *
- * Inserts the widget \a item at position \a index, or at the bottom of the toolbox if \a index is out of range. 
+ * Inserts the widget \a item at position \a index, or at the bottom of the toolbox if \a index is out of range.
  * The new item's label is set to \a label. Returns the new item's index.
  */
 int ToolBox::insertItem ( int index, QWidget * item, const QString & label )
@@ -81,8 +80,8 @@ int ToolBox::insertItem ( int index, QWidget * item, const QString & label )
 }
 
 /**
- * Inserts the widget \a item at position \a index, or at the bottom of the toolbox if \a index is out of range. 
- * The new item's label is set to \a label, and the \a iconSet is displayed to the left of the \a label. 
+ * Inserts the widget \a item at position \a index, or at the bottom of the toolbox if \a index is out of range.
+ * The new item's label is set to \a label, and the \a iconSet is displayed to the left of the \a label.
  * Returns the new item's index.
  */
 int ToolBox::insertItem ( int index, QWidget * item, const QIcon & iconSet, const QString & label )
@@ -100,7 +99,7 @@ void ToolBox::removeItem ( int index )
 }
 
 /**
- * If \a enabled is TRUE then the item at position \a index is enabled; otherwise item \a index is disabled.
+ * If \a enabled is true then the item at position \a index is enabled; otherwise item \a index is disabled.
  */
 void ToolBox::setItemEnabled ( int index, bool enabled )
 {
@@ -108,7 +107,7 @@ void ToolBox::setItemEnabled ( int index, bool enabled )
 }
 
 /**
- * Returns TRUE if the item at position \a index is enabled; otherwise returns FALSE.
+ * Returns true if the item at position \a index is enabled; otherwise returns false.
  */
 bool ToolBox::isItemEnabled ( int index ) const
 {

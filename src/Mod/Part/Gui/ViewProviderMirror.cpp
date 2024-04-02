@@ -20,48 +20,49 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
 # include <QAction>
 # include <QMenu>
 # include <QTimer>
+
 # include <Standard_math.hxx>
 # include <TopExp.hxx>
 # include <TopTools_IndexedMapOfShape.hxx>
-# include <TopTools_ListOfShape.hxx>
-# include <TopTools_ListIteratorOfListOfShape.hxx>
+
 # include <Inventor/actions/SoSearchAction.h>
 # include <Inventor/draggers/SoDragger.h>
+# include <Inventor/manips/SoCenterballManip.h>
 # include <Inventor/nodes/SoCoordinate3.h>
 # include <Inventor/nodes/SoFaceSet.h>
 # include <Inventor/nodes/SoMaterial.h>
 # include <Inventor/nodes/SoSeparator.h>
-# include <Inventor/manips/SoCenterballManip.h>
 #endif
 
-#include <Mod/Part/App/FeatureMirroring.h>
-#include <Mod/Part/App/FeatureFillet.h>
-#include <Mod/Part/App/FeatureChamfer.h>
-#include <Mod/Part/App/FeatureRevolution.h>
-#include <Mod/Part/App/PartFeatures.h>
 #include <Gui/Application.h>
 #include <Gui/Control.h>
 #include <Gui/Document.h>
+#include <Mod/Part/App/FeatureChamfer.h>
+#include <Mod/Part/App/FeatureFillet.h>
+#include <Mod/Part/App/FeatureMirroring.h>
+#include <Mod/Part/App/FeatureOffset.h>
+#include <Mod/Part/App/FeatureRevolution.h>
+#include <Mod/Part/App/PartFeatures.h>
+
 #include "ViewProviderMirror.h"
 #include "DlgFilletEdges.h"
 #include "TaskOffset.h"
 #include "TaskThickness.h"
 
-using namespace PartGui;
 
+using namespace PartGui;
 
 PROPERTY_SOURCE(PartGui::ViewProviderMirror, PartGui::ViewProviderPart)
 
 ViewProviderMirror::ViewProviderMirror()
 {
-    sPixmap = "Part_Mirror.svg";
+    sPixmap = "Part_Mirror";
     pcEditNode = new SoSeparator();
     pcEditNode->ref();
 }
@@ -88,8 +89,8 @@ bool ViewProviderMirror::setEdit(int ModNum)
         float len = (float)bbox.CalcDiagonalLength();
         Base::Vector3d base = mf->Base.getValue();
         Base::Vector3d norm = mf->Normal.getValue();
-        Base::Vector3d cent = bbox.CalcCenter();
-        base = cent.ProjToPlane(base, norm);
+        Base::Vector3d cent = bbox.GetCenter();
+        base = cent.ProjectToPlane(base, norm);
 
         // setup the graph for editing the mirror plane
         SoTransform* trans = new SoTransform;
@@ -119,7 +120,7 @@ bool ViewProviderMirror::setEdit(int ModNum)
         // translation and center fields are overridden.
         SoSearchAction sa;
         sa.setInterest(SoSearchAction::FIRST);
-        sa.setSearchingAll(FALSE);
+        sa.setSearchingAll(false);
         sa.setNode(trans);
         sa.apply(pcEditNode);
         SoPath * path = sa.getPath();
@@ -165,7 +166,7 @@ void ViewProviderMirror::unsetEdit(int ModNum)
         mf->Normal.setValue(norm[0],norm[1],norm[2]);
 
         pcRoot->removeChild(pcEditNode);
-        pcEditNode->removeAllChildren();
+        Gui::coinRemoveAllChildren(pcEditNode);
     }
     else {
         ViewProviderPart::unsetEdit(ModNum);
@@ -174,6 +175,7 @@ void ViewProviderMirror::unsetEdit(int ModNum)
 
 std::vector<App::DocumentObject*> ViewProviderMirror::claimChildren() const
 {
+    // Make the input object a child (see also #0001482)
     std::vector<App::DocumentObject*> temp;
     temp.push_back(static_cast<Part::Mirroring*>(getObject())->Source.getValue());
     return temp;
@@ -182,7 +184,7 @@ std::vector<App::DocumentObject*> ViewProviderMirror::claimChildren() const
 bool ViewProviderMirror::onDelete(const std::vector<std::string> &)
 {
     // get the input shape
-    Part::Mirroring* pMirroring = static_cast<Part::Mirroring*>(getObject()); 
+    Part::Mirroring* pMirroring = static_cast<Part::Mirroring*>(getObject());
     App::DocumentObject *pSource = pMirroring->Source.getValue();
     if (pSource)
         Gui::Application::Instance->showViewProvider(pSource);
@@ -190,13 +192,13 @@ bool ViewProviderMirror::onDelete(const std::vector<std::string> &)
     return true;
 }
 
-void ViewProviderMirror::dragStartCallback(void *data, SoDragger *)
+void ViewProviderMirror::dragStartCallback(void *, SoDragger *)
 {
     // This is called when a manipulator is about to manipulating
-    Gui::Application::Instance->activeDocument()->openCommand("Edit Mirror");
+    Gui::Application::Instance->activeDocument()->openCommand(QT_TRANSLATE_NOOP("Command", "Edit Mirror"));
 }
 
-void ViewProviderMirror::dragFinishCallback(void *data, SoDragger *)
+void ViewProviderMirror::dragFinishCallback(void *, SoDragger *)
 {
     // This is called when a manipulator has done manipulating
     Gui::Application::Instance->activeDocument()->commitCommand();
@@ -204,7 +206,7 @@ void ViewProviderMirror::dragFinishCallback(void *data, SoDragger *)
 
 void ViewProviderMirror::dragMotionCallback(void *data, SoDragger *drag)
 {
-    ViewProviderMirror* that = reinterpret_cast<ViewProviderMirror*>(data);
+    ViewProviderMirror* that = static_cast<ViewProviderMirror*>(data);
     const SbMatrix& mat = drag->getMotionMatrix();
     // the new axis of the plane
     SbRotation rot(mat);
@@ -224,9 +226,7 @@ ViewProviderFillet::ViewProviderFillet()
     sPixmap = "Part_Fillet";
 }
 
-ViewProviderFillet::~ViewProviderFillet()
-{
-}
+ViewProviderFillet::~ViewProviderFillet() = default;
 
 void ViewProviderFillet::updateData(const App::Property* prop)
 {
@@ -237,7 +237,10 @@ void ViewProviderFillet::updateData(const App::Property* prop)
         if (hist.size() != 1)
             return;
         Part::Fillet* objFill = dynamic_cast<Part::Fillet*>(getObject());
-        Part::Feature* objBase = dynamic_cast<Part::Feature*>(objFill->Base.getValue());
+        if (!objFill)
+            return;
+        Part::Feature* objBase = dynamic_cast<Part::Feature*>(
+                Part::Feature::getShapeOwner(objFill->Base.getValue()));
         if (objBase) {
             const TopoDS_Shape& baseShape = objBase->Shape.getValue();
             const TopoDS_Shape& fillShape = objFill->Shape.getValue();
@@ -246,23 +249,29 @@ void ViewProviderFillet::updateData(const App::Property* prop)
             TopExp::MapShapes(baseShape, TopAbs_FACE, baseMap);
             TopExp::MapShapes(fillShape, TopAbs_FACE, fillMap);
 
-            Gui::ViewProvider* vpBase = Gui::Application::Instance->getViewProvider(objBase);
-            std::vector<App::Color> colBase = static_cast<PartGui::ViewProviderPart*>(vpBase)->DiffuseColor.getValues();
-            std::vector<App::Color> colFill;
-            colFill.resize(fillMap.Extent(), static_cast<PartGui::ViewProviderPart*>(vpBase)->ShapeColor.getValue());
+            auto vpBase = dynamic_cast<PartGui::ViewProviderPart*>(Gui::Application::Instance->getViewProvider(objBase));
+            if (vpBase) {
+                std::vector<App::Color> colBase = vpBase->DiffuseColor.getValues();
+                std::vector<App::Color> colFill;
+                colFill.resize(fillMap.Extent(), vpBase->ShapeColor.getValue());
+                applyTransparency(vpBase->Transparency.getValue(),colBase);
 
-            bool setColor=false;
-            if (colBase.size() == baseMap.Extent()) {
-                applyColor(hist[0], colBase, colFill);
-                setColor = true;
-            }
-            else if (!colBase.empty() && colBase[0] != this->ShapeColor.getValue()) {
-                colBase.resize(baseMap.Extent(), colBase[0]);
-                applyColor(hist[0], colBase, colFill);
-                setColor = true;
-            }
-            if (setColor)
+                if (static_cast<int>(colBase.size()) == baseMap.Extent()) {
+                    applyColor(hist[0], colBase, colFill);
+                }
+                else if (!colBase.empty() && colBase[0] != this->ShapeColor.getValue()) {
+                    colBase.resize(baseMap.Extent(), colBase[0]);
+                    applyColor(hist[0], colBase, colFill);
+                }
+
+                // If the view provider has set a transparency then override the values
+                // of the input shapes
+                if (Transparency.getValue() > 0) {
+                    applyTransparency(Transparency.getValue(), colFill);
+                }
+
                 this->DiffuseColor.setValues(colFill);
+            }
         }
     }
 }
@@ -310,7 +319,7 @@ std::vector<App::DocumentObject*> ViewProviderFillet::claimChildren() const
 bool ViewProviderFillet::onDelete(const std::vector<std::string> &)
 {
     // get the input shape
-    Part::Fillet* pFillet = static_cast<Part::Fillet*>(getObject()); 
+    Part::Fillet* pFillet = static_cast<Part::Fillet*>(getObject());
     App::DocumentObject *pBase = pFillet->Base.getValue();
     if (pBase)
         Gui::Application::Instance->showViewProvider(pBase);
@@ -327,9 +336,7 @@ ViewProviderChamfer::ViewProviderChamfer()
     sPixmap = "Part_Chamfer";
 }
 
-ViewProviderChamfer::~ViewProviderChamfer()
-{
-}
+ViewProviderChamfer::~ViewProviderChamfer() = default;
 
 void ViewProviderChamfer::updateData(const App::Property* prop)
 {
@@ -340,7 +347,10 @@ void ViewProviderChamfer::updateData(const App::Property* prop)
         if (hist.size() != 1)
             return;
         Part::Chamfer* objCham = dynamic_cast<Part::Chamfer*>(getObject());
-        Part::Feature* objBase = dynamic_cast<Part::Feature*>(objCham->Base.getValue());
+        if (!objCham)
+            return;
+        Part::Feature* objBase = dynamic_cast<Part::Feature*>(
+                Part::Feature::getShapeOwner(objCham->Base.getValue()));
         if (objBase) {
             const TopoDS_Shape& baseShape = objBase->Shape.getValue();
             const TopoDS_Shape& chamShape = objCham->Shape.getValue();
@@ -349,23 +359,29 @@ void ViewProviderChamfer::updateData(const App::Property* prop)
             TopExp::MapShapes(baseShape, TopAbs_FACE, baseMap);
             TopExp::MapShapes(chamShape, TopAbs_FACE, chamMap);
 
-            Gui::ViewProvider* vpBase = Gui::Application::Instance->getViewProvider(objBase);
-            std::vector<App::Color> colBase = static_cast<PartGui::ViewProviderPart*>(vpBase)->DiffuseColor.getValues();
-            std::vector<App::Color> colCham;
-            colCham.resize(chamMap.Extent(), static_cast<PartGui::ViewProviderPart*>(vpBase)->ShapeColor.getValue());
+            auto vpBase = dynamic_cast<PartGui::ViewProviderPart*>(Gui::Application::Instance->getViewProvider(objBase));
+            if (vpBase) {
+                std::vector<App::Color> colBase = static_cast<PartGui::ViewProviderPart*>(vpBase)->DiffuseColor.getValues();
+                std::vector<App::Color> colCham;
+                colCham.resize(chamMap.Extent(), static_cast<PartGui::ViewProviderPart*>(vpBase)->ShapeColor.getValue());
+                applyTransparency(static_cast<PartGui::ViewProviderPart*>(vpBase)->Transparency.getValue(),colBase);
 
-            bool setColor=false;
-            if (colBase.size() == baseMap.Extent()) {
-                applyColor(hist[0], colBase, colCham);
-                setColor = true;
-            }
-            else if (!colBase.empty() && colBase[0] != this->ShapeColor.getValue()) {
-                colBase.resize(baseMap.Extent(), colBase[0]);
-                applyColor(hist[0], colBase, colCham);
-                setColor = true;
-            }
-            if (setColor)
+                if (static_cast<int>(colBase.size()) == baseMap.Extent()) {
+                    applyColor(hist[0], colBase, colCham);
+                }
+                else if (!colBase.empty() && colBase[0] != this->ShapeColor.getValue()) {
+                    colBase.resize(baseMap.Extent(), colBase[0]);
+                    applyColor(hist[0], colBase, colCham);
+                }
+
+                // If the view provider has set a transparency then override the values
+                // of the input shapes
+                if (Transparency.getValue() > 0) {
+                    applyTransparency(Transparency.getValue(), colCham);
+                }
+
                 this->DiffuseColor.setValues(colCham);
+            }
         }
     }
 }
@@ -413,7 +429,7 @@ std::vector<App::DocumentObject*> ViewProviderChamfer::claimChildren() const
 bool ViewProviderChamfer::onDelete(const std::vector<std::string> &)
 {
     // get the input shape
-    Part::Chamfer* pChamfer = static_cast<Part::Chamfer*>(getObject()); 
+    Part::Chamfer* pChamfer = static_cast<Part::Chamfer*>(getObject());
     App::DocumentObject *pBase = pChamfer->Base.getValue();
     if (pBase)
         Gui::Application::Instance->showViewProvider(pBase);
@@ -430,9 +446,7 @@ ViewProviderRevolution::ViewProviderRevolution()
     sPixmap = "Part_Revolve";
 }
 
-ViewProviderRevolution::~ViewProviderRevolution()
-{
-}
+ViewProviderRevolution::~ViewProviderRevolution() = default;
 
 std::vector<App::DocumentObject*> ViewProviderRevolution::claimChildren() const
 {
@@ -444,7 +458,7 @@ std::vector<App::DocumentObject*> ViewProviderRevolution::claimChildren() const
 bool ViewProviderRevolution::onDelete(const std::vector<std::string> &)
 {
     // get the input shape
-    Part::Revolution* pRevolve = static_cast<Part::Revolution*>(getObject()); 
+    Part::Revolution* pRevolve = static_cast<Part::Revolution*>(getObject());
     App::DocumentObject *pBase = pRevolve->Source.getValue();
     if (pBase)
         Gui::Application::Instance->showViewProvider(pBase);
@@ -461,9 +475,7 @@ ViewProviderLoft::ViewProviderLoft()
     sPixmap = "Part_Loft";
 }
 
-ViewProviderLoft::~ViewProviderLoft()
-{
-}
+ViewProviderLoft::~ViewProviderLoft() = default;
 
 std::vector<App::DocumentObject*> ViewProviderLoft::claimChildren() const
 {
@@ -484,13 +496,15 @@ ViewProviderSweep::ViewProviderSweep()
     sPixmap = "Part_Sweep";
 }
 
-ViewProviderSweep::~ViewProviderSweep()
-{
-}
+ViewProviderSweep::~ViewProviderSweep() = default;
 
 std::vector<App::DocumentObject*> ViewProviderSweep::claimChildren() const
 {
-    return static_cast<Part::Sweep*>(getObject())->Sections.getValues();
+    auto obj = static_cast<Part::Sweep*>(getObject());
+    auto children = obj->Sections.getValues();
+    if(obj->Spine.getValue())
+        children.push_back(obj->Spine.getValue());
+    return children;
 }
 
 bool ViewProviderSweep::onDelete(const std::vector<std::string> &)
@@ -507,15 +521,11 @@ ViewProviderOffset::ViewProviderOffset()
     sPixmap = "Part_Offset";
 }
 
-ViewProviderOffset::~ViewProviderOffset()
-{
-}
+ViewProviderOffset::~ViewProviderOffset() = default;
 
 void ViewProviderOffset::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
 {
-    QAction* act;
-    act = menu->addAction(QObject::tr("Edit offset"), receiver, member);
-    act->setData(QVariant((int)ViewProvider::Default));
+    addDefaultAction(menu, QObject::tr("Edit offset"));
     PartGui::ViewProviderPart::setupContextMenu(menu, receiver, member);
 }
 
@@ -525,7 +535,7 @@ bool ViewProviderOffset::setEdit(int ModNum)
         Gui::TaskView::TaskDialog *dlg = Gui::Control().activeDialog();
         TaskOffset* offsetDlg = qobject_cast<TaskOffset*>(dlg);
         if (offsetDlg && offsetDlg->getObject() != this->getObject())
-            offsetDlg = 0; // another pad left open its task panel
+            offsetDlg = nullptr; // another pad left open its task panel
         if (dlg && !offsetDlg) {
             if (dlg->canClose())
                 Gui::Control().closeDialog();
@@ -570,7 +580,7 @@ std::vector<App::DocumentObject*> ViewProviderOffset::claimChildren() const
 bool ViewProviderOffset::onDelete(const std::vector<std::string> &)
 {
     // get the support and Sketch
-    Part::Offset* offset = static_cast<Part::Offset*>(getObject()); 
+    Part::Offset* offset = static_cast<Part::Offset*>(getObject());
     App::DocumentObject* source = offset->Source.getValue();
     if (source){
         Gui::Application::Instance->getViewProvider(source)->show();
@@ -581,6 +591,11 @@ bool ViewProviderOffset::onDelete(const std::vector<std::string> &)
 
 // ---------------------------------------
 
+PROPERTY_SOURCE(PartGui::ViewProviderOffset2D, PartGui::ViewProviderOffset)
+
+
+// ---------------------------------------
+
 PROPERTY_SOURCE(PartGui::ViewProviderThickness, PartGui::ViewProviderPart)
 
 ViewProviderThickness::ViewProviderThickness()
@@ -588,15 +603,11 @@ ViewProviderThickness::ViewProviderThickness()
     sPixmap = "Part_Thickness";
 }
 
-ViewProviderThickness::~ViewProviderThickness()
-{
-}
+ViewProviderThickness::~ViewProviderThickness() = default;
 
 void ViewProviderThickness::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
 {
-    QAction* act;
-    act = menu->addAction(QObject::tr("Edit thickness"), receiver, member);
-    act->setData(QVariant((int)ViewProvider::Default));
+    addDefaultAction(menu, QObject::tr("Edit thickness"));
     PartGui::ViewProviderPart::setupContextMenu(menu, receiver, member);
 }
 
@@ -606,7 +617,7 @@ bool ViewProviderThickness::setEdit(int ModNum)
         Gui::TaskView::TaskDialog *dlg = Gui::Control().activeDialog();
         TaskThickness* thicknessDlg = qobject_cast<TaskThickness*>(dlg);
         if (thicknessDlg && thicknessDlg->getObject() != this->getObject())
-            thicknessDlg = 0; // another pad left open its task panel
+            thicknessDlg = nullptr; // another pad left open its task panel
         if (dlg && !thicknessDlg) {
             if (dlg->canClose())
                 Gui::Control().closeDialog();
@@ -634,7 +645,7 @@ void ViewProviderThickness::unsetEdit(int ModNum)
 {
     if (ModNum == ViewProvider::Default) {
         // when pressing ESC make sure to close the dialog
-        QTimer::singleShot(0, &Gui::Control(), SLOT(closeDialog()));
+        QTimer::singleShot(0, &Gui::Control(), &Gui::ControlSingleton::closeDialog);
     }
     else {
         PartGui::ViewProviderPart::unsetEdit(ModNum);
@@ -651,7 +662,7 @@ std::vector<App::DocumentObject*> ViewProviderThickness::claimChildren() const
 bool ViewProviderThickness::onDelete(const std::vector<std::string> &)
 {
     // get the support and Sketch
-    Part::Thickness* thickness = static_cast<Part::Thickness*>(getObject()); 
+    Part::Thickness* thickness = static_cast<Part::Thickness*>(getObject());
     App::DocumentObject* source = thickness->Faces.getValue();
     if (source){
         Gui::Application::Instance->getViewProvider(source)->show();
@@ -659,3 +670,26 @@ bool ViewProviderThickness::onDelete(const std::vector<std::string> &)
 
     return true;
 }
+
+// ---------------------------------------
+
+PROPERTY_SOURCE(PartGui::ViewProviderRefine, PartGui::ViewProviderPart)
+
+ViewProviderRefine::ViewProviderRefine()
+{
+    sPixmap = "Part_Refine_Shape";
+}
+
+ViewProviderRefine::~ViewProviderRefine() = default;
+
+// ---------------------------------------
+
+PROPERTY_SOURCE(PartGui::ViewProviderReverse, PartGui::ViewProviderPart)
+
+ViewProviderReverse::ViewProviderReverse()
+{
+    //TODO: Need a specific icon here!
+    //sPixmap = "Part_Reverse_Shape";
+}
+
+ViewProviderReverse::~ViewProviderReverse() = default;

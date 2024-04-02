@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -33,27 +33,22 @@ class SoSeparator;
 class SbVec3f;
 class SoTransform;
 
-namespace Gui {
-  class View3DInventorViewer;
-  class SoFCSelection;
-}
-
 namespace PartGui {
 
 
 class PartGuiExport ViewProviderImport : public ViewProviderPart
 {
-    PROPERTY_HEADER(PartGui::ViewProviderImport);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderImport);
 
 public:
     /// constructor
     ViewProviderImport();
     /// destructor
-    virtual ~ViewProviderImport();
+    ~ViewProviderImport() override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-    virtual void unsetEdit(int ModNum);
+    bool setEdit(int ModNum) override;
+    void unsetEdit(int ModNum) override;
 };
 
 } // namespace PartGui

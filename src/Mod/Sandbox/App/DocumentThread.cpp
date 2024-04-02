@@ -31,6 +31,8 @@
 
 #include <Base/Console.h>
 #include <Base/Sequencer.h>
+#include <Base/Stream.h>
+#include <Base/Writer.h>
 #include <Base/Interpreter.h>
 #include <App/Application.h>
 #include <App/Document.h>
@@ -52,7 +54,7 @@ void DocumentThread::run()
 {
     App::Document* doc = App::GetApplication().getActiveDocument();
     DocumentProtector dp(doc);
-    App::DocumentObject* obj = dp.addObject("Mesh::Ellipsoid", (const char*)objectName().toAscii());
+    dp.addObject("Mesh::Ellipsoid", (const char*)objectName().toLatin1());
     dp.recompute();
 }
 
@@ -82,11 +84,12 @@ void WorkerThread::run()
         }
         seq.next(true);
     }
+    Q_UNUSED(val);
 }
 
 // --------------------------------------
 
-QMutex PythonThread::mutex(QMutex::Recursive);
+QRecursiveMutex PythonThread::mutex;
 
 PythonThread::PythonThread(QObject* parent)
   : QThread(parent)
@@ -227,4 +230,42 @@ void DocumentTestThread::run()
 
     dp.recompute();
     op.execute(Callable<SandboxObject,&SandboxObject::resetValue>(obj));
+}
+
+
+DocumentSaverThread::DocumentSaverThread(App::Document* doc, QObject* parent)
+  : QThread(parent), doc(doc)
+{
+}
+
+DocumentSaverThread::~DocumentSaverThread()
+{
+}
+
+void DocumentSaverThread::run()
+{
+    std::string uuid = Base::Uuid::createUuid();
+    std::string fn = doc->TransientDir.getValue();
+    fn += "/";
+    fn += uuid;
+    fn += ".autosave";
+    Base::FileInfo tmp(fn);
+
+    // open extra scope to close ZipWriter properly
+    {
+        Base::ofstream file(tmp, std::ios::out | std::ios::binary);
+        Base::ZipWriter writer(file);
+
+        writer.setComment("FreeCAD Document");
+        writer.setLevel(0);
+        writer.putNextEntry("Document.xml");
+
+        doc->Save(writer);
+
+        // Special handling for Gui document.
+        doc->signalSaveDocument(writer);
+
+        // write additional files
+        writer.writeFiles();
+    }
 }

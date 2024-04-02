@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,36 +24,36 @@
 #ifndef PARTGUI_VIEWPROVIDERSPHEREPARAMETRIC_H
 #define PARTGUI_VIEWPROVIDERSPHEREPARAMETRIC_H
 
-#include "ViewProvider.h"
+#include "ViewProviderPrimitive.h"
 
 namespace PartGui {
 
-class PartGuiExport ViewProviderSphereParametric : public ViewProviderPart
+class PartGuiExport ViewProviderSphereParametric : public ViewProviderPrimitive
 {
-    PROPERTY_HEADER(PartGui::ViewProviderSphereParametric);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderSphereParametric);
 
 public:
     /// constructor
     ViewProviderSphereParametric();
     /// destructor
-    virtual ~ViewProviderSphereParametric();
+    ~ViewProviderSphereParametric() override;
 
-    std::vector<std::string> getDisplayModes(void) const;
+    std::vector<std::string> getDisplayModes() const override;
 
 protected:
 
 };
 
-class PartGuiExport ViewProviderEllipsoid : public ViewProviderPart
+class PartGuiExport ViewProviderEllipsoid : public ViewProviderPrimitive
 {
-    PROPERTY_HEADER(PartGui::ViewProviderEllipsoid);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderEllipsoid);
 
 public:
     /// constructor
     ViewProviderEllipsoid();
     /// destructor
-    virtual ~ViewProviderEllipsoid();
-    std::vector<std::string> getDisplayModes(void) const;
+    ~ViewProviderEllipsoid() override;
+    std::vector<std::string> getDisplayModes() const override;
 };
 
 } // namespace PartGui

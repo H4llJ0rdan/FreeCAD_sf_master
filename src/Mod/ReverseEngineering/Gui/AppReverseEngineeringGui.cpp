@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,50 +20,75 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
+#include <Base/Interpreter.h>
+#include <Base/PyObjectBase.h>
 #include <Gui/Application.h>
 #include <Gui/Language/Translator.h>
+
 #include "Workbench.h"
-//#include "resources/qrc_ReverseEngineering.cpp"
+
 
 // use a different name to CreateCommand()
-void CreateReverseEngineeringCommands(void);
+void CreateReverseEngineeringCommands();
 
 void loadReverseEngineeringResource()
 {
     // add resources and reloads the translators
     Q_INIT_RESOURCE(ReverseEngineering);
+    Q_INIT_RESOURCE(ReverseEngineering_translation);
     Gui::Translator::instance()->refresh();
 }
 
-/* registration table  */
-extern struct PyMethodDef ReverseEngineeringGui_Import_methods[];
+namespace ReverseEngineeringGui
+{
+class Module: public Py::ExtensionModule<Module>
+{
+public:
+    Module()
+        : Py::ExtensionModule<Module>("ReverseEngineeringGui")
+    {
+        initialize("This module is the ReverseEngineeringGui module.");  // register with Python
+    }
+
+private:
+};
+
+PyObject* initModule()
+{
+    return Base::Interpreter().addModule(new Module);
+}
+
+}  // namespace ReverseEngineeringGui
 
 
 /* Python entry */
-extern "C" {
-void ReenGuiExport initReverseEngineeringGui()
+PyMOD_INIT_FUNC(ReverseEngineeringGui)
 {
     if (!Gui::Application::Instance) {
         PyErr_SetString(PyExc_ImportError, "Cannot load Gui module in console application.");
-        return;
+        PyMOD_Return(nullptr);
     }
 
-    (void) Py_InitModule("ReverseEngineeringGui", ReverseEngineeringGui_Import_methods);   /* mod name, table ptr */
+    // load dependent module
+    try {
+        Base::Interpreter().loadModule("MeshGui");
+    }
+    catch (const Base::Exception& e) {
+        PyErr_SetString(PyExc_ImportError, e.what());
+        PyMOD_Return(nullptr);
+    }
+
+    PyObject* mod = ReverseEngineeringGui::initModule();
     Base::Console().Log("Loading GUI of ReverseEngineering module... done\n");
 
     // instantiating the commands
     CreateReverseEngineeringCommands();
     ReverseEngineeringGui::Workbench::init();
 
-     // add resources and reloads the translators
+    // add resources and reloads the translators
     loadReverseEngineeringResource();
+    PyMOD_Return(mod);
 }
-
-} // extern "C" {

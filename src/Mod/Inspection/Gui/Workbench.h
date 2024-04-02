@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) YEAR YOUR NAME         <Your e-mail address>            *
+ *   Copyright (c) 2011 Werner Mayer <wmayer[at]users.sourceforge.net>     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -26,22 +26,23 @@
 
 #include <Gui/Workbench.h>
 
-namespace InspectionGui {
-
-class Workbench : public Gui::StdWorkbench
+namespace InspectionGui
 {
-    TYPESYSTEM_HEADER();
+
+class Workbench: public Gui::StdWorkbench
+{
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     Workbench();
-    virtual ~Workbench();
+    ~Workbench() override;
 
 protected:
-    Gui::MenuItem* setupMenuBar() const;
-    Gui::ToolBarItem* setupToolBars() const;
+    Gui::MenuItem* setupMenuBar() const override;
+    Gui::ToolBarItem* setupToolBars() const override;
 };
 
-} // namespace InspectionGui
+}  // namespace InspectionGui
 
 
-#endif // Inspection_WORKBENCH_H 
+#endif  // Inspection_WORKBENCH_H

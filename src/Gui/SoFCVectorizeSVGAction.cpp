@@ -20,17 +20,19 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
+
 #ifndef _PreComp_
+# include <qglobal.h>
 # include <iomanip>
 # include <ios>
+# include <Inventor/SbBSPTree.h>
 #endif
-#include <Inventor/SbBasic.h>
-#include <Inventor/SbBSPTree.h>
 
 #include <Base/FileInfo.h>
+
 #include "SoFCVectorizeSVGAction.h"
+
 
 using namespace Gui;
 
@@ -55,9 +57,11 @@ public:
 
 class SoVectorizePoint : public SoVectorizeItem {
 public:
-    SoVectorizePoint(void) {
+    SoVectorizePoint() {
         this->type = POINT;
+        this->vidx = 0;
         this->size = 1.0f;
+        this->col = 0;
     }
     int vidx;       // index to BSPtree coordinate
     float size;     // Coin size (pixels)
@@ -66,7 +70,7 @@ public:
 
 class SoVectorizeTriangle : public SoVectorizeItem {
 public:
-    SoVectorizeTriangle(void) {
+    SoVectorizeTriangle() {
         this->type = TRIANGLE;
     }
     int vidx[3];      // indices to BSPtree coordinates
@@ -75,8 +79,12 @@ public:
 
 class SoVectorizeLine : public SoVectorizeItem {
 public:
-    SoVectorizeLine(void) {
+    SoVectorizeLine() {
         this->type = LINE;
+        vidx[0] = 0;
+        vidx[1] = 0;
+        col[0] = 0;
+        col[1] = 0;
         this->pattern = 0xffff;
         this->width = 1.0f;
     }
@@ -88,8 +96,11 @@ public:
 
 class SoVectorizeText : public SoVectorizeItem {
 public:
-    SoVectorizeText(void) {
+    SoVectorizeText() {
         this->type = TEXT;
+        this->fontsize = 10;
+        this->col = 0;
+        this->justification = LEFT;
     }
 
     enum Justification {
@@ -108,8 +119,10 @@ public:
 
 class SoVectorizeImage : public SoVectorizeItem {
 public:
-    SoVectorizeImage(void) {
+    SoVectorizeImage() {
         this->type = IMAGE;
+        this->image.data = nullptr;
+        this->image.nc = 0;
     }
 
     SbVec2f pos;        // pos in normalized coordinates
@@ -124,9 +137,7 @@ public:
 
 // ----------------------------------------------------------------
 
-SoSVGVectorOutput::SoSVGVectorOutput()
-{
-}
+SoSVGVectorOutput::SoSVGVectorOutput() = default;
 
 SoSVGVectorOutput::~SoSVGVectorOutput()
 {
@@ -145,7 +156,7 @@ SbBool SoSVGVectorOutput::openFile (const char *filename)
     return this->file.is_open();
 }
 
-void SoSVGVectorOutput::closeFile (void)
+void SoSVGVectorOutput::closeFile ()
 {
     if (this->file.is_open())
         this->file.close();
@@ -189,7 +200,7 @@ void SoFCVectorizeSVGActionP::printText(const SoVectorizeText * item) const
 
     std::ostream& str = publ->getSVGOutput()->getFileStream();
     str << "<text x=\"" << posx << "\" y=\"" << posy << "\" "
-           "font-size=\"" << item->fontsize * mul[1] << "px\">" 
+           "font-size=\"" << item->fontsize * mul[1] << "px\">"
         << item->string.getString() << "</text>" << std::endl;
 }
 
@@ -233,7 +244,7 @@ Separator {
   Material {
     diffuseColor [ 1 1 0, 0 0 1, 1 0 0 ]
   }
-  
+
   MaterialBinding {
     value PER_VERTEX
   }
@@ -243,45 +254,46 @@ Separator {
 }
 
 <?xml version="1.0"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN"
-	"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<defs>
-		<linearGradient id="red" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="35" y2="80">
-			<stop offset="0" stop-color="rgb(255,0,0)" stop-opacity="1"/>
-			<stop offset="1" stop-color="rgb(255,0,0)" stop-opacity="0"/>
-		</linearGradient>
-		<linearGradient id="blue" gradientUnits="userSpaceOnUse" x1="100" y1="50" x2="0" y2="50">
-			<stop offset="0" stop-color="rgb(0,0,255)" stop-opacity="1"/>
-			<stop offset="1" stop-color="rgb(0,0,255)" stop-opacity="0"/>
-		</linearGradient>
-		<linearGradient id="yellow" gradientUnits="userSpaceOnUse" x1="0" y1="100" x2="40" y2="20">
-			<stop offset="0" stop-color="rgb(255,255,0)" stop-opacity="1"/>
-			<stop offset="1" stop-color="rgb(255,255,0)" stop-opacity="0"/>
-		</linearGradient>
-		<path id="triangle1" d="M0 0 L100 50 L0 100 z"/>
+    <defs>
+        <linearGradient id="red" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="35" y2="80">
+            <stop offset="0" stop-color="rgb(255,0,0)" stop-opacity="1"/>
+            <stop offset="1" stop-color="rgb(255,0,0)" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="blue" gradientUnits="userSpaceOnUse" x1="100" y1="50" x2="0" y2="50">
+            <stop offset="0" stop-color="rgb(0,0,255)" stop-opacity="1"/>
+            <stop offset="1" stop-color="rgb(0,0,255)" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="yellow" gradientUnits="userSpaceOnUse" x1="0" y1="100" x2="40" y2="20">
+            <stop offset="0" stop-color="rgb(255,255,0)" stop-opacity="1"/>
+            <stop offset="1" stop-color="rgb(255,255,0)" stop-opacity="0"/>
+        </linearGradient>
+        <path id="triangle1" d="M0 0 L100 50 L0 100 z"/>
 <filter id="colorAdd">
-	<feComposite in="SourceGraphic" in2="BackgroundImage" operator="arithmetic" k2="1" k3="1"/>
+    <feComposite in="SourceGraphic" in2="BackgroundImage" operator="arithmetic" k2="1" k3="1"/>
 </filter>
 <filter id="Matrix1">
-	<feColorMatrix type="matrix" values="
-	1 0 0 0 0
-	0 1 0 0 0
-	0 0 1 0 0
-	1 1 1 1 0
-	0 0 0 0 1
-	"/>
+    <feColorMatrix type="matrix" values="
+    1 0 0 0 0
+    0 1 0 0 0
+    0 0 1 0 0
+    1 1 1 1 0
+    0 0 0 0 1
+    "/>
 </filter>
 </defs>
 <g filter="url(#Matrix1)">
-	<use xlink:href="#triangle1" fill="url(#blue)"/>
-	<use xlink:href="#triangle1" fill="url(#yellow)" filter="url(#colorAdd)"/>
-	<use xlink:href="#triangle1" fill="url(#red)" filter="url(#colorAdd)"/>
+    <use xlink:href="#triangle1" fill="url(#blue)"/>
+    <use xlink:href="#triangle1" fill="url(#yellow)" filter="url(#colorAdd)"/>
+    <use xlink:href="#triangle1" fill="url(#red)" filter="url(#colorAdd)"/>
 </g>
 </svg>
 */
 void SoFCVectorizeSVGActionP::printTriangle(const SbVec3f * v, const SbColor * c) const
 {
-    if (v[0] == v[1] || v[1] == v[2] || v[0] == v[2]) return;
+    if (v[0] == v[1] || v[1] == v[2] || v[0] == v[2])
+        return;
     uint32_t cc = c->getPackedValue();
 
     std::ostream& str = publ->getSVGOutput()->getFileStream();
@@ -294,18 +306,24 @@ void SoFCVectorizeSVGActionP::printTriangle(const SbVec3f * v, const SbColor * c
         << "; stroke:#"
         << std::hex << std::setw(6) << std::setfill('0') << (cc >> 8)
         << ";" << std::endl
-        << "    stroke-width:1.0;" << std::endl
+        << "    stroke-width:" << publ->getLineWidth() << ";" << std::endl
         << "    stroke-linecap:round;stroke-linejoin:round\"/>" << std::endl;
 }
 
 void SoFCVectorizeSVGActionP::printCircle(const SbVec3f & v, const SbColor & c, const float radius) const
 {
     // todo
+    Q_UNUSED(v);
+    Q_UNUSED(c);
+    Q_UNUSED(radius);
 }
 
 void SoFCVectorizeSVGActionP::printSquare(const SbVec3f & v, const SbColor & c, const float size) const
 {
     // todo
+    Q_UNUSED(v);
+    Q_UNUSED(c);
+    Q_UNUSED(size);
 }
 
 void SoFCVectorizeSVGActionP::printLine(const SoVectorizeLine * item) const
@@ -325,32 +343,35 @@ void SoFCVectorizeSVGActionP::printLine(const SoVectorizeLine * item) const
         v[i][1] = ((1.0f-v[i][1]) * mul[1]) + add[1];
         c[i].setPackedValue(item->col[i], t[i]);
     }
-    uint32_t cc = c->getPackedValue();
+    uint32_t cc = c[0].getPackedValue();
 
     std::ostream& str = publ->getSVGOutput()->getFileStream();
     str << "<line "
         << "x1=\"" << v[0][0] << "\" y1=\"" << v[0][1] << "\" "
         << "x2=\"" << v[1][0] << "\" y2=\"" << v[1][1] << "\" "
         << "stroke=\"#"
-        << std::hex << std::setw(6) << std::setfill('0') << (cc >> 8)
-        << "\" stroke-width=\"1px\" />\n";
+        << std::hex << std::setw(6) << std::setfill('0') << (cc >> 8) << "\""
+        << " stroke-linecap=\"square\" "
+        << " stroke-width=\"" << publ->getLineWidth() << "\" />\n";
 }
 
 void SoFCVectorizeSVGActionP::printPoint(const SoVectorizePoint * item) const
 {
     // todo
+    Q_UNUSED(item);
 }
 
 void SoFCVectorizeSVGActionP::printImage(const SoVectorizeImage * item) const
 {
     // todo
+    Q_UNUSED(item);
 }
 
 // -------------------------------------------------------
 
-SO_ACTION_SOURCE(SoFCVectorizeSVGAction);
+SO_ACTION_SOURCE(SoFCVectorizeSVGAction)
 
-void SoFCVectorizeSVGAction::initClass(void)
+void SoFCVectorizeSVGAction::initClass()
 {
     SO_ACTION_INIT_CLASS(SoFCVectorizeSVGAction, SoVectorizeAction);
 }
@@ -368,40 +389,49 @@ SoFCVectorizeSVGAction::~SoFCVectorizeSVGAction()
 }
 
 SoSVGVectorOutput *
-SoFCVectorizeSVGAction::getSVGOutput(void) const
+SoFCVectorizeSVGAction::getSVGOutput() const
 {
     return static_cast<SoSVGVectorOutput*>(SoVectorizeAction::getOutput());
 }
 
-void SoFCVectorizeSVGAction::printHeader(void) const
+void SoFCVectorizeSVGAction::printHeader() const
 {
     std::ostream& str = this->getSVGOutput()->getFileStream();
-    str << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" << std::endl;
-    str << "<!-- Created with FreeCAD (http://www.freecadweb.org) -->" << std::endl;
+    str << R"(<?xml version="1.0" encoding="UTF-8" standalone="no"?>)" << std::endl;
+    str << "<!-- Created with FreeCAD (http://www.freecad.org) -->" << std::endl;
     str << "<svg xmlns=\"http://www.w3.org/2000/svg\"" << std::endl;
-    str << "     xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:ev=\"http://www.w3.org/2001/xml-events\"" << std::endl;
-    str << "     version=\"1.1\" baseProfile=\"full\"" << std::endl;
+    str << R"(     xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events")" << std::endl;
+    str << R"(     version="1.1" baseProfile="full")"  << std::endl;
 
     SbVec2f size = getPageSize();
-    if (this->getOrientation() == LANDSCAPE)
+    if (this->getOrientation() == LANDSCAPE) {
         SbSwap<float>(size[0], size[1]);
-    str << "     width=\"" << size[0] << "\" height=\"" << size[1] << "\">" << std::endl;
+    }
+    if (getUseMM()) {
+        str << "     width=\"" << size[0] << "mm\" height=\"" << size[1] << "mm\""<< std::endl;
+        str << "     viewBox=\"0 0 " << size[0] << " " << size[1] << "\">" << std::endl;
+    } else {            //original code used px
+        str << "     width=\"" << size[0] << "\" height=\"" << size[1] << "\">" << std::endl;
+    }
     str << "<g>" << std::endl;
 }
 
-void SoFCVectorizeSVGAction::printFooter(void) const
+void SoFCVectorizeSVGAction::printFooter() const
 {
     std::ostream& str = this->getSVGOutput()->getFileStream();
     str << "</g>" << std::endl;
     str << "</svg>";
 }
 
-void SoFCVectorizeSVGAction::printViewport(void) const
+void SoFCVectorizeSVGAction::printViewport() const
 {
 }
 
-void SoFCVectorizeSVGAction::printBackground(void) const
+void SoFCVectorizeSVGAction::printBackground() const
 {
+    if (!getBackgroundState()) {
+        return;
+    }
     SbVec2f mul = getRotatedViewportSize();
     SbVec2f add = getRotatedViewportStartpos();
 
@@ -427,7 +457,7 @@ void SoFCVectorizeSVGAction::printBackground(void) const
     str << "   style=\"fill:#"
         << std::hex << std::setw(6) << std::setfill('0') << (cc >> 8)
         << ";fill-opacity:1;fill-rule:evenodd;stroke:none;"
-           "stroke-width:1px;stroke-linecap:butt;stroke-linejoin:"
+           "stroke-width:" << getLineWidth() << ";stroke-linecap:butt;stroke-linejoin:"
            "miter;stroke-opacity:1\" />\n";
     str << "<g>" << std::endl;
 }

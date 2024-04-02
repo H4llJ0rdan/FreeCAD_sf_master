@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,66 +20,66 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef __PRECOMPILED_GUI__
 #define __PRECOMPILED_GUI__
 
 #include <FCConfig.h>
 
-// Importing of App classes
-#ifdef FC_OS_WIN32
-# define SketcherExport __declspec(dllimport)
-# define PartExport     __declspec(dllimport)
-# define PartGuiExport  __declspec(dllimport)
-# define SketcherGuiExport __declspec(dllexport)
-#else // for Linux
-# define SketcherExport 
-# define PartExport
-# define PartAppExport     
-# define PartGuiExport     
-# define SketcherGuiExport 
+#ifdef _MSC_VER
+#pragma warning(disable : 4005)
 #endif
-
 
 #ifdef _PreComp_
 
 // standard
-#include <iostream>
-#include <cassert>
+#include <cfloat>
 #include <cmath>
+#include <cstdlib>
 
 // STL
-#include <vector>
-#include <map>
-#include <string>
-#include <list>
-#include <set>
 #include <algorithm>
-#include <stack>
-#include <queue>
 #include <bitset>
+#include <functional>
+#include <map>
+#include <memory>
+#include <vector>
+
+// Boost
+#include <boost/core/ignore_unused.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 
 #ifdef FC_OS_WIN32
-# define NOMINMAX
-# include <windows.h>
+#define NOMINMAX
+#include <windows.h>
 #endif
 
-// OCC
+// OpenCasCade
+#include <BRep_Tool.hxx>
+#include <GC_MakeEllipse.hxx>
+#include <Precision.hxx>
+#include <Standard_Version.hxx>
+#include <TopExp.hxx>
+#include <TopExp_Explorer.hxx>
+#include <TopTools_IndexedDataMapOfShapeListOfShape.hxx>
+#include <TopTools_IndexedMapOfShape.hxx>
+#include <TopoDS.hxx>
+#include <TopoDS_Edge.hxx>
 #include <TopoDS_Shape.hxx>
+#include <TopoDS_Vertex.hxx>
+#include <gp_Pnt.hxx>
 
-// Qt Toolkit
-#ifndef __Qt4All__
-# include <Gui/Qt4All.h>
+// Qt
+#ifndef __QtAll__
+#include <Gui/QtAll.h>
 #endif
+
+#include <QWidgetAction>
+
 // all of Inventor
 #ifndef __InventorAll__
-# include <Gui/InventorAll.h>
-#endif 
+#include <Gui/InventorAll.h>
+#endif
 
-// Python
-#include <Python.h>
+#endif  //_PreComp_
 
-
-#endif //_PreComp_
-
-#endif // __PRECOMPILED_GUI__
+#endif  // __PRECOMPILED_GUI__

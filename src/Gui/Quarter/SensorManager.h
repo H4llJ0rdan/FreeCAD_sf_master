@@ -33,7 +33,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \**************************************************************************/
 
-#include <QtCore/QObject>
+#include <QObject>
 
 class QTimer;
 
@@ -45,14 +45,14 @@ class SensorManager : public QObject {
   Q_OBJECT
   typedef QObject inherited;
 public:
-  SensorManager(void);
-  ~SensorManager();
+  SensorManager();
+  ~SensorManager() override;
 
-public slots:
-  void idleTimeout(void);
-  void delayTimeout(void);
-  void timerQueueTimeout(void);
-  void sensorQueueChanged(void);
+public Q_SLOTS:
+  void idleTimeout();
+  void delayTimeout();
+  void timerQueueTimeout();
+  void sensorQueueChanged();
   void setTimerEpsilon(double sec);
 
 private:

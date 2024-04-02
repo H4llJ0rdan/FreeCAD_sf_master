@@ -20,47 +20,45 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <QMessageBox>
 # include <QDir>
+# include <QMessageBox>
 #endif
 
-#include "DlgOnlineHelpImp.h"
-#include "PrefWidgets.h"
-
-#include <Base/Parameter.h>
 #include <App/Application.h>
+
+#include "DlgOnlineHelpImp.h"
+#include "ui_DlgOnlineHelp.h"
+
 
 using namespace Gui::Dialog;
 
 /* TRANSLATOR Gui::Dialog::DlgOnlineHelpImp */
 
 /**
- *  Constructs a DlgOnlineHelpImp which is a child of 'parent', with the 
- *  name 'name' and widget flags set to 'f' 
+ *  Constructs a DlgOnlineHelpImp which is a child of 'parent', with the
+ *  name 'name' and widget flags set to 'f'
  *
  *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
+ *  true to construct a modal dialog.
  */
 DlgOnlineHelpImp::DlgOnlineHelpImp( QWidget* parent )
   : PreferencePage(parent)
+  , ui(new Ui_DlgOnlineHelp)
 {
-    this->setupUi(this);
+    ui->setupUi(this);
 
-    prefStartPage->setFilter( tr("HTML files (*.html *.htm)") );
-    if (prefStartPage->fileName().isEmpty()) {
-        prefStartPage->setFileName(getStartpage());
+    ui->prefStartPage->setFilter(QString::fromLatin1("%1 (*.html *.htm)").arg(tr("HTML files")));
+    if (ui->prefStartPage->fileName().isEmpty()) {
+        ui->prefStartPage->setFileName(getStartpage());
     }
 }
 
-/** 
+/**
  *  Destroys the object and frees any allocated resources
  */
-DlgOnlineHelpImp::~DlgOnlineHelpImp()
-{
-}
+DlgOnlineHelpImp::~DlgOnlineHelpImp() = default;
 
 /**
  * Returns the start page for the HelpView. If none is defined the default 
@@ -76,12 +74,12 @@ QString DlgOnlineHelpImp::getStartpage()
 
 void DlgOnlineHelpImp::saveSettings()
 {
-    prefStartPage->onSave();
+    ui->prefStartPage->onSave();
 }
 
 void DlgOnlineHelpImp::loadSettings()
 {
-    prefStartPage->onRestore();
+    ui->prefStartPage->onRestore();
 }
 
 /**
@@ -90,14 +88,14 @@ void DlgOnlineHelpImp::loadSettings()
 void DlgOnlineHelpImp::changeEvent(QEvent *e)
 {
     if (e->type() == QEvent::LanguageChange) {
-        retranslateUi(this);
+        ui->retranslateUi(this);
     }
     else {
         QWidget::changeEvent(e);
     }
 }
 
-void DlgOnlineHelpImp::on_lineEditDownload_fileNameSelected( const QString& url )
+void DlgOnlineHelpImp::onLineEditDownloadFileNameSelected( const QString& url )
 {
     QDir dir(url);
     if (dir.exists() && dir.count() == 0) {

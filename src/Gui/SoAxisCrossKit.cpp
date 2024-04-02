@@ -20,7 +20,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
@@ -32,58 +31,56 @@
 # else
 # include <GL/gl.h>
 # endif
+
 # include <Inventor/actions/SoGetBoundingBoxAction.h>
 # include <Inventor/actions/SoGLRenderAction.h>
 # include <Inventor/bundles/SoMaterialBundle.h>
 # include <Inventor/bundles/SoTextureCoordinateBundle.h>
 # include <Inventor/elements/SoLazyElement.h>
+# include <Inventor/elements/SoModelMatrixElement.h>
 # include <Inventor/elements/SoViewportRegionElement.h>
 # include <Inventor/elements/SoViewVolumeElement.h>
-# include <Inventor/elements/SoModelMatrixElement.h>
+# include <Inventor/nodekits/SoShapeKit.h>
 # include <Inventor/nodes/SoBaseColor.h>
-# include <Inventor/nodes/SoShape.h>
-# include <Inventor/nodes/SoScale.h>
 # include <Inventor/nodes/SoCone.h>
 # include <Inventor/nodes/SoCoordinate3.h>
 # include <Inventor/nodes/SoCube.h>
 # include <Inventor/nodes/SoFontStyle.h>
 # include <Inventor/nodes/SoLineSet.h>
+# include <Inventor/nodes/SoScale.h>
 # include <Inventor/nodes/SoSeparator.h>
 # include <Inventor/nodes/SoText2.h>
 # include <Inventor/nodes/SoTranslation.h>
-# include <Inventor/nodekits/SoShapeKit.h>
 #endif
 
-
 #include "SoAxisCrossKit.h"
+
 
 using namespace Gui;
 
 
-SO_KIT_SOURCE(SoShapeScale);
+SO_KIT_SOURCE(SoShapeScale)
 
 //  Constructor.
-SoShapeScale::SoShapeScale(void)
+SoShapeScale::SoShapeScale()
 {
     SO_KIT_CONSTRUCTOR(SoShapeScale);
 
-    SO_KIT_ADD_FIELD(active, (TRUE));
+    SO_KIT_ADD_FIELD(active, (true));
     SO_KIT_ADD_FIELD(scaleFactor, (1.0f));
 
-    SO_KIT_ADD_CATALOG_ENTRY(topSeparator, SoSeparator, FALSE, this, "", FALSE);
-    SO_KIT_ADD_CATALOG_ABSTRACT_ENTRY(shape, SoNode, SoCube, TRUE, topSeparator, "", TRUE);
-    SO_KIT_ADD_CATALOG_ENTRY(scale, SoScale, FALSE, topSeparator, shape, FALSE);
+    SO_KIT_ADD_CATALOG_ENTRY(topSeparator, SoSeparator, false, this, "", false);
+    SO_KIT_ADD_CATALOG_ABSTRACT_ENTRY(shape, SoNode, SoCube, true, topSeparator, "", true);
+    SO_KIT_ADD_CATALOG_ENTRY(scale, SoScale, false, topSeparator, shape, false);
 
     SO_KIT_INIT_INSTANCE();
 }
 
 // Destructor.
-SoShapeScale::~SoShapeScale()
-{
-}
+SoShapeScale::~SoShapeScale() = default;
 
 void
-SoShapeScale::initClass(void)
+SoShapeScale::initClass()
 {
     SO_KIT_INIT_CLASS(SoShapeScale, SoBaseKit, "BaseKit");
 }
@@ -93,7 +90,7 @@ SoShapeScale::GLRender(SoGLRenderAction * action)
 {
     SoState * state = action->getState();
 
-    SoScale * scale = static_cast<SoScale*>(this->getAnyPart(SbName("scale"), TRUE));
+    SoScale * scale = static_cast<SoScale*>(this->getAnyPart(SbName("scale"), true));
     if (!this->active.getValue()) {
         SbVec3f v(1.0f, 1.0f, 1.0f);
         if (scale->scaleFactor.getValue() != v)
@@ -116,7 +113,7 @@ SoShapeScale::GLRender(SoGLRenderAction * action)
 
 // --------------------------------------------------------------
 
-SO_KIT_SOURCE(SoAxisCrossKit);
+SO_KIT_SOURCE(SoAxisCrossKit)
 
 void
 SoAxisCrossKit::initClass()
@@ -129,37 +126,35 @@ SoAxisCrossKit::SoAxisCrossKit()
    SO_KIT_CONSTRUCTOR(SoAxisCrossKit);
 
    // Add the parts to the catalog...
-   SO_KIT_ADD_CATALOG_ENTRY(xAxis, SoShapeKit, 
-                            TRUE, this,"", TRUE);
-   SO_KIT_ADD_CATALOG_ENTRY(xHead, SoShapeKit, 
-                            TRUE, this,"", TRUE);
-   SO_KIT_ADD_CATALOG_ENTRY(yAxis, SoShapeKit, 
-                            TRUE, this,"", TRUE);
-   SO_KIT_ADD_CATALOG_ENTRY(yHead, SoShapeKit, 
-                            TRUE, this,"", TRUE);
-   SO_KIT_ADD_CATALOG_ENTRY(zAxis, SoShapeKit, 
-                            TRUE, this,"", TRUE);
-   SO_KIT_ADD_CATALOG_ENTRY(zHead, SoShapeKit, 
-                            TRUE, this,"", TRUE);
+   SO_KIT_ADD_CATALOG_ENTRY(xAxis, SoShapeKit,
+                            true, this,"", true);
+   SO_KIT_ADD_CATALOG_ENTRY(xHead, SoShapeKit,
+                            true, this,"", true);
+   SO_KIT_ADD_CATALOG_ENTRY(yAxis, SoShapeKit,
+                            true, this,"", true);
+   SO_KIT_ADD_CATALOG_ENTRY(yHead, SoShapeKit,
+                            true, this,"", true);
+   SO_KIT_ADD_CATALOG_ENTRY(zAxis, SoShapeKit,
+                            true, this,"", true);
+   SO_KIT_ADD_CATALOG_ENTRY(zHead, SoShapeKit,
+                            true, this,"", true);
 
    SO_KIT_INIT_INSTANCE();
 
    createAxes();
 }
 
-SoAxisCrossKit::~SoAxisCrossKit()
-{
-}
+SoAxisCrossKit::~SoAxisCrossKit() = default;
 
 // This kit is made up entirely of SoShapeKits.
 // Since SoShapeKits do not affect state, neither does this.
 SbBool
 SoAxisCrossKit::affectsState() const
 {
-   return FALSE;
+   return false;
 }
 
-void SoAxisCrossKit::addWriteReference(SoOutput * out, SbBool isfromfield)
+void SoAxisCrossKit::addWriteReference(SoOutput * /*out*/, SbBool /*isfromfield*/)
 {
     // this node should not be written out to a file
 }
@@ -168,7 +163,7 @@ void SoAxisCrossKit::getBoundingBox(SoGetBoundingBoxAction * action)
 {
     inherited::getBoundingBox(action);
     action->resetCenter();
-    action->setCenter(SbVec3f(0,0,0), FALSE);
+    action->setCenter(SbVec3f(0,0,0), false);
 }
 
 // Set up parts for default configuration of the jumping jack
@@ -176,7 +171,7 @@ void
 SoAxisCrossKit::createAxes()
 {
    // Create the heads.
-   SoCone *head = new SoCone;
+   auto head = new SoCone;
    head->bottomRadius.setValue(5);
    head->height.setValue(10);
    setPart("xHead.shape", head);
@@ -184,19 +179,19 @@ SoAxisCrossKit::createAxes()
    setPart("zHead.shape", head);
 
    // Create the axes.
-   SoCoordinate3* coords = new SoCoordinate3;
+   auto coords = new SoCoordinate3;
    coords->point.set1Value(0, SbVec3f(0,0,0));
    coords->point.set1Value(1, SbVec3f(90,0,0));
    setPart("xAxis.coordinate3", coords);
    setPart("yAxis.coordinate3", coords);
    setPart("zAxis.coordinate3", coords);
 
-   SoLineSet *shape = new SoLineSet;
+   auto shape = new SoLineSet;
    setPart("xAxis.shape", shape);
    setPart("yAxis.shape", shape);
    setPart("zAxis.shape", shape);
 
-   // Place the axes ând heads
+   // Place the axes and heads
    set("yAxis.transform", "rotation 0 0 1 1.5707999");
    set("zAxis.transform", "rotation 0 1 0 -1.5707999");
 
@@ -213,6 +208,12 @@ SoAxisCrossKit::createAxes()
    set("zHead.transform", "rotation 1 0 0  1.5707999");
 
    // Set colors & styles
+   set("xAxis.appearance.lightModel", "model BASE_COLOR");
+   set("xHead.appearance.lightModel", "model BASE_COLOR");
+   set("yAxis.appearance.lightModel", "model BASE_COLOR");
+   set("yHead.appearance.lightModel", "model BASE_COLOR");
+   set("zAxis.appearance.lightModel", "model BASE_COLOR");
+   set("zHead.appearance.lightModel", "model BASE_COLOR");
    set("xAxis.appearance.drawStyle", "lineWidth 1");
    set("yAxis.appearance.drawStyle", "lineWidth 1");
    set("zAxis.appearance.drawStyle", "lineWidth 1");
@@ -234,7 +235,7 @@ SoAxisCrossKit::createAxes()
 
 // --------------------------------------------------------------
 
-SO_NODE_SOURCE(SoRegPoint);
+SO_NODE_SOURCE(SoRegPoint)
 
 void SoRegPoint::initClass()
 {
@@ -255,18 +256,18 @@ SoRegPoint::SoRegPoint()
     root->ref();
 
     // translation
-    SoTranslation* move = new SoTranslation();
+    auto move = new SoTranslation();
     move->translation.setValue(base.getValue() + normal.getValue() * length.getValue());
     root->addChild(move);
 
     // sub-group
-    SoBaseColor* col = new SoBaseColor();
+    auto col = new SoBaseColor();
     col->rgb.setValue(this->color.getValue());
 
-    SoFontStyle* font = new SoFontStyle;
+    auto font = new SoFontStyle;
     font->size = 14;
 
-    SoSeparator* sub = new SoSeparator();
+    auto sub = new SoSeparator();
     sub->addChild(col);
     sub->addChild(font);
     sub->addChild(new SoText2());
@@ -288,13 +289,13 @@ void SoRegPoint::GLRender(SoGLRenderAction *action)
         SoState*  state = action->getState();
         state->push();
         SoMaterialBundle mb(action);
-        SoTextureCoordinateBundle tb(action, TRUE, FALSE);
+        SoTextureCoordinateBundle tb(action, true, false);
         SoLazyElement::setLightModel(state, SoLazyElement::BASE_COLOR);
         mb.sendFirst();  // make sure we have the correct material
 
         SbVec3f p1 = base.getValue();
         SbVec3f p2 = p1 + normal.getValue() * length.getValue();
-        
+
         glLineWidth(1.0f);
         glColor3fv(color.getValue().getValue());
         glBegin(GL_LINE_STRIP);
@@ -315,7 +316,7 @@ void SoRegPoint::GLRender(SoGLRenderAction *action)
     }
 }
 
-void SoRegPoint::generatePrimitives(SoAction* action)
+void SoRegPoint::generatePrimitives(SoAction* /*action*/)
 {
 }
 
@@ -341,17 +342,17 @@ void SoRegPoint::notify(SoNotList * node)
 {
     SoField * f = node->getLastField();
     if (f == &this->base || f == &this->normal || f == &this->length) {
-        SoTranslation* move = static_cast<SoTranslation*>(root->getChild(0));
+        auto move = static_cast<SoTranslation*>(root->getChild(0));
         move->translation.setValue(base.getValue() + normal.getValue() * length.getValue());
     }
     else if (f == &this->color) {
-        SoSeparator* sub = static_cast<SoSeparator*>(root->getChild(1));
-        SoBaseColor* col = static_cast<SoBaseColor*>(sub->getChild(0));
+        auto sub = static_cast<SoSeparator*>(root->getChild(1));
+        auto col = static_cast<SoBaseColor*>(sub->getChild(0));
         col->rgb = this->color.getValue();
     }
     else if (f == &this->text) {
-        SoSeparator* sub = static_cast<SoSeparator*>(root->getChild(1));
-        SoText2* label = static_cast<SoText2*>(sub->getChild(2));
+        auto sub = static_cast<SoSeparator*>(root->getChild(1));
+        auto label = static_cast<SoText2*>(sub->getChild(2));
         label->string = this->text.getValue();
     }
 

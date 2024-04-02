@@ -24,6 +24,7 @@
 #define SPACEBALLEVENT_H
 
 #include <QInputEvent>
+
 namespace Spaceball
 {
     enum ButtonStateType {BUTTON_NONE = 0, BUTTON_PRESSED, BUTTON_RELEASED};
@@ -35,8 +36,8 @@ namespace Spaceball
         void setHandled(bool sig){handled = sig;}
 
     protected:
-        EventBase(QEvent::Type event);
-        bool handled;
+        explicit EventBase(QEvent::Type event);
+        bool handled{false};
     };
 
     class MotionEvent : public EventBase
@@ -44,6 +45,7 @@ namespace Spaceball
     public:
         MotionEvent();
         MotionEvent(const MotionEvent& in);
+        MotionEvent& operator= (const MotionEvent& in);
         void translations(int &xTransOut, int &yTransOut, int &zTransOut);
         void setTranslations(const int &xTransIn, const int &yTransIn, const int &zTransIn);
         int translationX(){return xTrans;}
@@ -59,13 +61,12 @@ namespace Spaceball
         static int MotionEventType;
 
     private:
-        int xTrans;
-        int yTrans;
-        int zTrans;
-        int xRot;
-        int yRot;
-        int zRot;
-        bool handled;
+        int xTrans{0};
+        int yTrans{0};
+        int zTrans{0};
+        int xRot{0};
+        int yRot{0};
+        int zRot{0};
     };
 
     class ButtonEvent : public EventBase
@@ -73,6 +74,7 @@ namespace Spaceball
     public:
         ButtonEvent();
         ButtonEvent(const ButtonEvent& in);
+        ButtonEvent& operator= (const ButtonEvent& in);
         ButtonStateType buttonStatus();
         void setButtonStatus(const ButtonStateType &buttonStatusIn);
         int buttonNumber();

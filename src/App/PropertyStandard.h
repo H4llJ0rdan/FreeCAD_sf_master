@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,18 +24,24 @@
 #ifndef APP_PROPERTYSTANDARD_H
 #define APP_PROPERTYSTANDARD_H
 
-// Std. configurations
-
-
-#include <string>
 #include <list>
+#include <memory>
+#include <string>
 #include <vector>
 #include <boost/dynamic_bitset.hpp>
 #include <boost/filesystem/path.hpp>
-
 #include <Base/Uuid.h>
+
 #include "Property.h"
+#include "Enumeration.h"
 #include "Material.h"
+
+#include <xercesc/util/XercesDefs.hpp>
+
+XERCES_CPP_NAMESPACE_BEGIN
+	class DOMElement;
+XERCES_CPP_NAMESPACE_END
+
 
 namespace Base {
 class Writer;
@@ -50,214 +56,295 @@ namespace App
  */
 class AppExport PropertyInteger: public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     PropertyInteger();
-    virtual ~PropertyInteger();
+    ~PropertyInteger() override;
 
-    /** Sets the property 
+    /** Sets the property
      */
     void setValue(long);
 
     /** This method returns a string representation of the property
      */
-    long getValue(void) const;
-    virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyIntegerItem"; }
+    long getValue() const;
+    const char* getEditorName() const override { return "Gui::PropertyEditor::PropertyIntegerItem"; }
 
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
 
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
 
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
 
-    virtual unsigned int getMemSize (void) const{return sizeof(long);}
+    unsigned int getMemSize () const override{return sizeof(long);}
+
+    void setPathValue(const App::ObjectIdentifier & path, const boost::any & value) override;
+    const boost::any getPathValue(const App::ObjectIdentifier & /*path*/) const override { return _lValue; }
+
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getValue() == static_cast<decltype(this)>(&other)->getValue();
+    }
 
 protected:
     long _lValue;
 };
 
 /** Path properties
- * This properties handling file system paths.
+ * Properties handling file system paths.
  */
 class AppExport PropertyPath: public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
-  
-    PropertyPath();
-    virtual ~PropertyPath();
 
-    /** Sets the property 
+    PropertyPath();
+    ~PropertyPath() override;
+
+    /** Sets the property
      */
     void setValue(const boost::filesystem::path &);
-    
-    /** Sets the property 
+
+    /** Sets the property
      */
     void setValue(const char *);
 
     /** This method returns a string representation of the property
      */
-    boost::filesystem::path getValue(void) const;
+    const boost::filesystem::path &getValue() const;
 
-    virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyPathItem"; }
-    
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    
-    virtual unsigned int getMemSize (void) const;
+    const char* getEditorName() const override { return "Gui::PropertyEditor::PropertyPathItem"; }
+
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+
+    unsigned int getMemSize () const override;
+
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getValue() == static_cast<decltype(this)>(&other)->getValue();
+    }
 
 protected:
     boost::filesystem::path _cValue;
 };
 
-/** Enum properties
- * This property fullfill the need of enumarations. It holds basicly a 
- * state (integer) and a list of valid state names. If the valid state
- * list is not set it act basicly like a IntegerProperty and do no checking.
- * If the list is set it checks on the range and if you set the state with
- * a string if its included in the enumarations.
- * In DEBUG the boundaries get checked, otherwise the caller of setValue()
- * has the responsebility to check the correctnes.
- * This mean if you set by setValue(const char*) with an not included value
- * and not using isPartOf() before,
- * in DEBUG you get an assert() in release its set to 0.
- */
-class AppExport PropertyEnumeration: public PropertyInteger
+/// Property wrapper around an Enumeration object.
+class AppExport PropertyEnumeration: public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     /// Standard constructor
     PropertyEnumeration();
-    
-    /// destructor
-    virtual ~PropertyEnumeration();
 
-    /// Enumeration methods 
+    /// Obvious constructor
+    explicit PropertyEnumeration(const Enumeration &e);
+
+    /// destructor
+    ~PropertyEnumeration() override;
+
+    /// Enumeration methods
+    /*!
+     * These all function as per documentation in Enumeration
+     */
     //@{
-    /** setting the enumaration string list
+    /** setting the enumeration string list
      * The list is a NULL terminated array of pointers to a const char* string
      * \code
      * const char enums[] = {"Black","White","Other",NULL}
      * \endcode
      */
     void setEnums(const char** plEnums);
+
+    /** setting the enumeration string as vector of strings
+     * This makes the enumeration custom.
+     */
+    void setEnums(const std::vector<std::string> &Enums);
+
     /** set the enum by a string
-     * is slower the setValue(long). Use long if possible
+     * is slower than setValue(long). Use long if possible
      */
     void setValue(const char* value);
+
     /** set directly the enum value
      * In DEBUG checks for boundaries.
-     * Is faster then using setValue(const char*).
+     * Is faster than using setValue(const char*).
      */
     void setValue(long);
+
+    /// Setter using Enumeration
+    void setValue(const Enumeration &source);
+
+    /// Returns current value of the enumeration as an integer
+    long getValue() const;
+
     /// checks if the property is set to a certain string value
     bool isValue(const char* value) const;
+
     /// checks if a string is included in the enumeration
     bool isPartOf(const char* value) const;
+
     /// get the value as string
-    const char* getValueAsString(void) const;
+    const char * getValueAsString() const;
+
+    /// Returns Enumeration object
+    const Enumeration &getEnum() const;
+
     /// get all possible enum values as vector of strings
-    std::vector<std::string> getEnumVector(void) const;
-    /// set all enum values as vector of strings
-    void setEnumVector(const std::vector<std::string>&);
+    std::vector<std::string> getEnumVector() const;
+
+    /// set enum values as vector of strings
+    void setEnumVector(const std::vector<std::string> &);
     /// get the pointer to the enum list
-    const char** getEnums(void) const;
+    bool hasEnums() const;
+
+    /// Returns true if the instance is in a usable state
+    bool isValid() const;
     //@}
 
-    virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyEnumItem"; }
-    
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
+    const char* getEditorName() const override { return _editorTypeName.c_str(); }
+    void setEditorName(const char* name) { _editorTypeName = name; }
 
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
+    PyObject * getPyObject() override;
+    void setPyObject(PyObject *) override;
 
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
+    void Save(Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property * Copy() const override;
+    void Paste(const Property &from) override;
+
+    void setPathValue(const App::ObjectIdentifier & path, const boost::any & value) override;
+    virtual bool setPyPathValue(const App::ObjectIdentifier & path, const Py::Object &value);
+    const boost::any getPathValue(const App::ObjectIdentifier & /*path*/) const override;
+    bool getPyPathValue(const ObjectIdentifier &path, Py::Object &r) const override;
+
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getEnum() == static_cast<decltype(this)>(&other)->getEnum();
+    }
 
 private:
-    bool _CustomEnum;
-    const char** _EnumArray;
+    Enumeration _enum;
+    std::string _editorTypeName;
 };
 
 /** Constraint integer properties
- * This property fullfill the need of constraint integer. It holds basicly a 
+ * This property fulfills the need of a constraint integer. It holds basically a
  * state (integer) and a struct of boundaries. If the boundaries
- * is not set it act basicly like a IntegerProperty and do no checking.
+ * is not set it acts basically like an IntegerProperty and does no checking.
  * The constraints struct can be created on the heap or build in.
  */
 class AppExport PropertyIntegerConstraint: public PropertyInteger
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     /// Standard constructor
     PropertyIntegerConstraint();
-    
-    /// destructor
-    virtual ~PropertyIntegerConstraint();
 
-    /// Constraint methods 
+    /// destructor
+    ~PropertyIntegerConstraint() override;
+
+    /// Constraint methods
     //@{
     /// the boundary struct
     struct Constraints {
         long LowerBound, UpperBound, StepSize;
+        Constraints()
+            : LowerBound(0)
+            , UpperBound(0)
+            , StepSize(0)
+            , candelete(false)
+        {
+        }
+        Constraints(long l, long u, long s)
+            : LowerBound(l)
+            , UpperBound(u)
+            , StepSize(s)
+            , candelete(false)
+        {
+        }
+        ~Constraints() = default;
+        void setDeletable(bool on)
+        {
+            candelete = on;
+        }
+        bool isDeletable() const
+        {
+            return candelete;
+        }
+    private:
+        bool candelete;
     };
     /** setting the boundaries
-     * This sets the constraint struct. It can be dynamcly 
-     * allocated or set as an static in the class the property
-     * blongs to:
+     * This sets the constraint struct. It can be dynamically
+     * allocated or set as a static in the class the property
+     * belongs to:
      * \code
      * const Constraints percent = {0,100,1}
      * \endcode
      */
     void setConstraints(const Constraints* sConstraint);
     /// get the constraint struct
-    const Constraints*  getConstraints(void) const;
+    const Constraints*  getConstraints() const;
     //@}
 
-    virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyIntegerConstraintItem"; }
-    virtual void setPyObject(PyObject *);
+    long getMinimum() const;
+    long getMaximum() const;
+    long getStepSize() const;
+
+    const char* getEditorName() const override { return "Gui::PropertyEditor::PropertyIntegerConstraintItem"; }
+    void setPyObject(PyObject *) override;
 
 protected:
-    const Constraints* _ConstStruct;
+    const Constraints* _ConstStruct{nullptr};
 };
 
 /** Percent property
- * This property is a special interger property and holds only
+ * This property is a special integer property and holds only
  * numbers between 0 and 100.
  */
 
 class AppExport PropertyPercent: public PropertyIntegerConstraint
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     /// Standard constructor
     PropertyPercent();
-    
+
     /// destructor
-    virtual ~PropertyPercent();
+    ~PropertyPercent() override;
 };
 
 /** Integer list properties
- * 
+ *
  */
-class AppExport PropertyIntegerList: public PropertyLists
+class AppExport PropertyIntegerList: public PropertyListsT<long>
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     /**
@@ -271,43 +358,31 @@ public:
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyIntegerList();
+    ~PropertyIntegerList() override;
 
-    virtual void setSize(int newSize);
-    virtual int getSize(void) const;
+    const char* getEditorName() const override
+    { return "Gui::PropertyEditor::PropertyIntegerListItem"; }
 
-    /** Sets the property 
-     */
-    void setValue(long);
-  
-    /// index operator
-    long operator[] (const int idx) const {return _lValueList.operator[] (idx);} 
-  
-    void  set1Value (const int idx, long value){_lValueList.operator[] (idx) = value;}
-    void setValues (const std::vector<long>& values);
+    PyObject *getPyObject() override;
 
-    const std::vector<long> &getValues(void) const{return _lValueList;}
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
 
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    virtual unsigned int getMemSize (void) const;
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+    unsigned int getMemSize () const override;
 
-private:
-    std::vector<long> _lValueList;
+protected:
+    long getPyValue(PyObject *item) const override;
 };
 
 /** Integer list properties
- * 
+ *
  */
 class AppExport PropertyIntegerSet: public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     /**
@@ -321,82 +396,96 @@ public:
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyIntegerSet();
+    ~PropertyIntegerSet() override;
 
-    /** Sets the property 
+    /** Sets the property
      */
     void setValue(long);
-    void setValue(void){;}
-  
+    void setValue(){;}
+
     void addValue (long value){_lValueSet.insert(value);}
     void setValues (const std::set<long>& values);
 
-    const std::set<long> &getValues(void) const{return _lValueSet;}
+    const std::set<long> &getValues() const{return _lValueSet;}
 
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    virtual unsigned int getMemSize (void) const;
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
 
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+    unsigned int getMemSize () const override;
+
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getValues() == static_cast<decltype(this)>(&other)->getValues();
+    }
 private:
     std::set<long> _lValueSet;
 };
 
 
-/** implements a key/value list as property 
- *  The key ought to be ASCII the Value should be treated as UTF8 to be save.
+/** implements a key/value list as property
+ *  The key ought to be ASCII the Value should be treated as UTF8 to be saved.
  */
 class AppExport PropertyMap: public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
-       
+
     /**
      * A constructor.
      * A more elaborate description of the constructor.
      */
     PropertyMap();
-    
+
     /**
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyMap();
+    ~PropertyMap() override;
 
-    virtual int getSize(void) const;
-    
-    /** Sets the property 
+    virtual int getSize() const;
+
+    /** Sets the property
      */
-    void setValue(void){}
+    void setValue(){}
     void setValue(const std::string& key,const std::string& value);
     void setValues(const std::map<std::string,std::string>&);
-    
+
     /// index operator
     const std::string& operator[] (const std::string& key) const ;
-    
+
     void  set1Value (const std::string& key, const std::string& value){_lValueList.operator[] (key) = value;}
-    
-    const std::map<std::string,std::string> &getValues(void) const{return _lValueList;}
-    
+
+    const std::map<std::string,std::string> &getValues() const{return _lValueList;}
+
     //virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyStringListItem"; }
+
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+
+    unsigned int getMemSize () const override;
     
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    
-    virtual unsigned int getMemSize (void) const;
-    
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getValues() == static_cast<decltype(this)>(&other)->getValues();
+    }
 
 private:
     std::map<std::string,std::string> _lValueList;
@@ -406,103 +495,160 @@ private:
 
 /** Float properties
  * This is the father of all properties handling floats.
- * Use this type only in rare cases. Mostly you want to 
- * use the more specialized types like e.g. PropertyLenth.
- * These properties fulfill also the needs of the unit system.
+ * Use this type only in rare cases. Mostly you want to
+ * use the more specialized types like e.g. PropertyLength.
+ * These properties also fulfill the needs of the unit system.
  * See PropertyUnits.h for all properties with units.
  */
 class AppExport PropertyFloat: public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     /** Value Constructor
-     *  Construct with explicite Values
+     *  Construct with explicit Values
      */
-    PropertyFloat(void);
+    PropertyFloat();
 
     /**
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyFloat();
+    ~PropertyFloat() override;
 
 
     void setValue(double lValue);
-    double getValue(void) const;
-    
-    virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyFloatItem"; }
-    
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    
-    virtual unsigned int getMemSize (void) const{return sizeof(double);}
-    
+    double getValue() const;
+
+    const char* getEditorName() const override { return "Gui::PropertyEditor::PropertyFloatItem"; }
+
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+
+    unsigned int getMemSize () const override{return sizeof(double);}
+
+    void setPathValue(const App::ObjectIdentifier &path, const boost::any &value) override;
+    const boost::any getPathValue(const App::ObjectIdentifier &path) const override;
+
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getValue() == static_cast<decltype(this)>(&other)->getValue();
+    }
+
 protected:
     double _dValue;
 };
 
 /** Constraint float properties
- * This property fullfill the need of constraint float. It holds basicly a 
+ * This property fulfills the need of a constraint float. It holds basically a
  * state (float) and a struct of boundaries. If the boundaries
- * is not set it act basicly like a IntegerProperty and do no checking.
- * The constraints struct can be created on the heap or build in.
+ * is not set it acts basically like a PropertyFloat and does no checking
+ * The constraints struct can be created on the heap or built-in.
  */
 class AppExport PropertyFloatConstraint: public PropertyFloat
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
 
     /** Value Constructor
-     *  Construct with explicite Values
+     *  Construct with explicit Values
      */
-    PropertyFloatConstraint(void);
-    
+    PropertyFloatConstraint();
+
     /**
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyFloatConstraint();
-    
+    ~PropertyFloatConstraint() override;
 
-    /// Constraint methods 
+
+    /// Constraint methods
     //@{
     /// the boundary struct
     struct Constraints {
         double LowerBound, UpperBound, StepSize;
+        Constraints()
+            : LowerBound(0)
+            , UpperBound(0)
+            , StepSize(0)
+            , candelete(false)
+        {
+        }
+        Constraints(double l, double u, double s)
+            : LowerBound(l)
+            , UpperBound(u)
+            , StepSize(s)
+            , candelete(false)
+        {
+        }
+        ~Constraints() = default;
+        void setDeletable(bool on)
+        {
+            candelete = on;
+        }
+        bool isDeletable() const
+        {
+            return candelete;
+        }
+    private:
+        bool candelete;
     };
     /** setting the boundaries
-     * This sets the constraint struct. It can be dynamcly 
+     * This sets the constraint struct. It can be dynamically
      * allocated or set as an static in the class the property
-     * blongs to:
+     * belongs to:
      * \code
      * const Constraints percent = {0.0,100.0,1.0}
      * \endcode
      */
     void setConstraints(const Constraints* sConstrain);
     /// get the constraint struct
-    const Constraints*  getConstraints(void) const;
+    const Constraints*  getConstraints() const;
     //@}
 
-    virtual const char* getEditorName(void) const
+    double getMinimum() const;
+    double getMaximum() const;
+    double getStepSize() const;
+
+    const char* getEditorName() const override
     { return "Gui::PropertyEditor::PropertyFloatConstraintItem"; }
 
-    virtual void setPyObject(PyObject *);
+    void setPyObject(PyObject *) override;
 
 protected:
-    const Constraints* _ConstStruct;
+    const Constraints* _ConstStruct{nullptr};
 };
 
-class AppExport PropertyFloatList: public PropertyLists
+
+/** Precision properties
+ * This property fulfills the need of a floating value with many decimal points,
+ * e.g. for holding values like Precision::Confusion(). The value has a default
+ * constraint for non-negative, but can be overridden
+ */
+class AppExport PropertyPrecision: public PropertyFloatConstraint
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
+public:
+    PropertyPrecision();
+    ~PropertyPrecision() override;
+    const char* getEditorName() const override
+    { return "Gui::PropertyEditor::PropertyPrecisionItem"; }
+};
+
+
+class AppExport PropertyFloatList: public PropertyListsT<double>
+{
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
 
@@ -511,46 +657,31 @@ public:
      * A more elaborate description of the constructor.
      */
     PropertyFloatList();
-    
+
     /**
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyFloatList();
-    
-    virtual void setSize(int newSize);
-    virtual int getSize(void) const;
+    ~PropertyFloatList() override;
 
-    /** Sets the property 
-     */
-    void setValue(double);
+    const char* getEditorName() const override
+    { return "Gui::PropertyEditor::PropertyFloatListItem"; }
 
-    void setValue (void){}
-    
-    /// index operator
-    double operator[] (const int idx) const {return _lValueList.operator[] (idx);} 
-    
-    
-    void set1Value (const int idx, double value){_lValueList.operator[] (idx) = value;}
-    void setValues (const std::vector<double>& values);
-    
-    const std::vector<double> &getValues(void) const{return _lValueList;}
-    
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual void SaveDocFile (Base::Writer &writer) const;
-    virtual void RestoreDocFile(Base::Reader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    virtual unsigned int getMemSize (void) const;
+    PyObject *getPyObject() override;
 
-private:
-    std::vector<double> _lValueList;
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    void SaveDocFile (Base::Writer &writer) const override;
+    void RestoreDocFile(Base::Reader &reader) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+    unsigned int getMemSize () const override;
+
+protected:
+    double getPyValue(PyObject *item) const override;
 };
 
 
@@ -559,7 +690,7 @@ private:
  */
 class AppExport PropertyString: public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
 
@@ -567,42 +698,53 @@ public:
      * A constructor.
      * A more elaborate description of the constructor.
      */
-    PropertyString(void);
-    
+    PropertyString();
+
     /**
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyString();
+    ~PropertyString() override;
 
-    void setValue(const char* sString);
+    virtual void setValue(const char* sString);
     void setValue(const std::string &sString);
-    const char* getValue(void) const;
-    const std::string& getStrValue(void) const
+    const char* getValue() const;
+    const std::string& getStrValue() const
     { return _cValue; }
-    bool isEmpty(void){return _cValue.empty();}
-    
-    virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyStringItem"; }
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
+    bool isEmpty(){return _cValue.empty();}
 
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    virtual unsigned int getMemSize (void) const;
+    const char* getEditorName() const override { return "Gui::PropertyEditor::PropertyStringItem"; }
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
 
-private:
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+    unsigned int getMemSize () const override;
+
+    void setPathValue(const App::ObjectIdentifier &path, const boost::any &value) override;
+    const boost::any getPathValue(const App::ObjectIdentifier &path) const override;
+
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getStrValue() == static_cast<decltype(this)>(&other)->getStrValue();
+    }
+
+protected:
     std::string _cValue;
 };
 
 /** UUID properties
- * This property handles unique identifieers 
+ * This property handles unique identifiers
  */
 class AppExport PropertyUUID: public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
 
@@ -610,31 +752,39 @@ public:
      * A constructor.
      * A more elaborate description of the constructor.
      */
-    PropertyUUID(void);
-    
+    PropertyUUID();
+
     /**
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyUUID();
+    ~PropertyUUID() override;
 
 
     void setValue(const Base::Uuid &);
     void setValue(const char* sString);
     void setValue(const std::string &sString);
-    const std::string& getValueStr(void) const;
-    const Base::Uuid& getValue(void) const;
-    
-    //virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyStringItem"; }
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
+    const std::string& getValueStr() const;
+    const Base::Uuid& getValue() const;
 
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    virtual unsigned int getMemSize (void) const;
+    //virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyStringItem"; }
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+    unsigned int getMemSize () const override;
+
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && _uuid.getValue() == static_cast<decltype(this)>(&other)->_uuid.getValue();
+    }
 
 private:
     Base::Uuid _uuid;
@@ -645,65 +795,60 @@ private:
  */
 class AppExport PropertyFont : public PropertyString
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
-    PropertyFont(void);
-    virtual ~PropertyFont();
-    virtual const char* getEditorName(void) const
+    PropertyFont();
+    ~PropertyFont() override;
+    const char* getEditorName() const override
     { return "Gui::PropertyEditor::PropertyFontItem"; }
+
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getValue() == static_cast<decltype(this)>(&other)->getValue();
+    }
 };
 
-class AppExport PropertyStringList: public PropertyLists
+class AppExport PropertyStringList: public PropertyListsT<std::string>
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
+    using inherited = PropertyListsT<std::string>;
 
 public:
-       
+
     /**
      * A constructor.
      * A more elaborate description of the constructor.
      */
     PropertyStringList();
-    
+
     /**
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyStringList();
+    ~PropertyStringList() override;
 
-    virtual void setSize(int newSize);
-    virtual int getSize(void) const;
-    
-    /** Sets the property 
-     */
-    void setValue(const std::string&);
-    void setValues(const std::vector<std::string>&);
     void setValues(const std::list<std::string>&);
-    
-    /// index operator
-    const std::string& operator[] (const int idx) const {return _lValueList.operator[] (idx);} 
-    
-    void  set1Value (const int idx, const std::string& value){_lValueList.operator[] (idx) = value;}
-    
-    const std::vector<std::string> &getValues(void) const{return _lValueList;}
-    
-    virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyStringListItem"; }
-    
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    
-    virtual unsigned int getMemSize (void) const;
-    
+    using inherited::setValues;
 
-private:
-    std::vector<std::string> _lValueList;
+    const char* getEditorName() const override
+    { return "Gui::PropertyEditor::PropertyStringListItem"; }
+
+    PyObject *getPyObject() override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+
+    unsigned int getMemSize () const override;
+
+protected:
+    std::string getPyValue(PyObject *item) const override;
 };
 
 /** Bool properties
@@ -711,7 +856,7 @@ private:
  */
 class AppExport PropertyBool : public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
 
@@ -719,70 +864,70 @@ public:
      * A constructor.
      * A more elaborate description of the constructor.
      */
-    PropertyBool(void);
-    
+    PropertyBool();
+
     /**
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyBool();
-    
-    void setValue(bool lValue);
-    bool getValue(void) const;
-    
-    virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyBoolItem"; }
-    
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
+    ~PropertyBool() override;
 
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    
-    virtual unsigned int getMemSize (void) const{return sizeof(bool);}
-    
+    void setValue(bool lValue);
+    bool getValue() const;
+
+    const char* getEditorName() const override { return "Gui::PropertyEditor::PropertyBoolItem"; }
+
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+
+    unsigned int getMemSize () const override{return sizeof(bool);}
+
+    void setPathValue(const App::ObjectIdentifier &path, const boost::any &value) override;
+    const boost::any getPathValue(const App::ObjectIdentifier &path) const override;
+
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getValue() == static_cast<decltype(this)>(&other)->getValue();
+    }
+
 private:
     bool _lValue;
 };
 
 /** Bool list properties
- * 
+ *
  */
-class AppExport PropertyBoolList : public PropertyLists
+class AppExport PropertyBoolList : public PropertyListsT<bool,boost::dynamic_bitset<> >
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
+    using inherited = PropertyListsT<bool, boost::dynamic_bitset<> >;
 
 public:
     PropertyBoolList();
-    virtual ~PropertyBoolList();
+    ~PropertyBoolList() override;
 
-    virtual void setSize(int newSize);
-    virtual int getSize(void) const;
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
 
-    /** Sets the property 
-     */
-    void setValue(bool);
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
 
-    /// index operator
-    void  set1Value (const int idx, bool value);
-    void setValues (const boost::dynamic_bitset<>& values);
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+    unsigned int getMemSize () const override;
 
-    const boost::dynamic_bitset<> &getValues(void) const{return _lValueList;}
-
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    virtual unsigned int getMemSize (void) const;
-
-private:
-    boost::dynamic_bitset<> _lValueList;
+protected:
+    bool getPyValue(PyObject *) const override;
 };
 
 
@@ -791,7 +936,7 @@ private:
  */
 class AppExport PropertyColor : public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     /**
@@ -799,14 +944,14 @@ public:
      * A more elaborate description of the constructor.
      */
     PropertyColor();
-    
+
     /**
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyColor();
+    ~PropertyColor() override;
 
-    /** Sets the property 
+    /** Sets the property
      */
     void setValue(const Color &col);
     void setValue(float r, float g, float b, float a=0.0f);
@@ -814,32 +959,39 @@ public:
 
     /** This method returns a string representation of the property
      */
-    const Color &getValue(void) const;
+    const Color &getValue() const;
 
-    virtual const char* getEditorName(void) const { return "Gui::PropertyEditor::PropertyColorItem"; }
+    const char* getEditorName() const override { return "Gui::PropertyEditor::PropertyColorItem"; }
+
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+
+    unsigned int getMemSize () const override{return sizeof(Color);}
     
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    
-    virtual unsigned int getMemSize (void) const{return sizeof(Color);}
-    
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getValue() == static_cast<decltype(this)>(&other)->getValue();
+    }
 
 private:
     Color _cCol;
 };
 
-class AppExport PropertyColorList: public PropertyLists
+class AppExport PropertyColorList: public PropertyListsT<Color>
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
-       
+
     /**
      * A constructor.
      * A more elaborate description of the constructor.
@@ -850,38 +1002,23 @@ public:
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyColorList();
+    ~PropertyColorList() override;
 
-    virtual void setSize(int newSize);
-    virtual int getSize(void) const;
-    
-    /** Sets the property 
-     */
-    void setValue(const Color&);
-  
-    /// index operator
-    const Color& operator[] (const int idx) const {return _lValueList.operator[] (idx);} 
-    
-    void  set1Value (const int idx, const Color& value){_lValueList.operator[] (idx) = value;}
-    
-    void setValues (const std::vector<Color>& values);
-    const std::vector<Color> &getValues(void) const{return _lValueList;}
-    
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
-    
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual void SaveDocFile (Base::Writer &writer) const;
-    virtual void RestoreDocFile(Base::Reader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    virtual unsigned int getMemSize (void) const;
-    
-private:
-    std::vector<Color> _lValueList;
+    PyObject *getPyObject() override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    void SaveDocFile (Base::Writer &writer) const override;
+    void RestoreDocFile(Base::Reader &reader) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+    unsigned int getMemSize () const override;
+
+protected:
+    Color getPyValue(PyObject *) const override;
 };
 
 /** Material properties
@@ -889,10 +1026,10 @@ private:
  */
 class AppExport PropertyMaterial : public Property
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
-      
+
     /**
      * A constructor.
      * A more elaborate description of the constructor.
@@ -903,9 +1040,9 @@ public:
      * A destructor.
      * A more elaborate description of the destructor.
      */
-    virtual ~PropertyMaterial();
-    
-    /** Sets the property 
+    ~PropertyMaterial() override;
+
+    /** Sets the property
      */
     void setValue(const Material &mat);
     void setAmbientColor(const Color& col);
@@ -914,27 +1051,103 @@ public:
     void setEmissiveColor(const Color& col);
     void setShininess(float);
     void setTransparency(float);
-    
+
     /** This method returns a string representation of the property
      */
-    const Material &getValue(void) const;
+    const Material &getValue() const;
 
-    virtual PyObject *getPyObject(void);
-    virtual void setPyObject(PyObject *);
+    PyObject *getPyObject() override;
+    void setPyObject(PyObject *) override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    const char* getEditorName() const override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+
+    unsigned int getMemSize () const override{return sizeof(_cMat);}
     
-    virtual void Save (Base::Writer &writer) const;
-    virtual void Restore(Base::XMLReader &reader);
-    
-    virtual Property *Copy(void) const;
-    virtual void Paste(const Property &from);
-    
-    virtual unsigned int getMemSize (void) const{return sizeof(_cMat);}
-    
+    bool isSame(const Property &other) const override {
+        if (&other == this)
+            return true;
+        return getTypeId() == other.getTypeId()
+            && getValue() == static_cast<decltype(this)>(&other)->getValue();
+    }
+
 private:
     Material _cMat;
 };
 
+/** Material properties
+*/
+class AppExport PropertyMaterialList : public PropertyListsT<Material>
+{
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
+public:
+
+    /**
+    * A constructor.
+    * A more elaborate description of the constructor.
+    */
+    PropertyMaterialList();
+
+    /**
+    * A destructor.
+    * A more elaborate description of the destructor.
+    */
+    ~PropertyMaterialList() override;
+
+    PyObject *getPyObject() override;
+
+    void Save(Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    void SaveDocFile(Base::Writer &writer) const override;
+    void RestoreDocFile(Base::Reader &reader) override;
+
+    const char* getEditorName() const override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+    unsigned int getMemSize() const override;
+
+protected:
+    Material getPyValue(PyObject *) const override;
+};
+
+
+/** Property for dynamic creation of a FreeCAD persistent object
+ *
+ * In Python, this property can be assigned a type string to create a dynamic FreeCAD
+ * object, and then read back as the Python binding of the newly created object.
+ */
+class AppExport PropertyPersistentObject: public PropertyString {
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
+    using inherited = PropertyString;
+public:
+    PyObject *getPyObject() override;
+    void setValue(const char* type) override;
+
+    void Save (Base::Writer &writer) const override;
+    void Restore(Base::XMLReader &reader) override;
+    void Restore(Base::DocumentReader &reader,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *ContainerDOM) override;
+
+    Property *Copy() const override;
+    void Paste(const Property &from) override;
+    unsigned int getMemSize () const override;
+
+    std::shared_ptr<Base::Persistence> getObject() const {
+        return _pObject;
+    }
+
+protected:
+    std::shared_ptr<Base::Persistence> _pObject;
+};
 
 } // namespace App
 

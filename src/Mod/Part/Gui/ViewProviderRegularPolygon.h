@@ -24,23 +24,23 @@
 #ifndef PARTGUI_VIEWPROVIDERREGULARPOLYGON_H
 #define PARTGUI_VIEWPROVIDERREGULARPOLYGON_H
 
-#include "ViewProvider.h"
+#include "ViewProviderPrimitive.h"
 
 
 namespace PartGui {
 
 
-class PartGuiExport ViewProviderRegularPolygon : public ViewProviderPart
+class PartGuiExport ViewProviderRegularPolygon : public ViewProviderPrimitive
 {
-    PROPERTY_HEADER(PartGui::ViewProviderRegularPolygon);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderRegularPolygon);
 
 public:
     /// constructor
     ViewProviderRegularPolygon();
     /// destructor
-    virtual ~ViewProviderRegularPolygon();
+    ~ViewProviderRegularPolygon() override;
 
-    std::vector<std::string> getDisplayModes(void) const;
+    std::vector<std::string> getDisplayModes() const override;
 
 protected:
 

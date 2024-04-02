@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,39 +20,9 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef START_PRECOMPILED_H
 #define START_PRECOMPILED_H
 
 #include <FCConfig.h>
 
-// Exporting of App classes
-#ifdef FC_OS_WIN32
-# define AppStartExport __declspec(dllexport)
-# define PartExport  __declspec(dllimport)
-# define MeshExport     __declspec(dllimport)
-#else // for Linux
-# define AppStartExport
-# define PartExport 
-# define MeshExport   
 #endif
-
-#ifdef _PreComp_
-
-// standard
-#include <iostream>
-#include <sstream>
-#include <stdio.h>
-#include <assert.h>
-#include <string>
-#include <map>
-#include <vector>
-#include <set>
-#include <bitset>
-
-#include <Python.h>
-
-
-#endif // _PreComp_
-#endif
-

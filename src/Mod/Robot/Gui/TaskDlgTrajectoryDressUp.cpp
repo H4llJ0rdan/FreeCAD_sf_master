@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,83 +20,69 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
+#include <Gui/Application.h>
+#include <Gui/Document.h>
 
 #include "TaskDlgTrajectoryDressUp.h"
-#include <Gui/TaskView/TaskSelectLinkProperty.h>
-
-#include <Gui/Document.h>
-#include <Gui/Application.h>
 
 
 using namespace RobotGui;
-
 
 //**************************************************************************
 //**************************************************************************
 // TaskDialog
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TaskDlgTrajectoryDressUp::TaskDlgTrajectoryDressUp(Robot::TrajectoryDressUpObject *obj)
-    : TaskDialog(),pcObject(obj)
+TaskDlgTrajectoryDressUp::TaskDlgTrajectoryDressUp(Robot::TrajectoryDressUpObject* obj)
+    : TaskDialog()
+    , pcObject(obj)
 {
-    param  = new TaskTrajectoryDressUpParameter(obj);
+    param = new TaskTrajectoryDressUpParameter(obj);
 
     Content.push_back(param);
-}
-
-TaskDlgTrajectoryDressUp::~TaskDlgTrajectoryDressUp()
-{
-
 }
 
 //==== calls from the TaskView ===============================================================
 
 
 void TaskDlgTrajectoryDressUp::open()
-{
-
-}
+{}
 
 void TaskDlgTrajectoryDressUp::clicked(int button)
 {
-    if(QDialogButtonBox::Apply == button)
-    {
-        // transfert the values to the object
+    if (QDialogButtonBox::Apply == button) {
+        // transfer the values to the object
         param->writeValues();
         // May throw an exception which we must handle here
-        pcObject->recompute();
+        pcObject->recomputeFeature();
     }
 }
 
 bool TaskDlgTrajectoryDressUp::accept()
 {
     param->writeValues();
-    pcObject->recompute();
+    pcObject->recomputeFeature();
 
     Gui::Document* doc = Gui::Application::Instance->activeDocument();
-    if(doc) 
+    if (doc) {
         doc->resetEdit();
+    }
     return true;
- 
 }
 
 bool TaskDlgTrajectoryDressUp::reject()
 {
     Gui::Document* doc = Gui::Application::Instance->activeDocument();
-    if(doc) 
+    if (doc) {
         doc->resetEdit();
+    }
     return true;
 }
 
 void TaskDlgTrajectoryDressUp::helpRequested()
-{
-
-}
+{}
 
 
 #include "moc_TaskDlgTrajectoryDressUp.cpp"

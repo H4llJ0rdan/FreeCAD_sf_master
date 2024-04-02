@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,44 +20,34 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-
-#ifndef _PreComp_
-#endif
 
 #include "TaskDlgSimulate.h"
 
-using namespace RobotGui;
 
+using namespace RobotGui;
 
 //**************************************************************************
 //**************************************************************************
 // TaskDialog
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TaskDlgSimulate::TaskDlgSimulate(Robot::RobotObject *pcRobotObject,Robot::TrajectoryObject *pcTrajectoryObject)
+TaskDlgSimulate::TaskDlgSimulate(Robot::RobotObject* pcRobotObject,
+                                 Robot::TrajectoryObject* pcTrajectoryObject)
     : TaskDialog()
 {
-    rob  = new TaskRobot6Axis(pcRobotObject);
-    ctr  = new TaskRobotControl(pcRobotObject);
-    
-    trac = new TaskTrajectory(pcRobotObject,pcTrajectoryObject);
-    msg  = new TaskRobotMessages(pcRobotObject);
-    
-    
-    QObject::connect(trac ,SIGNAL(axisChanged(float,float,float,float,float,float,const Base::Placement &)),
-                     rob  ,SLOT  (setAxis(float,float,float,float,float,float,const Base::Placement &)));
+    rob = new TaskRobot6Axis(pcRobotObject);
+    ctr = new TaskRobotControl(pcRobotObject);
+
+    trac = new TaskTrajectory(pcRobotObject, pcTrajectoryObject);
+    msg = new TaskRobotMessages(pcRobotObject);
+
+    QObject::connect(trac, &TaskTrajectory::axisChanged, rob, &TaskRobot6Axis::setAxis);
 
     Content.push_back(rob);
     Content.push_back(ctr);
     Content.push_back(trac);
     Content.push_back(msg);
-}
-
-TaskDlgSimulate::~TaskDlgSimulate()
-{
-
 }
 
 //==== calls from the TaskView ===============================================================
@@ -70,9 +60,7 @@ void TaskDlgSimulate::open()
 }
 
 void TaskDlgSimulate::clicked(int)
-{
-    
-}
+{}
 
 bool TaskDlgSimulate::accept()
 {
@@ -85,9 +73,7 @@ bool TaskDlgSimulate::reject()
 }
 
 void TaskDlgSimulate::helpRequested()
-{
-
-}
+{}
 
 
 #include "moc_TaskDlgSimulate.cpp"

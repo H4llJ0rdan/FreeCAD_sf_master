@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,21 +20,19 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_DOCUMENT_H
 #define GUI_DOCUMENT_H
-
-#include "MDIView.h"
 
 #include <list>
 #include <map>
 #include <string>
+#include <boost_signals2.hpp>
+#include <QString>
 
 #include <Base/Persistence.h>
-#include <App/Document.h>
+#include <Gui/TreeItemMode.h>
 
-#include "Tree.h"
-
+class SoNode;
 class SoPath;
 
 namespace Base {
@@ -42,29 +40,36 @@ class Matrix4D;
 }
 
 namespace App {
+class Document;
+class DocumentObject;
 class DocumentObjectGroup;
+class Property;
+class Transaction;
 }
 
 namespace Gui {
 
+class BaseView;
+class MDIView;
 class ViewProvider;
 class ViewProviderDocumentObject;
 class Application;
 class DocumentPy;
+class TransactionViewProvider;
 
 /** The Gui Document
  *  This is the document on GUI level. Its main responsibility is keeping
  *  track off open windows for a document and warning on unsaved closes.
  *  All handled views on the document must inherit from MDIView
- *  @see App::Document 
+ *  @see App::Document
  *  @see MDIView
- *  @author Jürgen Riegel
+ *  @author JÃ¼rgen Riegel
  */
 class GuiExport Document : public Base::Persistence
 {
 public:
     Document(App::Document* pcDocument, Application * app);
-    ~Document();
+    ~Document() override;
 
 protected:
     /** @name I/O of the document */
@@ -73,58 +78,91 @@ protected:
     void slotNewObject(const App::DocumentObject&);
     void slotDeletedObject(const App::DocumentObject&);
     void slotChangedObject(const App::DocumentObject&, const App::Property&);
-    void slotRenamedObject(const App::DocumentObject&);
+    void slotRelabelObject(const App::DocumentObject&);
+    void slotTransactionAppend(const App::DocumentObject&, App::Transaction*);
+    void slotTransactionRemove(const App::DocumentObject&, App::Transaction*);
     void slotActivatedObject(const App::DocumentObject&);
     void slotStartRestoreDocument(const App::Document&);
     void slotFinishRestoreDocument(const App::Document&);
+    void slotUndoDocument(const App::Document&);
+    void slotRedoDocument(const App::Document&);
+    void slotShowHidden(const App::Document&);
+    void slotFinishImportObjects(const std::vector<App::DocumentObject*> &);
+    void slotFinishRestoreObject(const App::DocumentObject &obj);
+    void slotRecomputed(const App::Document&);
+    void slotSkipRecompute(const App::Document &doc, const std::vector<App::DocumentObject*> &objs);
+    void slotTouchedObject(const App::DocumentObject &);
+    void slotChangePropertyEditor(const App::Document&, const App::Property &);
     //@}
+
+    void addViewProvider(Gui::ViewProviderDocumentObject*);
 
 public:
     /** @name Signals of the document */
     //@{
     /// signal on new Object
-    mutable boost::signal<void (const Gui::ViewProviderDocumentObject&)> signalNewObject;
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&)> signalNewObject;
     /// signal on deleted Object
-    mutable boost::signal<void (const Gui::ViewProviderDocumentObject&)> signalDeletedObject;
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&)> signalDeletedObject;
     /** signal on changed Object, the 2nd argument is the changed property
         of the referenced document object, not of the view provider */
-    mutable boost::signal<void (const Gui::ViewProviderDocumentObject&,
-                                const App::Property&)>                   signalChangedObject;
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&,
+                                          const App::Property&)>                   signalChangedObject;
     /// signal on renamed Object
-    mutable boost::signal<void (const Gui::ViewProviderDocumentObject&)> signalRenamedObject;
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&)> signalRelabelObject;
     /// signal on activated Object
-    mutable boost::signal<void (const Gui::ViewProviderDocumentObject&)> signalActivatedObject;
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&)> signalActivatedObject;
     /// signal on entering in edit mode
-    mutable boost::signal<void (const Gui::ViewProviderDocumentObject&)> signalInEdit;
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&)> signalInEdit;
     /// signal on leaving edit mode
-    mutable boost::signal<void (const Gui::ViewProviderDocumentObject&)> signalResetEdit;
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&)> signalResetEdit;
     /// signal on changed Object, the 2nd argument is the highlite mode to use
-    mutable boost::signal<void (const Gui::ViewProviderDocumentObject&,
-                                const Gui::HighlightMode&,
-                                bool)>                                   signalHighlightObject;
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&,
+                                          const Gui::HighlightMode&,
+                                          bool,
+                                          App::DocumentObject *parent,
+                                          const char *subname)> signalHighlightObject;
     /// signal on changed Object, the 2nd argument is the highlite mode to use
-    mutable boost::signal<void (const Gui::ViewProviderDocumentObject&,
-                                const Gui::TreeItemMode&)>               signalExpandObject;
-
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&,
+                                          const Gui::TreeItemMode&,
+                                          App::DocumentObject *parent,
+                                          const char *subname)> signalExpandObject;
+    /// signal on changed ShowInTree property in view provider
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&)> signalShowItem;
+    /// signal on scrolling to an object
+    mutable boost::signals2::signal<void (const Gui::ViewProviderDocumentObject&)> signalScrollToObject;
+    /// signal on undo Document
+    mutable boost::signals2::signal<void (const Gui::Document& doc)> signalUndoDocument;
+    /// signal on redo Document
+    mutable boost::signals2::signal<void (const Gui::Document& doc)> signalRedoDocument;
+    /// signal on deleting Document
+    mutable boost::signals2::signal<void (const Gui::Document& doc)> signalDeleteDocument;
     //@}
 
     /** @name I/O of the document */
     //@{
-    unsigned int getMemSize (void) const;
+    unsigned int getMemSize () const override;
     /// Save the document
-    bool save(void);
+    bool save();
     /// Save the document under a new file name
-    bool saveAs(void);
+    bool saveAs();
+    /// Save a copy of the document under a new file name
+    bool saveCopy();
+    /// Save all open document
+    static void saveAll();
     /// This method is used to save properties or very small amounts of data to an XML document.
-    virtual void Save (Base::Writer &writer) const;
+    void Save (Base::Writer &writer) const override;
     /// This method is used to restore properties from an XML document.
-    virtual void Restore(Base::XMLReader &reader);
+    void Restore(Base::XMLReader &reader) override;
     /// This method is used to save large amounts of data to a binary file.
-    virtual void SaveDocFile (Base::Writer &writer) const;
+    void SaveDocFile (Base::Writer &writer) const override;
     /// This method is used to restore large amounts of data from a binary file.
-    virtual void RestoreDocFile(Base::Reader &reader);
+    void RestoreDocFile(Base::Reader &reader) override;
+    void readUsing_XMLReader(Base::Reader &reader);
+    void readUsing_DocumentReader(Base::Reader &reader);
     void exportObjects(const std::vector<App::DocumentObject*>&, Base::Writer&);
-    void importObjects(const std::vector<App::DocumentObject*>&, Base::Reader&);
+    void importObjects(const std::vector<App::DocumentObject*>&, Base::Reader&,
+                       const std::map<std::string, std::string>& nameMapping);
     /// Add all root objects of the given array to a group
     void addRootObjectsToGroup(const std::vector<App::DocumentObject*>&, App::DocumentObjectGroup*);
     //@}
@@ -133,42 +171,60 @@ public:
     void setModified(bool);
     bool isModified() const;
 
-    /// Getter for the App Document 
-    App::Document*  getDocument(void) const;
+    /// Getter for the App Document
+    App::Document*  getDocument() const;
 
     /** @name methods for View handling */
     //@{
     /// Getter for the active view
-    Gui::MDIView* getActiveView(void) const;
-    Gui::MDIView* getViewOfViewProvider(Gui::ViewProvider*) const;
-    /// Creat a new view
-    void createView(const Base::Type& typeId);
-    /** send messages to the active view 
-     * Send a specific massage to the active view and is able to recive a
-     * return massage
+    Gui::MDIView* getActiveView() const;
+    void setActiveWindow(Gui::MDIView* view);
+    Gui::MDIView* getEditingViewOfViewProvider(Gui::ViewProvider*) const;
+    Gui::MDIView* getViewOfViewProvider(const Gui::ViewProvider*) const;
+    Gui::MDIView* getViewOfNode(SoNode*) const;
+    /// Create a new view
+    MDIView *createView(const Base::Type& typeId);
+    /// Create a clone of the given view
+    Gui::MDIView* cloneView(Gui::MDIView*);
+    /** send messages to the active view
+     * Send a specific massage to the active view and is able to receive a
+     * return message
      */
     /// send Messages to all views
     bool sendMsgToViews(const char* pMsg);
+    /** Sends the message \a pMsg to the views of type \a typeid and stops with
+     * the first view that supports the message and returns \a ppReturn. The very
+     * first checked view is the current active view.
+     * If a view supports the message true is returned and false otherwise.
+     */
+    bool sendMsgToFirstView(const Base::Type& typeId, const char* pMsg, const char** ppReturn);
     /// Attach a view (get called by the MDIView constructor)
     void attachView(Gui::BaseView* pcView, bool bPassiv=false);
     /// Detach a view (get called by the MDIView destructor)
-    void detachView(Gui::BaseView* pcView, bool bPassiv=false); 
+    void detachView(Gui::BaseView* pcView, bool bPassiv=false);
     /// helper for selection
-    ViewProvider* getViewProviderByPathFromTail(SoPath * path) const;
+    ViewProviderDocumentObject* getViewProviderByPathFromTail(SoPath * path) const;
+    /// helper for selection
+    ViewProviderDocumentObject* getViewProviderByPathFromHead(SoPath * path) const;
+    /// Get all view providers along the path and the corresponding node index in the path
+    std::vector<std::pair<ViewProviderDocumentObject*,int> > getViewProvidersByPath(SoPath * path) const;
     /// call update on all attached views
-    void onUpdate(void);
+    void onUpdate();
     /// call relabel to all attached views
-    void onRelabel(void);
+    void onRelabel();
     /// returns a list of all attached MDI views
     std::list<MDIView*> getMDIViews() const;
     /// returns a list of all MDI views of a certain type
     std::list<MDIView*> getMDIViewsOfType(const Base::Type& typeId) const;
     //@}
 
+    MDIView *setActiveView(ViewProviderDocumentObject *vp=nullptr, Base::Type typeId = Base::Type());
+
     /** @name View provider handling  */
     //@{
     /// Get the view provider for that object
     ViewProvider* getViewProvider(const App::DocumentObject *) const;
+    ViewProviderDocumentObject *getViewProvider(SoNode *node) const;
     /// set an annotation view provider
     void setAnnotationViewProvider(const char* name, ViewProvider *pcProvider);
     /// get an annotation view provider
@@ -186,46 +242,87 @@ public:
     std::vector<ViewProvider*> getViewProvidersOfType(const Base::Type& typeId) const;
     ViewProvider *getViewProviderByName(const char* name) const;
     /// set the ViewProvider in special edit mode
-    bool setEdit(Gui::ViewProvider* p, int ModNum=0);
-    /// reset from edit mode
-    void resetEdit(void);
+    bool setEdit(Gui::ViewProvider* p, int ModNum=0, const char *subname=nullptr);
+    const Base::Matrix4D &getEditingTransform() const;
+    void setEditingTransform(const Base::Matrix4D &mat);
+    /// reset from edit mode, this cause all document to reset edit
+    void resetEdit();
+    /// reset edit of this document
+    void _resetEdit();
     /// get the in edit ViewProvider or NULL
-    ViewProvider *getInEdit(void) const;
+    ViewProvider *getInEdit(ViewProviderDocumentObject **parentVp=nullptr,
+            std::string *subname=nullptr, int *mode=nullptr, std::string *subElement=nullptr) const;
+    /// set the in edit ViewProvider subname reference
+    void setInEdit(ViewProviderDocumentObject *parentVp, const char *subname);
+    /** Add or remove view provider from scene graphs of all views
+     *
+     * It calls ViewProvider::canAddToSceneGraph() to decide whether to add the
+     * view provider or remove it
+     */
+    void toggleInSceneGraph(ViewProvider *vp);
     //@}
 
     /** @name methods for the UNDO REDO handling */
     //@{
     /// Open a new Undo transaction on the document
-    void openCommand(const char* sName=0);
+    void openCommand(const char* sName=nullptr);
     /// Commit the Undo transaction on the document
-    void commitCommand(void);
+    void commitCommand();
     /// Abort the Undo transaction on the document
-    void abortCommand(void);
+    void abortCommand();
     /// Check if an Undo transaction is open
-    bool hasPendingCommand(void) const;
+    bool hasPendingCommand() const;
     /// Get an Undo string vector with the Undo names
-    std::vector<std::string> getUndoVector(void) const;
+    std::vector<std::string> getUndoVector() const;
     /// Get an Redo string vector with the Redo names
-    std::vector<std::string> getRedoVector(void) const;
-    /// Will UNDO  one or more steps
+    std::vector<std::string> getRedoVector() const;
+    /// Will UNDO one or more steps
     void undo(int iSteps);
-    /// Will REDO  one or more steps
+    /// Will REDO one or more steps
     void redo(int iSteps) ;
+    /** Check if the document is performing undo/redo transaction
+     *
+     * Unlike App::Document::isPerformingTransaction(), Gui::Document will
+     * report transacting when triggering grouped undo/redo in other documents
+     */
+    bool isPerformingTransaction() const;
     //@}
 
-    /// handels the application close event
-    bool canClose();
-    bool isLastView(void);
+    /// handles the application close event
+    bool canClose(bool checkModify=true, bool checkLink=false);
+    bool isLastView();
 
-    virtual PyObject *getPyObject(void);
+    /// called by Application before being deleted
+    void beforeDelete();
+
+    PyObject *getPyObject() override;
+
+    const char *getCameraSettings() const;
+    bool saveCameraSettings(const char *) const;
+    
+    void setProjectUnitSystem(int);
+    int getProjectUnitSystem() const;
+    
+	void setProjectUnitSystemIgnore(bool);
+	bool getProjectUnitSystemIgnore() const;
 
 protected:
     // pointer to the python class
     Gui::DocumentPy *_pcDocPy;
 
 private:
+    //handles the scene graph nodes to correctly group child and parents
+    void handleChildren3D(ViewProvider* viewProvider, bool deleting=false);
+
+    /// Check other documents for the same transaction ID
+    bool checkTransactionID(bool undo, int iSteps);
+    /// Ask for user interaction if saving has failed
+    bool askIfSavingFailed(const QString&);
+
     struct DocumentP* d;
     static int _iDocCount;
+
+    mutable std::string cameraSettings;
 
     /** @name attributes for the UNDO REDO facility
      */
@@ -235,6 +332,8 @@ private:
     /// redo names list
     std::list<std::string> listRedoNames;
     //@}
+
+    friend class TransactionViewProvider;
 };
 
 } // namespace Gui

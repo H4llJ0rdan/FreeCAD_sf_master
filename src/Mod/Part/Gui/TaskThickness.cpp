@@ -20,32 +20,27 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-
 #ifndef _PreComp_
-# include <QEventLoop>
 # include <QMessageBox>
-# include <QTextStream>
 #endif
 
-#include "ui_TaskOffset.h"
-#include "TaskThickness.h"
-
-#include <Gui/Application.h>
-#include <Gui/BitmapFactory.h>
-#include <Gui/Command.h>
-#include <Gui/Document.h>
-#include <Gui/Selection.h>
-#include <Gui/SelectionFilter.h>
-#include <Gui/ViewProvider.h>
-
-#include <Base/Console.h>
-#include <Base/Interpreter.h>
 #include <App/Application.h>
 #include <App/Document.h>
 #include <App/DocumentObject.h>
+#include <Gui/Application.h>
+#include <Gui/BitmapFactory.h>
+#include <Gui/Command.h>
+#include <Gui/CommandT.h>
+#include <Gui/Document.h>
+#include <Gui/Selection.h>
+#include <Gui/SelectionFilter.h>
+#include <Gui/SelectionObject.h>
+#include <Gui/ViewProvider.h>
 #include <Mod/Part/App/PartFeatures.h>
+
+#include "TaskThickness.h"
+#include "ui_TaskOffset.h"
 
 
 using namespace PartGui;
@@ -53,27 +48,20 @@ using namespace PartGui;
 class ThicknessWidget::Private
 {
 public:
-    Ui_TaskOffset ui;
-    QEventLoop loop;
+    Ui_TaskOffset ui{};
     QString text;
     std::string selection;
-    Part::Thickness* thickness;
-    Private()
-    {
-    }
-    ~Private()
-    {
-    }
+    Part::Thickness* thickness{nullptr};
 
     class FaceSelection : public Gui::SelectionFilterGate
     {
         const App::DocumentObject* object;
     public:
-        FaceSelection(const App::DocumentObject* obj)
-            : Gui::SelectionFilterGate((Gui::SelectionFilter*)0), object(obj)
+        explicit FaceSelection(const App::DocumentObject* obj)
+            : Gui::SelectionFilterGate(nullPointer()), object(obj)
         {
         }
-        bool allow(App::Document*pDoc, App::DocumentObject*pObj, const char*sSubName)
+        bool allow(App::Document* /*pDoc*/, App::DocumentObject*pObj, const char*sSubName) override
         {
             if (pObj != this->object)
                 return false;
@@ -90,21 +78,61 @@ public:
 ThicknessWidget::ThicknessWidget(Part::Thickness* thickness, QWidget* parent)
   : d(new Private())
 {
-    Gui::Application::Instance->runPythonCode("from FreeCAD import Base");
-    Gui::Application::Instance->runPythonCode("import Part");
+    Q_UNUSED(parent);
+    Gui::Command::runCommand(Gui::Command::App, "from FreeCAD import Base");
+    Gui::Command::runCommand(Gui::Command::App, "import Part");
 
     d->thickness = thickness;
     d->ui.setupUi(this);
+    setupConnections();
+
+    d->ui.labelOffset->setText(tr("Thickness"));
+    d->ui.fillOffset->hide();
+
+    QSignalBlocker blockOffset(d->ui.spinOffset);
     d->ui.spinOffset->setRange(-INT_MAX, INT_MAX);
     d->ui.spinOffset->setSingleStep(0.1);
     d->ui.spinOffset->setValue(d->thickness->Value.getValue());
-    d->ui.labelOffset->setText(tr("Thickness"));
-    d->ui.fillOffset->hide();
+
+    int mode = d->thickness->Mode.getValue();
+    d->ui.modeType->setCurrentIndex(mode);
+
+    int join = d->thickness->Join.getValue();
+    d->ui.joinType->setCurrentIndex(join);
+
+    QSignalBlocker blockIntSct(d->ui.intersection);
+    bool intsct = d->thickness->Intersection.getValue();
+    d->ui.intersection->setChecked(intsct);
+
+    QSignalBlocker blockSelfInt(d->ui.selfIntersection);
+    bool selfint = d->thickness->SelfIntersection.getValue();
+    d->ui.selfIntersection->setChecked(selfint);
+
+    d->ui.spinOffset->bind(d->thickness->Value);
 }
 
 ThicknessWidget::~ThicknessWidget()
 {
     delete d;
+    Gui::Selection().rmvSelectionGate();
+}
+
+void ThicknessWidget::setupConnections()
+{
+    connect(d->ui.spinOffset, qOverload<double>(&Gui::QuantitySpinBox::valueChanged),
+            this, &ThicknessWidget::onSpinOffsetValueChanged);
+    connect(d->ui.modeType, qOverload<int>(&QComboBox::activated),
+            this, &ThicknessWidget::onModeTypeActivated);
+    connect(d->ui.joinType, qOverload<int>(&QComboBox::activated),
+            this, &ThicknessWidget::onJoinTypeActivated);
+    connect(d->ui.intersection, &QCheckBox::toggled,
+            this, &ThicknessWidget::onIntersectionToggled);
+    connect(d->ui.selfIntersection, &QCheckBox::toggled,
+            this, &ThicknessWidget::onSelfIntersectionToggled);
+    connect(d->ui.facesButton, &QPushButton::toggled,
+            this, &ThicknessWidget::onFacesButtonToggled);
+    connect(d->ui.updateView, &QCheckBox::toggled,
+            this, &ThicknessWidget::onUpdateViewToggled);
 }
 
 Part::Thickness* ThicknessWidget::getObject() const
@@ -112,47 +140,47 @@ Part::Thickness* ThicknessWidget::getObject() const
     return d->thickness;
 }
 
-void ThicknessWidget::on_spinOffset_valueChanged(double val)
+void ThicknessWidget::onSpinOffsetValueChanged(double val)
 {
     d->thickness->Value.setValue(val);
     if (d->ui.updateView->isChecked())
         d->thickness->getDocument()->recomputeFeature(d->thickness);
 }
 
-void ThicknessWidget::on_modeType_activated(int val)
+void ThicknessWidget::onModeTypeActivated(int val)
 {
     d->thickness->Mode.setValue(val);
     if (d->ui.updateView->isChecked())
         d->thickness->getDocument()->recomputeFeature(d->thickness);
 }
 
-void ThicknessWidget::on_joinType_activated(int val)
+void ThicknessWidget::onJoinTypeActivated(int val)
 {
     d->thickness->Join.setValue((long)val);
     if (d->ui.updateView->isChecked())
         d->thickness->getDocument()->recomputeFeature(d->thickness);
 }
 
-void ThicknessWidget::on_intersection_toggled(bool on)
+void ThicknessWidget::onIntersectionToggled(bool on)
 {
     d->thickness->Intersection.setValue(on);
     if (d->ui.updateView->isChecked())
         d->thickness->getDocument()->recomputeFeature(d->thickness);
 }
 
-void ThicknessWidget::on_selfIntersection_toggled(bool on)
+void ThicknessWidget::onSelfIntersectionToggled(bool on)
 {
     d->thickness->SelfIntersection.setValue(on);
     if (d->ui.updateView->isChecked())
         d->thickness->getDocument()->recomputeFeature(d->thickness);
 }
 
-void ThicknessWidget::on_facesButton_clicked()
+void ThicknessWidget::onFacesButtonToggled(bool on)
 {
-    if (!d->loop.isRunning()) {
+    if (on) {
         QList<QWidget*> c = this->findChildren<QWidget*>();
-        for (QList<QWidget*>::iterator it = c.begin(); it != c.end(); ++it)
-            (*it)->setEnabled(false);
+        for (auto it : c)
+            it->setEnabled(false);
         d->ui.facesButton->setEnabled(true);
         d->ui.labelFaces->setText(tr("Select faces of the source object and press 'Done'"));
         d->ui.labelFaces->setEnabled(true);
@@ -163,23 +191,21 @@ void ThicknessWidget::on_facesButton_clicked()
         Gui::Application::Instance->hideViewProvider(d->thickness);
         Gui::Selection().clearSelection();
         Gui::Selection().addSelectionGate(new Private::FaceSelection(d->thickness->Faces.getValue()));
-        d->loop.exec();
     }
     else {
         QList<QWidget*> c = this->findChildren<QWidget*>();
-        for (QList<QWidget*>::iterator it = c.begin(); it != c.end(); ++it)
-            (*it)->setEnabled(true);
+        for (auto it : c)
+            it->setEnabled(true);
         d->ui.facesButton->setText(d->text);
         d->ui.labelFaces->clear();
-        d->loop.quit();
 
         d->selection = Gui::Command::getPythonTuple
             (d->thickness->Faces.getValue()->getNameInDocument(), d->thickness->Faces.getSubValues());
         std::vector<Gui::SelectionObject> sel = Gui::Selection().getSelectionEx();
-        for (std::vector<Gui::SelectionObject>::iterator it = sel.begin(); it != sel.end(); ++it) {
-            if (it->getObject() == d->thickness->Faces.getValue()) {
-                d->thickness->Faces.setValue(it->getObject(), it->getSubNames());
-                d->selection = it->getAsPropertyLinkSubString();
+        for (auto & it : sel) {
+            if (it.getObject() == d->thickness->Faces.getValue()) {
+                d->thickness->Faces.setValue(it.getObject(), it.getSubNames());
+                d->selection = it.getAsPropertyLinkSubString();
                 break;
             }
         }
@@ -192,7 +218,7 @@ void ThicknessWidget::on_facesButton_clicked()
     }
 }
 
-void ThicknessWidget::on_updateView_toggled(bool on)
+void ThicknessWidget::onUpdateViewToggled(bool on)
 {
     if (on) {
         d->thickness->getDocument()->recomputeFeature(d->thickness);
@@ -201,34 +227,30 @@ void ThicknessWidget::on_updateView_toggled(bool on)
 
 bool ThicknessWidget::accept()
 {
-    if (d->loop.isRunning())
+    if (d->ui.facesButton->isChecked())
         return false;
 
-    std::string name = d->thickness->getNameInDocument();
     try {
         if (!d->selection.empty()) {
-            Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Faces = %s",
-                name.c_str(),d->selection.c_str());
+            Gui::cmdAppObjectArgs(d->thickness, "Faces = %s", d->selection.c_str());
         }
-        Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Value = %f",
-            name.c_str(),d->ui.spinOffset->value());
-        Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Mode = %i",
-            name.c_str(),d->ui.modeType->currentIndex());
-        Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Join = %i",
-            name.c_str(),d->ui.joinType->currentIndex());
-        Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Intersection = %s",
-            name.c_str(),d->ui.intersection->isChecked() ? "True" : "False");
-        Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.SelfIntersection = %s",
-            name.c_str(),d->ui.selfIntersection->isChecked() ? "True" : "False");
+        Gui::cmdAppObjectArgs(d->thickness, "Value = %f", d->ui.spinOffset->value().getValue());
+        Gui::cmdAppObjectArgs(d->thickness, "Mode = %d", d->ui.modeType->currentIndex());
+        Gui::cmdAppObjectArgs(d->thickness, "Join = %d", d->ui.joinType->currentIndex());
+        Gui::cmdAppObjectArgs(d->thickness, "Intersection = %s",
+            d->ui.intersection->isChecked() ? "True" : "False");
+        Gui::cmdAppObjectArgs(d->thickness, "SelfIntersection = %s",
+            d->ui.selfIntersection->isChecked() ? "True" : "False");
 
         Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.recompute()");
         if (!d->thickness->isValid())
-            throw Base::Exception(d->thickness->getStatusString());
+            throw Base::CADKernelError(d->thickness->getStatusString());
         Gui::Command::doCommand(Gui::Command::Gui,"Gui.ActiveDocument.resetEdit()");
         Gui::Command::commitCommand();
     }
     catch (const Base::Exception& e) {
-        QMessageBox::warning(this, tr("Input error"), QString::fromAscii(e.what()));
+        QMessageBox::warning(
+            this, tr("Input error"), QCoreApplication::translate("Exception", e.what()));
         return false;
     }
 
@@ -237,7 +259,7 @@ bool ThicknessWidget::accept()
 
 bool ThicknessWidget::reject()
 {
-    if (d->loop.isRunning())
+    if (d->ui.facesButton->isChecked())
         return false;
 
     // save this and check if the object is still there after the
@@ -276,13 +298,9 @@ TaskThickness::TaskThickness(Part::Thickness* offset)
     widget->setWindowTitle(ThicknessWidget::tr("Thickness"));
     taskbox = new Gui::TaskView::TaskBox(
         Gui::BitmapFactory().pixmap("Part_Thickness"),
-        widget->windowTitle(), true, 0);
+        widget->windowTitle(), true, nullptr);
     taskbox->groupLayout()->addWidget(widget);
     Content.push_back(taskbox);
-}
-
-TaskThickness::~TaskThickness()
-{
 }
 
 Part::Thickness* TaskThickness::getObject() const

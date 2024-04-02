@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,114 +20,122 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef FEM_VIEWPROVIDERFEMMESH_H
 #define FEM_VIEWPROVIDERFEMMESH_H
 
-#include <Gui/ViewProviderGeometryObject.h>
 #include <Gui/ViewProviderBuilder.h>
-
-#include <CXX/Objects.hxx>
+#include <Gui/ViewProviderGeometryObject.h>
+#include <Gui/ViewProviderPythonFeature.h>
+#include <Mod/Fem/FemGlobal.h>
 
 class SoCoordinate3;
-class SoDrawStyle;  
-class SoIndexedFaceSet; 
-class SoIndexedLineSet; 
+class SoDrawStyle;
+class SoIndexedFaceSet;
+class SoIndexedLineSet;
 class SoShapeHints;
 class SoMaterialBinding;
 
 namespace FemGui
 {
 
-class ViewProviderFEMMeshBuilder : public Gui::ViewProviderBuilder
+class ViewProviderFEMMeshBuilder: public Gui::ViewProviderBuilder
 {
 public:
-    ViewProviderFEMMeshBuilder(){}
-    ~ViewProviderFEMMeshBuilder(){}
-    virtual void buildNodes(const App::Property*, std::vector<SoNode*>&) const;
-    void createMesh(const App::Property*, 
-                    SoCoordinate3*, 
+    ViewProviderFEMMeshBuilder() = default;
+    ~ViewProviderFEMMeshBuilder() override = default;
+    void buildNodes(const App::Property*, std::vector<SoNode*>&) const override;
+    void createMesh(const App::Property*,
+                    SoCoordinate3*,
                     SoIndexedFaceSet*,
                     SoIndexedLineSet*,
                     std::vector<unsigned long>&,
                     std::vector<unsigned long>&,
-                    bool ShowInner=false
-                    ) const;
+                    bool& edgeOnly,
+                    bool ShowInner,
+                    int MaxFacesShowInner) const;
 };
 
-class FemGuiExport ViewProviderFemMesh : public Gui::ViewProviderGeometryObject
+class FemGuiExport ViewProviderFemMesh: public Gui::ViewProviderGeometryObject
 {
-    PROPERTY_HEADER(FemGui::ViewProviderFemMesh);
+    PROPERTY_HEADER_WITH_OVERRIDE(FemGui::ViewProviderFemMesh);
 
 public:
     /// constructor.
     ViewProviderFemMesh();
 
     /// destructor.
-    ~ViewProviderFemMesh();
+    ~ViewProviderFemMesh() override;
 
     // Display properties
     App::PropertyColor PointColor;
     App::PropertyFloatConstraint PointSize;
     App::PropertyFloatConstraint LineWidth;
-    App::PropertyBool     BackfaceCulling;
-    App::PropertyBool     ShowInner;
+    App::PropertyBool BackfaceCulling;
+    App::PropertyBool ShowInner;
+    App::PropertyInteger MaxFacesShowInner;
 
-    void attach(App::DocumentObject *pcObject);
-    void setDisplayMode(const char* ModeName);
-    std::vector<std::string> getDisplayModes() const;
-    void updateData(const App::Property*);
+    void attach(App::DocumentObject* pcObject) override;
+    void setDisplayMode(const char* ModeName) override;
+    std::vector<std::string> getDisplayModes() const override;
+    void updateData(const App::Property*) override;
 
-      /** @name Selection handling
-      * This group of methodes do the selection handling.
-      * Here you can define how the selection for your ViewProvider
-      * works. 
+    /** @name Selection handling
+     * This group of methods do the selection handling.
+     * Here you can define how the selection for your ViewProvider
+     * works.
      */
     //@{
     /// indicates if the ViewProvider use the new Selection model
-    virtual bool useNewSelectionModel(void) const {return true;}
+    bool useNewSelectionModel() const override
+    {
+        return true;
+    }
     /// return a hit element to the selection path or 0
-    virtual std::string getElement(const SoDetail*) const;
-    virtual SoDetail* getDetail(const char*) const;
-    /// return the higlight lines for a given element or the whole shape
-    virtual std::vector<Base::Vector3d> getSelectionShape(const char* Element) const;
+    std::string getElement(const SoDetail*) const override;
+    SoDetail* getDetail(const char*) const override;
+    /// return the highlight lines for a given element or the whole shape
+    std::vector<Base::Vector3d> getSelectionShape(const char* Element) const override;
     //@}
 
-    // interface methodes 
+    // interface methods
     void setHighlightNodes(const std::set<long>&);
-    void resetHighlightNodes(void);
-    
-	/** @name Postprocessing
-      * this interfaces apply post processing stuff to the View-
-	  * Provider. They can override the positioning and the color
-	  * color or certain elements.
+    std::set<long> getHighlightNodes() const;
+    void resetHighlightNodes();
+
+    /** @name Postprocessing
+     * this interfaces apply post processing stuff to the View-
+     * Provider. They can override the positioning and the color
+     * color or certain elements.
      */
     //@{
 
-	/// set the color for each node
-	void setColorByNodeId(const std::map<long,App::Color> &NodeColorMap);
-    void setColorByNodeId(const std::vector<long> &NodeIds,const std::vector<App::Color>  &NodeColors);
+    /// set the color for each node
+    void setColorByNodeId(const std::map<long, App::Color>& NodeColorMap);
+    void setColorByNodeId(const std::vector<long>& NodeIds,
+                          const std::vector<App::Color>& NodeColors);
 
-	/// reset the view of the node colors
-	void resetColorByNodeId(void);
-	/// set the displacement for each node
-    void setDisplacementByNodeId(const std::map<long,Base::Vector3d> &NodeDispMap);
-    void setDisplacementByNodeId(const std::vector<long> &NodeIds,const std::vector<Base::Vector3d> &NodeDisps);
-	/// reset the view of the node displacement
-	void resetDisplacementByNodeId(void);
+    /// reset the view of the node colors
+    void resetColorByNodeId();
+    /// set the displacement for each node
+    void setDisplacementByNodeId(const std::map<long, Base::Vector3d>& NodeDispMap);
+    void setDisplacementByNodeId(const std::vector<long>& NodeIds,
+                                 const std::vector<Base::Vector3d>& NodeDisps);
+    /// reset the view of the node displacement
+    void resetDisplacementByNodeId();
     /// reaply the node displacement with a certain factor and do a redraw
-    void animateNodes(double factor);
-	/// set the color for each element
-	void setColorByElementId(const std::map<long,App::Color> &ElementColorMap);
-	/// reset the view of the element colors
-	void resetColorByElementId(void);
+    void applyDisplacementToNodes(double factor);
+    /// set the color for each element
+    void setColorByElementId(const std::map<long, App::Color>& ElementColorMap);
+    /// reset the view of the element colors
+    void resetColorByElementId();
+    //@}
 
-	//@}
+    const std::vector<unsigned long>& getVisibleElementFaces() const
+    {
+        return vFaceElementIdx;
+    }
 
-    const std::vector<unsigned long> &getVisibleElementFaces(void)const{return vFaceElementIdx;}
-
-
-    PyObject *getPyObject();
+    PyObject* getPyObject() override;
 
 private:
     static App::PropertyFloatConstraint::Constraints floatRange;
@@ -136,30 +144,39 @@ private:
 
 protected:
     /// get called by the container whenever a property has been changed
-    virtual void onChanged(const App::Property* prop);
+    void onChanged(const App::Property* prop) override;
 
-    void setColorByNodeIdHelper(const std::vector<App::Color> &);
-    void setDisplacementByNodeIdHelper(const std::vector<Base::Vector3d>& DispVector,long startId);
+    void setColorByNodeIdHelper(const std::vector<App::Color>&);
+    void setDisplacementByNodeIdHelper(const std::vector<Base::Vector3d>& DispVector, long startId);
     /// index of elements to their triangles
     std::vector<unsigned long> vFaceElementIdx;
     std::vector<unsigned long> vNodeElementIdx;
+    std::vector<unsigned long> vHighlightedIdx;
 
     std::vector<Base::Vector3d> DisplacementVector;
-    double                      DisplacementFactor;
+    double DisplacementFactor;
 
-    SoMaterial            * pcPointMaterial;
-    SoDrawStyle           * pcPointStyle;
+    SoMaterial* pcPointMaterial;
+    SoDrawStyle* pcPointStyle;
 
-    SoDrawStyle           * pcDrawStyle;
-    SoShapeHints          * pShapeHints;
-    SoMaterialBinding     * pcMatBinding;
-    SoCoordinate3         * pcCoords;
-    SoCoordinate3         * pcAnoCoords;
-    SoIndexedFaceSet      * pcFaces;
-    SoIndexedLineSet      * pcLines;
+    SoDrawStyle* pcDrawStyle;
+    SoShapeHints* pShapeHints;
+    SoMaterialBinding* pcMatBinding;
+    SoCoordinate3* pcCoords;
+    SoCoordinate3* pcAnoCoords;
+    SoIndexedFaceSet* pcFaces;
+    SoIndexedLineSet* pcLines;
+
+    bool onlyEdges;
+
+private:
+    class Private;
 };
 
-} //namespace FemGui
+using ViewProviderFemMeshPython = Gui::ViewProviderPythonFeatureT<ViewProviderFemMesh>;
 
 
-#endif // FEM_VIEWPROVIDERFEMMESH_H
+}  // namespace FemGui
+
+
+#endif  // FEM_VIEWPROVIDERFEMMESH_H

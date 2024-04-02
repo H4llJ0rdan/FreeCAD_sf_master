@@ -30,70 +30,81 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \**************************************************************************/
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4267)
+#endif
+
 #include "QuarterWidgetP.h"
-#include <Quarter/QuarterWidget.h>
-#include <Quarter/eventhandlers/EventFilter.h>
+#include "QuarterWidget.h"
+#include "eventhandlers/EventFilter.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QCursor>
-#include <QtGui/QMenu>
-#include <QtCore/QMap>
+#include <QActionGroup>
+#include <QApplication>
+#include <QCursor>
+#include <QMenu>
 
-#include <Inventor/nodes/SoCamera.h>
-#include <Inventor/nodes/SoNode.h>
+#include <Inventor/SoEventManager.h>
 #include <Inventor/actions/SoSearchAction.h>
 #include <Inventor/elements/SoGLCacheContextElement.h>
 #include <Inventor/lists/SbList.h>
-#include <Inventor/SoEventManager.h>
-#include <Inventor/scxml/SoScXMLStateMachine.h>
 #include <Inventor/misc/SoContextHandler.h>
+#include <Inventor/nodes/SoCamera.h>
+#include <Inventor/nodes/SoNode.h>
+#include <Inventor/scxml/SoScXMLStateMachine.h>
 #include <Inventor/C/glue/gl.h>
 
-#include "NativeEvent.h"
 #include "ContextMenu.h"
+#include "NativeEvent.h"
 #include "QuarterP.h"
 
-#include <stdlib.h>
 
 using namespace SIM::Coin3D::Quarter;
 
 class QuarterWidgetP_cachecontext {
 public:
   uint32_t id;
-  SbList <const QGLWidget *> widgetlist;
+  SbList <const QtGLWidget *> widgetlist;
 };
 
-static SbList <QuarterWidgetP_cachecontext *> * cachecontext_list = NULL;
+static SbList <QuarterWidgetP_cachecontext *> * cachecontext_list = nullptr;
 
-QuarterWidgetP::QuarterWidgetP(QuarterWidget * masterptr, const QGLWidget * sharewidget)
+QuarterWidgetP::QuarterWidgetP(QuarterWidget * masterptr, const QtGLWidget * sharewidget)
 : master(masterptr),
-  scene(NULL),
-  eventfilter(NULL),
-  interactionmode(NULL),
-  sorendermanager(NULL),
-  soeventmanager(NULL),
+  scene(nullptr),
+  eventfilter(nullptr),
+  interactionmode(nullptr),
+  sorendermanager(nullptr),
+  soeventmanager(nullptr),
   initialsorendermanager(false),
   initialsoeventmanager(false),
-  headlight(NULL),
-  cachecontext(NULL),
-  contextmenu(NULL),
+  headlight(nullptr),
+  cachecontext(nullptr),
   contextmenuenabled(true),
   autoredrawenabled(true),
   interactionmodeenabled(false),
   clearzbuffer(true),
   clearwindow(true),
-  addactions(true)
+  addactions(true),
+  processdelayqueue(true),
+  currentStateMachine(nullptr),
+  device_pixel_ratio(1.0),
+  transparencytypegroup(nullptr),
+  stereomodegroup(nullptr),
+  rendermodegroup(nullptr),
+  contextmenu(nullptr)
 {
   this->cachecontext = findCacheContext(masterptr, sharewidget);
 
   // FIXME: Centralize this as only one custom event filter can be
   // added to an application. (20101019 handegar)
+#ifdef HAVE_SPACENAV_LIB // fixes #0001970
   qApp->setEventFilter(QuarterWidgetP::nativeEventFilter);
+#endif
 }
 
 QuarterWidgetP::~QuarterWidgetP()
 {
-  QGLWidget* glMaster = static_cast<QGLWidget*>(this->master->viewport());
+  QtGLWidget* glMaster = static_cast<QtGLWidget*>(this->master->viewport());
   removeFromCacheContext(this->cachecontext, glMaster);
   if (this->contextmenu) {
     delete this->contextmenu;
@@ -114,19 +125,19 @@ QuarterWidgetP::searchForCamera(SoNode * root)
       return (SoCamera *) node;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 uint32_t
-QuarterWidgetP::getCacheContextId(void) const
+QuarterWidgetP::getCacheContextId() const
 {
   return this->cachecontext->id;
 }
 
 QuarterWidgetP_cachecontext *
-QuarterWidgetP::findCacheContext(QuarterWidget * widget, const QGLWidget * sharewidget)
+QuarterWidgetP::findCacheContext(QuarterWidget * widget, const QtGLWidget * sharewidget)
 {
-  if (cachecontext_list == NULL) {
+  if (!cachecontext_list) {
     // FIXME: static memory leak
     cachecontext_list = new SbList <QuarterWidgetP_cachecontext*>;
   }
@@ -135,23 +146,23 @@ QuarterWidgetP::findCacheContext(QuarterWidget * widget, const QGLWidget * share
 
     for (int j = 0; j < cachecontext->widgetlist.getLength(); j++) {
       if (cachecontext->widgetlist[j] == sharewidget) {
-        cachecontext->widgetlist.append(static_cast<const QGLWidget*>(widget->viewport()));
+        cachecontext->widgetlist.append(static_cast<const QtGLWidget*>(widget->viewport()));
         return cachecontext;
       }
     }
   }
   QuarterWidgetP_cachecontext * cachecontext = new QuarterWidgetP_cachecontext;
   cachecontext->id = SoGLCacheContextElement::getUniqueCacheContext();
-  cachecontext->widgetlist.append(static_cast<const QGLWidget*>(widget->viewport()));
+  cachecontext->widgetlist.append(static_cast<const QtGLWidget*>(widget->viewport()));
   cachecontext_list->append(cachecontext);
 
   return cachecontext;
 }
 
 void
-QuarterWidgetP::removeFromCacheContext(QuarterWidgetP_cachecontext * context, const QGLWidget * widget)
+QuarterWidgetP::removeFromCacheContext(QuarterWidgetP_cachecontext * context, const QtGLWidget * widget)
 {
-  context->widgetlist.removeItem((const QGLWidget*) widget);
+  context->widgetlist.removeItem((const QtGLWidget*) widget);
 
   if (context->widgetlist.getLength() == 0) { // last context in this share group?
     assert(cachecontext_list);
@@ -159,17 +170,25 @@ QuarterWidgetP::removeFromCacheContext(QuarterWidgetP_cachecontext * context, co
     for (int i = 0; i < cachecontext_list->getLength(); i++) {
       if ((*cachecontext_list)[i] == context) {
         // set the context while calling destructingContext() (might trigger OpenGL calls)
-        const_cast<QGLWidget*> (widget)->makeCurrent();
+        const_cast<QtGLWidget*> (widget)->makeCurrent();
         // fetch the cc_glglue context instance as a workaround for a bug fixed in Coin r12818
         (void) cc_glglue_instance(context->id);
         cachecontext_list->removeFast(i);
         SoContextHandler::destructingContext(context->id);
-        const_cast<QGLWidget*> (widget)->doneCurrent();
+        const_cast<QtGLWidget*> (widget)->doneCurrent();
         delete context;
         return;
       }
     }
   }
+}
+
+void
+QuarterWidgetP::replaceGLWidget(const QtGLWidget * newviewport)
+{
+  QtGLWidget* oldviewport = static_cast<QtGLWidget*>(this->master->viewport());
+  cachecontext->widgetlist.removeItem(oldviewport);
+  cachecontext->widgetlist.append(newviewport);
 }
 
 /*!
@@ -188,6 +207,7 @@ QuarterWidgetP::rendercb(void * userdata, SoRenderManager *)
 void
 QuarterWidgetP::prerendercb(void * userdata, SoRenderManager * manager)
 {
+  Q_UNUSED(manager); 
   QuarterWidgetP * thisp = static_cast<QuarterWidgetP *>(userdata);
   SoEventManager * evman = thisp->soeventmanager;
   assert(evman);
@@ -200,6 +220,7 @@ QuarterWidgetP::prerendercb(void * userdata, SoRenderManager * manager)
 void
 QuarterWidgetP::postrendercb(void * userdata, SoRenderManager * manager)
 {
+  Q_UNUSED(manager); 
   QuarterWidgetP * thisp = static_cast<QuarterWidgetP *>(userdata);
   SoEventManager * evman = thisp->soeventmanager;
   assert(evman);
@@ -212,6 +233,7 @@ QuarterWidgetP::postrendercb(void * userdata, SoRenderManager * manager)
 void
 QuarterWidgetP::statechangecb(void * userdata, ScXMLStateMachine * statemachine, const char * stateid, SbBool enter, SbBool)
 {
+  Q_UNUSED(statemachine); 
   static const SbName contextmenurequest("contextmenurequest");
   QuarterWidgetP * thisp = static_cast<QuarterWidgetP *>(userdata);
   assert(thisp && thisp->master);
@@ -239,7 +261,7 @@ QuarterWidgetP::statechangecb(void * userdata, ScXMLStateMachine * statemachine,
 
 
 QList<QAction *>
-QuarterWidgetP::transparencyTypeActions(void) const
+QuarterWidgetP::transparencyTypeActions() const
 {
   if (this->transparencytypeactions.isEmpty()) {
     this->transparencytypegroup = new QActionGroup(this->master);
@@ -259,7 +281,7 @@ QuarterWidgetP::transparencyTypeActions(void) const
 }
 
 QList<QAction *>
-QuarterWidgetP::stereoModeActions(void) const
+QuarterWidgetP::stereoModeActions() const
 {
   if (this->stereomodeactions.isEmpty()) {
     this->stereomodegroup = new QActionGroup(this->master);
@@ -273,7 +295,7 @@ QuarterWidgetP::stereoModeActions(void) const
 }
 
 QList<QAction *>
-QuarterWidgetP::renderModeActions(void) const
+QuarterWidgetP::renderModeActions() const
 {
   if (this->rendermodeactions.isEmpty()) {
     this->rendermodegroup = new QActionGroup(this->master);
@@ -290,7 +312,7 @@ QuarterWidgetP::renderModeActions(void) const
 #undef ADD_ACTION
 
 QMenu *
-QuarterWidgetP::contextMenu(void)
+QuarterWidgetP::contextMenu()
 {
   if (!this->contextmenu) {
     this->contextmenu = new ContextMenu(this->master);
@@ -306,7 +328,7 @@ QuarterWidgetP::nativeEventFilter(void * message, long * result)
 #ifdef HAVE_SPACENAV_LIB
   XEvent * event = (XEvent *) message;
   if (event->type == ClientMessage) {
-    // FIXME: I dont really like this, but the original XEvent will
+    // FIXME: I don't really like this, but the original XEvent will
     // die before reaching the destination within the Qt system. To
     // avoid this, we'll have to make a copy. We should try to find a
     // workaround for this. (20101020 handegar)
@@ -319,6 +341,9 @@ QuarterWidgetP::nativeEventFilter(void * message, long * result)
     qApp->postEvent(QApplication::focusWidget(), ne);
     return true;
   }
+#else
+  Q_UNUSED(message); 
+  Q_UNUSED(result); 
 #endif // HAVE_SPACENAV_LIB
 
   return false;

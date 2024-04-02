@@ -20,45 +20,49 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
 # include <sstream>
 # include <QApplication>
 # include <Inventor/SoPickedPoint.h>
+# include <Inventor/events/SoKeyboardEvent.h>
 # include <Inventor/events/SoMouseButtonEvent.h>
-# include <Inventor/nodes/SoSeparator.h>
+# include <Inventor/nodes/SoAnnotation.h>
 # include <Inventor/nodes/SoBaseColor.h>
+# include <Inventor/nodes/SoCoordinate3.h>
+# include <Inventor/nodes/SoDrawStyle.h>
 # include <Inventor/nodes/SoFontStyle.h>
+# include <Inventor/nodes/SoIndexedLineSet.h>
+# include <Inventor/nodes/SoMarkerSet.h>
 # include <Inventor/nodes/SoPickStyle.h>
 # include <Inventor/nodes/SoText2.h>
 # include <Inventor/nodes/SoTranslation.h>
-# include <Inventor/nodes/SoCoordinate3.h>
-# include <Inventor/nodes/SoIndexedLineSet.h>
-# include <Inventor/nodes/SoMarkerSet.h>
-# include <Inventor/nodes/SoDrawStyle.h>
 #endif
 
-#include "ViewProviderMeasureDistance.h"
-#include "SoFCSelection.h"
-#include "Application.h"
-#include "Document.h"
-#include "View3DInventorViewer.h"
+#include <Inventor/MarkerBitmaps.h>
 
-#include <App/PropertyGeo.h>
-#include <App/PropertyStandard.h>
+#include <App/Document.h>
 #include <App/MeasureDistance.h>
 #include <Base/Console.h>
+#include <Base/Quantity.h>
+
+#include "ViewProviderMeasureDistance.h"
+#include "Application.h"
+#include <Command.h>
+#include "Document.h"
+#include "View3DInventorViewer.h"
+#include "ViewParams.h"
+
 
 using namespace Gui;
 
 PROPERTY_SOURCE(Gui::ViewProviderMeasureDistance, Gui::ViewProviderDocumentObject)
 
 
-ViewProviderMeasureDistance::ViewProviderMeasureDistance() 
+ViewProviderMeasureDistance::ViewProviderMeasureDistance()
 {
-    ADD_PROPERTY(TextColor,(0.0f,0.0f,0.0f));
+    ADD_PROPERTY(TextColor,(1.0f,1.0f,1.0f));
     ADD_PROPERTY(LineColor,(1.0f,1.0f,1.0f));
     ADD_PROPERTY(FontSize,(18));
     ADD_PROPERTY(DistFactor,(1.0));
@@ -116,6 +120,11 @@ ViewProviderMeasureDistance::~ViewProviderMeasureDistance()
     pLines->unref();
 }
 
+bool ViewProviderMeasureDistance::isPartOfPhysicalObject() const
+{
+    return false;
+}
+
 void ViewProviderMeasureDistance::onChanged(const App::Property* prop)
 {
     if (prop == &Mirror || prop == &DistFactor) {
@@ -137,11 +146,11 @@ void ViewProviderMeasureDistance::onChanged(const App::Property* prop)
     }
 }
 
-std::vector<std::string> ViewProviderMeasureDistance::getDisplayModes(void) const
+std::vector<std::string> ViewProviderMeasureDistance::getDisplayModes() const
 {
     // add modes
     std::vector<std::string> StrList;
-    StrList.push_back("Base");
+    StrList.emplace_back("Base");
     return StrList;
 }
 
@@ -156,36 +165,30 @@ void ViewProviderMeasureDistance::attach(App::DocumentObject* pcObject)
 {
     ViewProviderDocumentObject::attach(pcObject);
 
-    SoPickStyle* ps = new SoPickStyle();
+    auto ps = new SoPickStyle();
     ps->style = SoPickStyle::UNPICKABLE;
 
-    SoSeparator *lineSep = new SoSeparator();
-    SoDrawStyle* style = new SoDrawStyle();
+    auto lineSep = new SoSeparator();
+    auto style = new SoDrawStyle();
     style->lineWidth = 2.0f;
     lineSep->addChild(ps);
     lineSep->addChild(style);
     lineSep->addChild(pColor);
     lineSep->addChild(pCoords);
     lineSep->addChild(pLines);
-    SoMarkerSet* points = new SoMarkerSet();
-    points->markerIndex = SoMarkerSet::CROSS_9_9;
+    auto points = new SoMarkerSet();
+    points->markerIndex = Gui::Inventor::MarkerBitmaps::getMarkerIndex("CROSS",
+            ViewParams::instance()->getMarkerSize());
     points->numPoints=2;
     lineSep->addChild(points);
 
-    // Making the whole measurement object selectable by 3d view can
-    // become cumbersome since it has influence to any raypick action.
-    // Thus, it's only selectable by its text label
-    SoFCSelection* textsep = new SoFCSelection();
-    textsep->objectName = pcObject->getNameInDocument();
-    textsep->documentName = pcObject->getDocument()->getName();
-    textsep->subElementName = "Main";
-    //SoSeparator* textsep = new SoSeparator();
+    auto textsep = new SoSeparator();
     textsep->addChild(pTranslation);
     textsep->addChild(pTextColor);
     textsep->addChild(pFont);
     textsep->addChild(pLabel);
 
-    SoSeparator* sep = new SoSeparator();
+    auto sep = new SoAnnotation();
     sep->addChild(lineSep);
     sep->addChild(textsep);
     addDisplayMaskMode(sep, "Base");
@@ -233,11 +236,7 @@ void ViewProviderMeasureDistance::updateData(const App::Property* prop)
         SbVec3f pos = (pCoords->point[2]+pCoords->point[3])/2.0f;
         pTranslation->translation.setValue(pos);
 
-        std::stringstream s;
-        s.precision(3);
-        s.setf(std::ios::fixed | std::ios::showpoint);
-        s << dif.length();
-        pLabel->string.setValue(s.str().c_str());
+        pLabel->string.setValue((Base::Quantity(dif.length(), Base::Unit::Length)).getUserString().toUtf8().constData());
     }
 
     ViewProviderDocumentObject::updateData(prop);
@@ -249,11 +248,14 @@ PointMarker::PointMarker(View3DInventorViewer* iv) : view(iv),
     vp(new ViewProviderPointMarker)
 {
     view->addViewProvider(vp);
+    previousSelectionEn = view->isSelectionEnabled();
+    view->setSelectionEnabled(false);
 }
 
 PointMarker::~PointMarker()
 {
     view->removeViewProvider(vp);
+    view->setSelectionEnabled(previousSelectionEn);
     delete vp;
 }
 
@@ -269,22 +271,25 @@ int PointMarker::countPoints() const
     return vp->pCoords->point.getNum();
 }
 
-void PointMarker::customEvent(QEvent* e)
+void PointMarker::customEvent(QEvent*)
 {
     Gui::Document* doc = Gui::Application::Instance->activeDocument();
+    doc->openCommand(QT_TRANSLATE_NOOP("Command", "Measure distance"));
     App::DocumentObject* obj = doc->getDocument()->addObject
         (App::MeasureDistance::getClassTypeId().getName(),"Distance");
 
-    App::MeasureDistance* md = static_cast<App::MeasureDistance*>(obj);
+    auto md = static_cast<App::MeasureDistance*>(obj);
     const SbVec3f& pt1 = vp->pCoords->point[0];
     const SbVec3f& pt2 = vp->pCoords->point[1];
     md->P1.setValue(Base::Vector3d(pt1[0],pt1[1],pt1[2]));
     md->P2.setValue(Base::Vector3d(pt2[0],pt2[1],pt2[2]));
-    std::stringstream s;
-    s.precision(3);
-    s.setf(std::ios::fixed | std::ios::showpoint);
-    s << "Distance: " << md->Distance.getValue();
-    md->Label.setValue(s.str());
+
+    QString str = QString::fromLatin1("Distance: %1")
+        .arg(Base::Quantity(md->Distance.getValue(), Base::Unit::Length).getUserString());
+    md->Label.setValue(str.toUtf8().constData());
+    doc->commitCommand();
+
+    this->deleteLater();
 }
 
 PROPERTY_SOURCE(Gui::ViewProviderPointMarker, Gui::ViewProviderDocumentObject)
@@ -295,11 +300,12 @@ ViewProviderPointMarker::ViewProviderPointMarker()
     pCoords->ref();
     pCoords->point.setNum(0);
     pMarker = new SoMarkerSet();
-    pMarker->markerIndex = SoMarkerSet::CROSS_9_9;
+    pMarker->markerIndex = Gui::Inventor::MarkerBitmaps::getMarkerIndex("CROSS",
+            ViewParams::instance()->getMarkerSize());
     pMarker->numPoints=0;
     pMarker->ref();
 
-    SoGroup* grp = new SoGroup();
+    auto grp = new SoGroup();
     grp->addChild(pCoords);
     grp->addChild(pMarker);
     addDisplayMaskMode(grp, "Base");
@@ -312,37 +318,61 @@ ViewProviderPointMarker::~ViewProviderPointMarker()
     pMarker->unref();
 }
 
+bool ViewProviderPointMarker::isPartOfPhysicalObject() const
+{
+    return false;
+}
+
 void ViewProviderMeasureDistance::measureDistanceCallback(void * ud, SoEventCallback * n)
 {
-    const SoMouseButtonEvent * mbe = static_cast<const SoMouseButtonEvent*>(n->getEvent());
-    Gui::View3DInventorViewer* view  = reinterpret_cast<Gui::View3DInventorViewer*>(n->getUserData());
-    PointMarker *pm = reinterpret_cast<PointMarker*>(ud);
-
-    // Mark all incoming mouse button events as handled, especially, to deactivate the selection node
-    n->getAction()->setHandled();
-    
-    if (mbe->getButton() == SoMouseButtonEvent::BUTTON1 && mbe->getState() == SoButtonEvent::DOWN) {
-        const SoPickedPoint * point = n->getPickedPoint();
-	// I think this is where we need to snap.  IR 20140630
-        if (point == NULL) {
-            Base::Console().Message("No point picked.\n");
-            return;
+    auto view  = static_cast<Gui::View3DInventorViewer*>(n->getUserData());
+    auto pm = static_cast<PointMarker*>(ud);
+    const SoEvent* ev = n->getEvent();
+    if (ev->isOfType(SoKeyboardEvent::getClassTypeId())) {
+        const auto ke = static_cast<const SoKeyboardEvent*>(ev);
+        const SbBool press = ke->getState() == SoButtonEvent::DOWN ? true : false;
+        if (ke->getKey() == SoKeyboardEvent::ESCAPE) {
+            n->setHandled();
+            // Handle it on key up, because otherwise upper layer will handle it too.
+            if (!press) {
+                endMeasureDistanceMode(ud, view, n, pm);
+            }
         }
-
-        n->setHandled();
-        pm->addPoint(point->getPoint());
-        if (pm->countPoints() == 2) {
-            QEvent *e = new QEvent(QEvent::User);
-            QApplication::postEvent(pm, e);
-            // leave mode
-            view->setEditing(false);
-            view->removeEventCallback(SoMouseButtonEvent::getClassTypeId(), measureDistanceCallback, ud);
-            pm->deleteLater();
-        }
-    } else if (mbe->getButton() != SoMouseButtonEvent::BUTTON1 && mbe->getState() == SoButtonEvent::UP) {
-        n->setHandled();
-        view->setEditing(false);
-        view->removeEventCallback(SoMouseButtonEvent::getClassTypeId(), measureDistanceCallback, ud);
-        pm->deleteLater();
     }
+    else if (ev->isOfType(SoMouseButtonEvent::getClassTypeId())) {
+        const auto mbe = static_cast<const SoMouseButtonEvent*>(ev);
+
+        // Mark all incoming mouse button events as handled, especially, to deactivate the selection node
+        n->getAction()->setHandled();
+
+        if (mbe->getButton() == SoMouseButtonEvent::BUTTON1 && mbe->getState() == SoButtonEvent::DOWN) {
+            const SoPickedPoint * point = n->getPickedPoint();
+            if (!point) {
+                Base::Console().Message("No point picked.\n");
+                return;
+            }
+
+            n->setHandled();
+            pm->addPoint(point->getPoint());
+            if (pm->countPoints() == 2) {
+                auto e = new QEvent(QEvent::User);
+                QApplication::postEvent(pm, e);
+                // leave mode
+                view->setEditing(false);
+                view->removeEventCallback(SoEvent::getClassTypeId(), measureDistanceCallback, ud);
+            }
+        }
+        else if (mbe->getButton() != SoMouseButtonEvent::BUTTON1 && mbe->getState() == SoButtonEvent::UP) {
+            endMeasureDistanceMode(ud, view, n, pm);
+        }
+    }
+}
+
+void ViewProviderMeasureDistance::endMeasureDistanceMode(void * ud, Gui::View3DInventorViewer* view, SoEventCallback * n, PointMarker *pm)
+{
+    n->setHandled();
+    view->setEditing(false);
+    view->removeEventCallback(SoEvent::getClassTypeId(), ViewProviderMeasureDistance::measureDistanceCallback, ud);
+    Application::Instance->commandManager().testActive();
+    pm->deleteLater();
 }

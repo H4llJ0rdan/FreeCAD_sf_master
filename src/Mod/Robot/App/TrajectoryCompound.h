@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2010 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2010 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,45 +20,40 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef ROBOT_TrajectoryCompound_H
 #define ROBOT_TrajectoryCompound_H
 
-#include <App/GeoFeature.h>
-#include <App/PropertyFile.h>
-#include <App/PropertyGeo.h>
+#include <App/PropertyLinks.h>
 
-#include "Trajectory.h"
 #include "TrajectoryObject.h"
-#include "PropertyTrajectory.h"
+
 
 namespace Robot
 {
 
-class RobotExport TrajectoryCompound : public TrajectoryObject
+class RobotExport TrajectoryCompound: public TrajectoryObject
 {
-    PROPERTY_HEADER(Robot::TrajectoryObject);
+    PROPERTY_HEADER_WITH_OVERRIDE(Robot::TrajectoryObject);
 
 public:
     /// Constructor
-    TrajectoryCompound(void);
-    virtual ~TrajectoryCompound();
+    TrajectoryCompound();
 
-    App::PropertyLinkList     Source;
+    App::PropertyLinkList Source;
 
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override
+    {
         return "RobotGui::ViewProviderTrajectoryCompound";
     }
-    virtual App::DocumentObjectExecReturn *execute(void);
+    App::DocumentObjectExecReturn* execute() override;
 
 protected:
     /// get called by the container when a property has changed
-    //virtual void onChanged (const App::Property* prop);
-
+    // virtual void onChanged (const App::Property* prop);
 };
 
-} //namespace Robot
+}  // namespace Robot
 
 
-#endif // ROBOT_ROBOTOBJECT_H
+#endif  // ROBOT_ROBOTOBJECT_H

@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender[at]users.sourceforge.net>     *
+ *   Copyright (c) 2012 Jan Rheinländer                                    *
+ *                                   <jrheinlaender@users.sourceforge.net> *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -25,6 +26,7 @@
 #define PARTDESIGN_FEATUREDRAFT_H
 
 #include <App/PropertyStandard.h>
+#include <App/PropertyUnits.h>
 #include <App/PropertyLinks.h>
 #include "FeatureDressUp.h"
 
@@ -33,12 +35,12 @@ namespace PartDesign
 
 class PartDesignExport Draft : public DressUp
 {
-    PROPERTY_HEADER(PartDesign::Draft);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesign::Draft);
 
 public:
     Draft();
 
-    App::PropertyFloatConstraint Angle;
+    App::PropertyAngle Angle;
     App::PropertyLinkSub NeutralPlane;
     App::PropertyLinkSub PullDirection;
     App::PropertyBool Reversed;
@@ -46,13 +48,17 @@ public:
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the view provider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartDesignGui::ViewProviderDraft";
     }
     //@}
+
+private:
+    void handleChangedPropertyType(Base::XMLReader &reader, const char * TypeName, App::Property * prop) override;
+    static const App::PropertyAngle::Constraints floatAngle;
 };
 
 } //namespace PartDesign

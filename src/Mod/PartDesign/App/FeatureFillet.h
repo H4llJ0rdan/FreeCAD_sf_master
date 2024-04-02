@@ -25,7 +25,7 @@
 #define PARTDESIGN_FEATUREFILLET_H
 
 #include <App/PropertyStandard.h>
-#include <App/PropertyLinks.h>
+#include <App/PropertyUnits.h>
 #include "FeatureDressUp.h"
 
 namespace PartDesign
@@ -33,23 +33,28 @@ namespace PartDesign
 
 class PartDesignExport Fillet : public DressUp
 {
-    PROPERTY_HEADER(PartDesign::Fillet);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesign::Fillet);
 
 public:
     Fillet();
 
-    App::PropertyFloatConstraint Radius;
+    App::PropertyQuantityConstraint Radius;
+    App::PropertyBool UseAllEdges;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the view provider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartDesignGui::ViewProviderFillet";
     }
     //@}
+
+protected:
+    void Restore(Base::XMLReader &reader) override;
+    void handleChangedPropertyType(Base::XMLReader &reader, const char * TypeName, App::Property * prop) override;
 };
 
 } //namespace Part

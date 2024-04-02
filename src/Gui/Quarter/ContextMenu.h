@@ -46,11 +46,11 @@ class ContextMenu : public QObject {
   Q_OBJECT
 public:
   ContextMenu(QuarterWidget * quarterwidget);
-  ~ContextMenu();
+  ~ContextMenu() override;
 
-  QMenu * getMenu(void) const;
+  QMenu * getMenu() const;
 
-public slots:
+public Q_SLOTS:
   void changeRenderMode(QAction * action);
   void changeStereoMode(QAction * action);
   void changeTransparencyType(QAction * action);

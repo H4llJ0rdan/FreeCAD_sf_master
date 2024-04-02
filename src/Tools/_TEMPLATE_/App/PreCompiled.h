@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) YEAR YOUR NAME         <Your e-mail address>            *
+ *   Copyright (c) YEAR YOUR NAME <Your e-mail address>                    *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -28,16 +28,16 @@
 
 // Exporting of App classes
 #ifdef FC_OS_WIN32
-# define _TEMPLATE_AppExport __declspec(dllexport)
-#else // for Linux
-# define _TEMPLATE_AppExport
+#define _TEMPLATE_AppExport __declspec(dllexport)
+#else  // for Linux
+#define _TEMPLATE_AppExport
 #endif
 
 #ifdef _PreComp_
 
 // standard
-#include <cstdio>
 #include <cassert>
+#include <cstdio>
 #include <iostream>
 
 // STL
@@ -55,7 +55,6 @@
 // Xerces
 #include <xercesc/util/XercesDefs.hpp>
 
-#endif //_PreComp_
+#endif  //_PreComp_
 
 #endif
-

@@ -25,12 +25,11 @@
 #define GUI_MANUALALIGNMENT_H
 
 #include <QPointer>
+#include <Base/BoundBox.h>
 #include <Base/Placement.h>
 #include <Base/Vector3D.h>
-#include <Gui/Application.h>
 #include <Gui/Document.h>
 #include <Gui/ViewProviderDocumentObject.h>
-#include <boost/signals.hpp>
 
 class SbVec3f;
 class SoPickedPoint;
@@ -40,6 +39,14 @@ namespace Gui {
 class Document;
 class AlignmentView;
 class View3DInventorViewer;
+
+class PickedPoint {
+public:
+    PickedPoint() = default;
+    PickedPoint(const Base::Vector3d& p, const Base::Vector3d& n) : point(p), normal(n) {}
+    Base::Vector3d point;
+    Base::Vector3d normal;
+};
 
 /**
  * The AlignemntGroup class is the base for fixed and movable groups.
@@ -58,7 +65,7 @@ public:
     void addView(App::DocumentObject*);
     std::vector<App::DocumentObject*> getViews() const;
     /**
-     * Checks for the view provider of one of the added views. 
+     * Checks for the view provider of one of the added views.
      */
     bool hasView(Gui::ViewProviderDocumentObject*) const;
     /**
@@ -81,7 +88,7 @@ public:
     /**
      * Add a point to an array of picked points.
      */
-    void addPoint(const Base::Vector3d&);
+    void addPoint(const PickedPoint&);
     /**
      * Remove last point from array of picked points.
      */
@@ -93,7 +100,7 @@ public:
     /**
      * Return an array of picked points.
      */
-    const std::vector<Base::Vector3d>& getPoints() const;
+    const std::vector<PickedPoint>& getPoints() const;
     /**
      * Clear all picked points.
      */
@@ -115,9 +122,13 @@ public:
      * Return the number of added views.
      */
     int count() const;
+    /**
+     * Get the overall bounding box of all views.
+     */
+    Base::BoundBox3d getBoundingBox() const;
 
 protected:
-    std::vector<Base::Vector3d> _pickedPoints;
+    std::vector<PickedPoint> _pickedPoints;
     std::vector<Gui::ViewProviderDocumentObject*> _views;
 };
 
@@ -161,6 +172,8 @@ public:
     void clear();
     bool isEmpty() const;
     int count() const;
+    const MovableGroup& getGroup(int i) const;
+    Base::BoundBox3d getBoundingBox() const;
 
 protected:
     void removeActiveGroup();
@@ -178,7 +191,7 @@ class GuiExport ManualAlignment : public QObject
 
 protected:
     ManualAlignment();
-    ~ManualAlignment();
+    ~ManualAlignment() override;
 
 public:
     static ManualAlignment* instance();
@@ -209,7 +222,7 @@ public:
     void slotDeletedObject(const Gui::ViewProvider& Obj);
 
 protected:
-    bool computeAlignment(const std::vector<Base::Vector3d>& unnavPts, const std::vector<Base::Vector3d>& navigPts);
+    bool computeAlignment(const std::vector<PickedPoint>& movPts, const std::vector<PickedPoint>& fixPts);
     void continueAlignment();
     void showInstructions();
     /** @name Probe picking */
@@ -236,7 +249,7 @@ private:
 
     static ManualAlignment* _instance;
 
-    typedef boost::BOOST_SIGNALS_NAMESPACE::connection Connection;
+    using Connection = boost::signals2::connection;
     Connection connectApplicationDeletedDocument;
     Connection connectDocumentDeletedObject;
 

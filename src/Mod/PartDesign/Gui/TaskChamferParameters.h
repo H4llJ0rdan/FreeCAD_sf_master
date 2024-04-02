@@ -24,83 +24,66 @@
 #ifndef GUI_TASKVIEW_TaskChamferParameters_H
 #define GUI_TASKVIEW_TaskChamferParameters_H
 
-#include <Gui/TaskView/TaskView.h>
-#include <Gui/Selection.h>
-#include <Gui/TaskView/TaskDialog.h>
-
+#include "TaskDressUpParameters.h"
 #include "ViewProviderChamfer.h"
 
 class Ui_TaskChamferParameters;
-
-namespace App {
-class Property;
+namespace PartDesign {
+class Chamfer;
 }
-
-namespace Gui {
-class ViewProvider;
-}
-
 
 namespace PartDesignGui {
 
-class TaskChamferParameters : public Gui::TaskView::TaskBox
+class TaskChamferParameters : public TaskDressUpParameters
 {
     Q_OBJECT
 
 public:
-    TaskChamferParameters(ViewProviderChamfer *ChamferView, QWidget *parent=0);
-    ~TaskChamferParameters();
+    explicit TaskChamferParameters(ViewProviderDressUp *DressUpView, QWidget *parent=nullptr);
+    ~TaskChamferParameters() override;
 
-    double getLength(void) const;
+    void apply() override;
 
 private Q_SLOTS:
-    void onLengthChanged(double);
+    void onTypeChanged(int);
+    void onSizeChanged(double);
+    void onSize2Changed(double);
+    void onAngleChanged(double);
+    void onFlipDirection(bool);
+    void onRefDeleted() override;
+    void onAddAllEdges();
+    void onCheckBoxUseAllEdgesToggled(bool checked);
 
 protected:
-    void changeEvent(QEvent *e);
+    void setButtons(const selectionModes mode) override;
+    bool event(QEvent *e) override;
+    void changeEvent(QEvent *e) override;
+    void onSelectionChanged(const Gui::SelectionChanges& msg) override;
+
+    int getType() const;
+    double getSize() const;
+    double getSize2() const;
+    double getAngle() const;
+    bool getFlipDirection() const;
 
 private:
+    void setUpUI(PartDesign::Chamfer* pcChamfer);
 
-private:
-    QWidget* proxy;
-    Ui_TaskChamferParameters* ui;
-    ViewProviderChamfer *ChamferView;
+    std::unique_ptr<Ui_TaskChamferParameters> ui;
 };
 
 /// simulation dialog for the TaskView
-class TaskDlgChamferParameters : public Gui::TaskView::TaskDialog
+class TaskDlgChamferParameters : public TaskDlgDressUpParameters
 {
     Q_OBJECT
 
 public:
-    TaskDlgChamferParameters(ViewProviderChamfer *ChamferView);
-    ~TaskDlgChamferParameters();
-
-    ViewProviderChamfer* getChamferView() const
-    { return ChamferView; }
-
+    explicit TaskDlgChamferParameters(ViewProviderChamfer *DressUpView);
+    ~TaskDlgChamferParameters() override;
 
 public:
-    /// is called the TaskView when the dialog is opened
-    virtual void open();
-    /// is called by the framework if an button is clicked which has no accept or reject role
-    virtual void clicked(int);
     /// is called by the framework if the dialog is accepted (Ok)
-    virtual bool accept();
-    /// is called by the framework if the dialog is rejected (Cancel)
-    virtual bool reject();
-    /// is called by the framework if the user presses the help button
-    virtual bool isAllowedAlterDocument(void) const
-    { return false; }
-
-    /// returns for Close and Help button
-    virtual QDialogButtonBox::StandardButtons getStandardButtons(void) const
-    { return QDialogButtonBox::Ok|QDialogButtonBox::Cancel; }
-
-protected:
-    ViewProviderChamfer   *ChamferView;
-
-    TaskChamferParameters  *parameter;
+    bool accept() override;
 };
 
 } //namespace PartDesignGui

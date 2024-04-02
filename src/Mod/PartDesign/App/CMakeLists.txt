@@ -1,20 +1,22 @@
-if(MSVC)
-    add_definitions(-DFCAppPartDesign -DHAVE_ACOSH -DHAVE_ASINH -DHAVE_ATANH)
-else(MSVC)
-    add_definitions(-DHAVE_LIMITS_H -DHAVE_CONFIG_H)
-endif(MSVC)
-
 include_directories(
     ${CMAKE_BINARY_DIR}
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_BINARY_DIR}/src
+    ${CMAKE_CURRENT_BINARY_DIR}
     ${Boost_INCLUDE_DIRS}
     ${OCC_INCLUDE_DIR}
-    ${ZLIB_INCLUDE_DIR}
-    ${PYTHON_INCLUDE_PATH}
-    ${XERCESC_INCLUDE_DIR}
     ${QT_INCLUDE_DIR}
+    ${ZLIB_INCLUDE_DIR}
+    ${PYTHON_INCLUDE_DIRS}
+    ${XercesC_INCLUDE_DIRS}
+    ${QT_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}/src/3rdParty/json/single_include/nlohmann/
 )
 link_directories(${OCC_LIBRARY_DIR})
+
+generate_from_xml(BodyPy)
+generate_from_xml(FeaturePy)
+
 
 set(PartDesign_LIBS
     ${OCC_LIBRARIES}
@@ -26,10 +28,28 @@ set(PartDesign_LIBS
 SET(Features_SRCS
     Feature.cpp
     Feature.h
+    FeatureSolid.cpp
+    FeatureSolid.h
     Body.cpp
     Body.h
+    FeatureBase.h
+    FeatureBase.cpp
 )
 SOURCE_GROUP("Features" FILES ${Features_SRCS})
+
+SET(DatumFeatures_SRCS
+    ShapeBinder.h
+    ShapeBinder.cpp
+    DatumPlane.cpp
+    DatumPlane.h
+    DatumLine.cpp
+    DatumLine.h
+    DatumPoint.cpp
+    DatumPoint.h
+    DatumCS.h
+    DatumCS.cpp
+)
+SOURCE_GROUP("DatumFeatures" FILES ${DatumFeatures_SRCS})
 
 SET(FeaturesTransformed_SRCS
     FeatureTransformed.h
@@ -56,14 +76,16 @@ SET(FeaturesDressUp_SRCS
     FeatureChamfer.h
     FeatureDraft.cpp
     FeatureDraft.h
+    FeatureThickness.cpp
+    FeatureThickness.h
 )
 SOURCE_GROUP("DressUpFeatures" FILES ${FeaturesDressUp_SRCS})
 
 SET(FeaturesSketchBased_SRCS
+    FeatureExtrude.cpp
+    FeatureExtrude.h
     FeatureSketchBased.cpp
     FeatureSketchBased.h
-    FeatureFace.cpp
-    FeatureFace.h
     FeaturePad.cpp
     FeaturePad.h
     FeaturePocket.cpp
@@ -72,12 +94,20 @@ SET(FeaturesSketchBased_SRCS
     FeatureRevolution.h
     FeatureGroove.cpp
     FeatureGroove.h
-    FeatureAdditive.cpp
-    FeatureAdditive.h
-    FeatureSubtractive.h
-    FeatureSubtractive.cpp
+    FeatureAddSub.cpp
+    FeatureAddSub.h
     FeatureHole.h
     FeatureHole.cpp
+    FeatureBoolean.h
+    FeatureBoolean.cpp
+    FeaturePrimitive.h
+    FeaturePrimitive.cpp
+    FeaturePipe.h
+    FeaturePipe.cpp
+    FeatureLoft.h
+    FeatureLoft.cpp
+    FeatureHelix.h
+    FeatureHelix.cpp
 )
 
 SOURCE_GROUP("SketchBasedFeatures" FILES ${FeaturesSketchBased_SRCS})
@@ -90,43 +120,33 @@ SET(Module_SRCS
 )
 SOURCE_GROUP("Module" FILES ${Module_SRCS})
 
+
+SET(Python_SRCS
+    BodyPy.xml
+    BodyPyImp.cpp
+    FeaturePy.xml
+    FeaturePyImp.cpp
+)
+SOURCE_GROUP("Python" FILES ${Python_SRCS})
+
 SET(PartDesign_SRCS
     ${Features_SRCS}
+    ${DatumFeatures_SRCS}
     ${FeaturesTransformed_SRCS}
     ${FeaturesSketchBased_SRCS}
     ${FeaturesDressUp_SRCS}
     ${Module_SRCS}
-)
-
-SET(PartDesign_Scripts
-    __init__.py
-    Init.py
-    TestPartDesignApp.py
-    InvoluteGearFeature.py
-    InvoluteGearFeature.ui
-    Scripts/__init__.py
-    Scripts/Gear.py
-    Scripts/DistanceBolt.py
-    Scripts/Epitrochoid.py
-    Scripts/FilletArc.py
-    Scripts/RadialCopy.py
-    Scripts/Parallelepiped.py
-    Scripts/Spring.py
-    fcgear/__init__.py
-    fcgear/fcgear.py
-    fcgear/fcgeardialog.py
-    fcgear/involute.py
-    fcgear/svggear.py
+    ${Python_SRCS}
 )
 
 add_library(PartDesign SHARED ${PartDesign_SRCS})
 target_link_libraries(PartDesign ${PartDesign_LIBS})
 
-
-fc_target_copy_resource(PartDesign 
-    ${CMAKE_SOURCE_DIR}/src/Mod/PartDesign
-    ${CMAKE_BINARY_DIR}/Mod/PartDesign
-    ${PartDesign_Scripts})
+if(FREECAD_USE_PCH)
+    add_definitions(-D_PreComp_)
+    GET_MSVC_PRECOMPILED_SOURCE("PreCompiled.cpp" PartDesign_CPP_SRCS ${PartDesign_SRCS})
+    ADD_MSVC_PRECOMPILED_HEADER(PartDesign PreCompiled.h PreCompiled.cpp PartDesign_CPP_SRCS)
+endif(FREECAD_USE_PCH)
 
 SET_BIN_DIR(PartDesign _PartDesign /Mod/PartDesign)
 SET_PYTHON_PREFIX_SUFFIX(PartDesign)

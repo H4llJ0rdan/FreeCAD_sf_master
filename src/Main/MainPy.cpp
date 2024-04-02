@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Juergen Riegel (juergen.riegel@web.de) 2008                       *
+ *   Copyright (c) 2008 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -19,16 +19,20 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
  *   USA                                                                   *
  *                                                                         *
- *   Juergen Riegel 2002                                                   *
  ***************************************************************************/
+
 #include <FCConfig.h>
 
 #ifdef _PreComp_
 # undef _PreComp_
 #endif
 
-#ifdef FC_OS_LINUX
-#	include <unistd.h>
+#if defined(FC_OS_WIN32)
+# include <windows.h>
+#endif
+
+#if defined(FC_OS_LINUX) || defined(FC_OS_BSD)
+# include <unistd.h>
 #endif
 
 #ifdef FC_OS_MACOSX
@@ -37,31 +41,33 @@
 #endif
 
 #if HAVE_CONFIG_H
-#	include <config.h>
+# include <config.h>
 #endif // HAVE_CONFIG_H
 
-#include <stdio.h>
+#include <cstdio>
 #include <sstream>
-
+#include <iostream>
+#include <QByteArray>
 
 // FreeCAD Base header
+#include <Base/ConsoleObserver.h>
 #include <Base/Exception.h>
+#include <Base/PyObjectBase.h>
+#include <Base/Sequencer.h>
 #include <App/Application.h>
 
-
 #if defined(FC_OS_WIN32)
-# include <windows.h>
 
 /** DllMain is called when DLL is loaded
  */
-BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID /*lpReserved*/)
 {
     switch (ul_reason_for_call) {
     case DLL_PROCESS_ATTACH: {
         // This name is preliminary, we pass it to Application::init() in initFreeCAD()
         // which does the rest.
         char  szFileName [MAX_PATH];
-        GetModuleFileName((HMODULE)hModule, szFileName, MAX_PATH-1);
+        GetModuleFileNameA((HMODULE)hModule, szFileName, MAX_PATH-1);
         App::Application::Config()["AppHomePath"] = szFileName;
     }
     break;
@@ -69,9 +75,9 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
         break;
     }
 
-    return TRUE;
+    return true;
 }
-#elif defined(FC_OS_LINUX)
+#elif defined(FC_OS_LINUX) || defined(FC_OS_BSD)
 # ifndef GNU_SOURCE
 #   define GNU_SOURCE
 # endif
@@ -80,90 +86,119 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 # include <windows.h>
 #endif
 
-#ifdef FC_OS_WIN32
-#	define MainExport __declspec(dllexport)
-#else
-#	define MainExport
-#endif
-
-extern "C"
+PyMOD_INIT_FUNC(FreeCAD)
 {
-    void MainExport initFreeCAD() {
+    // Init phase ===========================================================
+    App::Application::Config()["ExeName"] = "FreeCAD";
+    App::Application::Config()["ExeVendor"] = "FreeCAD";
+    App::Application::Config()["AppDataSkipVendor"] = "true";
 
-        // Init phase ===========================================================
-        App::Application::Config()["ExeName"] = "FreeCAD";
-        App::Application::Config()["ExeVendor"] = "FreeCAD";
-        App::Application::Config()["AppDataSkipVendor"] = "true";
-
-
-        int    argc=1;
-        char** argv;
-        argv = (char**)malloc(sizeof(char*)* (argc+1));
+    QByteArray path;
 
 #if defined(FC_OS_WIN32)
-        argv[0] = (char*)malloc(MAX_PATH);
-        strncpy(argv[0],App::Application::Config()["AppHomePath"].c_str(),MAX_PATH);
-        argv[0][MAX_PATH-1] = '\0'; // ensure null termination
+    path = App::Application::Config()["AppHomePath"].c_str();
 #elif defined(FC_OS_CYGWIN)
-        HMODULE hModule = GetModuleHandle("FreeCAD.dll");
-        char szFileName [MAX_PATH];
-        GetModuleFileName(hModule, szFileName, MAX_PATH-1);
-        argv[0] = (char*)malloc(MAX_PATH);
-        strncpy(argv[0],szFileName,MAX_PATH);
-        argv[0][MAX_PATH-1] = '\0'; // ensure null termination
-#elif defined(FC_OS_LINUX)
-        putenv("LANG=C");
-        putenv("LC_ALL=C");
-        // get whole path of the library
-        Dl_info info;
-        int ret = dladdr((void*)initFreeCAD, &info);
-        if ((ret == 0) || (!info.dli_fname)) {
-            PyErr_SetString(PyExc_ImportError, "Cannot get path of the FreeCAD module!");
-            return;
-        }
+    HMODULE hModule = GetModuleHandle("FreeCAD.dll");
+    char szFileName [MAX_PATH];
+    GetModuleFileNameA(hModule, szFileName, MAX_PATH-1);
+    path = szFileName;
+#elif defined(FC_OS_LINUX) || defined(FC_OS_BSD)
+    putenv("LANG=C");
+    putenv("LC_ALL=C");
+    // get whole path of the library
+    Dl_info info;
+    int ret = dladdr((void*)PyInit_FreeCAD, &info);
+    if ((ret == 0) || (!info.dli_fname)) {
+        PyErr_SetString(PyExc_ImportError, "Cannot get path of the FreeCAD module!");
+        return nullptr;
+    }
 
-        argv[0] = (char*)malloc(PATH_MAX);
-        strncpy(argv[0], info.dli_fname,PATH_MAX);
-        argv[0][PATH_MAX-1] = '\0'; // ensure null termination
-        // this is a workaround to avoid a crash in libuuid.so
+    path = info.dli_fname;
+    // this is a workaround to avoid a crash in libuuid.so
 #elif defined(FC_OS_MACOSX)
-        uint32_t sz = 0;
-        char *buf;
 
-        _NSGetExecutablePath(NULL, &sz);
-        buf = (char*) malloc(++sz);
-        int err=_NSGetExecutablePath(buf, &sz);
-        if (err != 0) {
-            PyErr_SetString(PyExc_ImportError, "Cannot get path of the FreeCAD module!");
-            return;
-        }
+    // The MacOS approach uses the Python sys.path list to find the path
+    // to FreeCAD.so - this should be OS-agnostic, except these two
+    // strings, and the call to access().
+    const static char libName[] = "/FreeCAD.so";
+    const static char upDir[] = "/../";
 
-        argv[0] = (char*)malloc(PATH_MAX);
-        strncpy(argv[0], buf, PATH_MAX);
-        argv[0][PATH_MAX-1] = '\0'; // ensure null termination
-        free(buf);
+    PyObject *pySysPath = PySys_GetObject("path");
+    if ( PyList_Check(pySysPath) ) {
+        int i;
+        // pySysPath should be a *PyList of strings - iterate through it
+        // backwards since the FreeCAD path was likely appended just before
+        // we were imported.
+        for (i = PyList_Size(pySysPath) - 1; i >= 0 ; --i) {
+            const char *basePath;
+            PyObject *pyPath = PyList_GetItem(pySysPath, i);
+            long sz = 0;
+
+            if ( PyUnicode_Check(pyPath) ) {
+                // Python 3 string
+                basePath = PyUnicode_AsUTF8AndSize(pyPath, &sz);
+            }
+            else {
+                continue;
+            }
+
+            if (sz + sizeof(libName) > PATH_MAX) {
+                continue;
+            }
+
+            path = basePath;
+
+            // append libName to the path
+            if (access(path + libName, R_OK | X_OK) == 0) {
+
+                // The FreeCAD "home" path is one level up from
+                // libName, so replace libName with upDir.
+                path += upDir;
+                break;
+            }
+        } // end for (i = PyList_Size(pySysPath) - 1; i >= 0 ; --i) {
+    } // end if ( PyList_Check(pySysPath) ) {
+
+    if (path.isEmpty()) {
+        PyErr_SetString(PyExc_ImportError, "Cannot get path of the FreeCAD module!");
+        return nullptr;
+    }
+
 #else
 # error "Implement: Retrieve the path of the module for your platform."
 #endif
-        argv[argc] = 0;
+    int argc = 1;
+    std::vector<char*> argv;
+    argv.push_back(path.data());
 
-        try {
-            // Inits the Application
-            App::Application::init(argc,argv);
-        }
-        catch (const Base::Exception& e) {
-            std::string appName = App::Application::Config()["ExeName"];
-            std::stringstream msg;
-            msg << "While initializing " << appName << " the  following exception occurred: '"
-                << e.what() << "'\n\n";
-            msg << "\nPlease contact the application's support team for more information.\n\n";
-            printf("Initialization of %s failed:\n%s", appName.c_str(), msg.str().c_str());
-        }
+    try {
+        // Inits the Application
+        App::Application::init(argc, argv.data());
+    }
+    catch (const Base::Exception& e) {
+        std::string appName = App::Application::Config()["ExeName"];
+        std::stringstream msg;
+        msg << "While initializing " << appName << " the following exception occurred: '"
+            << e.what() << "'\n\n";
+        msg << "\nPlease contact the application's support team for more information.\n\n";
+        printf("Initialization of %s failed:\n%s", appName.c_str(), msg.str().c_str());
+    }
 
-        free(argv[0]);
-        free(argv);
+    Base::EmptySequencer* seq = new Base::EmptySequencer();
+    (void)seq;
+    static Base::RedirectStdOutput stdcout;
+    static Base::RedirectStdLog    stdclog;
+    static Base::RedirectStdError  stdcerr;
+    std::cout.rdbuf(&stdcout);
+    std::clog.rdbuf(&stdclog);
+    std::cerr.rdbuf(&stdcerr);
 
-        return;
-    } //InitFreeCAD....
-} // extern "C"
+    //PyObject* module = _PyImport_FindBuiltin("FreeCAD");
+    PyObject* modules = PyImport_GetModuleDict();
+    PyObject* module = PyDict_GetItemString(modules, "FreeCAD");
+    if (!module) {
+        PyErr_SetString(PyExc_ImportError, "Failed to load FreeCAD module!");
+    }
+    return module;
+}
 

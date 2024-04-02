@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2008                        *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,23 +23,17 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
 #include "DocumentObjectFileIncluded.h"
-#include "Document.h"
 
 using namespace App;
 
 PROPERTY_SOURCE(App::DocumentObjectFileIncluded, App::DocumentObject)
 
 
-DocumentObjectFileIncluded::DocumentObjectFileIncluded() 
+DocumentObjectFileIncluded::DocumentObjectFileIncluded()
 {
-    ADD_PROPERTY_TYPE(File,(0),"",(App::PropertyType)(Prop_None),"File to include into Project File");
+    ADD_PROPERTY_TYPE(File,(nullptr),"",(App::PropertyType)(Prop_None),"File to include into Project File");
 }
 
-DocumentObjectFileIncluded::~DocumentObjectFileIncluded()
-{
-}
+DocumentObjectFileIncluded::~DocumentObjectFileIncluded() = default;
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2006                        *   
+ *   Copyright (c) 2006 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -10,25 +10,25 @@
  *   for detail see the LICENCE text file.                                 *
  *                                                                         *
  *   FreeCAD is distributed in the hope that it will be useful,            *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        * 
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU Library General Public License for more details.                  *
  *                                                                         *
  *   You should have received a copy of the GNU Library General Public     *
- *   License along with FreeCAD; if not, write to the Free Software        * 
+ *   License along with FreeCAD; if not, write to the Free Software        *
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
  *   USA                                                                   *
  *                                                                         *
- *   Juergen Riegel 2006                                                   *
  ***************************************************************************/
 
 /** \defgroup MemDebug Memory debugging
  *  \ingroup BASE
+ *  \brief Memory debugging tools
  * \section Overview
  * In C++ applications there are a lot of ways to handle memory allocation and deallocation.
  * As many ways to do it wrong or simply forget to free memory. One way to overcome
- * this problem is e.g. usage of handle classes (like OpenCASCADE it does) or use a lot of factories.
- * But all of them has drawbacks or performance penalties. One good way to get memory
+ * this problem is e.g. usage of handle classes (like OpenCASCADE does) or use a lot of factories.
+ * But all of them have drawbacks or performance penalties. One good way to get memory
  * problems hunted down is the MSCRT Heap debugging facility. This set of functions
  * opens the possibility to track and locate all kind of memory problems, e.g.
  * memory leaks.
@@ -41,16 +41,15 @@
 
 #ifndef _PreComp_
 # ifdef _MSC_VER
-#  include <cstdio>
-#  include <time.h>
-#  include <windows.h>
+#  include <ctime>
 #  include <crtdbg.h>
 # endif
 #endif
 
-
 /// Here the FreeCAD includes sorted by Base,App,Gui......
 #include "MemDebug.h"
+#include <stdexcept>
+
 
 using namespace Base;
 
@@ -59,13 +58,12 @@ using namespace Base;
 
 /** Memory debugging class
  * This class is an interface to the Windows CRT debugging
- * facility. If the define MemDebugOn in the src/FCConfig.h is 
- * set the class get intatiated 
- * globally and tracks all memory allocations on the heap. The 
- * result get written in the MemLog.txt in the active directory.
+ * facility. If the define MemDebugOn in the src/FCConfig.h is
+ * set the class gets instantiated globally and tracks all memory allocations on the heap.
+ * The result gets written in the MemLog.txt in the active directory.
  *  \par
- * NOTE: you must not instaciate this class! 
- *  
+ * NOTE: you must not instantiate this class!
+ *
  *
  * \author Juergen Riegel
  */
@@ -88,7 +86,7 @@ protected:
   //@}
 };
 
-// the one and only MemDebug instance. 
+// the one and only MemDebug instance.
 #ifdef MemDebugOn
 MemDebug cSingelton;
 #endif
@@ -116,27 +114,21 @@ MemDebug::MemDebug()
    _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR );
    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE );
    _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR );
- 
+
    // Set the debug heap to report memory leaks when the process terminates,
    // and to keep freed blocks in the linked list.
    SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF | _CRTDBG_DELAY_FREE_MEM_DF );
 
-   // Open a log file for the hook functions to use 
+   // Open a log file for the hook functions to use
    if ( logFile != NULL )
-     throw "Base::MemDebug::MemDebug():38: Dont call the constructor by your self!";
-#if (_MSC_VER >= 1400)
+     throw std::runtime_error("Base::MemDebug::MemDebug():38: Don't call the constructor by your self!");
+
    fopen_s( &logFile, "MemLog.txt", "w" );
    if ( logFile == NULL )
-     throw "Base::MemDebug::MemDebug():41: File IO Error. Canot open log file...";
+     throw std::runtime_error("Base::MemDebug::MemDebug():41: File IO Error. Can't open log file...");
    _strtime_s( timeStr, 15 );
    _strdate_s( dateStr, 15 );
-#elif (_MSC_VER >= 1200)
-   logFile = fopen( "MemLog.txt", "w" );
-   if ( logFile == NULL )
-     throw "Base::MemDebug::MemDebug():41: File IO Error. Canot open log file...";
-   _strtime( timeStr );
-   _strdate( dateStr );
-#endif
+
    fprintf( logFile,
             "Memory Allocation Log File for FreeCAD, run at %s on %s.\n",
             timeStr, dateStr );
@@ -161,7 +153,7 @@ MemDebug::~MemDebug()
 
 
 //**************************************************************************
-// separator for other implemetation aspects
+// separator for other implementation aspects
 
 
 /* REPORT HOOK FUNCTION
@@ -176,7 +168,7 @@ MemDebug::~MemDebug()
 */
 int MemDebug::sReportHook(int   nRptType,char *szMsg,int  *retVal)
 {
-   char *RptTypes[] = { "Warning", "Error", "Assert" };
+   const char *RptTypes[] = { "Warning", "Error", "Assert" };
 
    if ( ( nRptType > 0 ) || ( strstr( szMsg, "HEAP CORRUPTION DETECTED" ) ) )
       fprintf( logFile, "%s: %s", RptTypes[nRptType], szMsg );
@@ -201,8 +193,8 @@ int __cdecl MemDebug::sAllocHook(
    int      nLine
    )
 {
-  char *operation[] = { "       :", "Alloc  :", "Realloc:", "Free   :" };
-   char *blockType[] = { "Free", "Normal", "CRT", "Ignore", "Client" };
+   const char *operation[] = { "       :", "Alloc  :", "Realloc:", "Free   :" };
+   const char *blockType[] = { "Free", "Normal", "CRT", "Ignore", "Client" };
 
    if ( nBlockUse == _CRT_BLOCK )   // Ignore internal C runtime library allocations
       return( 7 ); // (True = 7, False = 0)
@@ -212,14 +204,14 @@ int __cdecl MemDebug::sAllocHook(
 
    if( nBlockUse !=4 )
      return(7);
-   
-   fprintf( logFile, 
-            "%s (#%7d) %12ld byte (%s) in %s line %d",
+
+   fprintf( logFile,
+            "%s (#%7d) %12Iu byte (%s) in %s line %d",
             operation[nAllocType],lRequest, nSize, blockType[nBlockUse],szFileName, nLine);
    if ( pvData != NULL )
       fprintf( logFile, " at %p\n", pvData );
    else
-     fprintf( logFile, "\n", pvData );
+     fprintf( logFile, "\n" );
 
    return( 7 );         // Allow the memory operation to proceed (True = 7, False = 0)
 }
@@ -239,7 +231,7 @@ void __cdecl MemDebug::sDumpClientHook(
 {
    long requestNumber=0;
   _CrtIsMemoryBlock(pUserData,(unsigned int)nBytes,&requestNumber,NULL,NULL);
-  fprintf( logFile, "Leak   : (#%7d) %12ld bytes (%p)  \n", requestNumber, nBytes, pUserData );
+  fprintf( logFile, "Leak   : (#%7d) %12Iu bytes (%p)  \n", requestNumber, nBytes, pUserData );
 
 }
 

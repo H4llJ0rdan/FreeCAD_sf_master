@@ -25,6 +25,9 @@
 #define GUI_GLPAINTER_H
 
 #ifdef FC_OS_WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #endif
 #ifdef FC_OS_MACOSX
@@ -34,10 +37,11 @@
 #endif
 
 #include <Base/BaseClass.h>
+#include <FCGlobal.h>
+#include <QtOpenGL.h>
 #include <QPoint>
 
 class QPaintDevice;
-class QGLWidget;
 
 namespace Gui {
 class View3DInventorViewer;
@@ -71,25 +75,21 @@ public:
     //@}
 
 private:
-    QGLWidget* viewer;
+    QtGLWidget* viewer{nullptr};
     GLfloat depthrange[2];
     GLdouble projectionmatrix[16];
-    GLint width, height;
-    bool logicOp;
-    bool lineStipple;
+    GLint width{0}, height{0};
+    bool logicOp{false};
+    bool lineStipple{false};
 };
 
 class GuiExport GLGraphicsItem : public Base::BaseClass
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
-    GLGraphicsItem()
-    {
-    }
-    virtual ~GLGraphicsItem()
-    {
-    }
+    GLGraphicsItem() = default;
+    ~GLGraphicsItem() override  = default;
     virtual void paintGL() = 0;
 };
 
@@ -101,41 +101,43 @@ class GuiExport Rubberband : public Gui::GLGraphicsItem
     bool working, stipple;
 
 public:
-    Rubberband(View3DInventorViewer* v);
+    explicit Rubberband(View3DInventorViewer* v);
     Rubberband();
-    ~Rubberband();
+    ~Rubberband() override;
     void setWorking(bool on);
     void setLineStipple(bool on);
     bool isWorking();
     void setViewer(View3DInventorViewer* v);
     void setCoords(int x1, int y1, int x2, int y2);
     void setColor(float r, float g, float b, float a);
-    void paintGL();
+    void paintGL() override;
 };
 
-class Polyline : public Gui::GLGraphicsItem
+class GuiExport Polyline : public Gui::GLGraphicsItem
 {
     View3DInventorViewer* viewer;
     std::vector<QPoint> _cNodeVector;
     int x_new, y_new;
     float rgb_r, rgb_g, rgb_b, rgb_a, line;
-    bool working, closed;
+    bool working, closed, stippled;
     GLPainter p;
 
 public:
-    Polyline(View3DInventorViewer* v);
+    explicit Polyline(View3DInventorViewer* v);
     Polyline();
-    ~Polyline();
+    ~Polyline() override;
     void setWorking(bool on);
-    bool isWorking();
+    bool isWorking() const;
     void setViewer(View3DInventorViewer* v);
     void setCoords(int x, int y);
     void setColor(int r, int g, int b, int a=0);
     void setLineWidth(float l);
     void setClosed(bool c);
+    void setCloseStippled(bool c);
     void addNode(const QPoint& p);
+    void popNode();
     void clear();
-    void paintGL();
+    void paintGL() override;
 };
 
 } // namespace Gui

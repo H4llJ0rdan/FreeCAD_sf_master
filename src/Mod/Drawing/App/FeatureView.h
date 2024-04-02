@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2007     *
+ *   Copyright (c) JÃ¼rgen Riegel          (juergen.riegel@web.de) 2007     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,26 +20,21 @@
  *                                                                         *
  ***************************************************************************/
 
- 
-
-
 #ifndef _FeatureView_h_
 #define _FeatureView_h_
 
-
 #include <App/DocumentObject.h>
-#include <App/PropertyStandard.h>
-#include <App/PropertyGeo.h>
 #include <App/FeaturePython.h>
+#include <App/PropertyStandard.h>
+#include <Mod/Drawing/DrawingGlobal.h>
 
 
 namespace Drawing
 {
 
-
 /** Base class of all View Features in the drawing module
  */
-class DrawingExport FeatureView : public App::DocumentObject
+class DrawingExport FeatureView: public App::DocumentObject
 {
     PROPERTY_HEADER(Drawing::FeatureView);
 
@@ -48,27 +43,28 @@ public:
     FeatureView(void);
     virtual ~FeatureView();
 
-    App::PropertyFloat X,Y,Scale,Rotation;
+    App::PropertyFloat X, Y, Scale, Rotation;
     App::PropertyString ViewResult;
-
-
-    /** @name methods overide Feature */
-    //@{
-    /// recalculate the Feature
-    virtual App::DocumentObjectExecReturn *recompute(void);
-    virtual App::DocumentObjectExecReturn *execute(void);
-    //@}
+    App::PropertyBool Visible;
 
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
+    virtual const char* getViewProviderName(void) const
+    {
         return "DrawingGui::ViewProviderDrawingView";
     }
+
+protected:
+    /** @name methods override Feature */
+    //@{
+    /// recalculate the Feature
+    virtual App::DocumentObjectExecReturn* recompute(void);
+    virtual App::DocumentObjectExecReturn* execute(void);
+    //@}
 };
 
-typedef App::FeaturePythonT<FeatureView> FeatureViewPython;
+using FeatureViewPython = App::FeaturePythonT<FeatureView>;
 
-} //namespace Drawing
-
+}  // namespace Drawing
 
 
 #endif

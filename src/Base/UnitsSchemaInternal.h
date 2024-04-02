@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Juergen Riegel  (FreeCAD@juergen-riegel.net>              *
+ *   Copyright (c) 2009 Jürgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,13 +24,12 @@
 #ifndef BASE_UNITSSCHEMAINTERNAL_H
 #define BASE_UNITSSCHEMAINTERNAL_H
 
-
-#include <string>
 #include <QString>
 #include "UnitsSchema.h"
 
+
 namespace Base {
-    
+
 
 /** The standard units schema
  *  Here is defined what internal (base) units FreeCAD uses.
@@ -40,7 +39,7 @@ namespace Base {
 class UnitsSchemaInternal: public UnitsSchema
 {
 public:
-	virtual QString schemaTranslate(Base::Quantity quant,double &factor,QString &unitString);
+    QString schemaTranslate(const Base::Quantity& quant, double &factor, QString &unitString) override;
 };
 
 

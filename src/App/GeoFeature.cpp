@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,10 +23,12 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
+#include <App/GeoFeaturePy.h>
 
 #include "GeoFeature.h"
+#include "GeoFeatureGroupExtension.h"
+#include "ElementNamingUtils.h"
+
 
 using namespace App;
 
@@ -38,14 +40,12 @@ PROPERTY_SOURCE(App::GeoFeature, App::DocumentObject)
 // Feature
 //===========================================================================
 
-GeoFeature::GeoFeature(void)
+GeoFeature::GeoFeature()
 {
-    ADD_PROPERTY(Placement,(Base::Placement()));
+    ADD_PROPERTY_TYPE(Placement,(Base::Placement()),nullptr,Prop_NoRecompute,nullptr);
 }
 
-GeoFeature::~GeoFeature(void)
-{
-}
+GeoFeature::~GeoFeature() = default;
 
 void GeoFeature::transformPlacement(const Base::Placement &transform)
 {
@@ -53,3 +53,87 @@ void GeoFeature::transformPlacement(const Base::Placement &transform)
     plm = transform * plm;
     this->Placement.setValue(plm);
 }
+
+Base::Placement GeoFeature::globalPlacement() const
+{
+    auto* group = GeoFeatureGroupExtension::getGroupOfObject(this);
+    if (group) {
+        auto ext = group->getExtensionByType<GeoFeatureGroupExtension>();
+        return ext->globalGroupPlacement() * Placement.getValue();
+    }
+    return Placement.getValue();    
+}
+
+const PropertyComplexGeoData* GeoFeature::getPropertyOfGeometry() const
+{
+    return nullptr;
+}
+
+PyObject* GeoFeature::getPyObject()
+{
+    if (PythonObject.is(Py::_None())) {
+        // ref counter is set to 1
+        PythonObject = Py::Object(new GeoFeaturePy(this),true);
+    }
+    return Py::new_reference_to(PythonObject);
+}
+
+
+std::pair<std::string,std::string> GeoFeature::getElementName(
+        const char *name, ElementNameType type) const
+{
+    (void)type;
+
+    std::pair<std::string,std::string> ret;
+    if(!name)
+        return ret;
+
+    ret.second = name;
+    return ret;
+}
+
+DocumentObject *GeoFeature::resolveElement(DocumentObject *obj, const char *subname, 
+        std::pair<std::string,std::string> &elementName, bool append, 
+        ElementNameType type, const DocumentObject *filter, 
+        const char **_element, GeoFeature **geoFeature)
+{
+    if(!obj || !obj->getNameInDocument())
+        return nullptr;
+    if(!subname)
+        subname = "";
+    const char *element = Data::findElementName(subname);
+    if(_element) *_element = element;
+    auto sobj = obj->getSubObject(subname);
+    if(!sobj)
+        return nullptr;
+    obj = sobj->getLinkedObject(true);
+    auto geo = dynamic_cast<GeoFeature*>(obj);
+    if(geoFeature) 
+        *geoFeature = geo;
+    if(!obj || (filter && obj!=filter))
+        return nullptr;
+    if(!element || !element[0]) {
+        if(append) 
+            elementName.second = Data::oldElementName(subname);
+        return sobj;
+    }
+
+    if(!geo || hasHiddenMarker(element)) {
+        if(!append) 
+            elementName.second = element;
+        else
+            elementName.second = Data::oldElementName(subname);
+        return sobj;
+    }
+    if(!append) 
+        elementName = geo->getElementName(element,type);
+    else{
+        const auto &names = geo->getElementName(element,type);
+        std::string prefix(subname,element-subname);
+        if(!names.first.empty())
+            elementName.first = prefix + names.first;
+        elementName.second = prefix + names.second;
+    }
+    return sobj;
+}
+

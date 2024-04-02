@@ -28,7 +28,7 @@ def addCommand(name,cmdObject):
 class TemplatePyMod_Cmd1:
     "Example command class"
     def Activated(self):
-        print "TemplatePyMod_Cmd1 activated ;-) "
+        print("TemplatePyMod_Cmd1 activated ;-) ")
 
     def GetResources(self):
         return {'Pixmap'  : 'Std_Tool1', 'MenuText': 'Example command', 'ToolTip': 'Very unimportand example command'}
@@ -66,10 +66,10 @@ class TemplatePyMod_Cmd2:
                         self.node=[]
                         self.view.removeEventCallback("SoMouseButtonEvent",self.call)
 
-        p=PolygonCreator(d,v,10)
+        self.polycreator = PolygonCreator(d,v,10)
 
     def IsActive(self):
-        if FreeCAD.ActiveDocument == None:
+        if FreeCAD.ActiveDocument is None:
             return False
         else:
             return True
@@ -142,7 +142,7 @@ class TemplatePyMod_Cmd4:
 		FreeCAD.Console.PrintError('TemplatePyMod_Cmd4 was destroyed\n')
 
 	def Activated(self):
-		if FreeCADGui.ActiveDocument != None:
+		if FreeCADGui.ActiveDocument is not None:
 			self.sc.enter()
 		else:
 			FreeCAD.Console.PrintWarning('A 3d view must be created\n')
@@ -159,7 +159,7 @@ class TemplatePyMod_Cmd5:
 		from pivy import coin
 
 		global myRenderArea
-		if myRenderArea == None:
+		if myRenderArea is None:
 			root = coin.SoSeparator()
 			myCamera = coin.SoPerspectiveCamera()
 			myMaterial = coin.SoMaterial()
@@ -193,6 +193,55 @@ class TemplatePyMod_Cmd6:
 	def GetResources(self):
 		return {'Pixmap'  : 'python', 'MenuText': 'Create a box', 'ToolTip': 'Use Box feature class which is completely written in Python'}
 
+class TemplatePyGrp_1:
+    def Activated(self):
+        import FreeCAD
+        FreeCAD.Console.PrintMessage("TemplatePyGrp_1\n")
+
+    def GetResources(self):
+        return {'Pixmap'  : 'Part_JoinConnect', 'MenuText': 'TemplatePyGrp_1', 'ToolTip': 'Print a message'}
+
+class TemplatePyGrp_2:
+    def Activated(self):
+        import FreeCAD
+        FreeCAD.Console.PrintMessage("TemplatePyGrp_2\n")
+
+    def GetResources(self):
+        return {'Pixmap'  : 'Part_JoinEmbed', 'MenuText': 'TemplatePyGrp_2', 'ToolTip': 'Print a message'}
+
+class TemplatePyGrp_3:
+    def Activated(self):
+        import FreeCAD
+        FreeCAD.Console.PrintMessage("TemplatePyGrp_3\n")
+
+    def GetResources(self):
+        return {'Pixmap'  : 'Part_JoinCutout', 'MenuText': 'TemplatePyGrp_3', 'ToolTip': 'Print a message'}
+
+class TemplatePyGroup:
+    "Example group command class"
+    #def Activated(self, index):
+    #    print "TemplatePyGroup activated ;-) "
+
+    def GetCommands(self):
+        return ("TemplatePyGrp_1", "TemplatePyGrp_2", "TemplatePyGrp_3", "Std_New")
+
+    def GetDefaultCommand(self):
+        return 2
+
+    def GetResources(self):
+        return {'Pixmap'  : 'python', 'MenuText': 'Group command', 'ToolTip': 'Example group command'}
+
+class TemplatePyCheckable:
+    "Example toggle command class"
+    def Activated(self, index):
+        if index == 0:
+            print("Toggle is off")
+        else:
+            print("Toggle is on")
+
+    def GetResources(self):
+        return {'Pixmap'  : 'python', 'MenuText': 'Toggle command', 'ToolTip': 'Example toggle command', 'Checkable': True}
+
 #---------------------------------------------------------------------------
 # Adds the commands to the FreeCAD command manager
 #---------------------------------------------------------------------------
@@ -202,4 +251,8 @@ addCommand('TemplatePyMod_Cmd3',TemplatePyMod_Cmd3())
 FreeCADGui.addCommand('TemplatePyMod_Cmd4',TemplatePyMod_Cmd4())
 FreeCADGui.addCommand('TemplatePyMod_Cmd5',TemplatePyMod_Cmd5())
 FreeCADGui.addCommand('TemplatePyMod_Cmd6',TemplatePyMod_Cmd6())
-
+FreeCADGui.addCommand('TemplatePyGrp_1',TemplatePyGrp_1())
+FreeCADGui.addCommand('TemplatePyGrp_2',TemplatePyGrp_2())
+FreeCADGui.addCommand('TemplatePyGrp_3',TemplatePyGrp_3())
+FreeCADGui.addCommand('TemplatePyGroup',TemplatePyGroup())
+FreeCADGui.addCommand('TemplatePyCheckable',TemplatePyCheckable())

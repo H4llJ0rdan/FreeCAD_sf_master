@@ -7,18 +7,13 @@
 
 #include <iostream>
 #include <fstream>
-
-#if defined (HAVE_STD_IOSTREAM) && defined (USE_STD_IOSTREAM)
 #include <sstream>
-#else
-#include <strstream>
-#endif
 
 #endif
 
 /*
   Zipios++ - a small C++ library that provides easy access to .zip files.
-  Copyright (C) 2000  Thomas Søndergaard
+  Copyright (C) 2000  Thomas SÃ¸ndergaard
   
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,54 +20,39 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
-/// Here the FreeCAD includes sorted by Base,App,Gui......
-#include <Base/Parameter.h>
-
 #include "ViewProviderLineParametric.h"
-
-
-//#include "Tree.h"
-
 
 
 using namespace PartGui;
 using namespace std;
 
-
 //**************************************************************************
 // Construction/Destruction
 
-PROPERTY_SOURCE(PartGui::ViewProviderLineParametric, PartGui::ViewProviderPart)
+PROPERTY_SOURCE(PartGui::ViewProviderLineParametric, PartGui::ViewProviderPrimitive)
 
-       
+
 ViewProviderLineParametric::ViewProviderLineParametric()
 {
-  sPixmap = "Part_Line_Parametric.svg";
+  sPixmap = "Part_Line_Parametric";
 }
 
-ViewProviderLineParametric::~ViewProviderLineParametric()
-{
-
-}
+ViewProviderLineParametric::~ViewProviderLineParametric() = default;
 
 
 
 // **********************************************************************************
 
-std::vector<std::string> ViewProviderLineParametric::getDisplayModes(void) const
+std::vector<std::string> ViewProviderLineParametric::getDisplayModes() const
 {
   // get the modes of the father
   std::vector<std::string> StrList;
 
   // add your own modes
-  StrList.push_back("Wireframe");
-  StrList.push_back("Points");
+  StrList.emplace_back("Wireframe");
+  StrList.emplace_back("Points");
 
   return StrList;
 }

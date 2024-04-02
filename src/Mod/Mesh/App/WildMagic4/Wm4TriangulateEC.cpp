@@ -33,7 +33,7 @@ TriangulateEC<Real>::TriangulateEC (const Positions& rkPositions,
 
     // Triangulate the unindexed polygon.
     int iVQuantity = (int)rkPositions.size();
-    const int* aiIndex = 0;
+    const int* aiIndex = nullptr;
     InitializeVertices(iVQuantity,aiIndex,rkTriangles);
     DoEarClipping(iVQuantity,aiIndex,rkTriangles);
 }
@@ -278,6 +278,7 @@ template <class Real>
 void TriangulateEC<Real>::InitializeVertices (int iVQuantity,
     const int* aiIndex, std::vector<int>& rkTriangle)
 {
+    (void)rkTriangle;
     m_kVertex.clear();
     m_kVertex.resize(iVQuantity);
     m_iCFirst = -1;
@@ -983,7 +984,7 @@ void TriangulateEC<Real>::Delete (Tree*& rpkRoot)
             WM4_DELETE pkTree;
         }
 
-        rpkRoot = 0;
+        rpkRoot = nullptr;
     }
 }
 //----------------------------------------------------------------------------

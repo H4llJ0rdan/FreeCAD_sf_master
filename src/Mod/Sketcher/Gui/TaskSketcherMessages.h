@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2011 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,49 +20,57 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_TASKVIEW_TaskSketcherMessages_H
 #define GUI_TASKVIEW_TaskSketcherMessages_H
 
+#include <boost_signals2.hpp>
+
 #include <Gui/TaskView/TaskView.h>
-#include <Gui/Selection.h>
-#include <boost/signals.hpp>
+
 
 class Ui_TaskSketcherMessages;
-typedef boost::signals::connection Connection;
+using Connection = boost::signals2::connection;
 
-namespace App {
+namespace App
+{
 class Property;
 }
 
-namespace SketcherGui { 
+namespace SketcherGui
+{
 
 class ViewProviderSketch;
 
-class TaskSketcherMessages : public Gui::TaskView::TaskBox
+class TaskSketcherMessages: public Gui::TaskView::TaskBox
 {
     Q_OBJECT
 
 public:
-    TaskSketcherMessages(ViewProviderSketch *sketchView);
-    ~TaskSketcherMessages();
+    explicit TaskSketcherMessages(ViewProviderSketch* sketchView);
+    ~TaskSketcherMessages() override;
 
-    void slotSetUp(QString msg);
-    void slotSolved(QString msg);
+    void slotSetUp(const QString& state,
+                   const QString& msg,
+                   const QString& link,
+                   const QString& linkText);
 
-private Q_SLOTS:
-    void on_labelConstrainStatus_linkActivated(const QString &);
-    
+private:
+    void setupConnections();
+    void onLabelConstrainStatusLinkClicked(const QString&);
+    void onAutoUpdateStateChanged();
+    void onManualUpdateClicked(bool checked);
+
+    void updateToolTip(const QString& link);
+
 protected:
-    ViewProviderSketch *sketchView;
+    ViewProviderSketch* sketchView;
     Connection connectionSetUp;
-    Connection connectionSolved;
 
 private:
     QWidget* proxy;
-    Ui_TaskSketcherMessages* ui;
+    std::unique_ptr<Ui_TaskSketcherMessages> ui;
 };
 
-} //namespace SketcherGui
+}  // namespace SketcherGui
 
-#endif // GUI_TASKVIEW_TaskSketcherMessages_H
+#endif  // GUI_TASKVIEW_TaskSketcherMessages_H

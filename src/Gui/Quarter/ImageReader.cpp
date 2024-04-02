@@ -30,21 +30,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \**************************************************************************/
 
-#include "ImageReader.h"
 #include <Inventor/SbImage.h>
-#include <Inventor/errors/SoDebugError.h>
-#include <QtGui/QImage>
+#include <QImage>
 
-#include <Quarter/QtCoinCompatibility.h>
+#include "ImageReader.h"
+#include "QtCoinCompatibility.h"
+
 
 using namespace SIM::Coin3D::Quarter;
 
-ImageReader::ImageReader(void)
+ImageReader::ImageReader()
 {
   SbImage::addReadImageCB(ImageReader::readImageCB, this);
 }
 
-ImageReader::~ImageReader(void)
+ImageReader::~ImageReader()
 {
   SbImage::removeReadImageCB(ImageReader::readImageCB, this);
 }
@@ -54,9 +54,9 @@ ImageReader::readImage(const SbString & filename, SbImage & sbimage) const
 {
   QImage image;
   if (image.load(filename.getString())) {
-    int c;
-    int w = image.width();
-    int h = image.height();
+    //int c;
+    //int w = image.width();
+    //int h = image.height();
 
     // Keep in 8-bits mode if that was what we read
     if (image.depth() != 8 || !image.isGrayscale()) {
@@ -66,9 +66,9 @@ ImageReader::readImage(const SbString & filename, SbImage & sbimage) const
     }
 
     QtCoinCompatibility::QImageToSbImage(image,sbimage);
-    return TRUE;
+    return true;
   }
-  return FALSE;
+  return false;
 }
 
 

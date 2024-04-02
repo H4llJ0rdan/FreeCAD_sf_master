@@ -1,59 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="sk" sourcelanguage="en">
+<TS version="2.1" language="sk" sourcelanguage="en">
   <context>
     <name>CmdDrawingAnnotation</name>
     <message>
-      <location filename="../../Command.cpp" line="+389"/>
+      <location filename="../../Command.cpp" line="475"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="476"/>
       <source>&amp;Annotation</source>
-      <translation>&amp;Annotation</translation>
+      <translation>&amp;Poznámky</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <location line="+2"/>
+      <location filename="../../Command.cpp" line="477"/>
+      <location filename="../../Command.cpp" line="479"/>
       <source>Inserts an Annotation view in the active drawing</source>
-      <translation>Inserts an Annotation view in the active drawing</translation>
+      <translation type="unfinished">Inserts an Annotation view in the active drawing</translation>
     </message>
   </context>
   <context>
     <name>CmdDrawingClip</name>
     <message>
-      <location line="+41"/>
+      <location filename="../../Command.cpp" line="523"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="524"/>
       <source>&amp;Clip</source>
-      <translation>&amp;Clip</translation>
+      <translation type="unfinished">&amp;Clip</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <location line="+2"/>
+      <location filename="../../Command.cpp" line="525"/>
+      <location filename="../../Command.cpp" line="527"/>
       <source>Inserts a clip group in the active drawing</source>
-      <translation>Inserts a clip group in the active drawing</translation>
+      <translation type="unfinished">Inserts a clip group in the active drawing</translation>
+    </message>
+  </context>
+  <context>
+    <name>CmdDrawingDraftView</name>
+    <message>
+      <location filename="../../Command.cpp" line="714"/>
+      <source>Drawing</source>
+      <translation>Výkres</translation>
+    </message>
+    <message>
+      <location filename="../../Command.cpp" line="715"/>
+      <source>&amp;Draft View</source>
+      <translation type="unfinished">&amp;Draft View</translation>
+    </message>
+    <message>
+      <location filename="../../Command.cpp" line="716"/>
+      <location filename="../../Command.cpp" line="718"/>
+      <source>Inserts a Draft view of the selected object(s) in the active drawing</source>
+      <translation type="unfinished">Inserts a Draft view of the selected object(s) in the active drawing</translation>
     </message>
   </context>
   <context>
     <name>CmdDrawingExportPage</name>
     <message>
-      <location line="+91"/>
+      <location filename="../../Command.cpp" line="625"/>
       <source>File</source>
       <translation>Súbor</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="626"/>
       <source>&amp;Export page...</source>
-      <translation>&amp;Export stránky...</translation>
+      <translation>&amp;Exportovať stránku...</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <location line="+2"/>
+      <location filename="../../Command.cpp" line="627"/>
+      <location filename="../../Command.cpp" line="629"/>
       <source>Export a page to an SVG file</source>
       <translation>Exportovať stranu do SVG súboru</translation>
     </message>
@@ -61,13 +80,13 @@
   <context>
     <name>CmdDrawingNewA3Landscape</name>
     <message>
-      <location line="-314"/>
+      <location filename="../../Command.cpp" line="269"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="270"/>
+      <location filename="../../Command.cpp" line="271"/>
       <source>Insert new A3 landscape drawing</source>
       <translation>Vložiť nový výkres A3 na šírku</translation>
     </message>
@@ -75,124 +94,143 @@
   <context>
     <name>CmdDrawingNewPage</name>
     <message>
-      <location line="-133"/>
+      <location filename="../../Command.cpp" line="91"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="92"/>
+      <location filename="../../Command.cpp" line="93"/>
       <source>Insert new drawing</source>
-      <translation>Vložiť nové Kreslenie</translation>
+      <translation>Vložiť nový výkres</translation>
     </message>
   </context>
   <context>
     <name>CmdDrawingNewView</name>
     <message>
-      <location line="+166"/>
+      <location filename="../../Command.cpp" line="308"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="309"/>
       <source>Insert view in drawing</source>
-      <translation>Vložiť zobrazenie v kresbe</translation>
+      <translation>Vložiť zobrazenie do výkresu</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="310"/>
       <source>Insert a new View of a Part in the active drawing</source>
-      <translation>Vložiť nový pohľad na úlohu v aktívnom výkrese</translation>
+      <translation>Vloží nové zobrazenie časti do aktívneho výkresu</translation>
     </message>
   </context>
   <context>
     <name>CmdDrawingOpen</name>
     <message>
-      <location line="-202"/>
+      <location filename="../../Command.cpp" line="58"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="59"/>
       <source>Open SVG...</source>
       <translation>Otvoriť SVG...</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="60"/>
       <source>Open a scalable vector graphic</source>
-      <translation>Otvorte škálovateľnú vektorovú grafiku</translation>
+      <translation>Otvorí vektorovú grafiku s možnosťou zmeny mierky (SVG)</translation>
     </message>
   </context>
   <context>
     <name>CmdDrawingOpenBrowserView</name>
     <message>
-      <location line="+294"/>
+      <location filename="../../Command.cpp" line="437"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="438"/>
       <source>Open &amp;browser view</source>
-      <translation>Open &amp;browser view</translation>
+      <translation>Otvoriť zobrazenie &amp;prehliadača</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <location line="+2"/>
+      <location filename="../../Command.cpp" line="439"/>
+      <location filename="../../Command.cpp" line="441"/>
       <source>Opens the selected page in a browser view</source>
-      <translation>Opens the selected page in a browser view</translation>
+      <translation>Otvorí vybranú stránku v zobrazení prehliadača</translation>
     </message>
   </context>
   <context>
     <name>CmdDrawingOrthoViews</name>
     <message>
-      <location line="-49"/>
+      <location filename="../../Command.cpp" line="387"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="388"/>
       <source>Insert orthographic views</source>
-      <translation>Insert orthographic views</translation>
+      <translation type="unfinished">Insert orthographic views</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="389"/>
       <source>Insert an orthographic projection of a part in the active drawing</source>
-      <translation>Insert an orthographic projection of a part in the active drawing</translation>
+      <translation type="unfinished">Insert an orthographic projection of a part in the active drawing</translation>
     </message>
   </context>
   <context>
     <name>CmdDrawingProjectShape</name>
     <message>
-      <location line="+271"/>
+      <location filename="../../Command.cpp" line="678"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="679"/>
       <source>Project shape...</source>
       <translation>Tvary projektu...</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="680"/>
+      <location filename="../../Command.cpp" line="681"/>
       <source>Project shape onto a user-defined plane</source>
-      <translation>Tvary projektu na užívateľom definovanú rovinu</translation>
+      <translation>Tvar projektu na používateľom určenej rovine</translation>
+    </message>
+  </context>
+  <context>
+    <name>CmdDrawingSpreadsheetView</name>
+    <message>
+      <location filename="../../Command.cpp" line="745"/>
+      <source>Drawing</source>
+      <translation>Výkres</translation>
+    </message>
+    <message>
+      <location filename="../../Command.cpp" line="746"/>
+      <source>&amp;Spreadsheet View</source>
+      <translation>&amp;Tabuľkové zobrazenie</translation>
+    </message>
+    <message>
+      <location filename="../../Command.cpp" line="747"/>
+      <location filename="../../Command.cpp" line="749"/>
+      <source>Inserts a view of a selected spreadsheet in the active drawing</source>
+      <translation type="unfinished">Inserts a view of a selected spreadsheet in the active drawing</translation>
     </message>
   </context>
   <context>
     <name>CmdDrawingSymbol</name>
     <message>
-      <location line="-107"/>
+      <location filename="../../Command.cpp" line="568"/>
       <source>Drawing</source>
-      <translation type="unfinished">Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../Command.cpp" line="569"/>
       <source>&amp;Symbol</source>
-      <translation type="unfinished">&amp;Symbol</translation>
+      <translation>&amp;Symbol</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <location line="+2"/>
+      <location filename="../../Command.cpp" line="570"/>
+      <location filename="../../Command.cpp" line="572"/>
       <source>Inserts a symbol from a svg file in the active drawing</source>
       <translation type="unfinished">Inserts a symbol from a svg file in the active drawing</translation>
     </message>
@@ -200,599 +238,538 @@
   <context>
     <name>DrawingGui::DrawingView</name>
     <message>
-      <location filename="../../DrawingView.cpp" line="+207"/>
+      <location filename="../../DrawingView.cpp" line="209"/>
       <source>&amp;Background</source>
       <translation>&amp;Pozadie</translation>
     </message>
     <message>
-      <location line="+6"/>
+      <location filename="../../DrawingView.cpp" line="215"/>
       <source>&amp;Outline</source>
-      <translation>&amp;Náčrt</translation>
+      <translation>&amp;Obrys</translation>
     </message>
     <message>
-      <location line="+6"/>
+      <location filename="../../DrawingView.cpp" line="221"/>
       <source>&amp;Native</source>
       <translation>Prirodze&amp;ne</translation>
     </message>
     <message>
-      <location line="+4"/>
+      <location filename="../../DrawingView.cpp" line="225"/>
       <source>&amp;OpenGL</source>
       <translation>&amp;OpenGL</translation>
     </message>
     <message>
-      <location line="+3"/>
+      <location filename="../../DrawingView.cpp" line="228"/>
       <source>&amp;Image</source>
       <translation>Obrázok</translation>
     </message>
     <message>
-      <location line="+4"/>
+      <location filename="../../DrawingView.cpp" line="232"/>
       <source>&amp;High Quality Antialiasing</source>
-      <translation>&amp;Vysoká kvalita vy&amp;hladzovania</translation>
+      <translation>Vyhladzovanie vo v&amp;ysokej kvalite</translation>
     </message>
     <message>
-      <location line="+26"/>
+      <location filename="../../DrawingView.cpp" line="269"/>
       <source>Open SVG File</source>
       <translation>Otvoriť súbor SVG</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../DrawingView.cpp" line="270"/>
       <source>Could not open file '%1'.</source>
-      <translation>Nepodarilo sa otvoriť súbor '%1'.</translation>
+      <translation>Nepodarilo sa otvoriť súbor „%1“.</translation>
     </message>
     <message>
-      <location line="+24"/>
+      <location filename="../../DrawingView.cpp" line="357"/>
       <source>&amp;Renderer</source>
-      <translation>&amp;Renderer</translation>
+      <translation>V&amp;ykresľovač</translation>
     </message>
     <message>
-      <location line="+55"/>
+      <location filename="../../DrawingView.cpp" line="462"/>
       <source>Export PDF</source>
-      <translation>Export do PDF</translation>
+      <translation>Exportovať PDF</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <source>PDF file (*.pdf)</source>
-      <translation>Súbor PDF (*.pdf)</translation>
+      <location filename="../../DrawingView.cpp" line="463"/>
+      <source>PDF file</source>
+      <translation>Súbor PDF</translation>
     </message>
     <message>
-      <location line="+16"/>
+      <location filename="../../DrawingView.cpp" line="479"/>
       <source>Page sizes</source>
       <translation>Veľkosti stránok</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../DrawingView.cpp" line="480"/>
       <source>A0</source>
       <translation>A0</translation>
     </message>
     <message>
-      <location line="+2"/>
+      <location filename="../../DrawingView.cpp" line="482"/>
       <source>A1</source>
       <translation>A1</translation>
     </message>
     <message>
-      <location line="+2"/>
+      <location filename="../../DrawingView.cpp" line="484"/>
       <source>A2</source>
       <translation>A2</translation>
     </message>
     <message>
-      <location line="+2"/>
+      <location filename="../../DrawingView.cpp" line="486"/>
       <source>A3</source>
       <translation>A3</translation>
     </message>
     <message>
-      <location line="+2"/>
+      <location filename="../../DrawingView.cpp" line="488"/>
       <source>A4</source>
       <translation>A4</translation>
     </message>
     <message>
-      <location line="+2"/>
+      <location filename="../../DrawingView.cpp" line="490"/>
       <source>A5</source>
       <translation>A5</translation>
+    </message>
+    <message>
+      <location filename="../../DrawingView.cpp" line="573"/>
+      <source>Different orientation</source>
+      <translation>Odlišná orientácia</translation>
+    </message>
+    <message>
+      <location filename="../../DrawingView.cpp" line="574"/>
+      <source>The printer uses a different orientation than the drawing.
+Do you want to continue?</source>
+      <translation>Tlačiareň používa odlišnú orientáciu ako nákres.
+Chcete pokračovať?</translation>
+    </message>
+    <message>
+      <location filename="../../DrawingView.cpp" line="581"/>
+      <location filename="../../DrawingView.cpp" line="589"/>
+      <source>Different paper size</source>
+      <translation>Odlišná veľkosť papiera</translation>
+    </message>
+    <message>
+      <location filename="../../DrawingView.cpp" line="582"/>
+      <location filename="../../DrawingView.cpp" line="590"/>
+      <source>The printer uses a different paper size than the drawing.
+Do you want to continue?</source>
+      <translation>Tlačiareň používa odlišnú veľkosť papiera ako nákres.
+Chcete pokračovať?</translation>
+    </message>
+    <message>
+      <location filename="../../DrawingView.cpp" line="601"/>
+      <source>Opening file failed</source>
+      <translation>Otvorenie zlyhalo</translation>
+    </message>
+    <message>
+      <location filename="../../DrawingView.cpp" line="602"/>
+      <source>Can't open file '%1' for writing.</source>
+      <translation>Nedá sa otvoriť súbor „%1“ na zápis.</translation>
     </message>
   </context>
   <context>
     <name>DrawingGui::TaskOrthoViews</name>
     <message>
-      <location filename="../../TaskOrthoViews.ui" line="+26"/>
+      <location filename="../../TaskOrthoViews.ui" line="26"/>
       <source>Orthographic Projection</source>
-      <translation>Orthographic Projection</translation>
+      <translation type="unfinished">Orthographic Projection</translation>
     </message>
     <message>
-      <location line="+20"/>
-      <location line="+25"/>
-      <location line="+25"/>
-      <location line="+25"/>
-      <location line="+25"/>
-      <location line="+31"/>
-      <location line="+25"/>
-      <location line="+25"/>
-      <location line="+25"/>
-      <location line="+25"/>
-      <location line="+25"/>
-      <location line="+60"/>
-      <source>Right click for axonometric settings</source>
-      <translation type="unfinished">Right click for axonometric settings</translation>
-    </message>
-    <message>
-      <location line="+106"/>
-      <source>Top left x / y</source>
-      <translation type="unfinished">Top left x / y</translation>
-    </message>
-    <message>
-      <location line="+48"/>
-      <source>Spacing dx / dy   </source>
-      <translation type="unfinished">Spacing dx / dy   </translation>
-    </message>
-    <message>
-      <location line="+71"/>
-      <source> Axis out and right</source>
-      <translation type="unfinished"> Axis out and right</translation>
-    </message>
-    <message>
-      <location line="+7"/>
-      <source> Vertical tilt</source>
-      <translation type="unfinished"> Vertical tilt</translation>
-    </message>
-    <message>
-      <location line="+11"/>
-      <location line="+200"/>
-      <source>X +ve</source>
-      <translation type="unfinished">X +ve</translation>
-    </message>
-    <message>
-      <location line="-195"/>
-      <location line="+75"/>
-      <location line="+125"/>
-      <source>Y +ve</source>
-      <translation type="unfinished">Y +ve</translation>
-    </message>
-    <message>
-      <location line="-195"/>
-      <location line="+75"/>
-      <location line="+125"/>
-      <source>Z +ve</source>
-      <translation type="unfinished">Z +ve</translation>
-    </message>
-    <message>
-      <location line="-195"/>
-      <location line="+200"/>
-      <source>X -ve</source>
-      <translation type="unfinished">X -ve</translation>
-    </message>
-    <message>
-      <location line="-195"/>
-      <location line="+70"/>
-      <location line="+130"/>
-      <source>Y -ve</source>
-      <translation type="unfinished">Y -ve</translation>
-    </message>
-    <message>
-      <location line="-195"/>
-      <location line="+70"/>
-      <location line="+130"/>
-      <source>Z -ve</source>
-      <translation type="unfinished">Z -ve</translation>
-    </message>
-    <message>
-      <location line="-188"/>
-      <source>Isometric</source>
-      <translation type="unfinished">Isometric</translation>
-    </message>
-    <message>
-      <location line="+5"/>
-      <source>Dimetric</source>
-      <translation type="unfinished">Dimetric</translation>
-    </message>
-    <message>
-      <location line="+5"/>
-      <source>Trimetric</source>
-      <translation type="unfinished">Trimetric</translation>
-    </message>
-    <message>
-      <location line="+8"/>
-      <source> Scale</source>
-      <translation type="unfinished"> Scale</translation>
-    </message>
-    <message>
-      <location line="+7"/>
-      <source> View projection   </source>
-      <translation type="unfinished"> View projection   </translation>
-    </message>
-    <message>
-      <location line="+7"/>
-      <source> Axis aligned up</source>
-      <translation type="unfinished"> Axis aligned up</translation>
-    </message>
-    <message>
-      <location line="+41"/>
-      <location line="+23"/>
-      <source>Flip</source>
-      <translation type="unfinished">Flip</translation>
-    </message>
-    <message>
-      <location line="-10"/>
-      <source> Trimetric</source>
-      <translation type="unfinished"> Trimetric</translation>
-    </message>
-    <message>
-      <location line="+28"/>
+      <location filename="../../TaskOrthoViews.ui" line="34"/>
       <source>Projection</source>
-      <translation>Projection</translation>
+      <translation>Projekcia</translation>
     </message>
     <message>
-      <location line="+11"/>
+      <location filename="../../TaskOrthoViews.ui" line="45"/>
       <source>Third Angle</source>
-      <translation>Third Angle</translation>
+      <translation>Tretí uhol</translation>
     </message>
     <message>
-      <location line="+5"/>
+      <location filename="../../TaskOrthoViews.ui" line="50"/>
       <source>First Angle</source>
-      <translation>First Angle</translation>
+      <translation>Prvý uhol</translation>
     </message>
     <message>
-      <location line="+19"/>
+      <location filename="../../TaskOrthoViews.ui" line="62"/>
       <source>View from:</source>
       <translation type="unfinished">View from:</translation>
     </message>
     <message>
-      <location line="+47"/>
+      <location filename="../../TaskOrthoViews.ui" line="76"/>
+      <location filename="../../TaskOrthoViews.ui" line="747"/>
+      <source>X +ve</source>
+      <translation type="unfinished">X +ve</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="81"/>
+      <location filename="../../TaskOrthoViews.ui" line="752"/>
+      <location filename="../../TaskOrthoViews.ui" line="791"/>
+      <source>Y +ve</source>
+      <translation type="unfinished">Y +ve</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="86"/>
+      <location filename="../../TaskOrthoViews.ui" line="757"/>
+      <location filename="../../TaskOrthoViews.ui" line="796"/>
+      <source>Z +ve</source>
+      <translation type="unfinished">Z +ve</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="91"/>
+      <location filename="../../TaskOrthoViews.ui" line="762"/>
+      <source>X -ve</source>
+      <translation type="unfinished">X -ve</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="96"/>
+      <location filename="../../TaskOrthoViews.ui" line="767"/>
+      <location filename="../../TaskOrthoViews.ui" line="801"/>
+      <source>Y -ve</source>
+      <translation type="unfinished">Y -ve</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="101"/>
+      <location filename="../../TaskOrthoViews.ui" line="772"/>
+      <location filename="../../TaskOrthoViews.ui" line="806"/>
+      <source>Z -ve</source>
+      <translation type="unfinished">Z -ve</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="109"/>
       <source>Axis aligned right:</source>
       <translation type="unfinished">Axis aligned right:</translation>
     </message>
     <message>
-      <source>Primary View</source>
-      <translation type="obsolete">Primary View</translation>
-    </message>
-    <message>
-      <source>Front</source>
-      <translation type="obsolete">Predok</translation>
-    </message>
-    <message>
-      <source>Right</source>
-      <translation type="obsolete">Vpravo</translation>
-    </message>
-    <message>
-      <source>Back</source>
-      <translation type="obsolete">Back</translation>
-    </message>
-    <message>
-      <source>Left</source>
-      <translation type="obsolete">Vľavo</translation>
-    </message>
-    <message>
-      <source>Top</source>
-      <translation type="obsolete">Zhora</translation>
-    </message>
-    <message>
-      <source>Bottom</source>
-      <translation type="obsolete">Spodok</translation>
-    </message>
-    <message>
-      <source>- Rotate</source>
-      <translation type="obsolete">- Rotate</translation>
-    </message>
-    <message>
-      <source>90</source>
-      <translation type="obsolete">90</translation>
-    </message>
-    <message>
-      <source>180</source>
-      <translation type="obsolete">180</translation>
-    </message>
-    <message>
-      <source>270</source>
-      <translation type="obsolete">270</translation>
-    </message>
-    <message>
-      <location line="-514"/>
-      <source>Primary view</source>
-      <translation>Primary view</translation>
-    </message>
-    <message>
-      <location line="+16"/>
+      <location filename="../../TaskOrthoViews.ui" line="154"/>
       <source>Secondary Views</source>
-      <translation>Secondary Views</translation>
+      <translation>Sekundárny teletext</translation>
     </message>
     <message>
-      <location line="+72"/>
+      <location filename="../../TaskOrthoViews.ui" line="176"/>
+      <location filename="../../TaskOrthoViews.ui" line="201"/>
+      <location filename="../../TaskOrthoViews.ui" line="232"/>
+      <location filename="../../TaskOrthoViews.ui" line="257"/>
+      <location filename="../../TaskOrthoViews.ui" line="282"/>
+      <location filename="../../TaskOrthoViews.ui" line="307"/>
+      <location filename="../../TaskOrthoViews.ui" line="357"/>
+      <location filename="../../TaskOrthoViews.ui" line="382"/>
+      <location filename="../../TaskOrthoViews.ui" line="407"/>
+      <location filename="../../TaskOrthoViews.ui" line="432"/>
+      <location filename="../../TaskOrthoViews.ui" line="457"/>
+      <location filename="../../TaskOrthoViews.ui" line="482"/>
+      <source>Right click for axonometric settings</source>
+      <translation type="unfinished">Right click for axonometric settings</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="329"/>
+      <source>Primary view</source>
+      <translation>Hlavné zobrazenie</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="532"/>
       <source>General</source>
       <translation>Všeobecné</translation>
     </message>
     <message>
-      <location line="+9"/>
+      <location filename="../../TaskOrthoViews.ui" line="541"/>
       <source>Auto scale / position</source>
-      <translation>Auto scale / position</translation>
+      <translation>Automatická mierka / pozícia</translation>
     </message>
     <message>
-      <location line="+15"/>
+      <location filename="../../TaskOrthoViews.ui" line="556"/>
       <source>Scale</source>
       <translation>Škála, zmena veľkosti</translation>
     </message>
     <message>
-      <source>Primary x / y</source>
-      <translation type="obsolete">Primary x / y</translation>
+      <location filename="../../TaskOrthoViews.ui" line="588"/>
+      <source>Top left x / y</source>
+      <translation type="unfinished">Top left x / y</translation>
     </message>
     <message>
-      <source>Secondary dx / dy</source>
-      <translation type="obsolete">Secondary dx / dy</translation>
+      <location filename="../../TaskOrthoViews.ui" line="636"/>
+      <source>Spacing dx / dy</source>
+      <translation type="unfinished">Spacing dx / dy</translation>
     </message>
     <message>
-      <location line="+125"/>
-      <source>Show hidden</source>
-      <translation>Show hidden</translation>
+      <location filename="../../TaskOrthoViews.ui" line="681"/>
+      <source>Show hidden lines</source>
+      <translation>Zobraziť skryté súbory</translation>
     </message>
     <message>
-      <location line="+7"/>
-      <source>Show smooth</source>
-      <translation>Show smooth</translation>
+      <location filename="../../TaskOrthoViews.ui" line="688"/>
+      <source>Show smooth lines</source>
+      <translation>Zobraziť iba riadky</translation>
     </message>
     <message>
-      <location line="+11"/>
+      <location filename="../../TaskOrthoViews.ui" line="699"/>
       <source>Axonometric</source>
-      <translation>Axonometric</translation>
+      <translation type="unfinished">Axonometric</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="707"/>
+      <source>View projection</source>
+      <translation>Prehľad projektov</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="718"/>
+      <source>Isometric</source>
+      <translation type="unfinished">Isometric</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="723"/>
+      <source>Dimetric</source>
+      <translation type="unfinished">Dimetric</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="728"/>
+      <source>Trimetric</source>
+      <translation type="unfinished">Trimetric</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="736"/>
+      <source> Axis aligned up</source>
+      <translation type="unfinished"> Axis aligned up</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="780"/>
+      <source>Axis out and right</source>
+      <translation type="unfinished">Axis out and right</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="814"/>
+      <source>Vertical tilt</source>
+      <translation type="unfinished">Vertical tilt</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="821"/>
+      <location filename="../../TaskOrthoViews.ui" line="858"/>
+      <source>Flip</source>
+      <translation>Otočiť</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="834"/>
+      <source> Scale</source>
+      <translation> Mierka</translation>
+    </message>
+    <message>
+      <location filename="../../TaskOrthoViews.ui" line="848"/>
+      <source> Trimetric</source>
+      <translation type="unfinished"> Trimetric</translation>
     </message>
   </context>
   <context>
     <name>DrawingGui::TaskProjection</name>
     <message>
-      <location filename="../../TaskDialog.cpp" line="+49"/>
+      <location filename="../../TaskDialog.cpp" line="48"/>
       <source>Visible sharp edges</source>
       <translation>Viditeľné ostré hrany</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../TaskDialog.cpp" line="49"/>
       <source>Visible smooth edges</source>
-      <translation>Viditeľné vyhladzovanie hrán</translation>
+      <translation>Viditeľné vyhladené hrany</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../TaskDialog.cpp" line="50"/>
       <source>Visible sewn edges</source>
       <translation>Viditeľné všité okraje</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../TaskDialog.cpp" line="51"/>
       <source>Visible outline edges</source>
       <translation>Viditeľné hrany obrysu</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../TaskDialog.cpp" line="52"/>
       <source>Visible isoparameters</source>
       <translation>Viditeľné iso parametre</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../TaskDialog.cpp" line="53"/>
       <source>Hidden sharp edges</source>
       <translation>Skryté ostré hrany</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../TaskDialog.cpp" line="54"/>
       <source>Hidden smooth edges</source>
-      <translation>Skryté vyhladzovanie hrán</translation>
+      <translation>Skryté vyhladené hrany</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../TaskDialog.cpp" line="55"/>
       <source>Hidden sewn edges</source>
       <translation>Skryté všité okraje</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../TaskDialog.cpp" line="56"/>
       <source>Hidden outline edges</source>
       <translation>Skryté hrany obrysu</translation>
     </message>
     <message>
-      <location line="+1"/>
+      <location filename="../../TaskDialog.cpp" line="57"/>
       <source>Hidden isoparameters</source>
       <translation>Skryté iso parametre</translation>
     </message>
     <message>
-      <location line="+17"/>
+      <location filename="../../TaskDialog.cpp" line="74"/>
       <source>Project shapes</source>
       <translation>Tvary projektu</translation>
+    </message>
+    <message>
+      <location filename="../../TaskDialog.cpp" line="88"/>
+      <source>No active document</source>
+      <translation>Žiadny aktívny dokument</translation>
+    </message>
+    <message>
+      <location filename="../../TaskDialog.cpp" line="89"/>
+      <source>There is currently no active document to complete the operation</source>
+      <translation>Momentálne nie je aktívny žiadny dokument na dokončenie operácie</translation>
+    </message>
+    <message>
+      <location filename="../../TaskDialog.cpp" line="94"/>
+      <source>No active view</source>
+      <translation>Žiadne aktívne zobrazenie</translation>
+    </message>
+    <message>
+      <location filename="../../TaskDialog.cpp" line="95"/>
+      <source>There is currently no active view to complete the operation</source>
+      <translation type="unfinished">There is currently no active view to complete the operation</translation>
     </message>
   </context>
   <context>
     <name>Drawing_NewPage</name>
     <message>
-      <source>A0 landscape</source>
-      <translation type="obsolete">A0 na šírku</translation>
-    </message>
-    <message>
-      <source>Insert new A0 landscape drawing</source>
-      <translation type="obsolete">Vložiť nový výkres A0 na šírku</translation>
-    </message>
-    <message>
-      <source>A1 landscape</source>
-      <translation type="obsolete">A1 na šírku</translation>
-    </message>
-    <message>
-      <source>Insert new A1 landscape drawing</source>
-      <translation type="obsolete">Vložiť nový výkres A1 na šírku</translation>
-    </message>
-    <message>
-      <source>A2 landscape</source>
-      <translation type="obsolete">A2 na šírku</translation>
-    </message>
-    <message>
-      <source>Insert new A2 landscape drawing</source>
-      <translation type="obsolete">Vložiť nový výkres A2 na šírku</translation>
-    </message>
-    <message>
-      <source>A3 landscape</source>
-      <translation type="obsolete">A4 na šírku</translation>
-    </message>
-    <message>
-      <source>Insert new A3 landscape drawing</source>
-      <translation type="obsolete">Vložiť nový výkres A3 na šírku</translation>
-    </message>
-    <message>
-      <source>A4 landscape</source>
-      <translation type="obsolete">A4 na šírku</translation>
-    </message>
-    <message>
-      <source>Insert new A4 landscape drawing</source>
-      <translation type="obsolete">Vložiť nový výkres A4 na šírku</translation>
-    </message>
-    <message>
-      <source>Insert new A%1 landscape drawing</source>
-      <translation type="obsolete">Insert new A%1 landscape drawing</translation>
-    </message>
-    <message>
-      <source>A%1 landscape</source>
-      <translation type="obsolete">A%1 landscape</translation>
-    </message>
-    <message>
-      <location filename="../../Command.cpp" line="-298"/>
+      <location filename="../../Command.cpp" line="217"/>
       <source>Landscape</source>
-      <translation type="unfinished">Landscape</translation>
+      <translation>Na šírku</translation>
     </message>
     <message>
-      <location line="+2"/>
+      <location filename="../../Command.cpp" line="219"/>
       <source>Portrait</source>
-      <translation type="unfinished">Portrait</translation>
+      <translation>Na výšku</translation>
     </message>
     <message>
-      <location line="+2"/>
+      <location filename="../../Command.cpp" line="223"/>
       <source>%1%2 %3</source>
-      <translation type="unfinished">%1%2 %3</translation>
+      <translation>%1%2 %3</translation>
     </message>
     <message>
-      <location line="+6"/>
+      <location filename="../../Command.cpp" line="228"/>
       <source>Insert new %1%2 %3 drawing</source>
       <translation type="unfinished">Insert new %1%2 %3 drawing</translation>
+    </message>
+    <message>
+      <location filename="../../Command.cpp" line="235"/>
+      <source>%1%2 %3 (%4)</source>
+      <translation>%1%2 %3 (%4)</translation>
+    </message>
+    <message>
+      <location filename="../../Command.cpp" line="241"/>
+      <source>Insert new %1%2 %3 (%4) drawing</source>
+      <translation>Vloží výkres vo formáte %1%2 %3 (%4)</translation>
     </message>
   </context>
   <context>
     <name>QObject</name>
     <message>
-      <location line="-124"/>
-      <location line="+426"/>
+      <location filename="../../Command.cpp" line="70"/>
+      <location filename="../../Command.cpp" line="589"/>
       <source>Choose an SVG file to open</source>
       <translation>Vyberte súbor SVG k otvoreniu</translation>
     </message>
     <message>
-      <location filename="../../AppDrawingGuiPy.cpp" line="+64"/>
-      <location line="+30"/>
-      <location filename="../../ViewProviderPage.cpp" line="+139"/>
-      <source>Drawing viewer</source>
-      <translation>Prehliadač kreslenia</translation>
+      <location filename="../../Command.cpp" line="71"/>
+      <location filename="../../Command.cpp" line="590"/>
+      <location filename="../../Command.cpp" line="644"/>
+      <source>Scalable Vector Graphic</source>
+      <translation>SVG</translation>
     </message>
     <message>
-      <location filename="../../Command.cpp" line="-425"/>
-      <location line="+426"/>
-      <source>Scalable Vector Graphics (*.svg *.svgz)</source>
-      <translation>Scalable Vector Graphics (*. svg *. svgz)</translation>
-    </message>
-    <message>
-      <location line="-227"/>
-      <location line="+51"/>
-      <location line="+45"/>
-      <location line="+177"/>
+      <location filename="../../Command.cpp" line="321"/>
+      <location filename="../../Command.cpp" line="400"/>
+      <location filename="../../Command.cpp" line="450"/>
+      <location filename="../../Command.cpp" line="638"/>
+      <location filename="../../Command.cpp" line="758"/>
       <source>Wrong selection</source>
-      <translation>Chybný výber</translation>
+      <translation>Nesprávny výber</translation>
     </message>
     <message>
-      <location line="-272"/>
-      <location line="+51"/>
+      <location filename="../../Command.cpp" line="322"/>
       <source>Select a Part object.</source>
       <translation>Vyberte časť objektu.</translation>
     </message>
     <message>
-      <location line="-45"/>
-      <location line="+51"/>
-      <location line="+76"/>
-      <location line="+45"/>
-      <location line="+42"/>
-      <source>No page to insert</source>
-      <translation>Žiadna strana pre vloženie</translation>
+      <location filename="../../Command.cpp" line="330"/>
+      <location filename="../../Command.cpp" line="409"/>
+      <location filename="../../Command.cpp" line="490"/>
+      <location filename="../../Command.cpp" line="538"/>
+      <location filename="../../Command.cpp" line="583"/>
+      <location filename="../../Command.cpp" line="764"/>
+      <source>No page found</source>
+      <translation>Nenašla sa žiadna stránka</translation>
     </message>
     <message>
-      <location line="-213"/>
-      <location line="+127"/>
-      <location line="+45"/>
-      <location line="+42"/>
-      <source>Create a page to insert.</source>
-      <translation>Vytvoriť stránku pre vloženie.</translation>
+      <location filename="../../Command.cpp" line="331"/>
+      <location filename="../../Command.cpp" line="410"/>
+      <location filename="../../Command.cpp" line="491"/>
+      <location filename="../../Command.cpp" line="539"/>
+      <location filename="../../Command.cpp" line="584"/>
+      <location filename="../../Command.cpp" line="765"/>
+      <source>Create a page first.</source>
+      <translation>Najskôr vytvorte stránku.</translation>
     </message>
     <message>
-      <location line="-163"/>
-      <source>Create a page to insert views into.</source>
-      <translation>Create a page to insert views into.</translation>
+      <location filename="../../Command.cpp" line="401"/>
+      <source>Select exactly one Part object.</source>
+      <translation type="unfinished">Select exactly one Part object.</translation>
     </message>
     <message>
-      <location line="+38"/>
-      <location line="+177"/>
+      <location filename="../../Command.cpp" line="451"/>
+      <location filename="../../Command.cpp" line="639"/>
       <source>Select one Page object.</source>
-      <translation>Vyberte jednostranný objekt.</translation>
+      <translation>Vyberte objekt na jednu stranu.</translation>
     </message>
     <message>
-      <location line="+5"/>
-      <source>SVG(*.svg)</source>
-      <translation>SVG (*.svg)</translation>
+      <location filename="../../Command.cpp" line="645"/>
+      <source>All Files</source>
+      <translation>Všetky súbory</translation>
     </message>
     <message>
-      <location line="+1"/>
-      <source>All Files (*.*)</source>
-      <translation>Všetky súbory (*.*)</translation>
-    </message>
-    <message>
-      <location line="+2"/>
+      <location filename="../../Command.cpp" line="647"/>
       <source>Export page</source>
       <translation>Export stránky</translation>
     </message>
     <message>
-      <location filename="../../ViewProviderPage.cpp" line="-27"/>
-      <source>Show drawing</source>
-      <translation>Zobraziť nákres</translation>
+      <location filename="../../Command.cpp" line="759"/>
+      <source>Select exactly one Spreadsheet object.</source>
+      <translation type="unfinished">Select exactly one Spreadsheet object.</translation>
     </message>
     <message>
-      <source>Front</source>
-      <translation type="obsolete">Predok</translation>
-    </message>
-    <message>
-      <source>Back</source>
-      <translation type="obsolete">Back</translation>
-    </message>
-    <message>
-      <source>Right</source>
-      <translation type="obsolete">Vpravo</translation>
-    </message>
-    <message>
-      <source>Left</source>
-      <translation type="obsolete">Vľavo</translation>
-    </message>
-    <message>
-      <source>Top</source>
-      <translation type="obsolete">Zhora</translation>
-    </message>
-    <message>
-      <source>Bottom</source>
-      <translation type="obsolete">Spodok</translation>
-    </message>
-    <message>
-      <location filename="../../TaskOrthoViews.cpp" line="+45"/>
-      <location line="+908"/>
+      <location filename="../../TaskOrthoViews.cpp" line="46"/>
+      <location filename="../../TaskOrthoViews.cpp" line="969"/>
       <source>Make axonometric...</source>
       <translation type="unfinished">Make axonometric...</translation>
     </message>
     <message>
-      <location line="-907"/>
-      <location line="+908"/>
+      <location filename="../../TaskOrthoViews.cpp" line="47"/>
+      <location filename="../../TaskOrthoViews.cpp" line="970"/>
       <source>Edit axonometric settings...</source>
       <translation type="unfinished">Edit axonometric settings...</translation>
     </message>
     <message>
-      <location line="-907"/>
-      <location line="+908"/>
+      <location filename="../../TaskOrthoViews.cpp" line="48"/>
+      <location filename="../../TaskOrthoViews.cpp" line="971"/>
       <source>Make orthographic</source>
       <translation type="unfinished">Make orthographic</translation>
+    </message>
+    <message>
+      <location filename="../../ViewProviderPage.cpp" line="141"/>
+      <source>Show drawing</source>
+      <translation>Zobraziť výkres</translation>
     </message>
   </context>
   <context>
     <name>Workbench</name>
     <message>
-      <location filename="../../Workbench.cpp" line="+37"/>
+      <location filename="../../Workbench.cpp" line="34"/>
       <source>Drawing</source>
-      <translation>Kreslenie</translation>
+      <translation>Výkres</translation>
     </message>
   </context>
 </TS>

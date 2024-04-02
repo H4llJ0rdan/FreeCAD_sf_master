@@ -1,20 +1,13 @@
-if(MSVC)
-    add_definitions(-DHAVE_ACOSH -DHAVE_ATANH -DHAVE_ASINH)
-else(MSVC)
-    add_definitions(-DHAVE_LIMITS_H -DHAVE_CONFIG_H)
-endif(MSVC)
-
 include_directories(
     ${CMAKE_BINARY_DIR}
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_BINARY_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR}
     ${Boost_INCLUDE_DIRS}
-    ${COIN3D_INCLUDE_DIR}
+    ${COIN3D_INCLUDE_DIRS}
     ${OCC_INCLUDE_DIR}
-    ${PYTHON_INCLUDE_PATH}
-    ${QT_INCLUDE_DIR}
-    ${XERCESC_INCLUDE_DIR}
+    ${PYTHON_INCLUDE_DIRS}
+    ${XercesC_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIR}
 )
 link_directories(${OCC_LIBRARY_DIR})
@@ -24,43 +17,36 @@ set(PartGui_LIBS
     FreeCADGui
 )
 
-set(PartGui_MOC_HDRS
-    CrossSections.h
-    Mirroring.h
-    DlgBooleanOperation.h
-    DlgExtrusion.h
-    DlgFilletEdges.h
-    DlgPartBoxImp.h
-    DlgPartCylinderImp.h
-    DlgPartImportIgesImp.h
-    DlgPartImportStepImp.h
-    DlgPrimitives.h
-    DlgRevolution.h
-    DlgSettings3DViewPartImp.h
-    DlgSettingsGeneral.h
-    DlgSettingsObjectColor.h
-    TaskFaceColors.h
-    TaskShapeBuilder.h
-    TaskLoft.h
-    TaskOffset.h
-    TaskSweep.h
-    TaskThickness.h
-    TaskDimension.h
-    TaskCheckGeometry.h
-)
-fc_wrap_cpp(PartGui_MOC_SRCS ${PartGui_MOC_HDRS})
-SOURCE_GROUP("Moc" FILES ${PartGui_MOC_SRCS})
+if(MSVC)
+    include_directories(
+        ${CMAKE_SOURCE_DIR}/src/3rdParty/OpenGL/api
+    )
+endif(MSVC)
 
-qt4_add_resources(PartGui_QRC_SRCS Resources/Part.qrc)
+include_directories(
+    ${QtConcurrent_INCLUDE_DIRS}
+)
+list(APPEND PartGui_LIBS
+    ${QtConcurrent_LIBRARIES}
+)
+
+set (Part_TR_QRC ${CMAKE_CURRENT_BINARY_DIR}/Resources/Part_translation.qrc)
+qt_find_and_add_translation(QM_SRCS "Resources/translations/*_*.ts"
+    ${CMAKE_CURRENT_BINARY_DIR}/Resources/translations)
+qt_create_resource_file(${Part_TR_QRC} ${QM_SRCS})
+qt_add_resources(PartGui_QRC_SRCS Resources/Part.qrc ${Part_TR_QRC})
 
 set(PartGui_UIC_SRCS
     CrossSections.ui
     Mirroring.ui
     DlgBooleanOperation.ui
+    DlgExportStep.ui
+    DlgExportHeaderStep.ui
     DlgExtrusion.ui
+    DlgScale.ui
+    DlgImportStep.ui
     DlgFilletEdges.ui
     DlgImportExportIges.ui
-    DlgImportExportStep.ui
     DlgPartBox.ui
     DlgPartCylinder.ui
     DlgPartImportIges.ui
@@ -70,20 +56,29 @@ set(PartGui_UIC_SRCS
     DlgRevolution.ui
     DlgSettings3DViewPart.ui
     DlgSettingsGeneral.ui
+    DlgSettingsMeasure.ui
     DlgSettingsObjectColor.ui
+    DlgProjectionOnSurface.ui
+    SectionCutting.ui
+    ShapeFromMesh.ui
     TaskFaceColors.ui
     TaskShapeBuilder.ui
     TaskLoft.ui
     TaskOffset.ui
     TaskSweep.ui
+    TaskAttacher.ui
 )
-qt4_wrap_ui(PartGui_UIC_HDRS ${PartGui_UIC_SRCS})
 
 SET(PartGui_SRCS
     ${PartGui_QRC_SRCS}
     ${PartGui_UIC_HDRS}
     AppPartGui.cpp
+    AttacherTexts.h
+    AttacherTexts.cpp
+    BoxSelection.cpp
+    BoxSelection.h
     Command.cpp
+    CommandFilter.cpp
     CommandSimple.cpp
     CommandParametric.cpp
     CrossSections.cpp
@@ -95,14 +90,23 @@ SET(PartGui_SRCS
     DlgBooleanOperation.cpp
     DlgBooleanOperation.h
     DlgBooleanOperation.ui
+    DlgExportStep.cpp
+    DlgExportStep.h
+    DlgExportStep.ui
+    DlgExportHeaderStep.ui
     DlgExtrusion.cpp
     DlgExtrusion.h
     DlgExtrusion.ui
+    DlgScale.cpp
+    DlgScale.h
+    DlgScale.ui
     DlgFilletEdges.cpp
     DlgFilletEdges.h
     DlgFilletEdges.ui
+    DlgImportStep.cpp
+    DlgImportStep.h
+    DlgImportStep.ui
     DlgImportExportIges.ui
-    DlgImportExportStep.ui
     DlgPartBox.ui
     DlgPartBoxImp.cpp
     DlgPartBoxImp.h
@@ -128,12 +132,23 @@ SET(PartGui_SRCS
     DlgSettingsGeneral.cpp
     DlgSettingsGeneral.h
     DlgSettingsGeneral.ui
+    DlgSettingsMeasure.cpp
+    DlgSettingsMeasure.h
+    DlgSettingsMeasure.ui
     DlgSettingsObjectColor.cpp
     DlgSettingsObjectColor.h
     DlgSettingsObjectColor.ui
+    DlgSettingsMeasure.cpp
+    DlgSettingsMeasure.h
+    DlgSettingsMeasure.ui
+    DlgProjectionOnSurface.cpp
+    DlgProjectionOnSurface.h
+    DlgProjectionOnSurface.ui
     Resources/Part.qrc
     PreCompiled.cpp
     PreCompiled.h
+    PropertyEnumAttacherItem.cpp
+    PropertyEnumAttacherItem.h
     SoFCShapeObject.cpp
     SoFCShapeObject.h
     SoBrepEdgeSet.cpp
@@ -144,6 +159,8 @@ SET(PartGui_SRCS
     SoBrepPointSet.h
     ViewProvider.cpp
     ViewProvider.h
+    ViewProviderAttachExtension.h
+    ViewProviderAttachExtension.cpp
     ViewProviderExt.cpp
     ViewProviderExt.h
     ViewProviderReference.cpp
@@ -160,6 +177,8 @@ SET(PartGui_SRCS
     ViewProviderPointParametric.h
     ViewProviderEllipseParametric.cpp
     ViewProviderEllipseParametric.h
+    ViewProviderGridExtension.cpp
+    ViewProviderGridExtension.h
     ViewProviderHelixParametric.cpp
     ViewProviderHelixParametric.h
     ViewProviderPlaneParametric.cpp
@@ -184,6 +203,8 @@ SET(PartGui_SRCS
     ViewProviderImport.h
     ViewProviderExtrusion.cpp
     ViewProviderExtrusion.h
+    ViewProviderScale.cpp
+    ViewProviderScale.h
     ViewProvider2DObject.cpp
     ViewProvider2DObject.h
     ViewProviderMirror.cpp
@@ -194,8 +215,19 @@ SET(PartGui_SRCS
     ViewProviderBoolean.h
     ViewProviderRuledSurface.cpp
     ViewProviderRuledSurface.h
+    ViewProviderPrimitive.cpp
+    ViewProviderPrimitive.h
     Workbench.cpp
     Workbench.h
+    WorkbenchManipulator.cpp
+    WorkbenchManipulator.h
+    ReferenceHighlighter.cpp
+    ReferenceHighlighter.h
+    SectionCutting.cpp
+    SectionCutting.h
+    SectionCutting.ui
+    ShapeFromMesh.cpp
+    ShapeFromMesh.h
     TaskFaceColors.cpp
     TaskFaceColors.h
     TaskFaceColors.ui
@@ -217,24 +249,28 @@ SET(PartGui_SRCS
     TaskDimension.h
     TaskCheckGeometry.cpp
     TaskCheckGeometry.h
+    TaskAttacher.h
+    TaskAttacher.cpp
 )
 
-SET(PartGui_Scripts
-    InitGui.py
-    TestPartGui.py
+if(FREECAD_USE_PCH)
+    add_definitions(-D_PreComp_)
+    GET_MSVC_PRECOMPILED_SOURCE("PreCompiled.cpp" PCH_SRCS ${PartGui_SRCS})
+    ADD_MSVC_PRECOMPILED_HEADER(PartGui PreCompiled.h PreCompiled.cpp PCH_SRCS)
+endif(FREECAD_USE_PCH)
+
+SET(PartGuiIcon_SVG
+    Resources/icons/PartWorkbench.svg
 )
 
-
-add_library(PartGui SHARED ${PartGui_SRCS})
+add_library(PartGui SHARED ${PartGui_SRCS} ${PartGuiIcon_SVG})
 target_link_libraries(PartGui ${PartGui_LIBS})
 
-
-fc_target_copy_resource(PartGui 
-    ${CMAKE_SOURCE_DIR}/src/Mod/Part
-    ${CMAKE_BINARY_DIR}/Mod/Part
-    ${PartGui_Scripts})
 
 SET_BIN_DIR(PartGui PartGui /Mod/Part)
 SET_PYTHON_PREFIX_SUFFIX(PartGui)
 
+fc_copy_sources(PartGui "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}/Mod/Part" ${PartGuiIcon_SVG})
+
 INSTALL(TARGETS PartGui DESTINATION ${CMAKE_INSTALL_LIBDIR})
+INSTALL(FILES ${PartGuiIcon_SVG} DESTINATION "${CMAKE_INSTALL_DATADIR}/Mod/Part/Resources/icons")

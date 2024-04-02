@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -20,16 +20,12 @@
  *                                                                            *
  ******************************************************************************/
 
-
 #ifndef GUI_TASKVIEW_TaskMirroredParameters_H
 #define GUI_TASKVIEW_TaskMirroredParameters_H
 
-#include <Gui/TaskView/TaskView.h>
-#include <Gui/Selection.h>
-#include <Gui/TaskView/TaskDialog.h>
-
 #include "TaskTransformedParameters.h"
 #include "ViewProviderMirrored.h"
+
 
 class Ui_TaskMirroredParameters;
 
@@ -51,28 +47,35 @@ class TaskMirroredParameters : public TaskTransformedParameters
 
 public:
     /// Constructor for task with ViewProvider
-    TaskMirroredParameters(ViewProviderTransformed *TransformedView, QWidget *parent = 0);
+    explicit TaskMirroredParameters(ViewProviderTransformed *TransformedView, QWidget *parent = nullptr);
     /// Constructor for task with parent task (MultiTransform mode)
     TaskMirroredParameters(TaskMultiTransformParameters *parentTask, QLayout *layout);
 
-    virtual ~TaskMirroredParameters();
+    ~TaskMirroredParameters() override;
 
-    const std::string getMirrorPlane(void) const;
+    void getMirrorPlane(App::DocumentObject*& obj, std::vector<std::string>& sub) const;
+
+    void apply() override;
 
 private Q_SLOTS:
     void onPlaneChanged(int num);
-    virtual void onUpdateView(bool);
+    void onUpdateView(bool) override;
+    void onFeatureDeleted() override;
 
 protected:
-    virtual void changeEvent(QEvent *e);
-    virtual void onSelectionChanged(const Gui::SelectionChanges& msg);
+    void addObject(App::DocumentObject*) override;
+    void removeObject(App::DocumentObject*) override;
+    void changeEvent(QEvent *e) override;
+    void onSelectionChanged(const Gui::SelectionChanges& msg) override;
+    void clearButtons() override;
 
 private:
     void setupUI();
     void updateUI();
+    ComboLinks planeLinks;
 
 private:
-    Ui_TaskMirroredParameters* ui;
+    std::unique_ptr<Ui_TaskMirroredParameters> ui;
 };
 
 
@@ -82,12 +85,12 @@ class TaskDlgMirroredParameters : public TaskDlgTransformedParameters
     Q_OBJECT
 
 public:
-    TaskDlgMirroredParameters(ViewProviderMirrored *MirroredView);
-    virtual ~TaskDlgMirroredParameters() {}
+    explicit TaskDlgMirroredParameters(ViewProviderMirrored *MirroredView);
+    ~TaskDlgMirroredParameters() override = default;
 
 public:
     /// is called by the framework if the dialog is accepted (Ok)
-    virtual bool accept();
+    bool accept() override;
 };
 
 } //namespace PartDesignGui

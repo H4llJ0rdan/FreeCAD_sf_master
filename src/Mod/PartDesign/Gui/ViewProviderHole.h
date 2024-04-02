@@ -31,16 +31,20 @@ namespace PartDesignGui {
 
 class PartDesignGuiExport ViewProviderHole : public ViewProvider
 {
-    PROPERTY_HEADER(PartGui::ViewProviderHole);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderHole);
 
 public:
     /// constructor
     ViewProviderHole();
     /// destructor
-    virtual ~ViewProviderHole();
+    ~ViewProviderHole() override;
 
-    /// grouping handling 
-    std::vector<App::DocumentObject*> claimChildren(void)const;
+    /// grouping handling
+    std::vector<App::DocumentObject*> claimChildren()const override;
+    void setupContextMenu(QMenu *menu, QObject *receiver, const char *member) override;
+    bool onDelete(const std::vector<std::string> &s) override;
+protected:
+    bool setEdit(int ModNum) override;
 };
 
 

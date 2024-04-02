@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -20,16 +20,12 @@
  *                                                                            *
  ******************************************************************************/
 
-
 #ifndef GUI_TASKVIEW_TaskLinearPatternParameters_H
 #define GUI_TASKVIEW_TaskLinearPatternParameters_H
 
-#include <Gui/TaskView/TaskView.h>
-#include <Gui/Selection.h>
-#include <Gui/TaskView/TaskDialog.h>
-
 #include "TaskTransformedParameters.h"
 #include "ViewProviderLinearPattern.h"
+
 
 class QTimer;
 class Ui_TaskLinearPatternParameters;
@@ -52,36 +48,49 @@ class TaskLinearPatternParameters : public TaskTransformedParameters
 
 public:
     /// Constructor for task with ViewProvider
-    TaskLinearPatternParameters(ViewProviderTransformed *TransformedView, QWidget *parent = 0);
+    explicit TaskLinearPatternParameters(ViewProviderTransformed *TransformedView, QWidget *parent = nullptr);
     /// Constructor for task with parent task (MultiTransform mode)
     TaskLinearPatternParameters(TaskMultiTransformParameters *parentTask, QLayout *layout);
-    virtual ~TaskLinearPatternParameters();
+    ~TaskLinearPatternParameters() override;
 
-    const std::string getDirection(void) const;
-    const bool getReverse(void) const;
-    const double getLength(void) const;
-    const unsigned getOccurrences(void) const;
+    void apply() override;
 
 private Q_SLOTS:
     void onUpdateViewTimer();
     void onDirectionChanged(int num);
     void onCheckReverse(const bool on);
+    void onModeChanged(const int mode);
     void onLength(const double l);
-    void onOccurrences(const int n);
-    virtual void onUpdateView(bool);
+    void onOffset(const double o);
+    void onOccurrences(const uint n);
+    void onUpdateView(bool) override;
+    void onFeatureDeleted() override;
 
 protected:
-    virtual void changeEvent(QEvent *e);
-    virtual void onSelectionChanged(const Gui::SelectionChanges& msg);
+    void addObject(App::DocumentObject*) override;
+    void removeObject(App::DocumentObject*) override;
+    void changeEvent(QEvent *e) override;
+    void onSelectionChanged(const Gui::SelectionChanges& msg) override;
+    void clearButtons() override;
+    void getDirection(App::DocumentObject*& obj, std::vector<std::string>& sub) const;
+    bool getReverse() const;
+    int getMode() const;
+    double getLength() const;
+    double getOffset() const;
+    unsigned getOccurrences() const;
 
 private:
+    void connectSignals();
     void setupUI();
     void updateUI();
+    void adaptVisibilityToMode();
     void kickUpdateViewTimer() const;
 
 private:
-    Ui_TaskLinearPatternParameters* ui;
+    std::unique_ptr<Ui_TaskLinearPatternParameters> ui;
     QTimer* updateViewTimer;
+
+    ComboLinks dirLinks;
 };
 
 
@@ -91,12 +100,8 @@ class TaskDlgLinearPatternParameters : public TaskDlgTransformedParameters
     Q_OBJECT
 
 public:
-    TaskDlgLinearPatternParameters(ViewProviderLinearPattern *LinearPatternView);
-    virtual ~TaskDlgLinearPatternParameters() {}
-
-public:
-    /// is called by the framework if the dialog is accepted (Ok)
-    virtual bool accept();
+    explicit TaskDlgLinearPatternParameters(ViewProviderLinearPattern *LinearPatternView);
+    ~TaskDlgLinearPatternParameters() override = default;
 };
 
 } //namespace PartDesignGui

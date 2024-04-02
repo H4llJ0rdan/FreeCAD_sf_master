@@ -24,23 +24,23 @@ template <class Real>
 MeshSmoother<Real>::MeshSmoother ()
 {
     m_iVQuantity = 0;
-    m_akVertex = 0;
+    m_akVertex = nullptr;
     m_iTQuantity = 0;
-    m_aiIndex = 0;
-    m_akNormal = 0;
-    m_akMean = 0;
-    m_aiNeighborCount = 0;
+    m_aiIndex = nullptr;
+    m_akNormal = nullptr;
+    m_akMean = nullptr;
+    m_aiNeighborCount = nullptr;
 }
 //----------------------------------------------------------------------------
 template <class Real>
 MeshSmoother<Real>::MeshSmoother (int iVQuantity, Vector3<Real>* akVertex,
     int iTQuantity, const int* aiIndex)
 {
-    m_akVertex = 0;
-    m_akNormal = 0;
-    m_aiIndex = 0;
-    m_akMean = 0;
-    m_aiNeighborCount = 0;
+    m_akVertex = nullptr;
+    m_akNormal = nullptr;
+    m_aiIndex = nullptr;
+    m_akMean = nullptr;
+    m_aiNeighborCount = nullptr;
 
     Create(iVQuantity,akVertex,iTQuantity,aiIndex);
 }
@@ -89,8 +89,8 @@ void MeshSmoother<Real>::Destroy ()
 template <class Real>
 void MeshSmoother<Real>::Update (Real fTime)
 {
-    memset(m_akNormal,0,m_iVQuantity*sizeof(Vector3<Real>));
-    memset(m_akMean,0,m_iVQuantity*sizeof(Vector3<Real>));
+    std::fill_n(m_akNormal,m_iVQuantity,Vector3<Real>{0,0,0});
+    std::fill_n(m_akMean,m_iVQuantity,Vector3<Real>{0,0,0});
 
     const int* piIndex = m_aiIndex;
     int i;

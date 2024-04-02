@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2002 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,40 +20,29 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 #ifndef GUI_DOCKWND_SELECTIONVIEW_H
 #define GUI_DOCKWND_SELECTIONVIEW_H
-
 
 #include "DockWindow.h"
 #include "Selection.h"
 
-class QPixmap;
-class QTabWidget;
+
 class QListWidget;
+class QListWidgetItem;
+class QCheckBox;
+class QLabel;
 
 namespace App {
-  class PropertyContainer;
+class DocumentObject;
 }
-
-namespace Gui {
-namespace PropertyEditor {
-
-class EditableListView;
-class EditableItem;
-class PropertyEditor;
-
-} // namespace PropertyEditor
-} // namespace Gui
 
 namespace Gui {
 namespace DockWnd {
 
 /** A test class. A more elaborate class description.
  */
-class SelectionView : public Gui::DockWindow, 
-                      public Gui::SelectionSingleton::ObserverType
+class SelectionView : public Gui::DockWindow,
+                      public Gui::SelectionObserver
 {
     Q_OBJECT
 
@@ -62,39 +51,64 @@ public:
      * A constructor.
      * A more elaborate description of the constructor.
      */
-    SelectionView(Gui::Document*  pcDocument, QWidget *parent=0);
+    explicit SelectionView(Gui::Document* pcDocument, QWidget *parent=nullptr);
 
     /**
      * A destructor.
      * A more elaborate description of the destructor.
     */
-    virtual ~SelectionView();
+    ~SelectionView() override;
 
     /// Observer message from the Selection
-    virtual void OnChange(Gui::SelectionSingleton::SubjectType &rCaller,
-                          Gui::SelectionSingleton::MessageType Reason);
+    void onSelectionChanged(const SelectionChanges& msg) override;
 
+    void leaveEvent(QEvent*) override;
 
-    bool onMsg(const char* pMsg,const char** ppReturn);
+    bool onMsg(const char* pMsg,const char** ppReturn) override;
 
-    virtual const char *getName(void) const {return "SelectionView";}
+    const char *getName() const override {return "SelectionView";}
 
     /// get called when the document is changed or updated
-    virtual void onUpdate(void);
+    void onUpdate() override;
 
     QListWidget* selectionView;
+    QLabel*      countLabel;
+
+    QCheckBox *enablePickList;
+    QListWidget *pickList;
 
 public Q_SLOTS:
     /// get called when text is entered in the search box
-    void search(QString text);
+    void search(const QString& text);
+    /// get called when enter is pressed in the search box
+    void validateSearch();
     /// get called when the list is right-clicked
-    void onItemContextMenu(QPoint point);
+    void onItemContextMenu(const QPoint& point);
     /// different actions
-    void select(QListWidgetItem* item=0);
-    void deselect(void);
-    void zoom(void);
-    void treeSelect(void);
+    void select(QListWidgetItem* item=nullptr);
+    void deselect();
+    void zoom();
+    void treeSelect();
+    void toPython();
+    void touch();
+    void showPart();
+    void onEnablePickList();
+    void toggleSelect(QListWidgetItem* item=nullptr);
+    void preselect(QListWidgetItem* item=nullptr);
 
+protected:
+    void showEvent(QShowEvent *) override;
+    void hideEvent(QHideEvent *) override;
+
+private:
+    QString getModule(const char* type) const;
+    QString getProperty(App::DocumentObject* obj) const;
+    bool supportPart(App::DocumentObject* obj, const QString& part) const;
+
+private:
+    float x,y,z;
+    std::vector<App::DocumentObject*> searchList;
+    bool openedAutomatically;
 };
 
 } // namespace DockWnd

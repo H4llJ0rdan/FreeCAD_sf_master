@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2007     *
+ *   Copyright (c) JÃ¼rgen Riegel          (juergen.riegel@web.de) 2007     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,19 +20,17 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
+#include <Base/PyObjectBase.h>
 #include <Gui/Application.h>
 #include <Gui/Language/Translator.h>
-#include "Workbench.h"
+
 #include "ViewProviderPage.h"
 #include "ViewProviderView.h"
-//#include "resources/qrc_Drawing.cpp"
+#include "Workbench.h"
+
 
 // use a different name to CreateCommand()
 void CreateDrawingCommands(void);
@@ -41,23 +39,25 @@ void loadDrawingResource()
 {
     // add resources and reloads the translators
     Q_INIT_RESOURCE(Drawing);
+    Q_INIT_RESOURCE(Drawing_translation);
     Gui::Translator::instance()->refresh();
 }
 
-/* registration table  */
-extern struct PyMethodDef DrawingGui_Import_methods[];
+namespace DrawingGui
+{
+extern PyObject* initModule();
+}
 
 
 /* Python entry */
-extern "C" {
-void DrawingGuiExport initDrawingGui()
+PyMOD_INIT_FUNC(DrawingGui)
 {
     if (!Gui::Application::Instance) {
         PyErr_SetString(PyExc_ImportError, "Cannot load Gui module in console application.");
-        return;
+        PyMOD_Return(nullptr);
     }
 
-    (void) Py_InitModule("DrawingGui", DrawingGui_Import_methods);   /* mod name, table ptr */
+    PyObject* mod = DrawingGui::initModule();
     Base::Console().Log("Loading GUI of Drawing module... done\n");
 
     // instantiating the commands
@@ -66,9 +66,10 @@ void DrawingGuiExport initDrawingGui()
 
     DrawingGui::ViewProviderDrawingPage::init();
     DrawingGui::ViewProviderDrawingView::init();
+    DrawingGui::ViewProviderDrawingViewPython::init();
+    DrawingGui::ViewProviderDrawingClip::init();
 
     // add resources and reloads the translators
     loadDrawingResource();
+    PyMOD_Return(mod);
 }
-
-} // extern "C" {

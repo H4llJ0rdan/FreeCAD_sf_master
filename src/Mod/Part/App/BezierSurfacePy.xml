@@ -3,6 +3,7 @@
 	<PythonExport
 		Father="GeometrySurfacePy"
 		Name="BezierSurfacePy"
+        PythonName="Part.BezierSurface"
 		Twin="GeomBezierSurface"
 		TwinPointer="GeomBezierSurface"
 		Include="Mod/Part/App/Geometry.h"
@@ -24,7 +25,7 @@
 					which is equal to the number of poles minus 1.
 				</UserDocu>
 			</Documentation>
-			<Parameter Name="UDegree" Type="Int"/>
+			<Parameter Name="UDegree" Type="Long"/>
 		</Attribute>
 		<Attribute Name="VDegree" ReadOnly="true">
 			<Documentation>
@@ -33,7 +34,7 @@
 					which is equal to the number of poles minus 1.
 				</UserDocu>
 			</Documentation>
-			<Parameter Name="VDegree" Type="Int"/>
+			<Parameter Name="VDegree" Type="Long"/>
 		</Attribute>
 		<Attribute Name="MaxDegree" ReadOnly="true">
 			<Documentation>
@@ -42,7 +43,7 @@
 					Bezier surface. This value is 25.
 				</UserDocu>
 			</Documentation>
-			<Parameter Name="MaxDegree" Type="Int"/>
+			<Parameter Name="MaxDegree" Type="Long"/>
 		</Attribute>
 		<Attribute Name="NbUPoles" ReadOnly="true">
 			<Documentation>
@@ -50,7 +51,7 @@
 					Returns the number of poles in u direction of this Bezier surface.
 				</UserDocu>
 			</Documentation>
-			<Parameter Name="NbUPoles" Type="Int"/>
+			<Parameter Name="NbUPoles" Type="Long"/>
 		</Attribute>
 		<Attribute Name="NbVPoles" ReadOnly="true">
 			<Documentation>
@@ -58,16 +59,16 @@
 					Returns the number of poles in v direction of this Bezier surface.
 				</UserDocu>
 			</Documentation>
-			<Parameter Name="NbVPoles" Type="Int"/>
+			<Parameter Name="NbVPoles" Type="Long"/>
 		</Attribute>
-		<Methode Name="bounds">
+        <Methode Name="bounds" Const="true">
 			<Documentation>
 				<UserDocu>
 					Returns the parametric bounds (U1, U2, V1, V2) of this Bezier surface.
 				</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="isURational">
+        <Methode Name="isURational" Const="true">
 			<Documentation>
 				<UserDocu>
 					Returns false if the equation of this Bezier surface is polynomial
@@ -77,7 +78,7 @@
 				</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="isVRational">
+        <Methode Name="isVRational" Const="true">
 			<Documentation>
 				<UserDocu>
 					Returns false if the equation of this Bezier surface is polynomial
@@ -87,17 +88,17 @@
 				</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="isUPeriodic">
+        <Methode Name="isUPeriodic" Const="true">
 			<Documentation>
 				<UserDocu>Returns false.</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="isVPeriodic">
+        <Methode Name="isVPeriodic" Const="true">
 			<Documentation>
 				<UserDocu>Returns false.</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="isUClosed">
+        <Methode Name="isUClosed" Const="true">
 			<Documentation>
 				<UserDocu>
 					Checks if this surface is closed in the u parametric direction.
@@ -106,7 +107,7 @@
 				</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="isVClosed">
+        <Methode Name="isVClosed" Const="true">
 			<Documentation>
 				<UserDocu>
 					Checks if this surface is closed in the v parametric direction.
@@ -200,14 +201,14 @@
 					in the u parametric direction, and between V1 and V2 in the v
 					parametric direction.
 					U1, U2, V1, and V2 can be outside the bounds of this surface.
-					
+
 					-- U1 and U2 isoparametric Bezier curves, segmented between
 					   V1 and V2, become the two bounds of the surface in the v
 					   parametric direction (0. and 1. u isoparametric curves).
 					-- V1 and V2 isoparametric Bezier curves, segmented between
 					   U1 and U2, become the two bounds of the surface in the u
 					   parametric direction (0. and 1. v isoparametric curves).
-					
+
 					The poles and weights tables are modified, but the degree of
 					this surface in the u and v parametric directions does not
 					change.U1 can be greater than U2, and V1 can be greater than V2.
@@ -232,12 +233,12 @@
 				<UserDocu>Set the row of poles of the Bezier surface.</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="getPole">
+        <Methode Name="getPole" Const="true">
 			<Documentation>
 				<UserDocu>Get a pole of index (UIndex,VIndex) of the Bezier surface.</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="getPoles">
+        <Methode Name="getPoles" Const="true">
 			<Documentation>
 				<UserDocu>Get all poles of the Bezier surface.</UserDocu>
 			</Documentation>
@@ -266,7 +267,7 @@
 				</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="getWeight">
+        <Methode Name="getWeight" Const="true">
 			<Documentation>
 				<UserDocu>
 					Get a weight of the pole of index (UIndex,VIndex)
@@ -274,7 +275,7 @@
 				</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="getWeights">
+        <Methode Name="getWeights" Const="true">
 			<Documentation>
 				<UserDocu>Get all weights of the Bezier surface.</UserDocu>
 			</Documentation>
@@ -305,16 +306,6 @@
 					   the two parametric directions, and
 					-- the orientation of the surface is reversed.
 				</UserDocu>
-			</Documentation>
-		</Methode>
-		<Methode Name="uIso">
-			<Documentation>
-				<UserDocu>Builds the U isoparametric Bezier curve of this Bezier surface</UserDocu>
-			</Documentation>
-		</Methode>
-		<Methode Name="vIso">
-			<Documentation>
-				<UserDocu>Builds the V isoparametric Bezier curve of this Bezier surface</UserDocu>
 			</Documentation>
 		</Methode>
 	</PythonExport>

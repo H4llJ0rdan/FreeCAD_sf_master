@@ -11,7 +11,7 @@
     FatherNamespace="Gui">
     <Documentation>
       <Author Licence="LGPL" Name="Werner Mayer" EMail="wmayer@users.sourceforge.net" />
-      <UserDocu>This class handles document objects in group</UserDocu>
+      <UserDocu>This is the class for Python workbenches</UserDocu>
     </Documentation>
     <Methode Name="appendMenu">
       <Documentation>
@@ -21,11 +21,6 @@
     <Methode Name="removeMenu">
       <Documentation>
         <UserDocu>Remove a menu</UserDocu>
-      </Documentation>
-    </Methode>
-    <Methode Name="listMenus">
-      <Documentation>
-        <UserDocu>Show a list of all menus</UserDocu>
       </Documentation>
     </Methode>
     <Methode Name="appendContextMenu">
@@ -48,11 +43,6 @@
         <UserDocu>Remove a toolbar</UserDocu>
       </Documentation>
     </Methode>
-    <Methode Name="listToolbars">
-      <Documentation>
-        <UserDocu>Show a list of all toolbars</UserDocu>
-      </Documentation>
-    </Methode>
     <Methode Name="appendCommandbar">
       <Documentation>
         <UserDocu>Append a new command bar</UserDocu>
@@ -63,66 +53,61 @@
         <UserDocu>Remove a command bar</UserDocu>
       </Documentation>
     </Methode>
-    <Methode Name="listCommandbars">
-      <Documentation>
-        <UserDocu>Show a list of all command bars</UserDocu>
-      </Documentation>
+    <Methode Name="AppendMenu">
+        <Documentation>
+            <UserDocu>deprecated -- use appendMenu</UserDocu>
+        </Documentation>
     </Methode>
-	  <Methode Name="AppendMenu">
-		  <Documentation>
-			  <UserDocu>deprecated -- use appendMenu</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="RemoveMenu">
-		  <Documentation>
-			  <UserDocu>deprecated -- use removeMenu</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="ListMenus">
-		  <Documentation>
-			  <UserDocu>deprecated -- use listMenus</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="AppendContextMenu">
-		  <Documentation>
-			  <UserDocu>deprecated -- use appendContextMenu</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="RemoveContextMenu">
-		  <Documentation>
-			  <UserDocu>deprecated -- use removeContextMenu</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="AppendToolbar">
-		  <Documentation>
-			  <UserDocu>deprecated -- use appendToolbar</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="RemoveToolbar">
-		  <Documentation>
-			  <UserDocu>deprecated -- use removeToolbar</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="ListToolbars">
-		  <Documentation>
-			  <UserDocu>deprecated -- use listToolbars</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="AppendCommandbar">
-		  <Documentation>
-			  <UserDocu>deprecated -- use appendCommandBar</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="RemoveCommandbar">
-		  <Documentation>
-			  <UserDocu>deprecated -- use removeCommandBar</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <Methode Name="ListCommandbars">
-		  <Documentation>
-			  <UserDocu>deprecated -- use listCommandBars</UserDocu>
-		  </Documentation>
-	  </Methode>
-	  <CustomAttributes />
+    <Methode Name="RemoveMenu">
+        <Documentation>
+            <UserDocu>deprecated -- use removeMenu</UserDocu>
+        </Documentation>
+    </Methode>
+    <Methode Name="ListMenus">
+        <Documentation>
+            <UserDocu>deprecated -- use listMenus</UserDocu>
+        </Documentation>
+    </Methode>
+    <Methode Name="AppendContextMenu">
+        <Documentation>
+            <UserDocu>deprecated -- use appendContextMenu</UserDocu>
+        </Documentation>
+    </Methode>
+    <Methode Name="RemoveContextMenu">
+        <Documentation>
+            <UserDocu>deprecated -- use removeContextMenu</UserDocu>
+        </Documentation>
+    </Methode>
+    <Methode Name="AppendToolbar">
+        <Documentation>
+            <UserDocu>deprecated -- use appendToolbar</UserDocu>
+        </Documentation>
+    </Methode>
+    <Methode Name="RemoveToolbar">
+        <Documentation>
+            <UserDocu>deprecated -- use removeToolbar</UserDocu>
+        </Documentation>
+    </Methode>
+    <Methode Name="ListToolbars">
+        <Documentation>
+            <UserDocu>deprecated -- use listToolbars</UserDocu>
+        </Documentation>
+    </Methode>
+    <Methode Name="AppendCommandbar">
+        <Documentation>
+            <UserDocu>deprecated -- use appendCommandBar</UserDocu>
+        </Documentation>
+    </Methode>
+    <Methode Name="RemoveCommandbar">
+        <Documentation>
+            <UserDocu>deprecated -- use removeCommandBar</UserDocu>
+        </Documentation>
+    </Methode>
+    <Methode Name="ListCommandbars">
+        <Documentation>
+            <UserDocu>deprecated -- use listCommandBars</UserDocu>
+        </Documentation>
+    </Methode>
+    <CustomAttributes />
   </PythonExport>
 </GenerateModel>

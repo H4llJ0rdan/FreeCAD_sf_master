@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,12 +24,9 @@
 #ifndef GUI_TASKVIEW_TASKAPPERANCE_H
 #define GUI_TASKVIEW_TASKAPPERANCE_H
 
-#include "TaskView.h"
 #include <Gui/Selection.h>
-#include <boost/signals.hpp>
+#include "TaskView.h"
 
-
-class Ui_TaskAppearance;
 
 namespace App {
 class Property;
@@ -37,29 +34,33 @@ class Property;
 
 namespace Gui {
 class ViewProvider;
+
 namespace TaskView {
-typedef boost::signals::connection TaskAppearance_Connection;
+
+using TaskAppearance_Connection = boost::signals2::connection;
+class Ui_TaskAppearance;
 
 class TaskAppearance : public TaskBox, public Gui::SelectionSingleton::ObserverType
 {
     Q_OBJECT
 
 public:
-    TaskAppearance(QWidget *parent = 0);
-    ~TaskAppearance();
+    explicit TaskAppearance(QWidget *parent = nullptr);
+    ~TaskAppearance() override;
     /// Observer message from the Selection
     void OnChange(Gui::SelectionSingleton::SubjectType &rCaller,
-                  Gui::SelectionSingleton::MessageType Reason);
+                  Gui::SelectionSingleton::MessageType Reason) override;
 
 private Q_SLOTS:
-    void on_changeMode_activated(const QString&);
-    void on_changePlot_activated(const QString&);
-    void on_spinTransparency_valueChanged(int);
-    void on_spinPointSize_valueChanged(int);
-    void on_spinLineWidth_valueChanged(int);
+    void setupConnections();
+    void onChangeModeActivated(const QString&);
+    void onChangePlotActivated(const QString&);
+    void onTransparencyValueChanged(int);
+    void onPointSizeValueChanged(int);
+    void onLineWidthValueChanged(int);
 
 protected:
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent *e) override;
 
 private:
     void slotChangedObject(const Gui::ViewProvider&, const App::Property& Prop);

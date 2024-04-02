@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,65 +20,65 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_TASKVIEW_TrajectorySimulate_H
 #define GUI_TASKVIEW_TrajectorySimulate_H
 
-
 #include <QDialog>
-#include "ui_TrajectorySimulate.h"
+#include <memory>
 
 #include <Mod/Robot/App/RobotObject.h>
-#include <Mod/Robot/App/Robot6Axis.h>
-#include <Mod/Robot/App/TrajectoryObject.h>
-#include <Mod/Robot/App/Trajectory.h>
 #include <Mod/Robot/App/Simulation.h>
+#include <Mod/Robot/App/TrajectoryObject.h>
 
 #include "ViewProviderRobotObject.h"
 
 
-namespace RobotGui { 
+namespace RobotGui
+{
 
+class Ui_DlgTrajectorySimulate;
 
-
-class TrajectorySimulate : public QDialog, public Ui_DlgTrajectorySimulate
+class TrajectorySimulate: public QDialog
 {
     Q_OBJECT
 
 public:
-    TrajectorySimulate(Robot::RobotObject *pcRobotObject,Robot::TrajectoryObject *pcTrajectoryObject,QWidget *parent = 0);
-    ~TrajectorySimulate();
+    TrajectorySimulate(Robot::RobotObject* pcRobotObject,
+                       Robot::TrajectoryObject* pcTrajectoryObject,
+                       QWidget* parent = nullptr);
+    ~TrajectorySimulate() override;
 
 private Q_SLOTS:
-    void start(void);
-    void stop(void);
-    void run(void);
-    void back(void);
-    void forward(void);
-    void end(void);
+    void start();
+    void stop();
+    void run();
+    void back();
+    void forward();
+    void end();
 
-    void timerDone(void);
-    void valueChanged ( int value );
-    void valueChanged ( double d );
+    void timerDone();
+    void valueChanged(int value);
+    void valueChanged(double d);
 
 protected:
-    void setTo(void);
+    void setTo();
 
-    QTimer *timer;
+    QTimer* timer;
 
     Robot::Simulation sim;
 
-    ViewProviderRobotObject *ViewProv;
+    ViewProviderRobotObject* ViewProv;
 
     bool Run;
     bool block;
 
     float timePos;
     float duration;
-private:
 
+private:
+    std::unique_ptr<Ui_DlgTrajectorySimulate> ui;
 };
 
-} //namespace PartDesignGui
+}  // namespace RobotGui
 
-#endif // GUI_TASKVIEW_TrajectorySimulate_H
+#endif  // GUI_TASKVIEW_TrajectorySimulate_H

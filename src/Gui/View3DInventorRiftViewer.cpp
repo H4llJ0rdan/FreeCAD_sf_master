@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2014 Juergen Riegel <FreeCAD@juergen-riegel.net>		   *
+ *   Copyright (c) 2014 Jürgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,15 +20,16 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 
 #if BUILD_VR
 
-#include <Base/Console.h>
-#include "View3DInventorRiftViewer.h"
 #include <App/Application.h>
+#include <Base/Console.h>
+
+#include "View3DInventorRiftViewer.h"
+
 
 using namespace Gui;
 
@@ -36,7 +37,7 @@ View3DInventorRiftViewer::View3DInventorRiftViewer() : CoinRiftWidget()
 {
     workplace = new SoGroup();
 
-    //translation  = new SoTranslation   ; 
+    //translation  = new SoTranslation   ;
     //translation->translation.setValue(0,-1,0);
     //workplace->addChild(translation);
 
@@ -52,34 +53,34 @@ View3DInventorRiftViewer::View3DInventorRiftViewer() : CoinRiftWidget()
 
 
     scale        = new SoScale         ;
-    scale->scaleFactor.setValue(0.001f,0.001f,0.001f); // scale from mm to m as neede by the Rift
+    scale->scaleFactor.setValue(0.001f,0.001f,0.001f); // scale from mm to m as needed by the Rift
     workplace->addChild(scale);
 
     ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Oculus");
-    
+
     this->setGeometry( hGrp->GetInt("RenderWindowPosX",100) ,
                        hGrp->GetInt("RenderWindowPosY",100) ,
                        hGrp->GetInt("RenderWindowSizeW",1920) ,
-                       hGrp->GetInt("RenderWindowSizeH",1080)                   
+                       hGrp->GetInt("RenderWindowSizeH",1080)
                      );
 
-    
+
     setBackgroundColor(SbColor(51,51,101));
     basePosition = SbVec3f(0.0f, 0.5f, 0.8f);
 }
 
-//void saveWinPostion(void)
+//void saveWinPosition(void)
 //{
-//  
-// 
+//
+//
 //
 //}
 
-View3DInventorRiftViewer::~View3DInventorRiftViewer() 
+View3DInventorRiftViewer::~View3DInventorRiftViewer()
 {
     ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Oculus");
 
-    // remeber last postion on close
+    // remember last position on close
     hGrp->SetInt("RenderWindowPosX",pos().x());
     hGrp->SetInt("RenderWindowPosY",pos().y());
     hGrp->SetInt("RenderWindowSizeW",size().width());
@@ -103,7 +104,7 @@ void View3DInventorRiftViewer::setSceneGraph(SoNode *sceneGraph)
 void View3DInventorRiftViewer::keyPressEvent(QKeyEvent *event)
 {
     static const float increment = 0.02; // move two centimeter per key
-    static const float rotIncrement = M_PI/4; // move two 90�  per key
+    static const float rotIncrement = M_PI/4; // move two 90° per key
 
 
     if (event->key() == Qt::Key_Plus) {
@@ -140,7 +141,7 @@ static View3DInventorRiftViewer *window=0;
 
 void oculusSetTestScene(View3DInventorRiftViewer *window)
 {
-	assert(window);
+    assert(window);
     // An example scene.
     static const char * inlineSceneGraph[] = {
         "#Inventor V2.1 ascii\n",
@@ -184,17 +185,17 @@ void oculusSetTestScene(View3DInventorRiftViewer *window)
 void oculusStop()
 {
     //SoDB::finish();
-	if(window){
-		delete window;
-		window = 0;
+    if(window){
+        delete window;
+        window = 0;
         ovr_Shutdown();
-	}
+    }
 
 }
 
 bool oculusUp(void)
 {
-	return window!=0;
+    return window!=0;
 }
 
 View3DInventorRiftViewer* oculusStart(void)
@@ -210,14 +211,14 @@ View3DInventorRiftViewer* oculusStart(void)
         qDebug() << "Could not initialize Oculus SDK.";
         return 0;
     }
-	if(window)
-		return window;
+    if(window)
+        return window;
 
     window = new View3DInventorRiftViewer;
     window->show();
 
 
-	return window;
+    return window;
     //return app.exec();
 }
 

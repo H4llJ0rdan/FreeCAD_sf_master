@@ -24,12 +24,19 @@
 #ifndef BASE_TOOLS_H
 #define BASE_TOOLS_H
 
+#ifndef FC_GLOBAL_H
+#include <FCGlobal.h>
+#endif
 #include <functional>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <vector>
 #include <string>
+#include <boost_signals2.hpp>
+#include <QString>
+
+// ----------------------------------------------------------------------------
 
 namespace Base
 {
@@ -79,12 +86,12 @@ inline std::ostream& blanksN(std::ostream& os, int n)
 
 inline manipulator<int> tabs(int n)
 {
-    return manipulator<int>(&tabsN, n);
+    return {&tabsN, n};
 }
 
 inline manipulator<int> blanks(int n)
 {
-    return manipulator<int>(&blanksN, n);
+    return {&blanksN, n};
 }
 
 // ----------------------------------------------------------------------------
@@ -136,12 +143,100 @@ public:
     ~StopWatch();
 
     void start();
+    int restart();
     int elapsed();
     std::string toString(int ms) const;
 
 private:
     struct Private;
     Private* d;
+};
+
+// ----------------------------------------------------------------------------
+
+template<typename Flag=bool>
+struct FlagToggler {
+
+    Flag &flag;
+    bool toggled;
+
+    FlagToggler(Flag &_flag)
+        :flag(_flag),toggled(true)
+    {
+        flag = !flag;
+    }
+
+    FlagToggler(Flag &_flag, Flag check)
+        :flag(_flag),toggled(check==_flag)
+    {
+        if (toggled)
+            flag = !flag;
+    }
+
+    ~FlagToggler() {
+        if (toggled)
+            flag = !flag;
+    }
+};
+
+// ----------------------------------------------------------------------------
+
+template<typename Status, class Object>
+class ObjectStatusLocker
+{
+public:
+    ObjectStatusLocker(Status s, Object* o, bool value = true) : status(s), obj(o)
+    { old_value = obj->testStatus(status); obj->setStatus(status, value); }
+    ~ObjectStatusLocker()
+    { obj->setStatus(status, old_value); }
+private:
+    Status status;
+    Object* obj;
+    bool old_value;
+};
+
+// ----------------------------------------------------------------------------
+
+class StateLocker
+{
+public:
+    StateLocker(bool& flag, bool value = true) : lock(flag)
+    { old_value = lock; lock = value; }
+    ~StateLocker()
+    { lock = old_value; }
+private:
+    bool& lock;
+    bool old_value;
+};
+
+// ----------------------------------------------------------------------------
+
+template<typename T>
+class BitsetLocker
+{
+public:
+    BitsetLocker(T& flags, std::size_t flag, bool value = true)
+        : flags(flags), flag(flag)
+    { oldValue = flags.test(flag); flags.set(flag,value); }
+    ~BitsetLocker()
+    { flags.set(flag,oldValue); }
+private:
+    T &flags;
+    std::size_t flag;
+    bool oldValue;
+};
+
+// ----------------------------------------------------------------------------
+
+class ConnectionBlocker {
+    using Connection = boost::signals2::connection;
+    using ConnectionBlock = boost::signals2::shared_connection_block;
+    ConnectionBlock blocker;
+
+public:
+    ConnectionBlocker(Connection& c) : blocker(c) {
+    }
+    ~ConnectionBlocker() = default;
 };
 
 // ----------------------------------------------------------------------------
@@ -154,7 +249,56 @@ struct BaseExport Tools
     static std::wstring widen(const std::string& str);
     static std::string narrow(const std::wstring& str);
     static std::string escapedUnicodeFromUtf8(const char *s);
+    static std::string escapedUnicodeToUtf8(const std::string& s);
+
+    static QString escapeEncodeString(const QString& s);
+    static std::string escapeEncodeString(const std::string& s);
+    static QString escapeEncodeFilename(const QString& s);
+    static std::string escapeEncodeFilename(const std::string& s);
+
+    /**
+     * @brief toStdString Convert a QString into a UTF-8 encoded std::string.
+     * @param s String to convert.
+     * @return A std::string encoded as UTF-8.
+     */
+    static inline std::string toStdString(const QString& s) {
+        QByteArray tmp = s.toUtf8();
+        return {tmp.constData(), static_cast<size_t>(tmp.size())};
+    }
+
+    /**
+     * @brief fromStdString Convert a std::string encoded as UTF-8 into a QString.
+     * @param s std::string, expected to be UTF-8 encoded.
+     * @return String represented as a QString.
+     */
+    static inline QString fromStdString(const std::string & s) {
+        return QString::fromUtf8(s.c_str(), static_cast<int>(s.size()));
+    }
+
+    /**
+     * @brief quoted Creates a quoted string.
+     * @param String to be quoted.
+     * @return A quoted std::string.
+     */
+    static std::string quoted(const char*);
+    /**
+     * @brief quoted Creates a quoted string.
+     * @param String to be quoted.
+     * @return A quoted std::string.
+     */
+    static std::string quoted(const std::string&);
+
+    /**
+     * @brief joinList
+     * Join the vector of strings \a vec using the separator \a sep
+     * @param vec
+     * @param sep
+     * @return
+     */
+    static std::string joinList(const std::vector<std::string>& vec,
+                                const std::string& sep = ", ");
 };
+
 
 } // namespace Base
 

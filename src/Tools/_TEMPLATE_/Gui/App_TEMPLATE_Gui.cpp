@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) YEAR YOUR NAME         <Your e-mail address>            *
+ *   Copyright (c) YEAR YOUR NAME <Your e-mail address>                    *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,44 +23,64 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <Python.h>
+#include <Python.h>
 #endif
 
 #include <Base/Console.h>
+#include <Base/Interpreter.h>
+#include <Base/PyObjectBase.h>
 #include <Gui/Application.h>
 
 #include "Workbench.h"
+
+#include <CXX/Extensions.hxx>
+#include <CXX/Objects.hxx>
 
 // use a different name to CreateCommand()
 void Create_TEMPLATE_Commands(void);
 
 
-/* registration table  */
-extern struct PyMethodDef _TEMPLATE_Gui_methods[];
+namespace _TEMPLATE_Gui
+{
+class Module: public Py::ExtensionModule<Module>
+{
+public:
+    Module()
+        : Py::ExtensionModule<Module>("_TEMPLATE_Gui")
+    {
+        initialize("This module is the _TEMPLATE_Gui module.");  // register with Python
+    }
 
-PyDoc_STRVAR(module__TEMPLATE_Gui_doc,
-"This module is the _TEMPLATE_Gui module.");
+    virtual ~Module()
+    {}
+
+private:
+};
+
+PyObject* initModule()
+{
+    return Base::Interpreter().addModule(new Module);
+}
+
+}  // namespace _TEMPLATE_Gui
 
 
 /* Python entry */
-extern "C" {
-void _TEMPLATE_GuiExport init_TEMPLATE_Gui()
+PyMOD_INIT_FUNC(_TEMPLATE_Gui)
 {
     if (!Gui::Application::Instance) {
         PyErr_SetString(PyExc_ImportError, "Cannot load Gui module in console application.");
-        return;
+        PyMOD_Return(0);
     }
 
-    // instanciating the commands
+    // instantiating the commands
     Create_TEMPLATE_Commands();
     _TEMPLATE_Gui::Workbench::init();
 
     // ADD YOUR CODE HERE
     //
     //
-
-    (void) Py_InitModule3("_TEMPLATE_Gui", _TEMPLATE_Gui_methods, module__TEMPLATE_Gui_doc);   /* mod name, table ptr */
+    PyObject* mod = _TEMPLATE_Gui::initModule();
     Base::Console().Log("Loading GUI of _TEMPLATE_ module... done\n");
+    PyMOD_Return(mod);
 }
-
-} // extern "C"

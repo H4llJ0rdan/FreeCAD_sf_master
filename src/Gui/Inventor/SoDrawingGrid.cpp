@@ -21,21 +21,26 @@
  ***************************************************************************/
 
 #include "PreCompiled.h"
+
+#ifndef _PreComp_
+# include <QObject>
+# include <Inventor/actions/SoGLRenderAction.h>
+# include <Inventor/elements/SoCacheElement.h>
+# include <Inventor/elements/SoLazyElement.h>
+# include <Inventor/elements/SoModelMatrixElement.h>
+# include <Inventor/elements/SoProjectionMatrixElement.h>
+# include <Inventor/elements/SoViewingMatrixElement.h>
+# include <Inventor/elements/SoViewportRegionElement.h>
+#endif
+
 #ifdef FC_OS_MACOSX
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
 #endif
-#include <Inventor/actions/SoGLRenderAction.h>
-#include <Inventor/elements/SoCacheElement.h>
-#include <Inventor/elements/SoLazyElement.h>
-#include <Inventor/elements/SoModelMatrixElement.h>
-#include <Inventor/elements/SoProjectionMatrixElement.h>
-#include <Inventor/elements/SoViewingMatrixElement.h>
-#include <Inventor/elements/SoViewVolumeElement.h>
-#include <Inventor/elements/SoViewportRegionElement.h>
 
 #include "SoDrawingGrid.h"
+
 
 using namespace Gui::Inventor;
 
@@ -45,7 +50,7 @@ grid=coin.SoType.fromName("SoDrawingGrid").createInstance()
 Gui.ActiveDocument.ActiveView.getSceneGraph().addChild(grid)
 */
 
-SO_NODE_SOURCE(SoDrawingGrid);
+SO_NODE_SOURCE(SoDrawingGrid)
 
 void
 SoDrawingGrid::initClass()
@@ -174,10 +179,14 @@ SoDrawingGrid::GLRenderOffPath(SoGLRenderAction *)
 void
 SoDrawingGrid::generatePrimitives(SoAction* action)
 {
+    Q_UNUSED(action); 
 }
 
 void
 SoDrawingGrid::computeBBox(SoAction *action, SbBox3f &box, SbVec3f &center)
 {
+    Q_UNUSED(action); 
+    Q_UNUSED(box); 
+    Q_UNUSED(center); 
     //SoState*  state = action->getState();
 }

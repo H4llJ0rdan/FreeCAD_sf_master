@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2007 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2007 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is Drawing of the FreeCAD CAx development system.           *
  *                                                                         *
@@ -20,12 +20,15 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef DRAWINGGUI_DRAWINGVIEW_H
 #define DRAWINGGUI_DRAWINGVIEW_H
 
-#include <Gui/MDIView.h>
 #include <QGraphicsView>
+#include <QPrinter>
+
+#include <Gui/MDIView.h>
+#include <Mod/Drawing/DrawingGlobal.h>
+
 
 QT_BEGIN_NAMESPACE
 class QSlider;
@@ -42,18 +45,27 @@ QT_END_NAMESPACE
 namespace DrawingGui
 {
 
-class DrawingGuiExport SvgView : public QGraphicsView
+class DrawingGuiExport SvgView: public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    enum RendererType { Native, OpenGL, Image };
+    enum RendererType
+    {
+        Native,
+        OpenGL,
+        Image
+    };
 
-    SvgView(QWidget *parent = 0);
+    SvgView(QWidget* parent = nullptr);
 
-    void openFile(const QFile &file);
+    void openFile(const QFile& file);
     void setRenderer(RendererType type = Native);
-    void drawBackground(QPainter *p, const QRectF &rect);
+    void drawBackground(QPainter* p, const QRectF& rect);
+    void setZoomInverted(bool on)
+    {
+        m_invertZoom = on;
+    }
 
 public Q_SLOTS:
     void setHighQualityAntialiasing(bool highQualityAntialiasing);
@@ -61,57 +73,66 @@ public Q_SLOTS:
     void setViewOutline(bool enable);
 
 protected:
-    void wheelEvent(QWheelEvent *event);
-    void paintEvent(QPaintEvent *event);
+    void wheelEvent(QWheelEvent* event);
+    void paintEvent(QPaintEvent* event);
 
 private:
     RendererType m_renderer;
 
-    QGraphicsItem *m_svgItem;
-    QGraphicsRectItem *m_backgroundItem;
-    QGraphicsRectItem *m_outlineItem;
+    QGraphicsItem* m_svgItem;
+    QGraphicsRectItem* m_backgroundItem;
+    QGraphicsRectItem* m_outlineItem;
 
     QImage m_image;
+    bool m_invertZoom;
 };
 
-class DrawingGuiExport DrawingView : public Gui::MDIView
+class DrawingGuiExport DrawingView: public Gui::MDIView
 {
     Q_OBJECT
 
 public:
-    DrawingView(Gui::Document* doc, QWidget* parent = 0);
+    DrawingView(Gui::Document* doc, QWidget* parent = nullptr);
+    virtual ~DrawingView();
 
 public Q_SLOTS:
-    void load(const QString &path = QString());
-    void setRenderer(QAction *action);
+    void load(const QString& path = QString());
+    void setRenderer(QAction* action);
     void viewAll();
 
 public:
-    bool onMsg(const char* pMsg,const char** ppReturn);
+    bool onMsg(const char* pMsg, const char** ppReturn);
     bool onHasMsg(const char* pMsg) const;
-    void onRelabel(Gui::Document *pDoc);
+    void onRelabel(Gui::Document* pDoc);
     void print();
     void printPdf();
     void printPreview();
     void print(QPrinter* printer);
+    void setDocumentObject(const std::string&);
     PyObject* getPyObject();
 
 protected:
-    void contextMenuEvent(QContextMenuEvent *event);
+    void contextMenuEvent(QContextMenuEvent* event);
+    void closeEvent(QCloseEvent*);
+    void findPrinterSettings(const QString&);
+    QPageSize::PageSizeId getPageSize(int w, int h) const;
 
 private:
-    QAction *m_nativeAction;
-    QAction *m_glAction;
-    QAction *m_imageAction;
-    QAction *m_highQualityAntialiasingAction;
-    QAction *m_backgroundAction;
-    QAction *m_outlineAction;
+    QAction* m_nativeAction;
+    QAction* m_glAction;
+    QAction* m_imageAction;
+    QAction* m_highQualityAntialiasingAction;
+    QAction* m_backgroundAction;
+    QAction* m_outlineAction;
 
-    SvgView *m_view;
+    SvgView* m_view;
+    std::string m_objectName;
 
     QString m_currentPath;
+    QPageLayout::Orientation m_orientation;
+    QPageSize::PageSizeId m_pageSize;
 };
 
-} // namespace DrawingViewGui
+}  // namespace DrawingGui
 
-#endif // DRAWINGGUI_DRAWINGVIEW_H
+#endif  // DRAWINGGUI_DRAWINGVIEW_H

@@ -44,27 +44,29 @@ class ViewProviderPointMarker;
 class PointMarker : public QObject
 {
 public:
-    PointMarker(View3DInventorViewer* view);
-    ~PointMarker();
+    explicit PointMarker(View3DInventorViewer* view);
+    ~PointMarker() override;
 
     void addPoint(const SbVec3f&);
     int countPoints() const;
 
 protected:
-    void customEvent(QEvent* e);
+    void customEvent(QEvent* e) override;
 
 private:
     View3DInventorViewer *view;
     ViewProviderPointMarker *vp;
+    bool previousSelectionEn;
 };
 
 class GuiExport ViewProviderPointMarker : public ViewProviderDocumentObject
 {
-    PROPERTY_HEADER(Gui::ViewProviderPointMarker);
+    PROPERTY_HEADER_WITH_OVERRIDE(Gui::ViewProviderPointMarker);
 
 public:
     ViewProviderPointMarker();
-    virtual ~ViewProviderPointMarker();
+    ~ViewProviderPointMarker() override;
+    bool isPartOfPhysicalObject() const override;
 
 protected:
     SoCoordinate3    * pCoords;
@@ -74,12 +76,13 @@ protected:
 
 class GuiExport ViewProviderMeasureDistance : public ViewProviderDocumentObject
 {
-    PROPERTY_HEADER(Gui::ViewProviderMeasureDistance);
+    PROPERTY_HEADER_WITH_OVERRIDE(Gui::ViewProviderMeasureDistance);
 
 public:
     /// Constructor
-    ViewProviderMeasureDistance(void);
-    virtual ~ViewProviderMeasureDistance();
+    ViewProviderMeasureDistance();
+    ~ViewProviderMeasureDistance() override;
+    bool isPartOfPhysicalObject() const override;
 
     // Display properties
     App::PropertyColor          TextColor;
@@ -88,15 +91,16 @@ public:
     App::PropertyFloat          DistFactor;
     App::PropertyBool           Mirror;
 
-    void attach(App::DocumentObject *);
-    void updateData(const App::Property*);
-    std::vector<std::string> getDisplayModes(void) const;
-    void setDisplayMode(const char* ModeName);
+    void attach(App::DocumentObject *) override;
+    void updateData(const App::Property*) override;
+    bool useNewSelectionModel() const override {return true;}
+    std::vector<std::string> getDisplayModes() const override;
+    void setDisplayMode(const char* ModeName) override;
 
     static void measureDistanceCallback(void * ud, SoEventCallback * n);
 
 protected:
-    void onChanged(const App::Property* prop);
+    void onChanged(const App::Property* prop) override;
 
 private:
     SoFontStyle      * pFont;
@@ -106,6 +110,8 @@ private:
     SoTranslation    * pTranslation;
     SoCoordinate3    * pCoords;
     SoIndexedLineSet * pLines;
+
+    static void endMeasureDistanceMode(void * ud, Gui::View3DInventorViewer* view, SoEventCallback * n, PointMarker *pm);
 };
 
 } //namespace Gui

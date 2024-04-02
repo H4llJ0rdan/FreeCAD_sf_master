@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,49 +20,48 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef ROBOT_ViewProviderTrajectory_H
 #define ROBOT_ViewProviderTrajectory_H
 
-#include <Inventor/VRMLnodes/SoVRMLTransform.h>
-#include <Gui/ViewProviderGeometryObject.h>
 #include <Gui/SoFCSelection.h>
+#include <Gui/ViewProviderGeometryObject.h>
+#include <Mod/Robot/RobotGlobal.h>
 
-class SoDragger;
-class SoJackDragger;
+
 class SoCoordinate3;
-class SoDrawStyle;  
-class SoLineSet; 
+class SoDragger;
+class SoDrawStyle;
+class SoJackDragger;
+class SoLineSet;
 
 namespace RobotGui
 {
 
-class RobotGuiExport ViewProviderTrajectory : public Gui::ViewProviderGeometryObject
+class RobotGuiExport ViewProviderTrajectory: public Gui::ViewProviderGeometryObject
 {
-    PROPERTY_HEADER(RobotGui::ViewProviderTrajectory);
+    PROPERTY_HEADER_WITH_OVERRIDE(RobotGui::ViewProviderTrajectory);
 
 public:
     /// constructor.
     ViewProviderTrajectory();
 
     /// destructor.
-    ~ViewProviderTrajectory();
+    ~ViewProviderTrajectory() override;
 
-    void attach(App::DocumentObject *pcObject);
-    void setDisplayMode(const char* ModeName);
-    std::vector<std::string> getDisplayModes() const;
-    void updateData(const App::Property*);
+    void attach(App::DocumentObject* pcObject) override;
+    void setDisplayMode(const char* ModeName) override;
+    std::vector<std::string> getDisplayModes() const override;
+    void updateData(const App::Property*) override;
+    void setupContextMenu(QMenu* menu, QObject* receiver, const char* member) override;
 
 protected:
- 
-    Gui::SoFCSelection    * pcTrajectoryRoot;
-    SoCoordinate3         * pcCoords;
-    SoDrawStyle           * pcDrawStyle;
-    SoLineSet             * pcLines;
+    Gui::SoFCSelection* pcTrajectoryRoot;
+    SoCoordinate3* pcCoords;
+    SoDrawStyle* pcDrawStyle;
+    SoLineSet* pcLines;
+};
 
- };
-
-} //namespace RobotGui
+}  // namespace RobotGui
 
 
-#endif // ROBOT_VIEWPROVIDERROBOTOBJECT_H
+#endif  // ROBOT_VIEWPROVIDERROBOTOBJECT_H

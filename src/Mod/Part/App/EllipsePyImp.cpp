@@ -20,69 +20,68 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <gp_Elips.hxx>
-# include <Geom_Ellipse.hxx>
 # include <GC_MakeEllipse.hxx>
+# include <Geom_Ellipse.hxx>
 #endif
 
 #include <Base/GeometryPyCXX.h>
+#include <Base/PyWrapParseTupleAndKeywords.h>
 #include <Base/VectorPy.h>
 
-#include "OCCError.h"
-#include "Geometry.h"
 #include "EllipsePy.h"
 #include "EllipsePy.cpp"
+#include "OCCError.h"
+
 
 using namespace Part;
 
 extern const char* gce_ErrorStatusText(gce_ErrorType et);
 
 // returns a string which represents the object e.g. when printed in python
-std::string EllipsePy::representation(void) const
+std::string EllipsePy::representation() const
 {
     return "<Ellipse object>";
 }
 
 PyObject *EllipsePy::PyMake(struct _typeobject *, PyObject *, PyObject *)  // Python wrapper
 {
-    // create a new instance of EllipsePy and the Twin object 
+    // create a new instance of EllipsePy and the Twin object
     return new EllipsePy(new GeomEllipse);
 }
 
 // constructor method
 int EllipsePy::PyInit(PyObject* args, PyObject* kwds)
 {
-    char* keywords_n[] = {NULL};
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "", keywords_n)) {
-        Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
+    static const std::array<const char *, 1> keywords_n {nullptr};
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "", keywords_n)) {
+        Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
         ellipse->SetMajorRadius(2.0);
         ellipse->SetMinorRadius(1.0);
         return 0;
     }
 
-    char* keywords_e[] = {"Ellipse",NULL};
+    static const std::array<const char *, 2> keywords_e {"Ellipse", nullptr};
     PyErr_Clear();
     PyObject *pElips;
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!",keywords_e, &(EllipsePy::Type), &pElips)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!",keywords_e, &(EllipsePy::Type), &pElips)) {
         EllipsePy* pEllipse = static_cast<EllipsePy*>(pElips);
-        Handle_Geom_Ellipse Elips1 = Handle_Geom_Ellipse::DownCast
+        Handle(Geom_Ellipse) Elips1 = Handle(Geom_Ellipse)::DownCast
             (pEllipse->getGeomEllipsePtr()->handle());
-        Handle_Geom_Ellipse Elips2 = Handle_Geom_Ellipse::DownCast
+        Handle(Geom_Ellipse) Elips2 = Handle(Geom_Ellipse)::DownCast
             (this->getGeomEllipsePtr()->handle());
         Elips2->SetElips(Elips1->Elips());
         return 0;
     }
 
-    char* keywords_ssc[] = {"S1","S2","Center",NULL};
+    static const std::array<const char *, 4> keywords_ssc {"S1", "S2", "Center", nullptr};
     PyErr_Clear();
     PyObject *pV1, *pV2, *pV3;
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O!", keywords_ssc,
-                                         &(Base::VectorPy::Type), &pV1,
-                                         &(Base::VectorPy::Type), &pV2,
-                                         &(Base::VectorPy::Type), &pV3)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!O!O!", keywords_ssc,
+                                            &(Base::VectorPy::Type), &pV1,
+                                            &(Base::VectorPy::Type), &pV2,
+                                            &(Base::VectorPy::Type), &pV3)) {
         Base::Vector3d v1 = static_cast<Base::VectorPy*>(pV1)->value();
         Base::Vector3d v2 = static_cast<Base::VectorPy*>(pV2)->value();
         Base::Vector3d v3 = static_cast<Base::VectorPy*>(pV3)->value();
@@ -94,16 +93,16 @@ int EllipsePy::PyInit(PyObject* args, PyObject* kwds)
             return -1;
         }
 
-        Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
+        Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
         ellipse->SetElips(me.Value()->Elips());
         return 0;
     }
 
-    char* keywords_cmm[] = {"Center","MajorRadius","MinorRadius",NULL};
+    static const std::array<const char *, 4> keywords_cmm {"Center", "MajorRadius", "MinorRadius", nullptr};
     PyErr_Clear();
     PyObject *pV;
     double major, minor;
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!dd", keywords_cmm,
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!dd", keywords_cmm,
                                         &(Base::VectorPy::Type), &pV,
                                         &major, &minor)) {
         Base::Vector3d c = static_cast<Base::VectorPy*>(pV)->value();
@@ -114,7 +113,7 @@ int EllipsePy::PyInit(PyObject* args, PyObject* kwds)
             return -1;
         }
 
-        Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
+        Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
         ellipse->SetElips(me.Value()->Elips());
         return 0;
     }
@@ -127,129 +126,56 @@ int EllipsePy::PyInit(PyObject* args, PyObject* kwds)
     return -1;
 }
 
-Py::Float EllipsePy::getMajorRadius(void) const
+Py::Float EllipsePy::getMajorRadius() const
 {
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
-    return Py::Float(ellipse->MajorRadius()); 
+    Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
+    return Py::Float(ellipse->MajorRadius());
 }
 
 void EllipsePy::setMajorRadius(Py::Float arg)
 {
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
+    Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
     ellipse->SetMajorRadius((double)arg);
 }
 
-Py::Float EllipsePy::getMinorRadius(void) const
+Py::Float EllipsePy::getMinorRadius() const
 {
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
-    return Py::Float(ellipse->MinorRadius()); 
+    Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
+    return Py::Float(ellipse->MinorRadius());
 }
 
 void EllipsePy::setMinorRadius(Py::Float arg)
 {
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
+    Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
     ellipse->SetMinorRadius((double)arg);
 }
 
-Py::Float EllipsePy::getEccentricity(void) const
+Py::Float EllipsePy::getFocal() const
 {
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
-    return Py::Float(ellipse->Eccentricity()); 
+    Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
+    return Py::Float(ellipse->Focal());
 }
 
-Py::Float EllipsePy::getFocal(void) const
+Py::Object EllipsePy::getFocus1() const
 {
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
-    return Py::Float(ellipse->Focal()); 
-}
-
-Py::Object EllipsePy::getFocus1(void) const
-{
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
+    Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
     gp_Pnt loc = ellipse->Focus1();
     return Py::Vector(Base::Vector3d(loc.X(), loc.Y(), loc.Z()));
 }
 
-Py::Object EllipsePy::getFocus2(void) const
+Py::Object EllipsePy::getFocus2() const
 {
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
+    Handle(Geom_Ellipse) ellipse = Handle(Geom_Ellipse)::DownCast(getGeomEllipsePtr()->handle());
     gp_Pnt loc = ellipse->Focus2();
     return Py::Vector(Base::Vector3d(loc.X(), loc.Y(), loc.Z()));
 }
 
-Py::Object EllipsePy::getCenter(void) const
-{
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
-    gp_Pnt loc = ellipse->Location();
-    return Py::Vector(Base::Vector3d(loc.X(), loc.Y(), loc.Z()));
-}
-
-void EllipsePy::setCenter(Py::Object arg)
-{
-    PyObject* p = arg.ptr();
-    if (PyObject_TypeCheck(p, &(Base::VectorPy::Type))) {
-        Base::Vector3d loc = static_cast<Base::VectorPy*>(p)->value();
-        Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
-        ellipse->SetLocation(gp_Pnt(loc.x, loc.y, loc.z));
-    }
-    else if (PyTuple_Check(p)) {
-        Py::Tuple tuple(arg);
-        gp_Pnt loc;
-        loc.SetX((double)Py::Float(tuple.getItem(0)));
-        loc.SetY((double)Py::Float(tuple.getItem(1)));
-        loc.SetZ((double)Py::Float(tuple.getItem(2)));
-        Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
-        ellipse->SetLocation(loc);
-    }
-    else {
-        std::string error = std::string("type must be 'Vector', not ");
-        error += p->ob_type->tp_name;
-        throw Py::TypeError(error);
-    }
-}
-
-Py::Object EllipsePy::getAxis(void) const
-{
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
-    gp_Ax1 axis = ellipse->Axis();
-    gp_Dir dir = axis.Direction();
-    return Py::Vector(Base::Vector3d(dir.X(), dir.Y(), dir.Z()));
-}
-
-void EllipsePy::setAxis(Py::Object arg)
-{
-    PyObject* p = arg.ptr();
-    Base::Vector3d val;
-    if (PyObject_TypeCheck(p, &(Base::VectorPy::Type))) {
-        val = static_cast<Base::VectorPy*>(p)->value();
-    }
-    else if (PyTuple_Check(p)) {
-        val = Base::getVectorFromTuple<double>(p);
-    }
-    else {
-        std::string error = std::string("type must be 'Vector', not ");
-        error += p->ob_type->tp_name;
-        throw Py::TypeError(error);
-    }
-
-    Handle_Geom_Ellipse ellipse = Handle_Geom_Ellipse::DownCast(getGeomEllipsePtr()->handle());
-    try {
-        gp_Ax1 axis;
-        axis.SetLocation(ellipse->Location());
-        axis.SetDirection(gp_Dir(val.x, val.y, val.z));
-        ellipse->SetAxis(axis);
-    }
-    catch (Standard_Failure) {
-        throw Py::Exception("cannot set axis");
-    }
-}
-
 PyObject *EllipsePy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int EllipsePy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }

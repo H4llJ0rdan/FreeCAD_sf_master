@@ -20,18 +20,20 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
+
 #ifndef _PreComp_
+# include <qglobal.h>
 # include <iomanip>
 # include <ios>
+# include <Inventor/SbBSPTree.h>
 #endif
-#include <Inventor/SbBasic.h>
-#include <Inventor/SbBSPTree.h>
 
 #include <Base/FileInfo.h>
 #include <Base/Tools.h>
+
 #include "SoFCVectorizeU3DAction.h"
+
 
 using namespace Gui;
 
@@ -56,9 +58,11 @@ public:
 
 class SoVectorizePoint : public SoVectorizeItem {
 public:
-    SoVectorizePoint(void) {
+    SoVectorizePoint() {
         this->type = POINT;
+        this->vidx = 0;
         this->size = 1.0f;
+        this->col = 0;
     }
     int vidx;       // index to BSPtree coordinate
     float size;     // Coin size (pixels)
@@ -67,7 +71,7 @@ public:
 
 class SoVectorizeTriangle : public SoVectorizeItem {
 public:
-    SoVectorizeTriangle(void) {
+    SoVectorizeTriangle() {
         this->type = TRIANGLE;
     }
     int vidx[3];      // indices to BSPtree coordinates
@@ -76,8 +80,12 @@ public:
 
 class SoVectorizeLine : public SoVectorizeItem {
 public:
-    SoVectorizeLine(void) {
+    SoVectorizeLine() {
         this->type = LINE;
+        vidx[0] = 0;
+        vidx[1] = 0;
+        col[0] = 0;
+        col[1] = 0;
         this->pattern = 0xffff;
         this->width = 1.0f;
     }
@@ -89,8 +97,11 @@ public:
 
 class SoVectorizeText : public SoVectorizeItem {
 public:
-    SoVectorizeText(void) {
+    SoVectorizeText() {
         this->type = TEXT;
+        this->fontsize = 10;
+        this->col = 0;
+        this->justification = LEFT;
     }
 
     enum Justification {
@@ -109,8 +120,10 @@ public:
 
 class SoVectorizeImage : public SoVectorizeItem {
 public:
-    SoVectorizeImage(void) {
+    SoVectorizeImage() {
         this->type = IMAGE;
+        this->image.data = nullptr;
+        this->image.nc = 0;
     }
 
     SbVec2f pos;        // pos in normalized coordinates
@@ -125,9 +138,7 @@ public:
 
 // ----------------------------------------------------------------
 
-SoU3DVectorOutput::SoU3DVectorOutput()
-{
-}
+SoU3DVectorOutput::SoU3DVectorOutput() = default;
 
 SoU3DVectorOutput::~SoU3DVectorOutput()
 {
@@ -146,7 +157,7 @@ SbBool SoU3DVectorOutput::openFile (const char *filename)
     return this->file.is_open();
 }
 
-void SoU3DVectorOutput::closeFile (void)
+void SoU3DVectorOutput::closeFile ()
 {
     if (this->file.is_open())
         this->file.close();
@@ -163,7 +174,7 @@ namespace Gui {
 class SoFCVectorizeU3DActionP
 {
 public:
-    SoFCVectorizeU3DActionP(SoFCVectorizeU3DAction * p) {
+    explicit SoFCVectorizeU3DActionP(SoFCVectorizeU3DAction * p) {
         this->publ = p;
     }
 
@@ -190,6 +201,7 @@ void SoFCVectorizeU3DActionP::printText(const SoVectorizeText * item) const
 
     //std::ostream& str = publ->getU3DOutput()->getFileStream();
     // todo
+    Q_UNUSED(item);
 }
 
 void SoFCVectorizeU3DActionP::printTriangle(const SoVectorizeTriangle * item) const
@@ -214,21 +226,29 @@ void SoFCVectorizeU3DActionP::printTriangle(const SoVectorizeTriangle * item) co
 
 void SoFCVectorizeU3DActionP::printTriangle(const SbVec3f * v, const SbColor * c) const
 {
-    if (v[0] == v[1] || v[1] == v[2] || v[0] == v[2]) return;
+    if (v[0] == v[1] || v[1] == v[2] || v[0] == v[2])
+        return;
     //uint32_t cc = c->getPackedValue();
 
     //std::ostream& str = publ->getU3DOutput()->getFileStream();
     // todo
+    Q_UNUSED(c);
 }
 
 void SoFCVectorizeU3DActionP::printCircle(const SbVec3f & v, const SbColor & c, const float radius) const
 {
     // todo
+    Q_UNUSED(v);
+    Q_UNUSED(c);
+    Q_UNUSED(radius);
 }
 
 void SoFCVectorizeU3DActionP::printSquare(const SbVec3f & v, const SbColor & c, const float size) const
 {
     // todo
+    Q_UNUSED(v);
+    Q_UNUSED(c);
+    Q_UNUSED(size);
 }
 
 void SoFCVectorizeU3DActionP::printLine(const SoVectorizeLine * item) const
@@ -252,23 +272,26 @@ void SoFCVectorizeU3DActionP::printLine(const SoVectorizeLine * item) const
 
     //std::ostream& str = publ->getU3DOutput()->getFileStream();
     // todo
+    Q_UNUSED(item);
 }
 
 void SoFCVectorizeU3DActionP::printPoint(const SoVectorizePoint * item) const
 {
     // todo
+    Q_UNUSED(item);
 }
 
 void SoFCVectorizeU3DActionP::printImage(const SoVectorizeImage * item) const
 {
     // todo
+    Q_UNUSED(item);
 }
 
 // -------------------------------------------------------
 
-SO_ACTION_SOURCE(SoFCVectorizeU3DAction);
+SO_ACTION_SOURCE(SoFCVectorizeU3DAction)
 
-void SoFCVectorizeU3DAction::initClass(void)
+void SoFCVectorizeU3DAction::initClass()
 {
     SO_ACTION_INIT_CLASS(SoFCVectorizeU3DAction, SoVectorizeAction);
     //SO_ACTION_ADD_METHOD(SoNode, SoFCVectorizeU3DAction::actionMethod);
@@ -287,7 +310,7 @@ SoFCVectorizeU3DAction::~SoFCVectorizeU3DAction()
 }
 
 SoU3DVectorOutput *
-SoFCVectorizeU3DAction::getU3DOutput(void) const
+SoFCVectorizeU3DAction::getU3DOutput() const
 {
     return static_cast<SoU3DVectorOutput*>(SoVectorizeAction::getOutput());
 }
@@ -295,6 +318,8 @@ SoFCVectorizeU3DAction::getU3DOutput(void) const
 void
 SoFCVectorizeU3DAction::actionMethod(SoAction * a, SoNode * n)
 {
+    Q_UNUSED(a);
+    Q_UNUSED(n);
 }
 
 void SoFCVectorizeU3DAction::beginTraversal(SoNode * node)
@@ -307,7 +332,7 @@ void SoFCVectorizeU3DAction::endTraversal(SoNode * node)
     inherited::endTraversal(node);
 }
 
-void SoFCVectorizeU3DAction::printHeader(void) const
+void SoFCVectorizeU3DAction::printHeader() const
 {
     std::ostream& str = this->getU3DOutput()->getFileStream();
     str << "FILE_FORMAT \"IDTF\"" << std::endl
@@ -331,15 +356,15 @@ void SoFCVectorizeU3DAction::printHeader(void) const
     str << Base::tabs(0) << "}" << std::endl;
 }
 
-void SoFCVectorizeU3DAction::printFooter(void) const
+void SoFCVectorizeU3DAction::printFooter() const
 {
 }
 
-void SoFCVectorizeU3DAction::printViewport(void) const
+void SoFCVectorizeU3DAction::printViewport() const
 {
 }
 
-void SoFCVectorizeU3DAction::printBackground(void) const
+void SoFCVectorizeU3DAction::printBackground() const
 {
     //SbVec2f mul = getRotatedViewportSize();
     //SbVec2f add = getRotatedViewportStartpos();

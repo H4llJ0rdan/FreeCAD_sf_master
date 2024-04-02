@@ -20,36 +20,44 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PART_FEATURECOMPOUND_H
 #define PART_FEATURECOMPOUND_H
 
 #include <App/PropertyLinks.h>
 #include "PartFeature.h"
 
+
 namespace Part
 {
 
 class Compound : public Part::Feature
 {
-    PROPERTY_HEADER(Part::Compound);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Compound);
 
 public:
     Compound();
-    virtual ~Compound();
+    ~Compound() override;
 
     App::PropertyLinkList Links;
 
     /** @name methods override feature */
     //@{
-    short mustExecute() const;
+    short mustExecute() const override;
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
+    App::DocumentObjectExecReturn *execute() override;
     /// returns the type name of the view provider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderCompound";
     }
     //@}
+};
+
+/// Same as Part::Compound, except it marks the Shape as transient, and rebuild it during restore
+class Compound2 : public Compound {
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Compound2);
+public:
+    Compound2();
+    void onDocumentRestored() override;
 };
 
 } //namespace Part

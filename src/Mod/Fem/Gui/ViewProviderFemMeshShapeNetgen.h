@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,44 +20,33 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef FEM_ViewProviderFemMeshShapeNetgen_H
 #define FEM_ViewProviderFemMeshShapeNetgen_H
 
 #include "ViewProviderFemMeshShape.h"
-#include <Gui/ViewProviderBuilder.h>
-
-class SoCoordinate3;
-class SoDrawStyle;  
-class SoIndexedFaceSet; 
-class SoIndexedLineSet; 
-class SoShapeHints;
-class SoMaterialBinding;
 
 namespace FemGui
 {
 
-
-class FemGuiExport ViewProviderFemMeshShapeNetgen : public ViewProviderFemMeshShape
+class FemGuiExport ViewProviderFemMeshShapeNetgen: public ViewProviderFemMeshShape
 {
-    PROPERTY_HEADER(FemGui::ViewProviderFemMeshShapeNetgen);
+    PROPERTY_HEADER_WITH_OVERRIDE(FemGui::ViewProviderFemMeshShapeNetgen);
 
 public:
     /// constructor.
     ViewProviderFemMeshShapeNetgen();
 
     /// destructor.
-    ~ViewProviderFemMeshShapeNetgen();
+    ~ViewProviderFemMeshShapeNetgen() override;
 
-     virtual void updateData(const App::Property*);
+    void updateData(const App::Property*) override;
 
 protected:
-    virtual void setupContextMenu(QMenu* menu, QObject* receiver, const char* member);
-    virtual bool setEdit(int ModNum);
-
+    void setupContextMenu(QMenu* menu, QObject* receiver, const char* member) override;
+    bool setEdit(int ModNum) override;
 };
 
-} //namespace FemGui
+}  // namespace FemGui
 
 
-#endif // FEM_ViewProviderFemMeshShapeNetgen_H
+#endif  // FEM_ViewProviderFemMeshShapeNetgen_H

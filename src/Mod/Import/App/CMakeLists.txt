@@ -1,19 +1,12 @@
-if(MSVC)
-    add_definitions(-DFCAppImport -DHAVE_ACOSH -DHAVE_ASINH -DHAVE_ATANH)
-else(MSVC)
-    add_definitions(-DHAVE_LIMITS_H -DHAVE_CONFIG_H)
-endif(MSVC)
-
-
 include_directories(
     ${CMAKE_BINARY_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${Boost_INCLUDE_DIRS}
     ${OCC_INCLUDE_DIR}
     ${ZLIB_INCLUDE_DIR}
-    ${PYTHON_INCLUDE_PATH}
-    ${XERCESC_INCLUDE_DIR}
-    ${QT_INCLUDE_DIR}
+    ${PYTHON_INCLUDE_DIRS}
+    ${XercesC_INCLUDE_DIRS}
 )
 
 link_directories(${OCC_LIBRARY_DIR})
@@ -27,14 +20,40 @@ set(Import_LIBS
 SET(Import_SRCS
     AppImport.cpp
     AppImportPy.cpp
+    ExportOCAF.cpp
+    ExportOCAF.h
+    ExportOCAF2.cpp
+    ExportOCAF2.h
     ImportOCAF.cpp
     ImportOCAF.h
+    ImportOCAF2.cpp
+    ImportOCAF2.h
+    #ImportOCAFAssembly.cpp
+    #ImportOCAFAssembly.h
+    ReaderGltf.cpp
+    ReaderGltf.h
+    ReaderIges.cpp
+    ReaderIges.h
+    ReaderStep.cpp
+    ReaderStep.h
     StepShapePy.xml
     StepShape.h
     StepShape.cpp
     StepShapePyImp.cpp
     PreCompiled.cpp
     PreCompiled.h
+    Tools.cpp
+    Tools.h
+    WriterGltf.cpp
+    WriterGltf.h
+    WriterIges.cpp
+    WriterIges.h
+    WriterStep.cpp
+    WriterStep.h
+    dxf/ImpExpDxf.cpp
+    dxf/ImpExpDxf.h
+    dxf/dxf.cpp
+    dxf/dxf.h
 )
 
 SET(SCL_Resources
@@ -51,9 +70,14 @@ SET(SCL_Resources
     SCL/SimpleDataTypes.py
     SCL/TypeChecker.py
     SCL/Utils.py
-    automotive_design.py     # AP214e3
-    ifc2x3.py                # IFC
-    ifc4.py                  # IFC 4
+    SCL/SimpleReader.py
+    SCL/Aufspannung.stp
+    SCL/gasket1.p21
+    SCL/Product1.stp
+    SCL_output/automotive_design.py     # AP214e3
+    SCL_output/ifc2x3.py                # IFC
+    SCL_output/ifc4.py                  # IFC 4
+    PlmXmlParser.py
 )
 SOURCE_GROUP("SCL" FILES ${SCL_Resources})
 
@@ -66,7 +90,7 @@ ADD_CUSTOM_TARGET(ImportPy ALL
     SOURCES ${SCL_Resources}
 )
 
-fc_target_copy_resource(ImportPy 
+fc_target_copy_resource(ImportPy
     ${CMAKE_SOURCE_DIR}/src/Mod/Import/App
     ${CMAKE_BINARY_DIR}/Mod/Import
     ${SCL_Resources})

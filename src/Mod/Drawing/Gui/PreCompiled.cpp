@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2007     *
+ *   Copyright (c) JÃ¼rgen Riegel          (juergen.riegel@web.de) 2007     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,5 +20,4 @@
  *                                                                         *
  ***************************************************************************/
 
-
-#include "PreCompiled.h" 
+#include "PreCompiled.h"

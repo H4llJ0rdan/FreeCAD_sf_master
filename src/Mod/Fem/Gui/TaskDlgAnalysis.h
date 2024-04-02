@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -27,46 +27,49 @@
 #include <Gui/TaskView/TaskDialog.h>
 
 
-namespace Fem{
-    class FemAnalysis;
+namespace Fem
+{
+class FemAnalysis;
 }
 
-namespace FemGui {
-    class TaskAnalysisInfo ;
-    class TaskDriver;
+namespace FemGui
+{
+class TaskAnalysisInfo;
+class TaskDriver;
 
 /// simulation dialog for the TaskView
-class TaskDlgAnalysis : public Gui::TaskView::TaskDialog
+class TaskDlgAnalysis: public Gui::TaskView::TaskDialog
 {
     Q_OBJECT
 
 public:
-    TaskDlgAnalysis(Fem::FemAnalysis *);
-    ~TaskDlgAnalysis();
+    explicit TaskDlgAnalysis(Fem::FemAnalysis*);
+    ~TaskDlgAnalysis() override;
 
 public:
     /// is called the TaskView when the dialog is opened
-    virtual void open();
+    void open() override;
     /// is called by the framework if the dialog is accepted (Ok)
-    virtual bool accept();
+    bool accept() override;
     /// is called by the framework if the dialog is rejected (Cancel)
-    virtual bool reject();
-    /// is called by the framework if the user press the help button 
-    virtual void helpRequested();
+    bool reject() override;
+    /// is called by the framework if the user press the help button
+    void helpRequested() override;
 
-    /// returns for Close and Help button 
-    virtual QDialogButtonBox::StandardButtons getStandardButtons(void) const
-    { return QDialogButtonBox::Ok|QDialogButtonBox::Cancel|QDialogButtonBox::Apply; }
+    /// returns for Close and Help button
+    QDialogButtonBox::StandardButtons getStandardButtons() const override
+    {
+        return QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply;
+    }
 
 protected:
-    TaskAnalysisInfo             *info; 
-    TaskDriver                   *driver; 
+    TaskAnalysisInfo* info;
+    TaskDriver* driver;
 
-    Fem::FemAnalysis              *FemAnalysis;
+    Fem::FemAnalysis* FemAnalysis;
 };
 
 
+}  // namespace FemGui
 
-} //namespace FemGui
-
-#endif // FEMGUI_TaskDlgAnalysis_H
+#endif  // FEMGUI_TaskDlgAnalysis_H

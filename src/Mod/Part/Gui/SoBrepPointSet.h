@@ -23,23 +23,21 @@
 #ifndef PARTGUI_SOBREPPOINTSET_H
 #define PARTGUI_SOBREPPOINTSET_H
 
-#include <Inventor/fields/SoSFInt32.h>
-#include <Inventor/fields/SoMFInt32.h>
-#include <Inventor/fields/SoSFNode.h>
-#include <Inventor/fields/SoSubField.h>
-#include <Inventor/nodes/SoSubNode.h>
 #include <Inventor/nodes/SoPointSet.h>
-#include <Inventor/elements/SoLazyElement.h>
-#include <Inventor/elements/SoReplacedElement.h>
+#include <memory>
 #include <vector>
+#include <Gui/SoFCSelectionContext.h>
+#include <Mod/Part/PartGlobal.h>
 
+
+class SoCoordinateElement;
 class SoGLCoordinateElement;
 class SoTextureCoordinateBundle;
 
 namespace PartGui {
 
 class PartGuiExport SoBrepPointSet : public SoPointSet {
-    typedef SoPointSet inherited;
+    using inherited = SoPointSet;
 
     SO_NODE_HEADER(SoBrepPointSet);
 
@@ -47,26 +45,25 @@ public:
     static void initClass();
     SoBrepPointSet();
 
-    SoSFInt32 highlightIndex;
-    SoMFInt32 selectionIndex;
-
 protected:
-    virtual ~SoBrepPointSet() {};
-    virtual void GLRender(SoGLRenderAction *action);
-    virtual void GLRenderBelowPath(SoGLRenderAction * action);
-    virtual void doAction(SoAction* action); 
+    ~SoBrepPointSet() override = default;
+    void GLRender(SoGLRenderAction *action) override;
+    void GLRenderBelowPath(SoGLRenderAction * action) override;
+    void doAction(SoAction* action) override;
+
+    void getBoundingBox(SoGetBoundingBoxAction * action) override;
 
 private:
-    void renderShape(const SoGLCoordinateElement * const vertexlist,
-                     const int32_t *vertexindices,
-                     int num_vertexindices);
-    void renderHighlight(SoGLRenderAction *action);
-    void renderSelection(SoGLRenderAction *action);
+    using SelContext = Gui::SoFCSelectionContext;
+    using SelContextPtr = Gui::SoFCSelectionContextPtr;
+    void renderHighlight(SoGLRenderAction *action, SelContextPtr);
+    void renderSelection(SoGLRenderAction *action, SelContextPtr, bool push=true);
 
 private:
-    SbColor selectionColor;
-    SbColor highlightColor;
-    SoColorPacker colorpacker;
+    SelContextPtr selContext;
+    SelContextPtr selContext2;
+    Gui::SoFCSelectionCounter selCounter;
+    uint32_t packedColor{0};
 };
 
 } // namespace PartGui

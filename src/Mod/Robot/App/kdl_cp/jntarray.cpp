@@ -23,7 +23,7 @@
 
 namespace KDL
 {
-    USING_PART_OF_NAMESPACE_EIGEN
+    using namespace Eigen;
 
     JntArray::JntArray()
     {
@@ -59,13 +59,13 @@ namespace KDL
 
     double JntArray::operator()(unsigned int i,unsigned int j)const
     {
-        assert(j==0);
+        (void)j;assert(j==0);
         return data(i);
     }
 
     double& JntArray::operator()(unsigned int i,unsigned int j)
     {
-        assert(j==0);
+        (void)j;assert(j==0);
         return data(i);
     }
 
@@ -101,7 +101,7 @@ namespace KDL
 
     void MultiplyJacobian(const Jacobian& jac, const JntArray& src, Twist& dest)
     {
-        Eigen::Matrix<double,6,1> t=(jac.data*src.data).lazy();
+        Eigen::Matrix<double,6,1> t=jac.data.lazyProduct(src.data);
         dest=Twist(Vector(t(0),t(1),t(2)),Vector(t(3),t(4),t(5)));
     }
     
@@ -117,8 +117,8 @@ namespace KDL
         return src1.data.isApprox(src2.data,eps);
     }
 
-    bool operator==(const JntArray& src1,const JntArray& src2){return Equal(src1,src2);};
-    //bool operator!=(const JntArray& src1,const JntArray& src2){return Equal(src1,src2);};
+    bool operator==(const JntArray& src1,const JntArray& src2){return Equal(src1,src2);}
+    //bool operator!=(const JntArray& src1,const JntArray& src2){return Equal(src1,src2);}
 
 }
 

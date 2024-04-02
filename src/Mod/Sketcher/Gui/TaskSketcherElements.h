@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2014 Abdullah Tahiri <abdullah.tahiri.yo@gmail.com	     *
+ *   Copyright (c) 2014 Abdullah Tahiri <abdullah.tahiri.yo@gmail.com>     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,115 +20,147 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_TASKVIEW_TaskSketcherElements_H
 #define GUI_TASKVIEW_TaskSketcherElements_H
 
-#include <Gui/TaskView/TaskView.h>
-#include <Gui/Selection.h>
-#include <boost/signals.hpp>
+#include <QListWidget>
+#include <QStyledItemDelegate>
 
-namespace App {
+#include <boost_signals2.hpp>
+
+#include <Gui/Selection.h>
+#include <Gui/TaskView/TaskView.h>
+
+
+namespace App
+{
 class Property;
 }
 
-namespace SketcherGui {
+namespace SketcherGui
+{
 
 class ViewProviderSketch;
 class Ui_TaskSketcherElements;
 
-class ElementView : public QListWidget
+
+class ElementItem;
+class ElementView;
+
+// Struct to identify the selection/preselection of a subelement of the item
+enum class SubElementType
+{
+    edge,
+    start,
+    end,
+    mid,
+    none
+};
+
+class ElementView: public QListWidget
 {
     Q_OBJECT
 
 public:
-    explicit ElementView(QWidget *parent = 0);
-    ~ElementView();
+    explicit ElementView(QWidget* parent = nullptr);
+    ~ElementView() override;
+    ElementItem* itemFromIndex(const QModelIndex& index);
 
-        
-Q_SIGNALS:
-    void onFilterShortcutPressed();
-    void signalCloseShape();
-    
 protected:
-    void contextMenuEvent (QContextMenuEvent* event);
-    void keyPressEvent(QKeyEvent * event);
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
 protected Q_SLOTS:
-    void deleteSelectedItems();
     // Constraints
-    void doHorizontalDistance();
-    void doVerticalDistance();
-    void doHorizontalConstraint();
-    void doVerticalConstraint();
-    void doLockConstraint();
     void doPointCoincidence();
+    void doPointOnObjectConstraint();
+    void doVerticalDistance();
+    void doHorizontalDistance();
     void doParallelConstraint();
     void doPerpendicularConstraint();
+    void doTangentConstraint();
+    void doEqualConstraint();
+    void doSymmetricConstraint();
+    void doBlockConstraint();
+
+    void doLockConstraint();
+    void doHorizontalConstraint();
+    void doVerticalConstraint();
     void doLengthConstraint();
     void doRadiusConstraint();
+    void doDiameterConstraint();
+    void doRadiamConstraint();
     void doAngleConstraint();
-    void doEqualConstraint();
-    void doPointOnObjectConstraint();
-    void doSymetricConstraint();
-    void doTangentConstraint();
+
     // Other Commands
-    void doToggleConstruction();    
-    // Acelerators
-    void doCloseShape();
-    void doConnect();
+    void doToggleConstruction();
+
+    // Accelerators
+    void doSelectConstraints();
     void doSelectOrigin();
     void doSelectHAxis();
     void doSelectVAxis();
+    void deleteSelectedItems();
 
-    void doSelectConstraints();
+    void onIndexHovered(QModelIndex index);
+    void onIndexChecked(QModelIndex, Qt::CheckState state);
 
+Q_SIGNALS:
+    void onItemHovered(QListWidgetItem*);
+
+private:
+    void changeLayer(int layer);
 };
 
-class TaskSketcherElements : public Gui::TaskView::TaskBox, public Gui::SelectionObserver
+class ElementFilterList;
+
+class TaskSketcherElements: public Gui::TaskView::TaskBox, public Gui::SelectionObserver
 {
     Q_OBJECT
 
 public:
-    TaskSketcherElements(ViewProviderSketch *sketchView);
-    ~TaskSketcherElements();
+    explicit TaskSketcherElements(ViewProviderSketch* sketchView);
+    ~TaskSketcherElements() override;
 
     /// Observer message from the Selection
-    void onSelectionChanged(const Gui::SelectionChanges& msg);
+    void onSelectionChanged(const Gui::SelectionChanges& msg) override;
 
 private:
-    void slotElementsChanged(void);
-    void updateIcons(int element);
-    void updatePreselection();
+    void slotElementsChanged();
+    void updateVisibility();
+    void setItemVisibility(QListWidgetItem* item);
     void clearWidget();
+    void createFilterButtonActions();
+    void createSettingsButtonActions();
+    void connectSignals();
 
 public Q_SLOTS:
-    void on_listWidgetElements_itemSelectionChanged(void); 
-    void on_listWidgetElements_itemEntered(QListWidgetItem *item);
-    void on_listWidgetElements_filterShortcutPressed();
-    void on_listWidgetElements_currentFilterChanged ( int index );
-    void on_namingBox_stateChanged(int state);
-    void on_autoSwitchBox_stateChanged(int state);
+    void onListWidgetElementsItemPressed(QListWidgetItem* item);
+    void onListWidgetElementsItemEntered(QListWidgetItem* item);
+    void onListWidgetElementsMouseMoveOnItem(QListWidgetItem* item);
+    void onSettingsExtendedInformationChanged();
+    void onFilterBoxStateChanged(int val);
+    void onListMultiFilterItemChanged(QListWidgetItem* item);
 
 protected:
-    void changeEvent(QEvent *e);
-    void leaveEvent ( QEvent * event );
-    ViewProviderSketch *sketchView;
-    typedef boost::BOOST_SIGNALS_NAMESPACE::connection Connection;
+    void changeEvent(QEvent* e) override;
+    void leaveEvent(QEvent* event) override;
+    ViewProviderSketch* sketchView;
+    using Connection = boost::signals2::connection;
     Connection connectionElementsChanged;
 
 private:
     QWidget* proxy;
-    Ui_TaskSketcherElements* ui;
+    std::unique_ptr<Ui_TaskSketcherElements> ui;
     int focusItemIndex;
     int previouslySelectedItemIndex;
-    
+    int previouslyHoveredItemIndex;
+    SubElementType previouslyHoveredType;
+
+    ElementFilterList* filterList;
+
     bool isNamingBoxChecked;
-    bool isautoSwitchBoxChecked;
-    
-    bool inhibitSelectionUpdate;
 };
 
-} //namespace SketcherGui
+}  // namespace SketcherGui
 
-#endif // GUI_TASKVIEW_TASKAPPERANCE_H
+#endif  // GUI_TASKVIEW_TASKAPPERANCE_H

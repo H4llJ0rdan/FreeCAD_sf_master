@@ -37,18 +37,18 @@ namespace Gui {
  * file structure from a server.
  * \author Werner Mayer
  */
-class NetworkRetriever : public QObject  
+class NetworkRetriever : public QObject
 {
     Q_OBJECT
 
 public:
-    NetworkRetriever( QObject * parent = 0 );
-    virtual ~NetworkRetriever();
+    NetworkRetriever( QObject * parent = nullptr );
+    ~NetworkRetriever() override;
 
     void setNumberOfTries( int );
     void setOutputFile( const QString& );
     void setEnableTimestamp(bool);
-    void setProxy( const QString&, const QString& = QString::null, const QString& = QString::null );
+    void setProxy( const QString&, const QString& = QString(), const QString& = QString() );
     void setEnableRecursive( bool, int = 0 );
     void setFollowRelative( bool );
     void setEnableConvert( bool );
@@ -82,16 +82,16 @@ class StdCmdDownloadOnlineHelp : public QObject, public Command
     Q_OBJECT
 
 public:
-    StdCmdDownloadOnlineHelp(QObject * parent = 0);
-    virtual ~StdCmdDownloadOnlineHelp();
+    StdCmdDownloadOnlineHelp(QObject * parent = nullptr);
+    ~StdCmdDownloadOnlineHelp() override;
     /** i18n stuff of the command. */
-    virtual void languageChange();
+    void languageChange() override;
 
 protected:
-    virtual void activated(int iMsg);
+    void activated(int iMsg) override;
 
     /** Creates the action object. */
-    virtual Action* createAction();
+    Action* createAction() override;
 
 private Q_SLOTS:
     void wgetFinished();

@@ -20,40 +20,34 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
 # ifdef FC_OS_WIN32
-# include <windows.h>
+#  include <windows.h>
 # endif
 # ifdef FC_OS_MACOSX
-# include <OpenGL/gl.h>
+#  include <OpenGL/gl.h>
 # else
-# include <GL/gl.h>
+#  include <GL/gl.h>
 # endif
-# include <float.h>
 # include <algorithm>
-# include <Inventor/actions/SoCallbackAction.h>
-# include <Inventor/actions/SoGetBoundingBoxAction.h>
-# include <Inventor/actions/SoGetPrimitiveCountAction.h>
+# include <cfloat>
 # include <Inventor/actions/SoGLRenderAction.h>
-# include <Inventor/actions/SoPickAction.h>
-# include <Inventor/actions/SoWriteAction.h>
 # include <Inventor/bundles/SoMaterialBundle.h>
 # include <Inventor/bundles/SoTextureCoordinateBundle.h>
 # include <Inventor/elements/SoCoordinateElement.h>
-# include <Inventor/elements/SoGLCacheContextElement.h>
+# include <Inventor/elements/SoLazyElement.h>
 # include <Inventor/errors/SoReadError.h>
 # include <Inventor/misc/SoState.h>
 #endif
 
 #include "SoFCShapeObject.h"
 
+
 using namespace PartGui;
 
-
-SO_NODE_SOURCE(SoFCControlPoints);
+SO_NODE_SOURCE(SoFCControlPoints)
 
 void SoFCControlPoints::initClass()
 {
@@ -81,12 +75,14 @@ void SoFCControlPoints::GLRender(SoGLRenderAction *action)
     {
         SoState*  state = action->getState();
         const SoCoordinateElement * coords = SoCoordinateElement::getInstance(state);
-        if (!coords) return;
+        if (!coords)
+            return;
         const SbVec3f * points = coords->getArrayPtr3();
-        if (!points) return;
+        if (!points)
+            return;
 
         SoMaterialBundle mb(action);
-        SoTextureCoordinateBundle tb(action, TRUE, FALSE);
+        SoTextureCoordinateBundle tb(action, true, false);
         SoLazyElement::setLightModel(state, SoLazyElement::BASE_COLOR);
         mb.sendFirst();  // make sure we have the correct material
 
@@ -148,7 +144,7 @@ void SoFCControlPoints::drawControlPoints(const SbVec3f * points,int32_t len) co
     glEnd();
 }
 
-void SoFCControlPoints::generatePrimitives(SoAction* action)
+void SoFCControlPoints::generatePrimitives(SoAction* /*action*/)
 {
 }
 
@@ -159,9 +155,11 @@ void SoFCControlPoints::computeBBox(SoAction *action, SbBox3f &box, SbVec3f &cen
 {
     SoState*  state = action->getState();
     const SoCoordinateElement * coords = SoCoordinateElement::getInstance(state);
-    if (!coords) return;
+    if (!coords)
+        return;
     const SbVec3f * points = coords->getArrayPtr3();
-    if (!points) return;
+    if (!points)
+        return;
     float maxX=-FLT_MAX, minX=FLT_MAX,
           maxY=-FLT_MAX, minY=FLT_MAX,
           maxZ=-FLT_MAX, minZ=FLT_MAX;

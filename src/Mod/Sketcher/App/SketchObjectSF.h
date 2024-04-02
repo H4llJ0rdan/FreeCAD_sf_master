@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2008     *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,23 +20,20 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 #ifndef SKETCH_SKETCHOBJECTSF_H
 #define SKETCH_SKETCHOBJECTSF_H
 
-#include <App/PropertyStandard.h>
 #include <App/PropertyFile.h>
-
 #include <Mod/Part/App/Part2DObject.h>
+#include <Mod/Sketcher/SketcherGlobal.h>
+
 
 namespace Sketcher
 {
 
-
-class SketchObjectSF :public Part::Part2DObject
+class SketchObjectSF: public Part::Part2DObject
 {
-    PROPERTY_HEADER(Sketcher::SketchObjectSF);
+    PROPERTY_HEADER_WITH_OVERRIDE(Sketcher::SketchObjectSF);
 
 public:
     SketchObjectSF();
@@ -44,24 +41,22 @@ public:
     /// Property
     App::PropertyFileIncluded SketchFlatFile;
 
-    /** @name methods overide Feature */
+    /** @name methods override Feature */
     //@{
     /// recalculate the Feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn* execute() override;
+    short mustExecute() const override;
     /// Uses the standard ViewProvider
-    //const char* getViewProviderName(void) const {
-    //    return "SketcherGui::ViewProviderSketchSF";
-    //}
+    // const char* getViewProviderName(void) const {
+    //     return "SketcherGui::ViewProviderSketchSF";
+    // }
     //@}
 
     bool save(const char* FileName);
     bool load(const char* FileName);
-
-
 };
 
-} //namespace Part
+}  // namespace Sketcher
 
 
-#endif // SKETCH_SKETCHOBJECTSF_H
+#endif  // SKETCH_SKETCHOBJECTSF_H

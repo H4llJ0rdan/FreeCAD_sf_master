@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Juergen Riegel         <juergen.riegel@web.de>          *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,11 +20,7 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
@@ -33,37 +29,37 @@
 #include "PointsPy.h"
 #include "Properties.h"
 #include "PropertyPointKernel.h"
-#include "FeaturePointsImportAscii.h"
+#include "Structured.h"
 
 
-/* registration table  */
-
-extern struct PyMethodDef Points_Import_methods[];
-
-
+namespace Points
+{
+extern PyObject* initModule();
+}
 
 /* Python entry */
-extern "C" {
-void PointsExport initPoints()
+PyMOD_INIT_FUNC(Points)
 {
-    PyObject* pointsModule =  Py_InitModule("Points", Points_Import_methods);   /* mod name, table ptr */
+    // clang-format off
+    PyObject* pointsModule = Points::initModule();
     Base::Console().Log("Loading Points module... done\n");
 
     // add python types
-    Base::Interpreter().addType(&Points::PointsPy  ::Type,pointsModule,"Points");
+    Base::Interpreter().addType(&Points::PointsPy::Type, pointsModule, "Points");
 
     // add properties
-    Points::PropertyGreyValue     ::init();
-    Points::PropertyGreyValueList ::init();
-    Points::PropertyNormalList    ::init();
-    Points::PropertyCurvatureList ::init();
-    Points::PropertyPointKernel   ::init();
+    Points::PropertyGreyValue       ::init();
+    Points::PropertyGreyValueList   ::init();
+    Points::PropertyNormalList      ::init();
+    Points::PropertyCurvatureList   ::init();
+    Points::PropertyPointKernel     ::init();
 
     // add data types
-    Points::Feature               ::init();
-    Points::FeaturePython         ::init();
-    Points::Export                ::init();
-    Points::ImportAscii           ::init();
+    Points::Feature                 ::init();
+    Points::Structured              ::init();
+    Points::FeatureCustom           ::init();
+    Points::StructuredCustom        ::init();
+    Points::FeaturePython           ::init();
+    PyMOD_Return(pointsModule);
+    // clang-format on
 }
-
-} // extern "C"

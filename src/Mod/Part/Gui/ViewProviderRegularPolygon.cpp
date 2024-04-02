@@ -20,47 +20,38 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
-#include <Base/Parameter.h>
 #include "ViewProviderRegularPolygon.h"
+
 
 using namespace PartGui;
 using namespace std;
 
-
 //**************************************************************************
 // Construction/Destruction
 
-PROPERTY_SOURCE(PartGui::ViewProviderRegularPolygon, PartGui::ViewProviderPart)
+PROPERTY_SOURCE(PartGui::ViewProviderRegularPolygon, PartGui::ViewProviderPrimitive)
 
-       
+
 ViewProviderRegularPolygon::ViewProviderRegularPolygon()
 {
-  sPixmap = "Part_Polygon_Parametric.svg";
+  sPixmap = "Part_Polygon_Parametric";
 }
 
-ViewProviderRegularPolygon::~ViewProviderRegularPolygon()
-{
-
-}
-
+ViewProviderRegularPolygon::~ViewProviderRegularPolygon() = default;
 
 
 // **********************************************************************************
 
-std::vector<std::string> ViewProviderRegularPolygon::getDisplayModes(void) const
+std::vector<std::string> ViewProviderRegularPolygon::getDisplayModes() const
 {
     // get the modes of the father
     std::vector<std::string> StrList;
 
     // add your own modes
-    StrList.push_back("Wireframe");
-    StrList.push_back("Points");
+    StrList.emplace_back("Wireframe");
+    StrList.emplace_back("Points");
 
     return StrList;
 }

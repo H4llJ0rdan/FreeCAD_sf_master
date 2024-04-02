@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenerateModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="generateMetaModel_Module.xsd">
-  <PythonExport 
-      Father="PersistencePy" 
-      Name="WaypointPy" 
-      Twin="Waypoint" 
-      TwinPointer="Waypoint" 
-      Include="Mod/Robot/App/Waypoint.h" 
-      Namespace="Robot" 
-      FatherInclude="Base/PersistencePy.h" 
+  <PythonExport
+      Father="PersistencePy"
+      Name="WaypointPy"
+      Twin="Waypoint"
+      TwinPointer="Waypoint"
+      Include="Mod/Robot/App/Waypoint.h"
+      Namespace="Robot"
+      FatherInclude="Base/PersistencePy.h"
       FatherNamespace="Base"
       Constructor="true"
       Delete="true">
@@ -29,7 +29,7 @@
 	  </Attribute>
 	  <Attribute Name="Pos" ReadOnly="false">
 		  <Documentation>
-			  <UserDocu>End position (destination) of the the waypoint</UserDocu>
+			  <UserDocu>End position (destination) of the waypoint</UserDocu>
 		  </Documentation>
 		  <Parameter Name="Pos" Type="Object"/>
 	  </Attribute>
@@ -51,15 +51,15 @@ In Case of WAIT s wait time
 	  </Attribute>
 	  <Attribute Name="Tool" ReadOnly="false">
 		  <Documentation>
-			  <UserDocu>descripe which tool frame to use for that point</UserDocu>
+			  <UserDocu>Describe which tool frame to use for that point</UserDocu>
 		  </Documentation>
-		  <Parameter Name="Tool" Type="Int"/>
+		  <Parameter Name="Tool" Type="Long"/>
 	  </Attribute>
 	  <Attribute Name="Base" ReadOnly="false">
 		  <Documentation>
-			  <UserDocu>descripe which Base frame to use for that point</UserDocu>
+			  <UserDocu>Describe which Base frame to use for that point</UserDocu>
 		  </Documentation>
-		  <Parameter Name="Base" Type="Int"/>
+		  <Parameter Name="Base" Type="Long"/>
 	  </Attribute>
   </PythonExport>
 </GenerateModel>

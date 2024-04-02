@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net>        *
+ *   Copyright (c) 2012 Jan Rheinländer                                    *
+ *                                   <jrheinlaender@users.sourceforge.net> *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,33 +25,30 @@
 #ifndef PARTGUI_ViewProviderDraft_H
 #define PARTGUI_ViewProviderDraft_H
 
-#include "ViewProvider.h"
+#include "ViewProviderDressUp.h"
 
 
 namespace PartDesignGui {
 
-class PartDesignGuiExport ViewProviderDraft : public ViewProvider
+class PartDesignGuiExport ViewProviderDraft : public ViewProviderDressUp
 {
-    PROPERTY_HEADER(PartDesignGui::ViewProviderDraft);
+    Q_DECLARE_TR_FUNCTIONS(PartDesignGui::ViewProviderDraft)
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderDraft);
 
 public:
     /// constructor
-    ViewProviderDraft();
-    /// destructor
-    virtual ~ViewProviderDraft();
+    ViewProviderDraft()
+        { sPixmap = "PartDesign_Draft.svg";
+          menuName = tr("Draft parameters"); }
 
-    /// grouping handling
-    void setupContextMenu(QMenu*, QObject*, const char*);
-
-    virtual bool onDelete(const std::vector<std::string> &);
+    /// return "Draft"
+    const std::string & featureName() const override;
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-    virtual void unsetEdit(int ModNum);
-
+    /// Returns a newly create dialog for the part to be placed in the task view
+    TaskDlgFeatureParameters *getEditDialog() override;
 };
-
-
 
 } // namespace PartDesignGui
 

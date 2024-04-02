@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) YEAR YOUR NAME         <Your e-mail address>            *
+ *   Copyright (c) 2011 Werner Mayer <wmayer[at]users.sourceforge.net>     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,10 +23,6 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
-/// Here the FreeCAD includes sorted by Base,App,Gui......
 #include "FileTemplate.h"
 
 
@@ -40,21 +36,17 @@ using namespace Base;
  * A constructor.
  * A more elaborate description of the constructor.
  */
-ClassTemplate::ClassTemplate()
-{
-}
+ClassTemplate::ClassTemplate() = default;
 
 /**
  * A destructor.
  * A more elaborate description of the destructor.
  */
-ClassTemplate::~ClassTemplate()
-{
-}
+ClassTemplate::~ClassTemplate() = default;
 
 
 //**************************************************************************
-// separator for other implemetation aspects
+// separator for other implementation aspects
 
 /**
  * a normal member taking two arguments and returning an integer value.
@@ -79,7 +71,7 @@ int ClassTemplate::testMe(int /*a*/,const char* /*s*/)
 
 //**************************************************************************
 //**************************************************************************
-// Seperator for additional classes
+// Separator for additional classes
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 

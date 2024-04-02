@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,29 +20,27 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PART_FEATUREPARTCUT_H
 #define PART_FEATUREPARTCUT_H
 
-#include <App/PropertyLinks.h>
-
 #include "FeaturePartBoolean.h"
+
 
 namespace Part
 {
 
 class Cut : public Boolean
 {
-    PROPERTY_HEADER(Part::Cut);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Cut);
 
 public:
     Cut();
 
-    /** @name methods overide Feature */
+    /** @name methods override Feature */
     //@{
     /// recalculate the Feature
 protected:
-    BRepAlgoAPI_BooleanOperation* makeOperation(const TopoDS_Shape&, const TopoDS_Shape&) const;
+    BRepAlgoAPI_BooleanOperation* makeOperation(const TopoDS_Shape&, const TopoDS_Shape&) const override;
     //@}
 };
 

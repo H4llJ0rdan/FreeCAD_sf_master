@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) YEAR YOUR NAME         <Your e-mail address>            *
+ *   Copyright (c) YEAR YOUR NAME <Your e-mail address>                    *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -26,9 +26,10 @@
 
 #include <Gui/Workbench.h>
 
-namespace _TEMPLATE_Gui {
+namespace _TEMPLATE_Gui
+{
 
-class Workbench : public Gui::StdWorkbench
+class Workbench: public Gui::StdWorkbench
 {
     TYPESYSTEM_HEADER();
 
@@ -41,7 +42,7 @@ protected:
     Gui::ToolBarItem* setupToolBars() const;
 };
 
-} // namespace _TEMPLATE_Gui
+}  // namespace _TEMPLATE_Gui
 
 
-#endif // _TEMPLATE__WORKBENCH_H 
+#endif  // _TEMPLATE__WORKBENCH_H

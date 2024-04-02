@@ -20,17 +20,19 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
+
 #ifndef _PreComp_
 # include <QEvent>
 # include <QGridLayout>
 # include <QPushButton>
+# include <QSizePolicy>
 #endif
 
 #include "DlgCustomizeImp.h"
 #include "MainWindow.h"
 #include "WidgetFactory.h"
+
 
 using namespace Gui::Dialog;
 
@@ -39,34 +41,35 @@ QList<QByteArray> DlgCustomizeImp::_pages;
 /* TRANSLATOR Gui::Dialog::DlgCustomizeImp */
 
 /**
- *  Constructs a DlgCustomizeImp which is a child of 'parent', with the 
- *  name 'name' and widget flags set to 'f' 
+ *  Constructs a DlgCustomizeImp which is a child of 'parent', with the
+ *  name 'name' and widget flags set to 'f'
  *
  *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
+ *  true to construct a modal dialog.
  */
-DlgCustomizeImp::DlgCustomizeImp(QWidget* parent, Qt::WFlags fl)
+DlgCustomizeImp::DlgCustomizeImp(QWidget* parent, Qt::WindowFlags fl)
   : QDialog(parent, fl)
 {
     setModal(false);
-    resize( 434, 365 ); 
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    resize( 690, 365 );
 
     setWindowTitle(tr("Customize"));
     setSizeGripEnabled( true );
 
-    customLayout = new QGridLayout( this ); 
+    customLayout = new QGridLayout( this );
     customLayout->setSpacing( 6 );
-    customLayout->setMargin( 11 );
+    customLayout->setContentsMargins( 11, 11, 11, 11 );
 
-    layout = new QHBoxLayout; 
+    layout = new QHBoxLayout;
     layout->setSpacing( 6 );
-    layout->setMargin( 0 );
+    layout->setContentsMargins( 0, 0, 0, 0 );
 
     buttonHelp = new QPushButton( this );
     buttonHelp->setText(tr("&Help"));
     layout->addWidget( buttonHelp );
 
-    QSpacerItem* spacer = new QSpacerItem( 20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    auto spacer = new QSpacerItem( 20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
     layout->addItem(spacer);
 
     buttonClose = new QPushButton( this );
@@ -76,12 +79,13 @@ DlgCustomizeImp::DlgCustomizeImp(QWidget* parent, Qt::WFlags fl)
     customLayout->addLayout( layout, 1, 0 );
 
     tabWidget = new QTabWidget( this );
+    tabWidget->setObjectName(QString::fromLatin1("Gui__Dialog__TabWidget"));//so we can find it in DlgMacroExecuteImp
 
     // make sure that pages are ready to create
     GetWidgetFactorySupplier();
-    for (QList<QByteArray>::Iterator it = _pages.begin(); it!=_pages.end(); ++it)
+    for (const QByteArray& it : _pages)
     {
-        addPage(WidgetFactory().createWidget((*it).constData()));
+        addPage(WidgetFactory().createWidget(it.constData()));
     }
 
     customLayout->addWidget(tabWidget, 0, 0);
@@ -93,17 +97,14 @@ DlgCustomizeImp::DlgCustomizeImp(QWidget* parent, Qt::WFlags fl)
 
     // connections
     //
-    connect(buttonHelp,  SIGNAL (clicked()), getMainWindow(), SLOT (whatsThis()));
-    connect(buttonClose, SIGNAL (clicked()), this, SLOT (close()));
+    connect(buttonHelp,  &QPushButton::clicked, getMainWindow(), &MainWindow::whatsThis);
+    connect(buttonClose, &QPushButton::clicked, this, &QDialog::close);
 }
 
 /**
  *  Destroys the object and frees any allocated resources
  */
-DlgCustomizeImp::~DlgCustomizeImp()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
+DlgCustomizeImp::~DlgCustomizeImp() = default;
 
 /**
  * Adds a customize page with its class name \a className.

@@ -34,19 +34,15 @@
 
 */
 
-#include <Quarter/eventhandlers/EventFilter.h>
+#include <QEvent>
+#include <QMouseEvent>
 
-#include <QtCore/QEvent>
-#include <QtGui/QMouseEvent>
+#include "QuarterWidget.h"
+#include "devices/Keyboard.h"
+#include "devices/Mouse.h"
+#include "devices/SpaceNavigatorDevice.h"
+#include "eventhandlers/EventFilter.h"
 
-#include <Inventor/SoEventManager.h>
-#include <Inventor/events/SoLocation2Event.h>
-#include <Inventor/events/SoMouseButtonEvent.h>
-
-#include <Quarter/QuarterWidget.h>
-#include <Quarter/devices/Mouse.h>
-#include <Quarter/devices/Keyboard.h>
-#include <Quarter/devices/SpaceNavigatorDevice.h>
 
 namespace SIM { namespace Coin3D { namespace Quarter {
 
@@ -62,7 +58,7 @@ public:
     this->windowsize = SbVec2s(event->size().width(),
                                event->size().height());
 
-    foreach(InputDevice * device, this->devices) {
+    Q_FOREACH(InputDevice * device, this->devices) {
       device->setWindowSize(this->windowsize);
     }
   }
@@ -70,14 +66,19 @@ public:
   void trackPointerPosition(QMouseEvent * event)
   {
     assert(this->windowsize[1] != -1);
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
     this->globalmousepos = event->globalPos();
+#else
+    this->globalmousepos = event->globalPosition().toPoint();
+#endif
 
     SbVec2s mousepos(event->pos().x(), this->windowsize[1] - event->pos().y() - 1);
-    foreach(InputDevice * device, this->devices) {
+    // the following corrects for high-dpi displays (e.g. mac retina)
+    mousepos *= quarterwidget->devicePixelRatio();
+    Q_FOREACH(InputDevice * device, this->devices) {
       device->setMousePosition(mousepos);
     }
   }
-
 };
 
 #define PRIVATE(obj) obj->pimpl
@@ -91,17 +92,18 @@ EventFilter::EventFilter(QObject * parent)
 {
   PRIVATE(this) = new EventFilterP;
 
-  PRIVATE(this)->quarterwidget = dynamic_cast<QuarterWidget *>(parent);
+  QuarterWidget* quarter = dynamic_cast<QuarterWidget *>(parent);
+  PRIVATE(this)->quarterwidget = quarter;
   assert(PRIVATE(this)->quarterwidget);
 
   PRIVATE(this)->windowsize = SbVec2s(PRIVATE(this)->quarterwidget->width(),
                                       PRIVATE(this)->quarterwidget->height());
 
-  PRIVATE(this)->devices += new Mouse;
-  PRIVATE(this)->devices += new Keyboard;
+  PRIVATE(this)->devices += new Mouse(quarter);
+  PRIVATE(this)->devices += new Keyboard(quarter);
 
 #ifdef HAVE_SPACENAV_LIB
-  PRIVATE(this)->devices += new SpaceNavigatorDevice;
+  PRIVATE(this)->devices += new SpaceNavigatorDevice(quarter);
 #endif // HAVE_SPACENAV_LIB
 
 }
@@ -141,6 +143,7 @@ EventFilter::unregisterInputDevice(InputDevice * device)
 bool
 EventFilter::eventFilter(QObject * obj, QEvent * qevent)
 {
+  Q_UNUSED(obj); 
   // make sure every device has updated screen size and mouse position
   // before translating events
   switch (qevent->type()) {
@@ -148,10 +151,10 @@ EventFilter::eventFilter(QObject * obj, QEvent * qevent)
   case QEvent::MouseButtonPress:
   case QEvent::MouseButtonRelease:
   case QEvent::MouseButtonDblClick:
-    PRIVATE(this)->trackPointerPosition(dynamic_cast<QMouseEvent *>(qevent));
+    PRIVATE(this)->trackPointerPosition(static_cast<QMouseEvent *>(qevent));
     break;
   case QEvent::Resize:
-    PRIVATE(this)->trackWindowSize(dynamic_cast<QResizeEvent *>(qevent));
+    PRIVATE(this)->trackWindowSize(static_cast<QResizeEvent *>(qevent));
     break;
   default:
     break;
@@ -159,7 +162,7 @@ EventFilter::eventFilter(QObject * obj, QEvent * qevent)
 
   // translate QEvent into SoEvent and see if it is handled by scene
   // graph
-  foreach(InputDevice * device, PRIVATE(this)->devices) {
+  Q_FOREACH(InputDevice * device, PRIVATE(this)->devices) {
     const SoEvent * soevent = device->translateEvent(qevent);
     if (soevent && PRIVATE(this)->quarterwidget->processSoEvent(soevent)) {
       return true;
@@ -172,7 +175,7 @@ EventFilter::eventFilter(QObject * obj, QEvent * qevent)
   Returns mouse position in global coordinates
  */
 const QPoint &
-EventFilter::globalMousePosition(void) const
+EventFilter::globalMousePosition() const
 {
   return PRIVATE(this)->globalmousepos;
 }

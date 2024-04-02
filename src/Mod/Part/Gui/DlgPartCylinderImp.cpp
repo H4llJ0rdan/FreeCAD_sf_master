@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,36 +20,37 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-#endif
 
 #include "DlgPartCylinderImp.h"
+#include "ui_DlgPartCylinder.h"
+
 
 using namespace PartGui;
 
-/* 
- *  Constructs a DlgPartCylinder which is a child of 'parent', with the 
- *  name 'name' and widget flags set to 'f' 
- *
- *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
- */
-DlgPartCylinderImp::DlgPartCylinderImp(QWidget* parent, Qt::WFlags fl)
-  : Gui::LocationInterface<Ui_DlgPartCylinder>(parent, fl)
+DlgPartCylinderImp::DlgPartCylinderImp(QWidget* parent, Qt::WindowFlags fl)
+  : Gui::LocationDialogUiImp(new Ui_DlgPartCylinder, parent, fl)
 {
-    QList<QDoubleSpinBox*> list = this->findChildren<QDoubleSpinBox*>();
-    for (QList<QDoubleSpinBox*>::iterator it = list.begin(); it != list.end(); ++it)
-        (*it)->setDecimals(Base::UnitsApi::getDecimals());
 }
 
-/*  
+/*
  *  Destroys the object and frees any allocated resources
  */
-DlgPartCylinderImp::~DlgPartCylinderImp()
+DlgPartCylinderImp::~DlgPartCylinderImp() = default;
+
+Ui_DlgPartCylinderPtr DlgPartCylinderImp::getUi() const
 {
-    // no need to delete child widgets, Qt does it all for us
+    return boost::any_cast< Ui_DlgPartCylinderPtr >(ui->get());
+}
+
+double DlgPartCylinderImp::getRadius() const
+{
+    return getUi()->radius->value().getValue();
+}
+
+double DlgPartCylinderImp::getLength() const
+{
+    return getUi()->length->value().getValue();
 }
 
 #include "moc_DlgPartCylinderImp.cpp"

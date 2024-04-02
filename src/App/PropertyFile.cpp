@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2008                        *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,25 +23,18 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-# include <algorithm>
-# include <sstream>
-#endif
-
-/// Here the FreeCAD includes sorted by Base,App,Gui......
-
-#include <Base/Exception.h>
-#include <Base/Reader.h>
-#include <Base/Writer.h>
-#include <Base/Stream.h>
 #include <Base/Console.h>
 #include <Base/PyObjectBase.h>
+#include <Base/Reader.h>
+#include <Base/Stream.h>
+#include <Base/Writer.h>
 #include <Base/Uuid.h>
 
 #include "PropertyFile.h"
 #include "Document.h"
-#include "PropertyContainer.h"
 #include "DocumentObject.h"
+#include "PropertyContainer.h"
+
 
 using namespace App;
 using namespace Base;
@@ -53,13 +46,10 @@ using namespace std;
 // PropertyFileIncluded
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TYPESYSTEM_SOURCE(App::PropertyFileIncluded , App::Property);
+TYPESYSTEM_SOURCE(App::PropertyFileIncluded , App::Property)
 
 
-PropertyFileIncluded::PropertyFileIncluded()
-{
-
-}
+PropertyFileIncluded::PropertyFileIncluded() = default;
 
 PropertyFileIncluded::~PropertyFileIncluded()
 {
@@ -71,7 +61,7 @@ PropertyFileIncluded::~PropertyFileIncluded()
     }
 }
 
-void PropertyFileIncluded::aboutToSetValue(void)
+void PropertyFileIncluded::aboutToSetValue()
 {
     // This is a trick to check in Copy() if it is called
     // directly from outside or by the Undo/Redo mechanism.
@@ -85,12 +75,12 @@ void PropertyFileIncluded::aboutToSetValue(void)
     this->StatusBits.reset(10);
 }
 
-std::string PropertyFileIncluded::getDocTransientPath(void) const
+std::string PropertyFileIncluded::getDocTransientPath() const
 {
     std::string path;
     PropertyContainer *co = getContainer();
     if (co->isDerivedFrom(DocumentObject::getClassTypeId())) {
-        path = dynamic_cast<DocumentObject*>(co)->getDocument()->TransientDir.getValue();
+        path = static_cast<DocumentObject*>(co)->getDocument()->TransientDir.getValue();
         std::replace(path.begin(), path.end(), '\\', '/');
     }
     return path;
@@ -107,17 +97,25 @@ std::string PropertyFileIncluded::getUniqueFileName(const std::string& path, con
     return fi.filePath();
 }
 
-std::string PropertyFileIncluded::getExchangeTempFile(void) const
+std::string PropertyFileIncluded::getExchangeTempFile() const
 {
     return Base::FileInfo::getTempFileName(Base::FileInfo
         (getValue()).fileName().c_str(), getDocTransientPath().c_str());
+}
+
+std::string PropertyFileIncluded::getOriginalFileName() const
+{
+    return _OriginalName;
 }
 
 void PropertyFileIncluded::setValue(const char* sFile, const char* sName)
 {
     if (sFile && sFile[0] != '\0') {
         if (_cValue == sFile)
-            throw Base::Exception("Not possible to set the same file!");
+            throw Base::FileSystemError("Not possible to set the same file!");
+
+        // keep the path to the original file
+        _OriginalName = sFile;
 
         std::string pathTrans = getDocTransientPath();
         Base::FileInfo file(sFile);
@@ -125,7 +123,7 @@ void PropertyFileIncluded::setValue(const char* sFile, const char* sName)
         if (!file.exists()) {
             std::stringstream str;
             str << "File " << file.filePath() << " does not exist.";
-            throw Base::Exception(str.str());
+            throw Base::FileSystemError(str.str());
         }
 
         aboutToSetValue(); // undo/redo by moving the file away with temp name
@@ -145,7 +143,7 @@ void PropertyFileIncluded::setValue(const char* sFile, const char* sName)
                 // if a file with this name already exists search for a new one
                 std::string dir = pathTrans;
                 std::string fnp = fi.fileNamePure();
-                std::string ext = fi.extension(false);
+                std::string ext = fi.extension();
                 int i=0;
                 do {
                     i++;
@@ -174,7 +172,7 @@ void PropertyFileIncluded::setValue(const char* sFile, const char* sName)
         // directory:
         // When a file is read-only it is supposed to be assigned to a
         // PropertyFileIncluded instance. In this case we must copy the
-        // file because otherwise the above instance looses its data.
+        // file because otherwise the above instance loses its data.
         // If the file is writable it is supposed to be of free use and
         // it can be simply renamed.
 
@@ -184,7 +182,7 @@ void PropertyFileIncluded::setValue(const char* sFile, const char* sName)
             if (!done) {
                 std::stringstream str;
                 str << "Cannot rename file " << file.filePath() << " to " << _cValue;
-                throw Base::Exception(str.str());
+                throw Base::FileSystemError(str.str());
             }
 
             // make the file read-only
@@ -199,7 +197,7 @@ void PropertyFileIncluded::setValue(const char* sFile, const char* sName)
                 // if a file with this name already exists search for a new one
                 std::string dir = fi.dirPath();
                 std::string fnp = fi.fileNamePure();
-                std::string ext = fi.extension(false);
+                std::string ext = fi.extension();
                 int i=0;
                 do {
                     i++;
@@ -219,7 +217,7 @@ void PropertyFileIncluded::setValue(const char* sFile, const char* sName)
             if (!done) {
                 std::stringstream str;
                 str << "Cannot copy file from " << file.filePath() << " to " << _cValue;
-                throw Base::Exception(str.str());
+                throw Base::FileSystemError(str.str());
             }
 
             // make the file read-only
@@ -231,32 +229,66 @@ void PropertyFileIncluded::setValue(const char* sFile, const char* sName)
     }
 }
 
-const char* PropertyFileIncluded::getValue(void) const
+const char* PropertyFileIncluded::getValue() const
 {
      return _cValue.c_str();
 }
 
-PyObject *PropertyFileIncluded::getPyObject(void)
+PyObject *PropertyFileIncluded::getPyObject()
 {
-    PyObject *p = PyUnicode_DecodeUTF8(_cValue.c_str(),_cValue.size(),0);
-    if (!p) throw Base::Exception("PropertyFileIncluded: UTF-8 conversion failure");
+    PyObject *p = PyUnicode_DecodeUTF8(_cValue.c_str(),_cValue.size(),nullptr);
+    if (!p) {
+        throw Base::UnicodeError("PropertyFileIncluded: UTF-8 conversion failure");
+    }
     return p;
+}
+
+namespace App {
+const char* getNameFromFile(PyObject* value)
+{
+    const char* string = nullptr;
+    PyObject *oname = PyObject_GetAttrString (value, "name");
+    if (oname) {
+        if (PyUnicode_Check (oname)) {
+            string = PyUnicode_AsUTF8 (oname);
+        }
+        else if (PyBytes_Check (oname)) {
+            string = PyBytes_AsString (oname);
+        }
+        Py_DECREF (oname);
+    }
+
+    if (!string)
+        throw Base::TypeError("Unable to get filename");
+    return string;
+}
+
+
+
+bool isIOFile(PyObject* file)
+{
+    PyObject* io = PyImport_ImportModule("io");
+    PyObject* IOBase_Class = PyObject_GetAttrString(io, "IOBase");
+    bool isFile = PyObject_IsInstance(file, IOBase_Class);
+    Py_DECREF(IOBase_Class);
+    Py_DECREF(io);
+    return isFile;
+}
 }
 
 void PropertyFileIncluded::setPyObject(PyObject *value)
 {
-    std::string string;
     if (PyUnicode_Check(value)) {
-        PyObject* unicode = PyUnicode_AsUTF8String(value);
-        string = PyString_AsString(unicode);
-        Py_DECREF(unicode);
+        std::string string = PyUnicode_AsUTF8(value);
+        setValue(string.c_str());
     }
-    else if (PyString_Check(value)) {
-        string = PyString_AsString(value);
+    else if (PyBytes_Check(value)) {
+        std::string string = PyBytes_AsString(value);
+        setValue(string.c_str());
     }
-    else if (PyFile_Check(value)) {
-        PyObject* FileName = PyFile_Name(value);
-        string = PyString_AsString(FileName);
+    else if (isIOFile(value)){
+        std::string string = getNameFromFile(value);
+        setValue(string.c_str());
     }
     else if (PyTuple_Check(value)) {
         if (PyTuple_Size(value) != 2)
@@ -267,49 +299,54 @@ void PropertyFileIncluded::setPyObject(PyObject *value)
         // decoding file
         std::string fileStr;
         if (PyUnicode_Check(file)) {
-            PyObject* unicode = PyUnicode_AsUTF8String(file);
-            fileStr = PyString_AsString(unicode);
-            Py_DECREF(unicode);
+            fileStr = PyUnicode_AsUTF8(file);
         }
-        else if (PyString_Check(file)) {
-            fileStr = PyString_AsString(file);
+        else if (PyBytes_Check(file)) {
+            fileStr = PyBytes_AsString(file);
         }
-        else if (PyFile_Check(file)) {
-            PyObject* FileName = PyFile_Name(file);
-            fileStr = PyString_AsString(FileName);
+        else if (isIOFile(value)) {
+            fileStr = getNameFromFile(file);
         }
         else {
-            std::string error = std::string("First item in tuple must be a file or string");
-            error += value->ob_type->tp_name;
+            std::string error = std::string("First item in tuple must be a file or string, not ");
+            error += file->ob_type->tp_name;
             throw Base::TypeError(error);
         }
 
         // decoding name
         std::string nameStr;
-        if (PyString_Check(name)) {
-            nameStr = PyString_AsString(name);
+        if (PyUnicode_Check(name)) {
+            nameStr = PyUnicode_AsUTF8(name);
         }
-        else if (PyFile_Check(name)) {
-            PyObject* FileName = PyFile_Name(name);
-            nameStr = PyString_AsString(FileName);
+        else if (PyBytes_Check(name)) {
+            nameStr = PyBytes_AsString(name);
+        }
+        else if (isIOFile(value)) {
+            nameStr = getNameFromFile(name);
         }
         else {
-            std::string error = std::string("Second item in tuple must be a string");
-            error += value->ob_type->tp_name;
+            std::string error = std::string("Second item in tuple must be a string, not ");
+            error += name->ob_type->tp_name;
             throw Base::TypeError(error);
         }
 
         setValue(fileStr.c_str(),nameStr.c_str());
-        return;
+    }
+    else if (PyDict_Check(value)) {
+        Py::Dict dict(value);
+        if (dict.hasKey("filter")) {
+            setFilter(Py::String(dict.getItem("filter")));
+        }
+        if (dict.hasKey("filename")) {
+            std::string string = static_cast<std::string>(Py::String(dict.getItem("filename")));
+            setValue(string.c_str());
+        }
     }
     else {
-        std::string error = std::string("Type must be string or file");
+        std::string error = std::string("Type must be string or file, not ");
         error += value->ob_type->tp_name;
         throw Base::TypeError(error);
     }
-
-    // assign the string
-    setValue(string.c_str());
 }
 
 void PropertyFileIncluded::Save (Base::Writer &writer) const
@@ -341,8 +378,10 @@ void PropertyFileIncluded::Save (Base::Writer &writer) const
         // instead initiate an extra file 
         if (!_cValue.empty()) {
             Base::FileInfo file(_cValue.c_str());
+            std::string filename = writer.addFile(file.fileName().c_str(), this);
+            filename = encodeAttribute(filename);
             writer.Stream() << writer.ind() << "<FileIncluded file=\""
-                            << writer.addFile(file.fileName().c_str(), this) << "\"/>" << std::endl;
+                            << filename << "\"/>" << std::endl;
         }
         else {
             writer.Stream() << writer.ind() << "<FileIncluded file=\"\"/>" << std::endl;
@@ -356,7 +395,7 @@ void PropertyFileIncluded::Restore(Base::XMLReader &reader)
     if (reader.hasAttribute("file")) {
         string file (reader.getAttribute("file") );
         if (!file.empty()) {
-            // initate a file read
+            // initiate a file read
             reader.addFile(file.c_str(),this);
             // is in the document transient path
             aboutToSetValue();
@@ -390,33 +429,38 @@ void PropertyFileIncluded::SaveDocFile (Base::Writer &writer) const
         std::stringstream str;
         str << "PropertyFileIncluded::SaveDocFile(): "
             << "File '" << _cValue << "' in transient directory doesn't exist.";
-        throw Base::Exception(str.str());
+        throw Base::FileSystemError(str.str());
     }
 
     // copy plain data
     unsigned char c;
     std::ostream& to = writer.Stream();
     while (from.get((char&)c)) {
-        to.put((const char)c);
+        to.put((char)c);
     }
 }
 
 void PropertyFileIncluded::RestoreDocFile(Base::Reader &reader)
 {
     Base::FileInfo fi(_cValue.c_str());
+    if (fi.exists() && !fi.isWritable()) {
+        // This happens when an object is being restored and tries to reference the
+        // same file of another object (e.g. for copy&paste of objects inside the same document).
+        return;
+    }
     Base::ofstream to(fi, std::ios::out | std::ios::binary);
     if (!to) {
         std::stringstream str;
         str << "PropertyFileIncluded::RestoreDocFile(): "
-            << "File '" << _cValue << "' in transient directory doesn't exist.";
-        throw Base::Exception(str.str());
+            << "File '" << _cValue << "' in transient directory cannot be created.";
+        throw Base::FileSystemError(str.str());
     }
 
     // copy plain data
     aboutToSetValue();
     unsigned char c;
     while (reader.get((char&)c)) {
-        to.put((const char)c);
+        to.put((char)c);
     }
     to.close();
 
@@ -425,9 +469,9 @@ void PropertyFileIncluded::RestoreDocFile(Base::Reader &reader)
     hasSetValue();
 }
 
-Property *PropertyFileIncluded::Copy(void) const
+Property *PropertyFileIncluded::Copy() const
 {
-    PropertyFileIncluded *prop = new PropertyFileIncluded();
+    std::unique_ptr<PropertyFileIncluded> prop(new PropertyFileIncluded());
 
     // remember the base name
     prop->_BaseFileName = _BaseFileName;
@@ -444,7 +488,7 @@ Property *PropertyFileIncluded::Copy(void) const
                 str << "PropertyFileIncluded::Copy(): "
                     << "Renaming the file '" << file.filePath() << "' to '"
                     << newName.filePath() << "' failed.";
-                throw Base::Exception(str.str());
+                throw Base::FileSystemError(str.str());
             }
         }
         else {
@@ -455,7 +499,7 @@ Property *PropertyFileIncluded::Copy(void) const
                 str << "PropertyFileIncluded::Copy(): "
                     << "Copying the file '" << file.filePath() << "' to '"
                     << newName.filePath() << "' failed.";
-                throw Base::Exception(str.str());
+                throw Base::FileSystemError(str.str());
             }
         }
 
@@ -467,7 +511,7 @@ Property *PropertyFileIncluded::Copy(void) const
         newName.setPermissions(Base::FileInfo::ReadWrite);
     }
 
-    return prop;
+    return prop.release();
 }
 
 void PropertyFileIncluded::Paste(const Property &from)
@@ -498,7 +542,7 @@ void PropertyFileIncluded::Paste(const Property &from)
                     str << "PropertyFileIncluded::Paste(): "
                         << "Renaming the file '" << fiSrc.filePath() << "' to '"
                         << fiDst.filePath() << "' failed.";
-                    throw Base::Exception(str.str());
+                    throw Base::FileSystemError(str.str());
                 }
             }
             else {
@@ -507,7 +551,7 @@ void PropertyFileIncluded::Paste(const Property &from)
                     str << "PropertyFileIncluded::Paste(): "
                         << "Copying the file '" << fiSrc.filePath() << "' to '"
                         << fiDst.filePath() << "' failed.";
-                    throw Base::Exception(str.str());
+                    throw Base::FileSystemError(str.str());
                 }
             }
 
@@ -525,7 +569,7 @@ void PropertyFileIncluded::Paste(const Property &from)
     hasSetValue();
 }
 
-unsigned int PropertyFileIncluded::getMemSize (void) const
+unsigned int PropertyFileIncluded::getMemSize () const
 {
     unsigned int mem = Property::getMemSize();
     mem += _cValue.size();
@@ -533,19 +577,53 @@ unsigned int PropertyFileIncluded::getMemSize (void) const
     return mem;
 }
 
+void PropertyFileIncluded::setFilter(std::string filter)
+{
+    m_filter = std::move(filter);
+}
+
+std::string PropertyFileIncluded::getFilter() const
+{
+    return m_filter;
+}
+
 //**************************************************************************
 // PropertyFile
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TYPESYSTEM_SOURCE(App::PropertyFile , App::PropertyString);
+TYPESYSTEM_SOURCE(App::PropertyFile , App::PropertyString)
 
 PropertyFile::PropertyFile()
 {
-
+    m_filter = "";
 }
 
-PropertyFile::~PropertyFile()
-{
+PropertyFile::~PropertyFile() = default;
 
+void PropertyFile::setFilter(const std::string f)
+{
+    m_filter = f;
+}
+
+std::string PropertyFile::getFilter() const
+{
+    return m_filter;
+}
+
+void PropertyFile::setPyObject(PyObject *value)
+{
+    if (PyDict_Check(value)) {
+        Py::Dict dict(value);
+        if (dict.hasKey("filter")) {
+            setFilter(Py::String(dict.getItem("filter")));
+        }
+        if (dict.hasKey("filename")) {
+            std::string string = static_cast<std::string>(Py::String(dict.getItem("filename")));
+            setValue(string.c_str());
+        }
+    }
+    else {
+        PropertyString::setPyObject(value);
+    }
 }
 

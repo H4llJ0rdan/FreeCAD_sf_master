@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2007 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2007 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is Drawing of the FreeCAD CAx development system.           *
  *                                                                         *
@@ -20,56 +20,52 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <QAction>
-# include <QApplication>
-# include <QBuffer>
-# include <QContextMenuEvent>
-# include <QFileInfo>
-# include <QFileDialog>
-# include <QGLWidget>
-# include <QGraphicsRectItem>
-# include <QGraphicsSvgItem>
-# include <QGridLayout>
-# include <QGroupBox>
-# include <QListWidget>
-# include <QMenu>
-# include <QMessageBox>
-# include <QMouseEvent>
-# include <QPainter>
-# include <QPaintEvent>
-# include <QPrinter>
-# include <QPrintDialog>
-# include <QPrintPreviewDialog>
-# include <QPrintPreviewWidget>
-# include <QScrollArea>
-# include <QSlider>
-# include <QStatusBar>
-# include <QSvgRenderer>
-# include <QSvgWidget>
-# include <QWheelEvent>
-# include <strstream>
-# include <cmath>
+#include <cmath>
+
+#include <QAction>
+#include <QApplication>
+#include <QContextMenuEvent>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QGLWidget>
+#include <QGraphicsRectItem>
+#include <QGraphicsSvgItem>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QListWidget>
+#include <QMenu>
+#include <QMessageBox>
+#include <QPaintEvent>
+#include <QPainter>
+#include <QPrintDialog>
+#include <QPrintPreviewDialog>
+#include <QPrinter>
+#include <QWheelEvent>
+
 #endif
 
-#include "DrawingView.h"
-#include <Base/Stream.h>
-#include <Base/gzstream.h>
-#include <Base/PyObjectBase.h>
+#include <App/Application.h>
+#include <App/Document.h>
+#include <Base/Parameter.h>
 #include <Gui/Document.h>
 #include <Gui/FileDialog.h>
+#include <Gui/ViewProvider.h>
 #include <Gui/WaitCursor.h>
+
+#include "DrawingView.h"
+
 
 using namespace DrawingGui;
 
-SvgView::SvgView(QWidget *parent)
+SvgView::SvgView(QWidget* parent)
     : QGraphicsView(parent)
     , m_renderer(Native)
-    , m_svgItem(0)
-    , m_backgroundItem(0)
-    , m_outlineItem(0)
+    , m_svgItem(nullptr)
+    , m_backgroundItem(nullptr)
+    , m_outlineItem(nullptr)
+    , m_invertZoom(false)
 {
     setScene(new QGraphicsScene(this));
     setTransformationAnchor(AnchorUnderMouse);
@@ -87,7 +83,7 @@ SvgView::SvgView(QWidget *parent)
     setBackgroundBrush(tilePixmap);
 }
 
-void SvgView::drawBackground(QPainter *p, const QRectF &)
+void SvgView::drawBackground(QPainter* p, const QRectF&)
 {
     p->save();
     p->resetTransform();
@@ -95,12 +91,13 @@ void SvgView::drawBackground(QPainter *p, const QRectF &)
     p->restore();
 }
 
-void SvgView::openFile(const QFile &file)
+void SvgView::openFile(const QFile& file)
 {
-    if (!file.exists())
+    if (!file.exists()) {
         return;
+    }
 
-    QGraphicsScene *s = scene();
+    QGraphicsScene* s = scene();
 
     bool drawBackground = (m_backgroundItem ? m_backgroundItem->isVisible() : true);
     bool drawOutline = (m_outlineItem ? m_outlineItem->isVisible() : false);
@@ -131,7 +128,9 @@ void SvgView::openFile(const QFile &file)
     s->addItem(m_svgItem);
     s->addItem(m_outlineItem);
 
-    s->setSceneRect(m_outlineItem->boundingRect().adjusted(-10, -10, 10, 10));
+    // use the actual bounding box of the SVG template to avoid any scaling effect
+    // when printing the drawing (#0000932)
+    s->setSceneRect(m_outlineItem->boundingRect());
 }
 
 void SvgView::setRenderer(RendererType type)
@@ -142,7 +141,8 @@ void SvgView::setRenderer(RendererType type)
 #ifndef QT_NO_OPENGL
         setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 #endif
-    } else {
+    }
+    else {
         setViewport(new QWidget);
     }
 }
@@ -150,7 +150,7 @@ void SvgView::setRenderer(RendererType type)
 void SvgView::setHighQualityAntialiasing(bool highQualityAntialiasing)
 {
 #ifndef QT_NO_OPENGL
-    setRenderHint(QPainter::HighQualityAntialiasing, highQualityAntialiasing);
+    setRenderHint(QPainter::Antialiasing, highQualityAntialiasing);
 #else
     Q_UNUSED(highQualityAntialiasing);
 #endif
@@ -158,21 +158,23 @@ void SvgView::setHighQualityAntialiasing(bool highQualityAntialiasing)
 
 void SvgView::setViewBackground(bool enable)
 {
-    if (!m_backgroundItem)
+    if (!m_backgroundItem) {
         return;
+    }
 
     m_backgroundItem->setVisible(enable);
 }
 
 void SvgView::setViewOutline(bool enable)
 {
-    if (!m_outlineItem)
+    if (!m_outlineItem) {
         return;
+    }
 
     m_outlineItem->setVisible(enable);
 }
 
-void SvgView::paintEvent(QPaintEvent *event)
+void SvgView::paintEvent(QPaintEvent* event)
 {
     if (m_renderer == Image) {
         if (m_image.size() != viewport()->size()) {
@@ -185,15 +187,19 @@ void SvgView::paintEvent(QPaintEvent *event)
 
         QPainter p(viewport());
         p.drawImage(0, 0, m_image);
-
-    } else {
+    }
+    else {
         QGraphicsView::paintEvent(event);
     }
 }
 
-void SvgView::wheelEvent(QWheelEvent *event)
+void SvgView::wheelEvent(QWheelEvent* event)
 {
-    qreal factor = std::pow(1.2, -event->delta() / 240.0);
+    int delta = -event->angleDelta().y();
+    if (m_invertZoom) {
+        delta = -delta;
+    }
+    qreal factor = std::pow(1.2, delta / 240.0);
     scale(factor, factor);
     event->accept();
 }
@@ -203,7 +209,8 @@ void SvgView::wheelEvent(QWheelEvent *event)
 /* TRANSLATOR DrawingGui::DrawingView */
 
 DrawingView::DrawingView(Gui::Document* doc, QWidget* parent)
-  : Gui::MDIView(doc, parent), m_view(new SvgView)
+    : Gui::MDIView(doc, parent)
+    , m_view(new SvgView)
 {
     m_backgroundAction = new QAction(tr("&Background"), this);
     m_backgroundAction->setEnabled(false);
@@ -232,30 +239,42 @@ DrawingView::DrawingView(Gui::Document* doc, QWidget* parent)
     m_highQualityAntialiasingAction->setEnabled(false);
     m_highQualityAntialiasingAction->setCheckable(true);
     m_highQualityAntialiasingAction->setChecked(false);
-    connect(m_highQualityAntialiasingAction, SIGNAL(toggled(bool)),
-            m_view, SLOT(setHighQualityAntialiasing(bool)));
+    connect(m_highQualityAntialiasingAction,
+            SIGNAL(toggled(bool)),
+            m_view,
+            SLOT(setHighQualityAntialiasing(bool)));
 #endif
 
-    QActionGroup *rendererGroup = new QActionGroup(this);
+    QActionGroup* rendererGroup = new QActionGroup(this);
     rendererGroup->addAction(m_nativeAction);
 #ifndef QT_NO_OPENGL
     rendererGroup->addAction(m_glAction);
 #endif
     rendererGroup->addAction(m_imageAction);
-    connect(rendererGroup, SIGNAL(triggered(QAction *)),
-            this, SLOT(setRenderer(QAction *)));
+    connect(rendererGroup, SIGNAL(triggered(QAction*)), this, SLOT(setRenderer(QAction*)));
 
     setCentralWidget(m_view);
-    //setWindowTitle(tr("SVG Viewer"));
+    // setWindowTitle(tr("SVG Viewer"));
+    m_orientation = QPageLayout::Landscape;
+    m_pageSize = QPageSize::A4;
+
+    ParameterGrp::handle hGrp =
+        App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/View");
+    bool on = hGrp->GetBool("InvertZoom", true);
+    m_view->setZoomInverted(on);
 }
 
-void DrawingView::load (const QString & fileName)
+DrawingView::~DrawingView()
+{}
+
+void DrawingView::load(const QString& fileName)
 {
     if (!fileName.isEmpty()) {
         QFile file(fileName);
         if (!file.exists()) {
-            QMessageBox::critical(this, tr("Open SVG File"),
-                           tr("Could not open file '%1'.").arg(fileName));
+            QMessageBox::critical(this,
+                                  tr("Open SVG File"),
+                                  tr("Could not open file '%1'.").arg(fileName));
 
             m_outlineAction->setEnabled(false);
             m_backgroundAction->setEnabled(false);
@@ -266,15 +285,82 @@ void DrawingView::load (const QString & fileName)
 
         if (!fileName.startsWith(QLatin1String(":/"))) {
             m_currentPath = fileName;
-            //setWindowTitle(tr("%1 - SVG Viewer").arg(m_currentPath));
+            // setWindowTitle(tr("%1 - SVG Viewer").arg(m_currentPath));
         }
 
         m_outlineAction->setEnabled(true);
         m_backgroundAction->setEnabled(true);
+
+        findPrinterSettings(QFileInfo(fileName).baseName());
     }
 }
 
-void DrawingView::contextMenuEvent(QContextMenuEvent *event)
+void DrawingView::findPrinterSettings(const QString& fileName)
+{
+    if (fileName.indexOf(QLatin1String("Portrait"), Qt::CaseInsensitive) >= 0) {
+        m_orientation = QPageLayout::Portrait;
+    }
+    else {
+        m_orientation = QPageLayout::Landscape;
+    }
+
+    QMap<QPageSize::PageSizeId, QString> pageSizes;
+    pageSizes[QPageSize::A0] = QString::fromLatin1("A0");
+    pageSizes[QPageSize::A1] = QString::fromLatin1("A1");
+    pageSizes[QPageSize::A2] = QString::fromLatin1("A2");
+    pageSizes[QPageSize::A3] = QString::fromLatin1("A3");
+    pageSizes[QPageSize::A4] = QString::fromLatin1("A4");
+    pageSizes[QPageSize::A5] = QString::fromLatin1("A5");
+    pageSizes[QPageSize::A6] = QString::fromLatin1("A6");
+    pageSizes[QPageSize::A7] = QString::fromLatin1("A7");
+    pageSizes[QPageSize::A8] = QString::fromLatin1("A8");
+    pageSizes[QPageSize::A9] = QString::fromLatin1("A9");
+    pageSizes[QPageSize::B0] = QString::fromLatin1("B0");
+    pageSizes[QPageSize::B1] = QString::fromLatin1("B1");
+    pageSizes[QPageSize::B2] = QString::fromLatin1("B2");
+    pageSizes[QPageSize::B3] = QString::fromLatin1("B3");
+    pageSizes[QPageSize::B4] = QString::fromLatin1("B4");
+    pageSizes[QPageSize::B5] = QString::fromLatin1("B5");
+    pageSizes[QPageSize::B6] = QString::fromLatin1("B6");
+    pageSizes[QPageSize::B7] = QString::fromLatin1("B7");
+    pageSizes[QPageSize::B8] = QString::fromLatin1("B8");
+    pageSizes[QPageSize::B9] = QString::fromLatin1("B9");
+    for (QMap<QPageSize::PageSizeId, QString>::iterator it = pageSizes.begin();
+         it != pageSizes.end();
+         ++it) {
+        if (fileName.startsWith(it.value(), Qt::CaseInsensitive)) {
+            m_pageSize = it.key();
+            break;
+        }
+    }
+}
+
+void DrawingView::setDocumentObject(const std::string& name)
+{
+    m_objectName = name;
+}
+
+void DrawingView::closeEvent(QCloseEvent* ev)
+{
+    MDIView::closeEvent(ev);
+    if (!ev->isAccepted()) {
+        return;
+    }
+
+    // when closing the view from GUI notify the view provider to mark it invisible
+    if (_pcDocument && !m_objectName.empty()) {
+        App::Document* doc = _pcDocument->getDocument();
+        if (doc) {
+            App::DocumentObject* obj = doc->getObject(m_objectName.c_str());
+            Gui::ViewProvider* vp = _pcDocument->getViewProvider(obj);
+            if (vp) {
+                vp->hide();
+            }
+        }
+    }
+}
+
+void DrawingView::contextMenuEvent(QContextMenuEvent* event)
 {
     QMenu menu;
     menu.addAction(this->m_backgroundAction);
@@ -288,14 +374,15 @@ void DrawingView::contextMenuEvent(QContextMenuEvent *event)
     menu.exec(event->globalPos());
 }
 
-void DrawingView::setRenderer(QAction *action)
+void DrawingView::setRenderer(QAction* action)
 {
 #ifndef QT_NO_OPENGL
     m_highQualityAntialiasingAction->setEnabled(false);
 #endif
 
-    if (action == m_nativeAction)
+    if (action == m_nativeAction) {
         m_view->setRenderer(SvgView::Native);
+    }
 #ifndef QT_NO_OPENGL
     else if (action == m_glAction) {
         m_highQualityAntialiasingAction->setEnabled(true);
@@ -307,23 +394,37 @@ void DrawingView::setRenderer(QAction *action)
     }
 }
 
-bool DrawingView::onMsg(const char* pMsg, const char** ppReturn)
+bool DrawingView::onMsg(const char* pMsg, const char**)
 {
-    if (strcmp("ViewFit",pMsg) == 0) {
+    if (strcmp("ViewFit", pMsg) == 0) {
         viewAll();
         return true;
     }
-    else if (strcmp("Save",pMsg) == 0) {
-        Gui::Document *doc = getGuiDocument();
+    else if (strcmp("Save", pMsg) == 0) {
+        Gui::Document* doc = getGuiDocument();
         if (doc) {
             doc->save();
             return true;
         }
     }
-    else if (strcmp("SaveAs",pMsg) == 0) {
-        Gui::Document *doc = getGuiDocument();
+    else if (strcmp("SaveAs", pMsg) == 0) {
+        Gui::Document* doc = getGuiDocument();
         if (doc) {
             doc->saveAs();
+            return true;
+        }
+    }
+    else if (strcmp("Undo", pMsg) == 0) {
+        Gui::Document* doc = getGuiDocument();
+        if (doc) {
+            doc->undo(1);
+            return true;
+        }
+    }
+    else if (strcmp("Redo", pMsg) == 0) {
+        Gui::Document* doc = getGuiDocument();
+        if (doc) {
+            doc->redo(1);
             return true;
         }
     }
@@ -332,45 +433,59 @@ bool DrawingView::onMsg(const char* pMsg, const char** ppReturn)
 
 bool DrawingView::onHasMsg(const char* pMsg) const
 {
-    if (strcmp("ViewFit",pMsg) == 0)
+    if (strcmp("ViewFit", pMsg) == 0) {
         return true;
-    else if (strcmp("Save",pMsg) == 0)
-        return getGuiDocument() != 0;
-    else if (strcmp("SaveAs",pMsg) == 0)
-        return getGuiDocument() != 0;
-    else if (strcmp("Print",pMsg) == 0)
+    }
+    else if (strcmp("Save", pMsg) == 0) {
+        return getGuiDocument() != nullptr;
+    }
+    else if (strcmp("SaveAs", pMsg) == 0) {
+        return getGuiDocument() != nullptr;
+    }
+    else if (strcmp("Undo", pMsg) == 0) {
+        App::Document* doc = getAppDocument();
+        return doc && doc->getAvailableUndos() > 0;
+    }
+    else if (strcmp("Redo", pMsg) == 0) {
+        App::Document* doc = getAppDocument();
+        return doc && doc->getAvailableRedos() > 0;
+    }
+    else if (strcmp("Print", pMsg) == 0) {
         return true;
-    else if (strcmp("PrintPreview",pMsg) == 0)
+    }
+    else if (strcmp("PrintPreview", pMsg) == 0) {
         return true;
-    else if (strcmp("PrintPdf",pMsg) == 0)
+    }
+    else if (strcmp("PrintPdf", pMsg) == 0) {
         return true;
+    }
     return false;
 }
 
-void DrawingView::onRelabel(Gui::Document *pDoc)
+void DrawingView::onRelabel(Gui::Document* pDoc)
 {
     if (!bIsPassive && pDoc) {
-        QString cap = QString::fromLatin1("%1 : %2[*]")
-            .arg(QString::fromUtf8(pDoc->getDocument()->Label.getValue()))
-            .arg(objectName());
+        QString cap =
+            QString::fromLatin1("%1 : %2[*]")
+                .arg(QString::fromUtf8(pDoc->getDocument()->Label.getValue()), objectName());
         setWindowTitle(cap);
     }
 }
 
 void DrawingView::printPdf()
 {
-    Gui::FileOptionsDialog dlg(this, 0);
+    Gui::FileOptionsDialog dlg(this, Qt::WindowFlags());
     dlg.setFileMode(QFileDialog::AnyFile);
     dlg.setAcceptMode(QFileDialog::AcceptSave);
     dlg.setWindowTitle(tr("Export PDF"));
-    dlg.setFilters(QStringList() << tr("PDF file (*.pdf)"));
+    dlg.setNameFilters(QStringList() << QString::fromLatin1("%1 (*.pdf)").arg(tr("PDF file")));
 
-    QGridLayout *gridLayout;
-    QGridLayout *formLayout;
-    QGroupBox *groupBox;
-    QListWidget *listWidget;
+    QGridLayout* gridLayout;
+    QGridLayout* formLayout;
+    QGroupBox* groupBox;
+    QListWidget* listWidget;
     QListWidgetItem* item;
-    QWidget *form = new QWidget(&dlg);
+    QWidget* form = new QWidget(&dlg);
     form->resize(40, 300);
     formLayout = new QGridLayout(form);
     groupBox = new QGroupBox(form);
@@ -381,32 +496,41 @@ void DrawingView::printPdf()
 
     groupBox->setTitle(tr("Page sizes"));
     item = new QListWidgetItem(tr("A0"), listWidget);
-    item->setData(Qt::UserRole, QVariant(QPrinter::A0));
+    item->setData(Qt::UserRole, QVariant(QPageSize::A0));
     item = new QListWidgetItem(tr("A1"), listWidget);
-    item->setData(Qt::UserRole, QVariant(QPrinter::A1));
+    item->setData(Qt::UserRole, QVariant(QPageSize::A1));
     item = new QListWidgetItem(tr("A2"), listWidget);
-    item->setData(Qt::UserRole, QVariant(QPrinter::A2));
+    item->setData(Qt::UserRole, QVariant(QPageSize::A2));
     item = new QListWidgetItem(tr("A3"), listWidget);
-    item->setData(Qt::UserRole, QVariant(QPrinter::A3));
+    item->setData(Qt::UserRole, QVariant(QPageSize::A3));
     item = new QListWidgetItem(tr("A4"), listWidget);
-    item->setData(Qt::UserRole, QVariant(QPrinter::A4));
+    item->setData(Qt::UserRole, QVariant(QPageSize::A4));
     item = new QListWidgetItem(tr("A5"), listWidget);
-    item->setData(Qt::UserRole, QVariant(QPrinter::A5));
-    listWidget->item(4)->setSelected(true); // by default A4
+    item->setData(Qt::UserRole, QVariant(QPageSize::A5));
+    int index = 4;  // by default A4
+    for (int i = 0; i < listWidget->count(); i++) {
+        if (listWidget->item(i)->data(Qt::UserRole).toInt() == m_pageSize) {
+            index = i;
+            break;
+        }
+    }
+    listWidget->item(index)->setSelected(true);
     dlg.setOptionsWidget(Gui::FileOptionsDialog::ExtensionRight, form, false);
 
     if (dlg.exec() == QDialog::Accepted) {
         Gui::WaitCursor wc;
-        QString filename = dlg.selectedFiles().front();
+        QString filename = dlg.selectedFiles().constFirst();
         QPrinter printer(QPrinter::HighResolution);
+        printer.setFullPage(true);
         printer.setOutputFormat(QPrinter::PdfFormat);
         printer.setOutputFileName(filename);
-        printer.setOrientation(QPrinter::Landscape);
+        printer.setPageOrientation(m_orientation);
         QList<QListWidgetItem*> items = listWidget->selectedItems();
         if (items.size() == 1) {
             int AX = items.front()->data(Qt::UserRole).toInt();
-            printer.setPaperSize(QPrinter::PageSize(AX));
+            printer.setPageSize(QPageSize(QPageSize::PageSizeId(AX)));
         }
+
         print(&printer);
     }
 }
@@ -415,7 +539,10 @@ void DrawingView::print()
 {
     QPrinter printer(QPrinter::HighResolution);
     printer.setFullPage(true);
-    printer.setOrientation(QPrinter::Landscape);
+
+    printer.setPageSize(QPageSize(m_pageSize));
+    printer.setPageOrientation(m_orientation);
+
     QPrintDialog dlg(&printer, this);
     if (dlg.exec() == QDialog::Accepted) {
         print(&printer);
@@ -426,37 +553,145 @@ void DrawingView::printPreview()
 {
     QPrinter printer(QPrinter::HighResolution);
     printer.setFullPage(true);
-    printer.setOrientation(QPrinter::Landscape);
+
+    printer.setPageSize(QPageSize(m_pageSize));
+    printer.setPageOrientation(m_orientation);
 
     QPrintPreviewDialog dlg(&printer, this);
-    connect(&dlg, SIGNAL(paintRequested (QPrinter *)),
-            this, SLOT(print(QPrinter *)));
+    connect(&dlg, SIGNAL(paintRequested(QPrinter*)), this, SLOT(print(QPrinter*)));
     dlg.exec();
 }
 
 void DrawingView::print(QPrinter* printer)
 {
-#if 1
+    // As size of the render area paperRect() should be used. When performing a real
+    // print pageRect() may also work but the output is cropped at the bottom part.
+    // So, independent whether pageRect() or paperRect() is used there is no scaling effect.
+    // However, when using a different paper size as set in the drawing template (e.g.
+    // DIN A5 instead of DIN A4) then the output is scaled.
+    //
+    // When creating a PDF file there seems to be no difference between pageRect() and
+    // paperRect().
+    //
+    // When showing the preview of a print paperRect() must be used because with pageRect()
+    // a certain scaling effect can be observed and the content becomes smaller.
+    QPaintEngine::Type paintType = printer->paintEngine()->type();
+    if (printer->outputFormat() == QPrinter::NativeFormat) {
+        int w = printer->widthMM();
+        int h = printer->heightMM();
+        QPageSize::PageSizeId realPaperSize = getPageSize(w, h);
+        QPageSize::PageSizeId curPaperSize = printer->pageLayout().pageSize().id();
+
+        // for the preview a 'Picture' paint engine is used which we don't
+        // care if it uses wrong printer settings
+        bool doPrint = paintType != QPaintEngine::Picture;
+
+        if (doPrint && printer->pageLayout().orientation() != this->m_orientation) {
+            int ret = QMessageBox::warning(
+                this,
+                tr("Different orientation"),
+                tr("The printer uses a different orientation than the drawing.\n"
+                   "Do you want to continue?"),
+                QMessageBox::Yes | QMessageBox::No);
+            if (ret != QMessageBox::Yes) {
+                return;
+            }
+        }
+        else if (doPrint && realPaperSize != this->m_pageSize) {
+            int ret = QMessageBox::warning(
+                this,
+                tr("Different paper size"),
+                tr("The printer uses a different paper size than the drawing.\n"
+                   "Do you want to continue?"),
+                QMessageBox::Yes | QMessageBox::No);
+            if (ret != QMessageBox::Yes) {
+                return;
+            }
+        }
+        else if (doPrint && curPaperSize != this->m_pageSize) {
+            int ret = QMessageBox::warning(
+                this,
+                tr("Different paper size"),
+                tr("The printer uses a different paper size than the drawing.\n"
+                   "Do you want to continue?"),
+                QMessageBox::Yes | QMessageBox::No);
+            if (ret != QMessageBox::Yes) {
+                return;
+            }
+        }
+    }
+
     QPainter p(printer);
-    QRect rect = printer->pageRect();
+    if (!p.isActive() && !printer->outputFileName().isEmpty()) {
+        qApp->setOverrideCursor(Qt::ArrowCursor);
+        QMessageBox::critical(
+            this,
+            tr("Opening file failed"),
+            tr("Can't open file '%1' for writing.").arg(printer->outputFileName()));
+        qApp->restoreOverrideCursor();
+        return;
+    }
+    QRect rect = printer->pageLayout().fullRectPixels(printer->resolution());
+#ifdef Q_OS_WIN32
+    // On Windows the preview looks broken when using paperRect as render area.
+    // Although the picture is scaled when using pageRect, it looks just fine.
+    if (paintType == QPaintEngine::Picture) {
+        rect = printer->pageLayout().paintRectPixels(printer->resolution());
+    }
+#endif
     this->m_view->scene()->render(&p, rect);
     p.end();
-#else
-    printer->setResolution(QPrinter::HighResolution);
-    printer->setPageSize(QPrinter::A4);
-    QPainter painter(printer);
+}
 
-    // print, fitting the viewport contents into a full page
-    m_view->render(&painter);
+QPageSize::PageSizeId DrawingView::getPageSize(int w, int h) const
+{
+    static const float paperSizes[][2] = {
+        {210, 297},        // A4
+        {176, 250},        // B5
+        {215.9f, 279.4f},  // Letter
+        {215.9f, 355.6f},  // Legal
+        {190.5f, 254},     // Executive
+        {841, 1189},       // A0
+        {594, 841},        // A1
+        {420, 594},        // A2
+        {297, 420},        // A3
+        {148, 210},        // A5
+        {105, 148},        // A6
+        {74, 105},         // A7
+        {52, 74},          // A8
+        {37, 52},          // A8
+        {1000, 1414},      // B0
+        {707, 1000},       // B1
+        {31, 44},          // B10
+        {500, 707},        // B2
+        {353, 500},        // B3
+        {250, 353},        // B4
+        {125, 176},        // B6
+        {88, 125},         // B7
+        {62, 88},          // B8
+        {33, 62},          // B9
+        {163, 229},        // C5E
+        {105, 241},        // US Common
+        {110, 220},        // DLE
+        {210, 330},        // Folio
+        {431.8f, 279.4f},  // Ledger
+        {279.4f, 431.8f}   // Tabloid
+    };
 
-    // print the upper half of the viewport into the lower.
-    // half of the page.
-    QRect viewport = m_view->viewport()->rect();
-    m_view->render(&painter,
-                   QRectF(0, printer->height() / 2,
-                             printer->width(), printer->height() / 2),
-                   viewport.adjusted(0, 0, 0, -viewport.height() / 2));
-#endif
+    QPageSize::PageSizeId ps = QPageSize::Custom;
+    for (int i = 0; i < 30; i++) {
+        if (std::abs(paperSizes[i][0] - w) <= 1 && std::abs(paperSizes[i][1] - h) <= 1) {
+            ps = static_cast<QPageSize::PageSizeId>(i);
+            break;
+        }
+        else if (std::abs(paperSizes[i][0] - h) <= 1 && std::abs(paperSizes[i][1] - w) <= 1) {
+            ps = static_cast<QPageSize::PageSizeId>(i);
+
+            break;
+        }
+    }
+
+    return ps;
 }
 
 void DrawingView::viewAll()
@@ -466,7 +701,7 @@ void DrawingView::viewAll()
 
 PyObject* DrawingView::getPyObject()
 {
-    Py_Return;
+    return Gui::MDIView::getPyObject();
 }
 
 #include "moc_DrawingView.cpp"

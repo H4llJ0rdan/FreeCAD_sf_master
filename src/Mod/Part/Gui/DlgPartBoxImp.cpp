@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,33 +20,29 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-#endif
 
 #include "DlgPartBoxImp.h"
+#include "ui_DlgPartBox.h"
+
 
 using namespace PartGui;
 
-/* 
- *  Constructs a DlgPartBox which is a child of 'parent', with the 
- *  name 'name' and widget flags set to 'f' 
+/*
+ *  Constructs a DlgPartBox which is a child of 'parent', with the
+ *  name 'name' and widget flags set to 'f'
  *
  *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
+ *  true to construct a modal dialog.
  */
-DlgPartBoxImp::DlgPartBoxImp(QWidget* parent, Qt::WFlags fl)
-  : Gui::LocationInterface<Ui_DlgPartBox>(parent, fl)
+DlgPartBoxImp::DlgPartBoxImp(QWidget* parent, Qt::WindowFlags fl)
+    : Gui::LocationDialogUiImp(new Ui_DlgPartBox, parent, fl)
 {
 }
 
-/*  
+/*
  *  Destroys the object and frees any allocated resources
  */
-DlgPartBoxImp::~DlgPartBoxImp()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
+DlgPartBoxImp::~DlgPartBoxImp() = default;
 
 #include "moc_DlgPartBoxImp.cpp"

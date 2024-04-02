@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -23,41 +23,25 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
 #include "ViewProviderMirrored.h"
 #include "TaskMirroredParameters.h"
-#include <Mod/PartDesign/App/FeatureMirrored.h>
-#include <Mod/Sketcher/App/SketchObject.h>
-#include <Gui/Control.h>
-#include <Gui/Command.h>
-#include <Gui/Application.h>
 
 using namespace PartDesignGui;
 
-PROPERTY_SOURCE(PartDesignGui::ViewProviderMirrored,PartDesignGui::ViewProvider)
+PROPERTY_SOURCE(PartDesignGui::ViewProviderMirrored,PartDesignGui::ViewProviderTransformed)
 
-bool ViewProviderMirrored::setEdit(int ModNum)
+TaskDlgFeatureParameters *ViewProviderMirrored::getEditDialog() {
+    return new TaskDlgMirroredParameters (this);
+}
+
+void ViewProviderMirrored::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
 {
-    ViewProviderTransformed::setEdit(ModNum);
+    addDefaultAction(menu, QObject::tr("Edit mirrored"));
+    PartDesignGui::ViewProvider::setupContextMenu(menu, receiver, member);
+}
 
-    if (ModNum == ViewProvider::Default ) {
-        TaskDlgMirroredParameters *mirroredDlg = NULL;
-
-        if (checkDlgOpen(mirroredDlg)) {
-            // start the edit dialog
-            if (mirroredDlg)
-                Gui::Control().showDialog(mirroredDlg);
-            else
-                Gui::Control().showDialog(new TaskDlgMirroredParameters(this));
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-    else {
-        return ViewProviderPart::setEdit(ModNum);
-    }
+const std::string & ViewProviderMirrored::featureName() const
+{
+    static const std::string name = "Mirrored";
+    return name;
 }

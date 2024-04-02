@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,26 +20,11 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-# include <Inventor/SbColor.h>
-# include <Inventor/fields/SoSFColor.h> 
-# include <Inventor/nodes/SoCamera.h>
-# include <Inventor/nodes/SoSeparator.h>
-# include <Inventor/nodes/SoDirectionalLight.h>
-# include <Inventor/SoPickedPoint.h>
-# include <Inventor/actions/SoRayPickAction.h> 
-#endif
+#include <App/DocumentObject.h>
 
-#include <Base/Parameter.h>
-#include <App/Document.h>
-
-#include "Window.h"
-#include "SoFCSelection.h"
 #include "ViewProviderFeature.h"
-#include "View3DInventorViewer.h"
 
 
 using namespace Gui;
@@ -53,9 +38,7 @@ ViewProviderFeature::ViewProviderFeature()
     ADD_PROPERTY(ColourList,(c));
 }
 
-ViewProviderFeature::~ViewProviderFeature()
-{
-}
+ViewProviderFeature::~ViewProviderFeature() = default;
 
 void ViewProviderFeature::attach(App::DocumentObject *pcObj)
 {

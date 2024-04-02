@@ -23,27 +23,14 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <cfloat>
-# include "InventorAll.h"
-# include <QAction>
-# include <QActionGroup>
+# include <Inventor/nodes/SoCamera.h>
 # include <QApplication>
-# include <QByteArray>
-# include <QCursor>
-# include <QList>
-# include <QMenu>
-# include <QMetaObject>
-# include <QRegExp>
 #endif
 
-#include <Inventor/sensors/SoTimerSensor.h>
-
-#include <App/Application.h>
 #include "NavigationStyle.h"
+#include "SoMouseWheelEvent.h"
 #include "View3DInventorViewer.h"
-#include "Application.h"
-#include "MenuManager.h"
-#include "MouseSelection.h"
+
 
 using namespace Gui;
 
@@ -51,15 +38,11 @@ using namespace Gui;
 
 /* TRANSLATOR Gui::InventorNavigationStyle */
 
-TYPESYSTEM_SOURCE(Gui::InventorNavigationStyle, Gui::UserNavigationStyle);
+TYPESYSTEM_SOURCE(Gui::InventorNavigationStyle, Gui::UserNavigationStyle)
 
-InventorNavigationStyle::InventorNavigationStyle()
-{
-}
+InventorNavigationStyle::InventorNavigationStyle() = default;
 
-InventorNavigationStyle::~InventorNavigationStyle()
-{
-}
+InventorNavigationStyle::~InventorNavigationStyle() = default;
 
 const char* InventorNavigationStyle::mouseButtons(ViewerMode mode)
 {
@@ -77,12 +60,20 @@ const char* InventorNavigationStyle::mouseButtons(ViewerMode mode)
     }
 }
 
+std::string InventorNavigationStyle::userFriendlyName() const
+{
+    // do not mark this for translation
+    return "OpenInventor";
+}
+
 SbBool InventorNavigationStyle::processSoEvent(const SoEvent * const ev)
 {
     // Events when in "ready-to-seek" mode are ignored, except those
     // which influence the seek mode itself -- these are handled further
     // up the inheritance hierarchy.
-    if (this->isSeekMode()) { return inherited::processSoEvent(ev); }
+    if (this->isSeekMode()) {
+        return inherited::processSoEvent(ev);
+    }
     // Switch off viewing mode (Bug #0000911)
     if (!this->isSeekMode()&& !this->isAnimating() && this->isViewing() )
         this->setViewing(false); // by default disable viewing mode to render the scene
@@ -90,82 +81,43 @@ SbBool InventorNavigationStyle::processSoEvent(const SoEvent * const ev)
     const SoType type(ev->getTypeId());
 
     const SbViewportRegion & vp = viewer->getSoRenderManager()->getViewportRegion();
-    const SbVec2s size(vp.getViewportSizePixels());
-    const SbVec2f prevnormalized = this->lastmouseposition;
     const SbVec2s pos(ev->getPosition());
-    const SbVec2f posn((float) pos[0] / (float) std::max((int)(size[0] - 1), 1),
-                       (float) pos[1] / (float) std::max((int)(size[1] - 1), 1));
+    const SbVec2f posn = normalizePixelPos(pos);
 
+    const SbVec2f prevnormalized = this->lastmouseposition;
     this->lastmouseposition = posn;
 
-    // Set to TRUE if any event processing happened. Note that it is not
+    // Set to true if any event processing happened. Note that it is not
     // necessary to restrict ourselves to only do one "action" for an
     // event, we only need this flag to see if any processing happened
     // at all.
-    SbBool processed = FALSE;
+    SbBool processed = false;
 
     const ViewerMode curmode = this->currentmode;
     ViewerMode newmode = curmode;
 
     // Mismatches in state of the modifier keys happens if the user
     // presses or releases them outside the viewer window.
-    if (this->ctrldown != ev->wasCtrlDown()) {
-        this->ctrldown = ev->wasCtrlDown();
-    }
-    if (this->shiftdown != ev->wasShiftDown()) {
-        this->shiftdown = ev->wasShiftDown();
-    }
-    if (this->altdown != ev->wasAltDown()) {
-        this->altdown = ev->wasAltDown();
-    }
+    syncModifierKeys(ev);
 
     // give the nodes in the foreground root the chance to handle events (e.g color bar)
-    if (!processed && !viewer->isEditing()) {
+    if (!viewer->isEditing()) {
         processed = handleEventInForeground(ev);
         if (processed)
-            return TRUE;
+            return true;
     }
 
     // Keyboard handling
     if (type.isDerivedFrom(SoKeyboardEvent::getClassTypeId())) {
-        const SoKeyboardEvent * const event = (const SoKeyboardEvent *) ev;
-        const SbBool press = event->getState() == SoButtonEvent::DOWN ? TRUE : FALSE;
-        switch (event->getKey()) {
-        case SoKeyboardEvent::LEFT_CONTROL:
-        case SoKeyboardEvent::RIGHT_CONTROL:
-            this->ctrldown = press;
-            break;
-        case SoKeyboardEvent::LEFT_SHIFT:
-        case SoKeyboardEvent::RIGHT_SHIFT:
-            this->shiftdown = press;
-            break;
-        case SoKeyboardEvent::LEFT_ALT:
-        case SoKeyboardEvent::RIGHT_ALT:
-            this->altdown = press;
-            break;
-        case SoKeyboardEvent::H:
-            processed = TRUE;
-            viewer->saveHomePosition();
-            break;
-        case SoKeyboardEvent::S:
-        case SoKeyboardEvent::HOME:
-        case SoKeyboardEvent::LEFT_ARROW:
-        case SoKeyboardEvent::UP_ARROW:
-        case SoKeyboardEvent::RIGHT_ARROW:
-        case SoKeyboardEvent::DOWN_ARROW:
-            if (!this->isViewing())
-                this->setViewing(true);
-            break;
-        default:
-            break;
-        }
+        auto event = static_cast<const SoKeyboardEvent *>(ev);
+        processed = processKeyboardEvent(event);
     }
 
     // Mouse Button / Spaceball Button handling
     if (type.isDerivedFrom(SoMouseButtonEvent::getClassTypeId())) {
-        const SoMouseButtonEvent * const event = (const SoMouseButtonEvent *) ev;
+        const auto event = (const SoMouseButtonEvent *) ev;
         const int button = event->getButton();
-        const SbBool press = event->getState() == SoButtonEvent::DOWN ? TRUE : FALSE;
+        const SbBool press = event->getState() == SoButtonEvent::DOWN ? true : false;
 
         // SoDebugError::postInfo("processSoEvent", "button = %d", button);
         switch (button) {
@@ -177,7 +129,7 @@ SbBool InventorNavigationStyle::processSoEvent(const SoEvent * const ev)
                 float ratio = vp.getViewportAspectRatio();
                 SbViewVolume vv = viewer->getSoRenderManager()->getCamera()->getViewVolume(ratio);
                 this->panningplane = vv.getPlane(viewer->getSoRenderManager()->getCamera()->focalDistance.getValue());
-                this->lockrecenter = FALSE;
+                this->lockrecenter = false;
             }
             else if (!press && ev->wasShiftDown() &&
                 (this->currentmode != NavigationStyle::SELECTION)) {
@@ -189,38 +141,41 @@ SbBool InventorNavigationStyle::processSoEvent(const SoEvent * const ev)
                         panToCenter(panningplane, posn);
                         this->interactiveCountDec();
                     }
-                    processed = TRUE;
+                    processed = true;
                 }
             }
             else if (press && (this->currentmode == NavigationStyle::SEEK_WAIT_MODE)) {
                 newmode = NavigationStyle::SEEK_MODE;
                 this->seekToPoint(pos); // implicitly calls interactiveCountInc()
-                processed = TRUE;
-                this->lockrecenter = TRUE;
+                processed = true;
+                this->lockrecenter = true;
             }
             else if (press && (this->currentmode == NavigationStyle::IDLE)) {
                 this->setViewing(true);
-                processed = TRUE;
-                this->lockrecenter = TRUE;
+                processed = true;
+                this->lockrecenter = true;
             }
             else if (!press && (this->currentmode == NavigationStyle::DRAGGING)) {
                 this->setViewing(false);
-                processed = TRUE;
-                this->lockrecenter = TRUE;
+                processed = true;
+                this->lockrecenter = true;
             }
             else if (viewer->isEditing() && (this->currentmode == NavigationStyle::SPINNING)) {
-                processed = TRUE;
-                this->lockrecenter = TRUE;
+                processed = true;
+                this->lockrecenter = true;
+            }
+            else {
+                processed = processClickEvent(event);
             }
             break;
         case SoMouseButtonEvent::BUTTON2:
             // If we are in edit mode then simply ignore the RMB events
             // to pass the event to the base class.
-            this->lockrecenter = TRUE;
+            this->lockrecenter = true;
             if (!viewer->isEditing()) {
                 // If we are in zoom or pan mode ignore RMB events otherwise
-                // the canvas doesn't get any release events 
-                if (this->currentmode != NavigationStyle::ZOOMING && 
+                // the canvas doesn't get any release events
+                if (this->currentmode != NavigationStyle::ZOOMING &&
                     this->currentmode != NavigationStyle::PANNING) {
                     if (this->isPopupMenuEnabled()) {
                         if (!press) { // release right mouse button
@@ -237,7 +192,7 @@ SbBool InventorNavigationStyle::processSoEvent(const SoEvent * const ev)
                 float ratio = vp.getViewportAspectRatio();
                 SbViewVolume vv = viewer->getSoRenderManager()->getCamera()->getViewVolume(ratio);
                 this->panningplane = vv.getPlane(viewer->getSoRenderManager()->getCamera()->focalDistance.getValue());
-                this->lockrecenter = FALSE;
+                this->lockrecenter = false;
             }
             else {
                 SbTime tmp = (ev->getTime() - this->centerTime);
@@ -248,18 +203,10 @@ SbBool InventorNavigationStyle::processSoEvent(const SoEvent * const ev)
                         panToCenter(panningplane, posn);
                         this->interactiveCountDec();
                     }
-                    processed = TRUE;
+                    processed = true;
                 }
             }
             this->button3down = press;
-            break;
-        case SoMouseButtonEvent::BUTTON4:
-            doZoom(viewer->getSoRenderManager()->getCamera(), TRUE, posn);
-            processed = TRUE;
-            break;
-        case SoMouseButtonEvent::BUTTON5:
-            doZoom(viewer->getSoRenderManager()->getCamera(), FALSE, posn);
-            processed = TRUE;
             break;
         default:
             break;
@@ -268,31 +215,31 @@ SbBool InventorNavigationStyle::processSoEvent(const SoEvent * const ev)
 
     // Mouse Movement handling
     if (type.isDerivedFrom(SoLocation2Event::getClassTypeId())) {
-        this->lockrecenter = TRUE;
-        const SoLocation2Event * const event = (const SoLocation2Event *) ev;
+        this->lockrecenter = true;
+        const auto event = (const SoLocation2Event *) ev;
         if (this->currentmode == NavigationStyle::ZOOMING) {
             this->zoomByCursor(posn, prevnormalized);
-            processed = TRUE;
+            processed = true;
         }
         else if (this->currentmode == NavigationStyle::PANNING) {
             float ratio = vp.getViewportAspectRatio();
             panCamera(viewer->getSoRenderManager()->getCamera(), ratio, this->panningplane, posn, prevnormalized);
-            processed = TRUE;
+            processed = true;
         }
         else if (this->currentmode == NavigationStyle::DRAGGING) {
             this->addToLog(event->getPosition(), event->getTime());
             this->spin(posn);
             moveCursorPosition();
-            processed = TRUE;
+            processed = true;
         }
     }
 
     // Spaceball & Joystick handling
     if (type.isDerivedFrom(SoMotion3Event::getClassTypeId())) {
-        const SoMotion3Event * const event = static_cast<const SoMotion3Event * const>(ev);
+        const auto event = static_cast<const SoMotion3Event *>(ev);
         if (event)
             this->processMotionEvent(event);
-        processed = TRUE;
+        processed = true;
     }
 
     enum {
@@ -365,12 +312,14 @@ SbBool InventorNavigationStyle::processSoEvent(const SoEvent * const ev)
 
     // If not handled in this class, pass on upwards in the inheritance
     // hierarchy.
-    if ((curmode == NavigationStyle::SELECTION ||
+    if (ev->isOfType(SoMouseWheelEvent::getClassTypeId()))
+        processed = inherited::processSoEvent(ev);
+    else if ((curmode == NavigationStyle::SELECTION ||
          newmode == NavigationStyle::SELECTION ||
          viewer->isEditing()) && !processed)
         processed = inherited::processSoEvent(ev);
     else
-        return TRUE;
+        return true;
 
     return processed;
 }

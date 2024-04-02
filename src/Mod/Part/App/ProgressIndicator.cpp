@@ -20,12 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-#endif
 
 #include "ProgressIndicator.h"
+
 
 using namespace Part;
 /*!
@@ -34,7 +32,7 @@ using namespace Part;
   #include <Transfer_TransientProcess.hxx>
 
   STEPControl_Reader aReader;
-  Handle_Message_ProgressIndicator pi = new ProgressIndicator(100);
+  Handle(Message_ProgressIndicator) pi = new ProgressIndicator(100);
 
   pi->NewScope(20, "Loading STEP file...");
   pi->Show();
@@ -54,6 +52,7 @@ using namespace Part;
   \endcode
  */
 
+#if OCC_VERSION_HEX < 0x070500
 ProgressIndicator::ProgressIndicator (int theMaxVal)
   : myProgress(new Base::SequencerLauncher("", theMaxVal))
 {
@@ -83,3 +82,4 @@ Standard_Boolean ProgressIndicator::UserBreak()
 {
     return myProgress->wasCanceled();
 }
+#endif

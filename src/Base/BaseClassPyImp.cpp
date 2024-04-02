@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2007     *
+ *   Copyright (c) 2007 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,8 +23,6 @@
 
 #include "PreCompiled.h"
 
-#include "BaseClass.h"
-
 // inclusion of the generated files (generated out of BaseClassPy.xml)
 #include "BaseClassPy.h"
 #include "BaseClassPy.cpp"
@@ -32,67 +30,62 @@
 using namespace Base;
 
 // returns a string which represent the object e.g. when printed in python
-std::string BaseClassPy::representation(void) const
+std::string BaseClassPy::representation() const
 {
-    return std::string("<binding object>");
+    return {"<binding object>"};
 }
 
 
 PyObject*  BaseClassPy::isDerivedFrom(PyObject *args)
 {
-    char *name;
-    if (!PyArg_ParseTuple(args, "s", &name))     // convert args: Python->C 
-        return NULL;                    // NULL triggers exception
+    char *name{};
+    if (!PyArg_ParseTuple(args, "s", &name))
+        return nullptr;
 
     Base::Type type = Base::Type::fromName(name);
-    if (type != Base::Type::badType() && getBaseClassPtr()->getTypeId().isDerivedFrom(type)) {
-        Py_INCREF(Py_True);
-        return Py_True;
-    }
-    else {
-        Py_INCREF(Py_False);
-        return Py_False;
-    }
+    bool valid = (type != Base::Type::badType() && getBaseClassPtr()->getTypeId().isDerivedFrom(type));
+    return PyBool_FromLong(valid ? 1 : 0);
 }
 
 PyObject*  BaseClassPy::getAllDerivedFrom(PyObject *args)
 {
-    if (!PyArg_ParseTuple(args, ""))     // convert args: Python->C 
-        return NULL;                    // NULL triggers exception
-    
+    if (!PyArg_ParseTuple(args, ""))
+        return nullptr;
+
     std::vector<Base::Type> ary;
     Base::Type::getAllDerivedFrom(getBaseClassPtr()->getTypeId(), ary);
     Py::List res;
-    for (std::vector<Base::Type>::iterator it = ary.begin(); it != ary.end(); ++it)
-        res.append(Py::String(it->getName()));
+    for (const auto & it : ary)
+        res.append(Py::String(it.getName()));
     return Py::new_reference_to(res);
 }
 
-Py::String BaseClassPy::getTypeId(void) const
+Py::String BaseClassPy::getTypeId() const
 {
-    return Py::String(std::string(getBaseClassPtr()->getTypeId().getName()));
+    return {std::string(getBaseClassPtr()->getTypeId().getName())};
 }
 
-Py::Int BaseClassPy::getModule(void) const
+Py::String BaseClassPy::getModule() const
 {
-    return Py::Int();
+    std::string module(getBaseClassPtr()->getTypeId().getName());
+    std::string::size_type pos = module.find_first_of("::");
+
+    if (pos != std::string::npos)
+        module = std::string(module, 0, pos);
+    else
+        module.clear();
+
+    return {module};
 }
 
-PyObject *BaseClassPy::getCustomAttributes(const char* attr) const
+PyObject *BaseClassPy::getCustomAttributes(const char* /*attr*/) const
 {
-    // this attribute is marked 'deprecated' but to keep old code working we
-    // handle it here. In a future version this will be removed.
-    if (strcmp(attr, "Type") == 0) {
-        PyErr_SetString(PyExc_DeprecationWarning, "Use 'TypeId' instead");
-        PyErr_Print();
-        return Py::new_reference_to(Py::String(std::string(getBaseClassPtr()->getTypeId().getName())));
-    }
-    return 0;
+    return nullptr;
 }
 
 int BaseClassPy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }
 
 

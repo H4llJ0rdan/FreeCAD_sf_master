@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -25,19 +25,37 @@
 
 #ifndef _PreComp_
 # include <QApplication>
-# include <QDir>
-# include <QFileInfo>
-# include <QLineEdit>
 #endif
 
+#include <App/Part.h>
 #include <Gui/Application.h>
 #include <Gui/Command.h>
-#include <Gui/MainWindow.h>
+#include <Gui/Document.h>
+#include <Gui/MDIView.h>
+
+
+//===========================================================================
+// Utils
+//===========================================================================
+namespace {
+QString getAutoGroupCommandStr()
+// Helper function to get the python code to add the newly created object to the active Part object if present
+{
+    App::Part* activePart = Gui::Application::Instance->activeView()->getActiveObject<App::Part*>("part");
+    if (activePart) {
+        QString activePartName = QString::fromLatin1(activePart->getNameInDocument());
+        return QString::fromLatin1("App.ActiveDocument.getObject('%1\')."
+            "addObject(App.ActiveDocument.ActiveObject)\n")
+            .arg(activePartName);
+    }
+    return QString::fromLatin1("# Object created at document root.");
+}
+}
 
 //===========================================================================
 // Part_Cylinder
 //===========================================================================
-DEF_STD_CMD_A(CmdPartCylinder);
+DEF_STD_CMD_A(CmdPartCylinder)
 
 CmdPartCylinder::CmdPartCylinder()
   : Command("Part_Cylinder")
@@ -53,20 +71,22 @@ CmdPartCylinder::CmdPartCylinder()
 
 void CmdPartCylinder::activated(int iMsg)
 {
+    Q_UNUSED(iMsg);
     QString cmd;
     cmd = qApp->translate("CmdPartCylinder","Cylinder");
     openCommand((const char*)cmd.toUtf8());
 
-    doCommand(Doc,"App.ActiveDocument.addObject(\"Part::Cylinder\",\"Cylinder\")");
-    cmd = QString::fromAscii("App.ActiveDocument.ActiveObject.Label = \"%1\"")
+    runCommand(Doc,"App.ActiveDocument.addObject(\"Part::Cylinder\",\"Cylinder\")");
+    cmd = QString::fromLatin1("App.ActiveDocument.ActiveObject.Label = \"%1\"")
         .arg(qApp->translate("CmdPartCylinder","Cylinder"));
-    doCommand(Doc,(const char*)cmd.toUtf8());
+    runCommand(Doc,cmd.toUtf8());
+    runCommand(Doc, getAutoGroupCommandStr().toUtf8());
     commitCommand();
     updateActive();
-    doCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
+    runCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
 }
 
-bool CmdPartCylinder::isActive(void)
+bool CmdPartCylinder::isActive()
 {
     if (getActiveGuiDocument())
         return true;
@@ -77,7 +97,7 @@ bool CmdPartCylinder::isActive(void)
 //===========================================================================
 // Part_Box
 //===========================================================================
-DEF_STD_CMD_A(CmdPartBox);
+DEF_STD_CMD_A(CmdPartBox)
 
 CmdPartBox::CmdPartBox()
   : Command("Part_Box")
@@ -93,20 +113,22 @@ CmdPartBox::CmdPartBox()
 
 void CmdPartBox::activated(int iMsg)
 {
+    Q_UNUSED(iMsg);
     QString cmd;
     cmd = qApp->translate("CmdPartBox","Cube");
     openCommand((const char*)cmd.toUtf8());
 
-    doCommand(Doc,"App.ActiveDocument.addObject(\"Part::Box\",\"Box\")");
-    cmd = QString::fromAscii("App.ActiveDocument.ActiveObject.Label = \"%1\"")
+    runCommand(Doc,"App.ActiveDocument.addObject(\"Part::Box\",\"Box\")");
+    cmd = QString::fromLatin1("App.ActiveDocument.ActiveObject.Label = \"%1\"")
         .arg(qApp->translate("CmdPartBox","Cube"));
-    doCommand(Doc,(const char*)cmd.toUtf8());
+    runCommand(Doc,cmd.toUtf8());
+    runCommand(Doc, getAutoGroupCommandStr().toUtf8());
     commitCommand();
     updateActive();
-    doCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
+    runCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
 }
 
-bool CmdPartBox::isActive(void)
+bool CmdPartBox::isActive()
 {
     if (getActiveGuiDocument())
         return true;
@@ -117,7 +139,7 @@ bool CmdPartBox::isActive(void)
 //===========================================================================
 // Part_Sphere
 //===========================================================================
-DEF_STD_CMD_A(CmdPartSphere);
+DEF_STD_CMD_A(CmdPartSphere)
 
 CmdPartSphere::CmdPartSphere()
   : Command("Part_Sphere")
@@ -133,20 +155,22 @@ CmdPartSphere::CmdPartSphere()
 
 void CmdPartSphere::activated(int iMsg)
 {
+    Q_UNUSED(iMsg);
     QString cmd;
     cmd = qApp->translate("CmdPartSphere","Sphere");
     openCommand((const char*)cmd.toUtf8());
 
-    doCommand(Doc,"App.ActiveDocument.addObject(\"Part::Sphere\",\"Sphere\")");
-    cmd = QString::fromAscii("App.ActiveDocument.ActiveObject.Label = \"%1\"")
+    runCommand(Doc,"App.ActiveDocument.addObject(\"Part::Sphere\",\"Sphere\")");
+    cmd = QString::fromLatin1("App.ActiveDocument.ActiveObject.Label = \"%1\"")
         .arg(qApp->translate("CmdPartSphere","Sphere"));
-    doCommand(Doc,(const char*)cmd.toUtf8());
+    runCommand(Doc,cmd.toUtf8());
+    runCommand(Doc, getAutoGroupCommandStr().toUtf8());
     commitCommand();
     updateActive();
-    doCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
+    runCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
 }
 
-bool CmdPartSphere::isActive(void)
+bool CmdPartSphere::isActive()
 {
     if (getActiveGuiDocument())
         return true;
@@ -157,7 +181,7 @@ bool CmdPartSphere::isActive(void)
 //===========================================================================
 // Part_Cone
 //===========================================================================
-DEF_STD_CMD_A(CmdPartCone);
+DEF_STD_CMD_A(CmdPartCone)
 
 CmdPartCone::CmdPartCone()
   : Command("Part_Cone")
@@ -173,20 +197,22 @@ CmdPartCone::CmdPartCone()
 
 void CmdPartCone::activated(int iMsg)
 {
+    Q_UNUSED(iMsg);
     QString cmd;
     cmd = qApp->translate("CmdPartCone","Cone");
     openCommand((const char*)cmd.toUtf8());
 
-    doCommand(Doc,"App.ActiveDocument.addObject(\"Part::Cone\",\"Cone\")");
-    cmd = QString::fromAscii("App.ActiveDocument.ActiveObject.Label = \"%1\"")
+    runCommand(Doc,"App.ActiveDocument.addObject(\"Part::Cone\",\"Cone\")");
+    cmd = QString::fromLatin1("App.ActiveDocument.ActiveObject.Label = \"%1\"")
         .arg(qApp->translate("CmdPartCone","Cone"));
-    doCommand(Doc,(const char*)cmd.toUtf8());
+    runCommand(Doc,cmd.toUtf8());
+    runCommand(Doc, getAutoGroupCommandStr().toUtf8());
     commitCommand();
     updateActive();
-    doCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
+    runCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
 }
 
-bool CmdPartCone::isActive(void)
+bool CmdPartCone::isActive()
 {
     if (getActiveGuiDocument())
         return true;
@@ -197,7 +223,7 @@ bool CmdPartCone::isActive(void)
 //===========================================================================
 // Part_Torus
 //===========================================================================
-DEF_STD_CMD_A(CmdPartTorus);
+DEF_STD_CMD_A(CmdPartTorus)
 
 CmdPartTorus::CmdPartTorus()
   : Command("Part_Torus")
@@ -213,20 +239,22 @@ CmdPartTorus::CmdPartTorus()
 
 void CmdPartTorus::activated(int iMsg)
 {
+    Q_UNUSED(iMsg);
     QString cmd;
     cmd = qApp->translate("CmdPartTorus","Torus");
     openCommand((const char*)cmd.toUtf8());
 
-    doCommand(Doc,"App.ActiveDocument.addObject(\"Part::Torus\",\"Torus\")");
-    cmd = QString::fromAscii("App.ActiveDocument.ActiveObject.Label = \"%1\"")
+    runCommand(Doc,"App.ActiveDocument.addObject(\"Part::Torus\",\"Torus\")");
+    cmd = QString::fromLatin1("App.ActiveDocument.ActiveObject.Label = \"%1\"")
         .arg(qApp->translate("CmdPartTorus","Torus"));
-    doCommand(Doc,(const char*)cmd.toUtf8());
+    runCommand(Doc,cmd.toUtf8());
+    runCommand(Doc, getAutoGroupCommandStr().toUtf8());
     commitCommand();
     updateActive();
-    doCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
+    runCommand(Gui, "Gui.SendMsgToActiveView(\"ViewFit\")");
 }
 
-bool CmdPartTorus::isActive(void)
+bool CmdPartTorus::isActive()
 {
     if (getActiveGuiDocument())
         return true;
@@ -237,7 +265,7 @@ bool CmdPartTorus::isActive(void)
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-void CreateParamPartCommands(void)
+void CreateParamPartCommands()
 {
     Gui::CommandManager &rcCmdMgr = Gui::Application::Instance->commandManager();
     rcCmdMgr.addCommand(new CmdPartCylinder());

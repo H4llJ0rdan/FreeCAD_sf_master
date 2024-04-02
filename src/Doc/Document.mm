@@ -16,7 +16,7 @@
 </node>
 <node CREATED="1193392451370" ID="Freemind_Link_1851213906" MODIFIED="1193392725276" POSITION="left" TEXT="Parametric">
 <font BOLD="true" NAME="SansSerif" SIZE="12"/>
-<node CREATED="1193397670822" ID="Freemind_Link_384122313" MODIFIED="1193397678685" TEXT="Solver algorithem"/>
+<node CREATED="1193397670822" ID="Freemind_Link_384122313" MODIFIED="1193397678685" TEXT="Solver algorithm"/>
 <node CREATED="1193397679216" ID="Freemind_Link_183160796" MODIFIED="1193397694847" TEXT="Modelling history groups"/>
 </node>
 <node CREATED="1193392473774" ID="Freemind_Link_1429136593" MODIFIED="1193392717752" POSITION="left" TEXT="Groups (Assozativ)">
@@ -34,7 +34,7 @@
 <font BOLD="true" NAME="SansSerif" SIZE="12"/>
 <node CREATED="1193392755557" ID="Freemind_Link_1428395748" MODIFIED="1193392767045" TEXT="XML Model"/>
 <node CREATED="1193392767389" ID="Freemind_Link_1901080961" MODIFIED="1193392777035" TEXT="GUI Callback"/>
-<node CREATED="1193392777503" ID="Freemind_Link_130622541" MODIFIED="1193392788820" TEXT="Exceptions wile restore"/>
+<node CREATED="1193392777503" ID="Freemind_Link_130622541" MODIFIED="1193392788820" TEXT="Exceptions while restore"/>
 </node>
 </node>
 </map>

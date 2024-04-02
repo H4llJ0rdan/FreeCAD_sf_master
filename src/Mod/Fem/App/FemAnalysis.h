@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,54 +20,86 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef Fem_FemAnalysis_H
 #define Fem_FemAnalysis_H
 
-
-#include <App/DocumentObject.h>
-#include <App/PropertyLinks.h>
+#include <App/DocumentObjectGroup.h>
 #include <App/FeaturePython.h>
-
+#include <App/PropertyStandard.h>
+#include <Mod/Fem/FemGlobal.h>
 
 
 namespace Fem
 {
 
-class AppFemExport FemAnalysis : public App::DocumentObject
+/**
+ * @brief Container of objects relevant to one simulation.
+ *
+ * @details
+ *  A Analysis contains all objects necessary for a complete specification
+ *  of a simulation. After computing it also contains the result of the
+ *  simulation. The Analysis object is just a container. It is not responsible
+ *  for anything else like executing the simulation.
+ *
+ *  The Analysis class is essentially a App::DocumentObjectGroup. It handles
+ *  all the container stuff. The difference is that the Analysis document
+ *  object uses a different ViewProvider, has a Uid property and does some
+ *  compatibility handling via handleChangedPropertyName.
+ *
+ *  This implies that it is not checked which objects are put into the
+ *  Analysis object. Every document object of FreeCAD can be part of a
+ *  Analysis.
+ */
+class FemExport FemAnalysis: public App::DocumentObjectGroup
 {
-    PROPERTY_HEADER(Fem::FemAnalysis);
+    PROPERTY_HEADER_WITH_OVERRIDE(Fem::FemAnalysis);
 
 public:
-    /// Constructor
-    FemAnalysis(void);
-    virtual ~FemAnalysis();
+    /**
+     * Uses Base::Uuid to initialize the Uid property to a newly generated
+     * unique id because PropertyUUID doesn't initialize itself.
+     */
+    FemAnalysis();
+    ~FemAnalysis() override;
 
-    /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
+    /**
+     * A unique identifier for each Analysis object. Useful when doing
+     * filesystem operations because it can provide a unique file or
+     * directory name for an analysis. Retains its value across save/load
+     * cycles.
+     */
+    App::PropertyUUID Uid;
+
+    const char* getViewProviderName() const override
+    {
         return "FemGui::ViewProviderFemAnalysis";
     }
-    virtual App::DocumentObjectExecReturn *execute(void) {
-        return App::DocumentObject::StdReturn;
-    }
-    virtual short mustExecute(void) const;
-    virtual PyObject *getPyObject(void);
-
-    /// Member objects of the Analysis
-    App::PropertyLinkList Member;
-    /// unique identifier of the Analysis 
-    App::PropertyUUID    Uid;
-
 
 protected:
-    /// get called by the container when a property has changed
-    virtual void onChanged (const App::Property* prop);
+    /**
+     * @brief Retain compatibility with old "Member" property.
+     *
+     * @details
+     *  In an older version of FreeCAD FemAnalysis handles it's member itself
+     *  in a property called "Member". Now this is handled in the "Group"
+     *  property of DocumentObjectGroup. This methods translates old files
+     *  still using the "Member" property.
+     */
+    void handleChangedPropertyName(Base::XMLReader& reader,
+                                   const char* TypeName,
+                                   const char* PropName) override;
 };
 
-typedef App::FeaturePythonT<FemAnalysis> FemAnalysisPython;
+class FemExport DocumentObject: public App::DocumentObject
+{
+    PROPERTY_HEADER_WITH_OVERRIDE(Fem::DocumentObject);
+};
+
+using FemAnalysisPython = App::FeaturePythonT<FemAnalysis>;
+using FeaturePython = App::FeaturePythonT<DocumentObject>;
 
 
-} //namespace Fem
+}  // namespace Fem
 
 
-#endif // Fem_FemAnalysis_H
+#endif  // Fem_FemAnalysis_H

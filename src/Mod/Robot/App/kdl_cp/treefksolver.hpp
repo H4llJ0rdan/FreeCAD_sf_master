@@ -50,8 +50,7 @@ namespace KDL {
          *
          * @param q_in input joint coordinates
          * @param p_out reference to output cartesian pose
-         * @param segmentName 
-         *
+         * @param segmentName
          * @return if < 0 something went wrong
          */
         virtual int JntToCart(const JntArray& q_in, Frame& p_out, std::string segmentName)=0;
@@ -90,7 +89,7 @@ namespace KDL {
 //    class TreeFkSolverAcc {
 //   public:
         /**
-         * Calculate forward position, velocity and accelaration
+         * Calculate forward position, velocity and acceleration
          * kinematics, from joint coordinates to cartesian coordinates
          *
          * @param q_in input joint coordinates (position, velocity and

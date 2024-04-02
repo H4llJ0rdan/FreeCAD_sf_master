@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2002 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,7 +20,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <sstream>
@@ -33,16 +32,17 @@
 # include <QTreeWidget>
 #endif
 
+#include <App/Application.h>
+#include <Base/Exception.h>
+#include <Base/Parameter.h>
+
 #include "DlgParameterImp.h"
-#include "DlgInputDialogImp.h"
+#include "ui_DlgParameter.h"
 #include "BitmapFactory.h"
+#include "DlgParameterFind.h"
+#include "DlgInputDialogImp.h"
 #include "FileDialog.h"
 #include "SpinBox.h"
-
-#include <Base/Parameter.h>
-#include <Base/Exception.h>
-#include <App/Application.h>
-
 
 
 using namespace Gui::Dialog;
@@ -51,28 +51,39 @@ using namespace Gui::Dialog;
 
 /**
  *  Constructs a DlgParameterImp which is a child of 'parent', with the
- *  name 'name' and widget flags set to 'f' 
+ *  name 'name' and widget flags set to 'f'
  *
  *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
+ *  true to construct a modal dialog.
  */
-DlgParameterImp::DlgParameterImp( QWidget* parent,  Qt::WFlags fl )
-  : QDialog( parent, fl|Qt::WindowMinMaxButtonsHint )
+DlgParameterImp::DlgParameterImp( QWidget* parent,  Qt::WindowFlags fl )
+  : QDialog(parent, fl|Qt::WindowMinMaxButtonsHint)
+  , ui(new Ui_DlgParameter)
 {
-    this->setupUi(this);
-    QStringList groupLabels; 
+    ui->setupUi(this);
+    setupConnections();
+
+    ui->checkSort->setVisible(false); // for testing
+
+    QStringList groupLabels;
     groupLabels << tr( "Group" );
-    paramGroup = new ParameterGroup(splitter3);
+    paramGroup = new ParameterGroup(ui->splitter3);
     paramGroup->setHeaderLabels(groupLabels);
     paramGroup->setRootIsDecorated(false);
+    paramGroup->setSortingEnabled(true);
+    paramGroup->sortByColumn(0, Qt::AscendingOrder);
+    paramGroup->header()->setProperty("showSortIndicator", QVariant(true));
 
-    QStringList valueLabels; 
+    QStringList valueLabels;
     valueLabels << tr( "Name" ) << tr( "Type" ) << tr( "Value" );
-    paramValue = new ParameterValue(splitter3);
+    paramValue = new ParameterValue(ui->splitter3);
     paramValue->setHeaderLabels(valueLabels);
     paramValue->setRootIsDecorated(false);
-    paramValue->header()->setResizeMode(0, QHeaderView::Stretch);
-  
+    paramValue->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    paramValue->setSortingEnabled(true);
+    paramValue->sortByColumn(0, Qt::AscendingOrder);
+    paramValue->header()->setProperty("showSortIndicator", QVariant(true));
+
     QSizePolicy policy = paramValue->sizePolicy();
     policy.setHorizontalStretch(3);
     paramValue->setSizePolicy(policy);
@@ -83,31 +94,132 @@ DlgParameterImp::DlgParameterImp( QWidget* parent,  Qt::WFlags fl )
 #endif
 
     ParameterManager* sys = App::GetApplication().GetParameterSet("System parameter");
-    const std::map<std::string,ParameterManager *>& rcList = App::GetApplication().GetParameterSetList();
-    for (std::map<std::string,ParameterManager *>::const_iterator it= rcList.begin();it!=rcList.end();++it) {
-        if (it->second != sys) // for now ignore system parameters because they are nowhere used
-            parameterSet->addItem(tr(it->first.c_str()), QVariant(QByteArray(it->first.c_str())));
+    const auto& rcList = App::GetApplication().GetParameterSetList();
+    for (const auto & it : rcList) {
+        if (it.second != sys) // for now ignore system parameters because they are nowhere used
+            ui->parameterSet->addItem(tr(it.first.c_str()), QVariant(QByteArray(it.first.c_str())));
     }
 
     QByteArray cStr("User parameter");
-    parameterSet->setCurrentIndex(parameterSet->findData(cStr));
-    onChangeParameterSet(parameterSet->currentIndex());
-    if (parameterSet->count() < 2)
-        parameterSet->hide();
+    ui->parameterSet->setCurrentIndex(ui->parameterSet->findData(cStr));
+    onChangeParameterSet(ui->parameterSet->currentIndex());
+    if (ui->parameterSet->count() < 2)
+        ui->parameterSet->hide();
 
-    connect(parameterSet, SIGNAL(activated(int)), 
-            this, SLOT(onChangeParameterSet(int)));
-    connect(paramGroup, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), 
-            this, SLOT(onGroupSelected(QTreeWidgetItem*)));
+    connect(ui->parameterSet, qOverload<int>(&QComboBox::activated),
+            this, &DlgParameterImp::onChangeParameterSet);
+    connect(paramGroup, &QTreeWidget::currentItemChanged, this, &DlgParameterImp::onGroupSelected);
     onGroupSelected(paramGroup->currentItem());
+
+    // setup for function on_findGroup_changed:
+    // store the current font properties because
+    // we don't know what style sheet the user uses for FC
+    defaultFont = paramGroup->font();
+    boldFont = defaultFont;
+    boldFont.setBold(true);
+    defaultColor = paramGroup->topLevelItem(0)->foreground(0);
+
+    ui->findGroupLE->setPlaceholderText(tr("Search Group"));
 }
 
-/** 
+/**
  *  Destroys the object and frees any allocated resources
  */
 DlgParameterImp::~DlgParameterImp()
 {
     // no need to delete child widgets, Qt does it all for us
+    delete ui;
+}
+
+void DlgParameterImp::setupConnections()
+{
+    connect(ui->buttonFind, &QPushButton::clicked,
+            this, &DlgParameterImp::onButtonFindClicked);
+    connect(ui->findGroupLE, &QLineEdit::textChanged,
+            this, &DlgParameterImp::onFindGroupTtextChanged);
+    connect(ui->buttonSaveToDisk, &QPushButton::clicked,
+            this, &DlgParameterImp::onButtonSaveToDiskClicked);
+    connect(ui->closeButton, &QPushButton::clicked,
+            this, &DlgParameterImp::onCloseButtonClicked);
+    connect(ui->checkSort, &QCheckBox::toggled,
+            this, &DlgParameterImp::onCheckSortToggled);
+}
+
+void DlgParameterImp::onButtonFindClicked()
+{
+    if (finder.isNull())
+        finder = new DlgParameterFind(this);
+    finder->show();
+}
+
+void DlgParameterImp::onFindGroupTtextChanged(const QString &SearchStr)
+{
+    // search for group tree items and highlight found results
+
+    QTreeWidgetItem* ExpandItem;
+
+    // at first reset all items to the default font and expand state
+    if (!foundList.empty()) {
+        for (QTreeWidgetItem* item : qAsConst(foundList)) {
+            item->setFont(0, defaultFont);
+            item->setForeground(0, defaultColor);
+            ExpandItem = item;
+            // a group can be nested down to several levels
+            // do not collapse if the search string is empty
+            while (!SearchStr.isEmpty()) {
+                if (!ExpandItem->parent())
+                    break;
+                else {
+                    ExpandItem->setExpanded(false);
+                    ExpandItem = ExpandItem->parent();
+                }
+            }
+        }
+    }
+    // expand the top level entries to get the initial tree state
+    for (int i = 0; i < paramGroup->topLevelItemCount(); ++i) {
+        paramGroup->topLevelItem(i)->setExpanded(true);
+    }
+
+    // don't perform a search if the string is empty
+    if (SearchStr.isEmpty())
+        return;
+
+    // search the tree widget
+    foundList = paramGroup->findItems(SearchStr, Qt::MatchContains | Qt::MatchRecursive);
+    if (!foundList.empty()) {
+        // reset background style sheet
+        if (!ui->findGroupLE->styleSheet().isEmpty())
+            ui->findGroupLE->setStyleSheet(QString());
+        for (QTreeWidgetItem* item : qAsConst(foundList)) {
+            item->setFont(0, boldFont);
+            item->setForeground(0, Qt::red);
+            // expand its parent to see the item
+            // a group can be nested down to several levels
+            ExpandItem = item;
+            while (true) {
+                if (!ExpandItem->parent())
+                    break;
+                else {
+                    ExpandItem->setExpanded(true);
+                    ExpandItem = ExpandItem->parent();
+                }
+            }
+            // if there is only one item found, scroll to it
+            if (foundList.size() == 1) {
+                paramGroup->scrollToItem(foundList[0], QAbstractItemView::PositionAtCenter);
+            }
+        }
+    }
+    else {
+        // Set red background to indicate no matching
+        QString styleSheet = QString::fromLatin1(
+            " QLineEdit {\n"
+            "     background-color: rgb(221,144,161);\n"
+            " }\n"
+        );
+        ui->findGroupLE->setStyleSheet(styleSheet);
+    }
 }
 
 /**
@@ -117,7 +229,7 @@ DlgParameterImp::~DlgParameterImp()
 void DlgParameterImp::changeEvent(QEvent *e)
 {
     if (e->type() == QEvent::LanguageChange) {
-        retranslateUi(this);
+        ui->retranslateUi(this);
         paramGroup->headerItem()->setText( 0, tr( "Group" ) );
         paramValue->headerItem()->setText( 0, tr( "Name" ) );
         paramValue->headerItem()->setText( 1, tr( "Type" ) );
@@ -127,7 +239,18 @@ void DlgParameterImp::changeEvent(QEvent *e)
     }
 }
 
-void DlgParameterImp::on_closeButton_clicked()
+void DlgParameterImp::onCheckSortToggled(bool on)
+{
+    paramGroup->setSortingEnabled(on);
+    paramGroup->sortByColumn(0, Qt::AscendingOrder);
+    paramGroup->header()->setProperty("showSortIndicator", QVariant(on));
+
+    paramValue->setSortingEnabled(on);
+    paramValue->sortByColumn(0, Qt::AscendingOrder);
+    paramValue->header()->setProperty("showSortIndicator", QVariant(on));
+}
+
+void DlgParameterImp::onCloseButtonClicked()
 {
     close();
 }
@@ -192,61 +315,69 @@ void DlgParameterImp::onGroupSelected( QTreeWidgetItem * item )
 {
     if ( item && item->type() == QTreeWidgetItem::UserType + 1 )
     {
+        bool sortingEnabled = paramValue->isSortingEnabled();
         paramValue->clear();
         Base::Reference<ParameterGrp> _hcGrp = static_cast<ParameterGroupItem*>(item)->_hcGrp;
         static_cast<ParameterValue*>(paramValue)->setCurrentGroup( _hcGrp );
 
         // filling up Text nodes
         std::vector<std::pair<std::string,std::string> > mcTextMap = _hcGrp->GetASCIIMap();
-        for(std::vector<std::pair<std::string,std::string> >::iterator It2=mcTextMap.begin();It2!=mcTextMap.end();It2++)
+        for(const auto & It2 : mcTextMap)
         {
-            (void)new ParameterText(paramValue,QString::fromUtf8(It2->first.c_str()),
-                It2->second.c_str(), _hcGrp);
+            (void)new ParameterText(paramValue,QString::fromUtf8(It2.first.c_str()),
+                It2.second.c_str(), _hcGrp);
         }
 
         // filling up Int nodes
         std::vector<std::pair<std::string,long> > mcIntMap = _hcGrp->GetIntMap();
-        for(std::vector<std::pair<std::string,long> >::iterator It3=mcIntMap.begin();It3!=mcIntMap.end();It3++)
+        for(const auto & It3 : mcIntMap)
         {
-            (void)new ParameterInt(paramValue,QString::fromUtf8(It3->first.c_str()),It3->second, _hcGrp);
+            (void)new ParameterInt(paramValue,QString::fromUtf8(It3.first.c_str()),It3.second, _hcGrp);
         }
 
         // filling up Float nodes
         std::vector<std::pair<std::string,double> > mcFloatMap = _hcGrp->GetFloatMap();
-        for(std::vector<std::pair<std::string,double> >::iterator It4=mcFloatMap.begin();It4!=mcFloatMap.end();It4++)
+        for(const auto & It4 : mcFloatMap)
         {
-            (void)new ParameterFloat(paramValue,QString::fromUtf8(It4->first.c_str()),It4->second, _hcGrp);
+            (void)new ParameterFloat(paramValue,QString::fromUtf8(It4.first.c_str()),It4.second, _hcGrp);
         }
 
         // filling up bool nodes
         std::vector<std::pair<std::string,bool> > mcBoolMap = _hcGrp->GetBoolMap();
-        for(std::vector<std::pair<std::string,bool> >::iterator It5=mcBoolMap.begin();It5!=mcBoolMap.end();It5++)
+        for(const auto & It5 : mcBoolMap)
         {
-            (void)new ParameterBool(paramValue,QString::fromUtf8(It5->first.c_str()),It5->second, _hcGrp);
+            (void)new ParameterBool(paramValue,QString::fromUtf8(It5.first.c_str()),It5.second, _hcGrp);
         }
 
         // filling up UInt nodes
         std::vector<std::pair<std::string,unsigned long> > mcUIntMap = _hcGrp->GetUnsignedMap();
-        for(std::vector<std::pair<std::string,unsigned long> >::iterator It6=mcUIntMap.begin();It6!=mcUIntMap.end();It6++)
+        for(const auto & It6 : mcUIntMap)
         {
-            (void)new ParameterUInt(paramValue,QString::fromUtf8(It6->first.c_str()),It6->second, _hcGrp);
+            (void)new ParameterUInt(paramValue,QString::fromUtf8(It6.first.c_str()),It6.second, _hcGrp);
         }
+        paramValue->setSortingEnabled(sortingEnabled);
+    }
+}
+
+/** Switches the type of parameters with name @a config. */
+void DlgParameterImp::activateParameterSet(const char* config)
+{
+    int index = ui->parameterSet->findData(QByteArray(config));
+    if (index != -1) {
+        ui->parameterSet->setCurrentIndex(index);
+        onChangeParameterSet(index);
     }
 }
 
 /** Switches the type of parameters either to user or system parameters. */
-void DlgParameterImp::onChangeParameterSet(int index)
+void DlgParameterImp::onChangeParameterSet(int itemPos)
 {
-    ParameterManager* rcParMngr = App::GetApplication().GetParameterSet(parameterSet->itemData(index).toByteArray());
+    ParameterManager* rcParMngr = App::GetApplication().GetParameterSet(ui->parameterSet->itemData(itemPos).toByteArray());
     if (!rcParMngr)
         return;
 
-    if (rcParMngr == App::GetApplication().GetParameterSet("System parameter"))
-        buttonSaveToDisk->setEnabled(true);
-    else if (rcParMngr == App::GetApplication().GetParameterSet("User parameter"))
-        buttonSaveToDisk->setEnabled(true);
-    else
-        buttonSaveToDisk->setEnabled(false);
+    rcParMngr->CheckDocument();
+    ui->buttonSaveToDisk->setEnabled(rcParMngr->HasSerializer());
 
     // remove all labels
     paramGroup->clear();
@@ -254,8 +385,8 @@ void DlgParameterImp::onChangeParameterSet(int index)
 
     // root labels
     std::vector<Base::Reference<ParameterGrp> > grps = rcParMngr->GetGroups();
-    for ( std::vector<Base::Reference<ParameterGrp> >::iterator it = grps.begin(); it != grps.end(); ++it ) {
-        QTreeWidgetItem* item = new ParameterGroupItem(paramGroup, *it);
+    for (const auto & grp : grps) {
+        auto item = new ParameterGroupItem(paramGroup, grp);
         paramGroup->expandItem(item);
         item->setIcon(0, QApplication::style()->standardPixmap(QStyle::SP_ComputerIcon));
     }
@@ -264,11 +395,14 @@ void DlgParameterImp::onChangeParameterSet(int index)
     ParameterGrp::handle hGrp = App::GetApplication().GetUserParameter().GetGroup("BaseApp")->GetGroup("Preferences");
     hGrp = hGrp->GetGroup("ParameterEditor");
     QString path = QString::fromUtf8(hGrp->GetASCII("LastParameterGroup").c_str());
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
+    QStringList paths = path.split(QLatin1String("."), Qt::SkipEmptyParts);
+#else
     QStringList paths = path.split(QLatin1String("."), QString::SkipEmptyParts);
-    if (paths.empty())
-        return;
-    QTreeWidgetItem* parent = 0;
-    for (int index=0; index < paramGroup->topLevelItemCount(); index++) {
+#endif
+
+    QTreeWidgetItem* parent = nullptr;
+    for (int index=0; index < paramGroup->topLevelItemCount() && !paths.empty(); index++) {
         QTreeWidgetItem* child = paramGroup->topLevelItem(index);
         if (child->text(0) == paths.front()) {
             paths.pop_front();
@@ -277,9 +411,9 @@ void DlgParameterImp::onChangeParameterSet(int index)
     }
 
     while (parent && !paths.empty()) {
-        paramGroup->setItemExpanded(parent, true);
+        parent->setExpanded(true);
         QTreeWidgetItem* item = parent;
-        parent = 0;
+        parent = nullptr;
         for (int index=0; index < item->childCount(); index++) {
             QTreeWidgetItem* child = item->child(index);
             if (child->text(0) == paths.front()) {
@@ -296,15 +430,14 @@ void DlgParameterImp::onChangeParameterSet(int index)
         paramGroup->setCurrentItem(paramGroup->topLevelItem(0));
 }
 
-void DlgParameterImp::on_buttonSaveToDisk_clicked()
+void DlgParameterImp::onButtonSaveToDiskClicked()
 {
-    int index = parameterSet->currentIndex();
-    ParameterManager* parmgr = App::GetApplication().GetParameterSet(parameterSet->itemData(index).toByteArray());
-    if (!parmgr) return;
-    if (parmgr == App::GetApplication().GetParameterSet("System parameter"))
-        parmgr->SaveDocument(App::Application::Config()["SystemParameter"].c_str());
-    else if (parmgr == App::GetApplication().GetParameterSet("User parameter"))
-        parmgr->SaveDocument(App::Application::Config()["UserParameter"].c_str());
+    int index = ui->parameterSet->currentIndex();
+    ParameterManager* parmgr = App::GetApplication().GetParameterSet(ui->parameterSet->itemData(index).toByteArray());
+    if (!parmgr)
+        return;
+
+    parmgr->SaveDocument();
 }
 
 namespace Gui {
@@ -313,12 +446,12 @@ bool validateInput(QWidget* parent, const QString& input)
     if (input.isEmpty())
         return false;
     for (int i=0; i<input.size(); i++) {
-        const char c = input.at(i).toAscii();
+        const char c = input.at(i).toLatin1();
         if ((c < '0' || c > '9') &&  // Numbers
             (c < 'A' || c > 'Z') &&  // Uppercase letters
             (c < 'a' || c > 'z') &&  // Lowercase letters
             (c != ' ')) {            // Space
-            QMessageBox::warning(parent, DlgParameterImp::tr("Invalid input"), 
+            QMessageBox::warning(parent, DlgParameterImp::tr("Invalid input"),
                                          DlgParameterImp::tr("Invalid key name '%1'").arg(input));
             return false;
         }
@@ -335,31 +468,29 @@ ParameterGroup::ParameterGroup( QWidget * parent )
   : QTreeWidget(parent)
 {
     menuEdit = new QMenu(this);
-    expandAct = menuEdit->addAction(tr("Expand"), this, SLOT(onToggleSelectedItem()));
+    expandAct = menuEdit->addAction(tr("Expand"), this, &ParameterGroup::onToggleSelectedItem);
     menuEdit->addSeparator();
-    subGrpAct = menuEdit->addAction(tr("Add sub-group"), this, SLOT(onCreateSubgroup()));
-    removeAct = menuEdit->addAction(tr("Remove group"), this, SLOT(onDeleteSelectedItem()));
-    renameAct = menuEdit->addAction(tr("Rename group"), this, SLOT(onRenameSelectedItem()));
+    subGrpAct = menuEdit->addAction(tr("Add sub-group"), this, &ParameterGroup::onCreateSubgroup);
+    removeAct = menuEdit->addAction(tr("Remove group"), this, &ParameterGroup::onDeleteSelectedItem);
+    renameAct = menuEdit->addAction(tr("Rename group"), this, &ParameterGroup::onRenameSelectedItem);
     menuEdit->addSeparator();
-    exportAct = menuEdit->addAction(tr("Export parameter"), this, SLOT(onExportToFile()));
-    importAct = menuEdit->addAction(tr("Import parameter"), this, SLOT(onImportFromFile()));
+    exportAct = menuEdit->addAction(tr("Export parameter"), this, &ParameterGroup::onExportToFile);
+    importAct = menuEdit->addAction(tr("Import parameter"), this, &ParameterGroup::onImportFromFile);
     menuEdit->setDefaultAction(expandAct);
 }
 
-ParameterGroup::~ParameterGroup()
-{
-}
+ParameterGroup::~ParameterGroup() = default;
 
 void ParameterGroup::contextMenuEvent ( QContextMenuEvent* event )
 {
     QTreeWidgetItem* item = currentItem();
-    if (isItemSelected(item))
+    if (item && item->isSelected())
     {
         expandAct->setEnabled(item->childCount() > 0);
         // do not allow to import parameters from a non-empty parameter group
         importAct->setEnabled(item->childCount() == 0);
 
-        if ( isItemExpanded(item) )
+        if (item->isExpanded())
             expandAct->setText( tr("Collapse") );
         else
         expandAct->setText( tr("Expand") );
@@ -369,7 +500,7 @@ void ParameterGroup::contextMenuEvent ( QContextMenuEvent* event )
 
 void ParameterGroup::keyPressEvent (QKeyEvent* event)
 {
-    switch ( tolower(event->key()) ) 
+    switch ( tolower(event->key()) )
     {
     case Qt::Key_Delete:
         {
@@ -383,18 +514,23 @@ void ParameterGroup::keyPressEvent (QKeyEvent* event)
 void ParameterGroup::onDeleteSelectedItem()
 {
     QTreeWidgetItem* sel = currentItem();
-    if (isItemSelected(sel) && sel->parent())
+    if (sel && sel->isSelected() && sel->parent())
     {
-        if ( QMessageBox::question(this, tr("Remove group"), tr("Do really want to remove this parameter group?"),
-                               QMessageBox::Yes, QMessageBox::No|QMessageBox::Default|QMessageBox::Escape) == 
+        if ( QMessageBox::question(this, tr("Remove group"), tr("Do you really want to remove this parameter group?"),
+                               QMessageBox::Yes | QMessageBox::No, QMessageBox::No) ==
                                QMessageBox::Yes )
         {
             QTreeWidgetItem* parent = sel->parent();
             int index = parent->indexOfChild(sel);
             parent->takeChild(index);
-            ParameterGroupItem* para = static_cast<ParameterGroupItem*>(parent);
-            para->_hcGrp->RemoveGrp(sel->text(0).toAscii());
+
+            std::string groupName = sel->text(0).toStdString();
+            // must delete the tree item here because it and its children still
+            // hold a reference to the parameter group
             delete sel;
+
+            auto para = static_cast<ParameterGroupItem*>(parent);
+            para->_hcGrp->RemoveGrp(groupName.c_str());
         }
     }
 }
@@ -402,12 +538,12 @@ void ParameterGroup::onDeleteSelectedItem()
 void ParameterGroup::onToggleSelectedItem()
 {
     QTreeWidgetItem* sel = currentItem();
-    if (isItemSelected(sel))
+    if (sel && sel->isSelected())
     {
-        if ( isItemExpanded(sel) )
-            setItemExpanded(sel, false);
-        else if ( sel->childCount() > 0 )
-            setItemExpanded(sel, true);
+        if (sel->isExpanded())
+            sel->setExpanded(false);
+        else if (sel->childCount() > 0)
+            sel->setExpanded(true);
     }
 }
 
@@ -415,24 +551,24 @@ void ParameterGroup::onCreateSubgroup()
 {
     bool ok;
     QString name = QInputDialog::getText(this, QObject::tr("New sub-group"), QObject::tr("Enter the name:"),
-                                         QLineEdit::Normal, QString::null, &ok );
+                                         QLineEdit::Normal, QString(), &ok, Qt::MSWindowsFixedSizeDialogHint);
 
     if (ok && Gui::validateInput(this, name))
     {
         QTreeWidgetItem* item = currentItem();
-        if (isItemSelected(item))
+        if (item && item->isSelected())
         {
-            ParameterGroupItem* para = static_cast<ParameterGroupItem*>(item);
+            auto para = static_cast<ParameterGroupItem*>(item);
             Base::Reference<ParameterGrp> hGrp = para->_hcGrp;
 
-            if ( hGrp->HasGroup( name.toAscii() ) )
+            if ( hGrp->HasGroup( name.toLatin1() ) )
             {
                 QMessageBox::critical( this, tr("Existing sub-group"),
                     tr("The sub-group '%1' already exists.").arg( name ) );
                 return;
             }
 
-            hGrp = hGrp->GetGroup( name.toAscii() );
+            hGrp = hGrp->GetGroup( name.toLatin1() );
             (void)new ParameterGroupItem(para,hGrp);
             expandItem(para);
         }
@@ -442,13 +578,13 @@ void ParameterGroup::onCreateSubgroup()
 void ParameterGroup::onExportToFile()
 {
     QString file = FileDialog::getSaveFileName( this, tr("Export parameter to file"),
-        QString::null, tr("XML (*.FCParam)"));
+        QString(), QString::fromLatin1("XML (*.FCParam)"));
     if ( !file.isEmpty() )
     {
         QTreeWidgetItem* item = currentItem();
-        if (isItemSelected(item))
+        if (item && item->isSelected())
         {
-            ParameterGroupItem* para = static_cast<ParameterGroupItem*>(item);
+            auto para = static_cast<ParameterGroupItem*>(item);
             Base::Reference<ParameterGrp> hGrp = para->_hcGrp;
             hGrp->exportTo( file.toUtf8() );
         }
@@ -458,33 +594,32 @@ void ParameterGroup::onExportToFile()
 void ParameterGroup::onImportFromFile()
 {
     QString file = FileDialog::getOpenFileName( this, tr("Import parameter from file"),
-        QString::null, tr("XML (*.FCParam)"));
+        QString(), QString::fromLatin1("XML (*.FCParam)"));
     if ( !file.isEmpty() )
     {
-        QFileInfo fi(file);
         QTreeWidgetItem* item = currentItem();
-        if (isItemSelected(item))
+        if (item && item->isSelected())
         {
-            ParameterGroupItem* para = static_cast<ParameterGroupItem*>(item);
+            auto para = static_cast<ParameterGroupItem*>(item);
             Base::Reference<ParameterGrp> hGrp = para->_hcGrp;
 
             // remove the items and internal parameter values
             QList<QTreeWidgetItem*> childs = para->takeChildren();
-            for (QList<QTreeWidgetItem*>::iterator it = childs.begin(); it != childs.end(); ++it)
+            for (auto & child : childs)
             {
-                delete *it;
+                delete child;
             }
 
             try
             {
                 hGrp->importFrom( file.toUtf8() );
                 std::vector<Base::Reference<ParameterGrp> > cSubGrps = hGrp->GetGroups();
-                for ( std::vector<Base::Reference<ParameterGrp> >::iterator it = cSubGrps.begin(); it != cSubGrps.end(); ++it )
+                for (const auto & cSubGrp : cSubGrps)
                 {
-                    new ParameterGroupItem(para,*it);
+                    new ParameterGroupItem(para,cSubGrp);
                 }
 
-                setItemExpanded(para, para->childCount());
+                para->setExpanded(para->childCount());
             }
             catch( const Base::Exception& )
             {
@@ -497,7 +632,7 @@ void ParameterGroup::onImportFromFile()
 void ParameterGroup::onRenameSelectedItem()
 {
     QTreeWidgetItem* sel = currentItem();
-    if (isItemSelected(sel))
+    if (sel && sel->isSelected())
     {
         editItem(sel, 0);
     }
@@ -525,31 +660,34 @@ ParameterValue::ParameterValue( QWidget * parent )
   : QTreeWidget(parent)
 {
     menuEdit = new QMenu(this);
-    changeAct = menuEdit->addAction(tr("Change value"), this, SLOT(onChangeSelectedItem()));
+    changeAct = menuEdit->addAction(tr("Change value"), this, qOverload<>(&ParameterValue::onChangeSelectedItem));
     menuEdit->addSeparator();
-    removeAct = menuEdit->addAction(tr("Remove key"), this, SLOT(onDeleteSelectedItem()));
-    renameAct = menuEdit->addAction(tr("Rename key"), this, SLOT(onRenameSelectedItem()));
+    removeAct = menuEdit->addAction(tr("Remove key"), this, &ParameterValue::onDeleteSelectedItem);
+    renameAct = menuEdit->addAction(tr("Rename key"), this, &ParameterValue::onRenameSelectedItem);
     menuEdit->setDefaultAction(changeAct);
 
     menuEdit->addSeparator();
     menuNew = menuEdit->addMenu(tr("New"));
-    newStrAct = menuNew->addAction(tr("New string item"), this, SLOT(onCreateTextItem()));
-    newFltAct = menuNew->addAction(tr("New float item"), this, SLOT(onCreateFloatItem()));
-    newIntAct = menuNew->addAction(tr("New integer item"), this, SLOT(onCreateIntItem()));
-    newUlgAct = menuNew->addAction(tr("New unsigned item"), this, SLOT(onCreateUIntItem()));
-    newBlnAct = menuNew->addAction(tr("New Boolean item"), this, SLOT(onCreateBoolItem()));
+    newStrAct = menuNew->addAction(tr("New string item"), this, &ParameterValue::onCreateTextItem);
+    newFltAct = menuNew->addAction(tr("New float item"), this, &ParameterValue::onCreateFloatItem);
+    newIntAct = menuNew->addAction(tr("New integer item"), this, &ParameterValue::onCreateIntItem);
+    newUlgAct = menuNew->addAction(tr("New unsigned item"), this, &ParameterValue::onCreateUIntItem);
+    newBlnAct = menuNew->addAction(tr("New Boolean item"), this, &ParameterValue::onCreateBoolItem);
 
-    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), 
-            this, SLOT(onChangeSelectedItem(QTreeWidgetItem*, int)));
+    connect(this, &ParameterValue::itemDoubleClicked,
+            this, qOverload<QTreeWidgetItem*, int>(&ParameterValue::onChangeSelectedItem));
 }
 
-ParameterValue::~ParameterValue()
-{
-}
+ParameterValue::~ParameterValue() = default;
 
 void ParameterValue::setCurrentGroup( const Base::Reference<ParameterGrp>& hGrp )
 {
     _hcGrp = hGrp;
+}
+
+Base::Reference<ParameterGrp> ParameterValue::currentGroup() const
+{
+    return _hcGrp;
 }
 
 bool ParameterValue::edit ( const QModelIndex & index, EditTrigger trigger, QEvent * event )
@@ -562,15 +700,22 @@ bool ParameterValue::edit ( const QModelIndex & index, EditTrigger trigger, QEve
 void ParameterValue::contextMenuEvent ( QContextMenuEvent* event )
 {
     QTreeWidgetItem* item = currentItem();
-    if (isItemSelected(item))
+    if (item && item->isSelected()) {
         menuEdit->popup(event->globalPos());
-    else
-        menuNew->popup(event->globalPos());
+    }
+    else {
+        // There is a regression in Qt 5.12.9 where it isn't checked that a sub-menu (here menuNew)
+        // can be popped up without its parent menu (menuEdit) and thus causes a crash.
+        // A workaround is to simply call exec() instead.
+        //
+        //menuNew->popup(event->globalPos());
+        menuNew->exec(event->globalPos());
+    }
 }
 
 void ParameterValue::keyPressEvent (QKeyEvent* event)
 {
-    switch ( tolower(event->key()) ) 
+    switch ( tolower(event->key()) )
     {
     case Qt::Key_Delete:
         {
@@ -581,9 +726,19 @@ void ParameterValue::keyPressEvent (QKeyEvent* event)
   }
 }
 
+void ParameterValue::resizeEvent(QResizeEvent* event)
+{
+    QHeaderView* hv = header();
+    hv->setSectionResizeMode(QHeaderView::Stretch);
+
+    QTreeWidget::resizeEvent(event);
+
+    hv->setSectionResizeMode(QHeaderView::Interactive);
+}
+
 void ParameterValue::onChangeSelectedItem(QTreeWidgetItem* item, int col)
 {
-    if (isItemSelected(item) && col > 0)
+    if (item->isSelected() && col > 0)
     {
         static_cast<ParameterValueItem*>(item)->changeValue();
     }
@@ -597,7 +752,7 @@ void ParameterValue::onChangeSelectedItem()
 void ParameterValue::onDeleteSelectedItem()
 {
     QTreeWidgetItem* sel = currentItem();
-    if (isItemSelected(sel))
+    if (sel && sel->isSelected())
     {
         takeTopLevelItem(indexOfTopLevelItem(sel));
         static_cast<ParameterValueItem*>(sel)->removeFromGroup();
@@ -608,7 +763,7 @@ void ParameterValue::onDeleteSelectedItem()
 void ParameterValue::onRenameSelectedItem()
 {
     QTreeWidgetItem* sel = currentItem();
-    if (isItemSelected(sel))
+    if (sel && sel->isSelected())
     {
         editItem(sel, 0);
     }
@@ -617,15 +772,15 @@ void ParameterValue::onRenameSelectedItem()
 void ParameterValue::onCreateTextItem()
 {
     bool ok;
-    QString name = QInputDialog::getText(this, QObject::tr("New text item"), QObject::tr("Enter the name:"), 
-                                         QLineEdit::Normal, QString::null, &ok);
+    QString name = QInputDialog::getText(this, QObject::tr("New text item"), QObject::tr("Enter the name:"),
+                                         QLineEdit::Normal, QString(), &ok, Qt::MSWindowsFixedSizeDialogHint);
 
     if (!ok || !Gui::validateInput(this, name))
         return;
 
     std::vector<std::pair<std::string,std::string> > smap = _hcGrp->GetASCIIMap();
-    for (std::vector<std::pair<std::string,std::string> >::iterator it = smap.begin(); it != smap.end(); ++it) {
-        if (name == QLatin1String(it->first.c_str()))
+    for (const auto & it : smap) {
+        if (name == QLatin1String(it.first.c_str()))
         {
             QMessageBox::critical( this, tr("Existing item"),
                 tr("The item '%1' already exists.").arg( name ) );
@@ -633,8 +788,8 @@ void ParameterValue::onCreateTextItem()
         }
     }
 
-    QString val = QInputDialog::getText(this, QObject::tr("New text item"), QObject::tr("Enter your text:"), 
-                                        QLineEdit::Normal, QString::null, &ok);
+    QString val = QInputDialog::getText(this, QObject::tr("New text item"), QObject::tr("Enter your text:"),
+                                        QLineEdit::Normal, QString(), &ok, Qt::MSWindowsFixedSizeDialogHint);
     if ( ok && !val.isEmpty() )
     {
         ParameterValueItem *pcItem;
@@ -646,15 +801,15 @@ void ParameterValue::onCreateTextItem()
 void ParameterValue::onCreateIntItem()
 {
     bool ok;
-    QString name = QInputDialog::getText(this, QObject::tr("New integer item"), QObject::tr("Enter the name:"), 
-                                         QLineEdit::Normal, QString::null, &ok);
+    QString name = QInputDialog::getText(this, QObject::tr("New integer item"), QObject::tr("Enter the name:"),
+                                         QLineEdit::Normal, QString(), &ok, Qt::MSWindowsFixedSizeDialogHint);
 
     if (!ok || !Gui::validateInput(this, name))
         return;
 
     std::vector<std::pair<std::string,long> > lmap = _hcGrp->GetIntMap();
-    for (std::vector<std::pair<std::string,long> >::iterator it = lmap.begin(); it != lmap.end(); ++it) {
-        if (name == QLatin1String(it->first.c_str()))
+    for (const auto & it : lmap) {
+        if (name == QLatin1String(it.first.c_str()))
         {
             QMessageBox::critical( this, tr("Existing item"),
                 tr("The item '%1' already exists.").arg( name ) );
@@ -662,8 +817,8 @@ void ParameterValue::onCreateIntItem()
         }
     }
 
-    int val = QInputDialog::getInteger(this, QObject::tr("New integer item"), QObject::tr("Enter your number:"), 
-                                       0, -2147483647, 2147483647, 1, &ok);
+    int val = QInputDialog::getInt(this, QObject::tr("New integer item"), QObject::tr("Enter your number:"),
+                                   0, -2147483647, 2147483647, 1, &ok, Qt::MSWindowsFixedSizeDialogHint);
 
     if ( ok )
     {
@@ -676,15 +831,15 @@ void ParameterValue::onCreateIntItem()
 void ParameterValue::onCreateUIntItem()
 {
     bool ok;
-    QString name = QInputDialog::getText(this, QObject::tr("New unsigned item"), QObject::tr("Enter the name:"), 
-                                         QLineEdit::Normal, QString::null, &ok);
+    QString name = QInputDialog::getText(this, QObject::tr("New unsigned item"), QObject::tr("Enter the name:"),
+                                         QLineEdit::Normal, QString(), &ok, Qt::MSWindowsFixedSizeDialogHint);
 
     if (!ok || !Gui::validateInput(this, name))
         return;
 
     std::vector<std::pair<std::string,unsigned long> > lmap = _hcGrp->GetUnsignedMap();
-    for (std::vector<std::pair<std::string,unsigned long> >::iterator it = lmap.begin(); it != lmap.end(); ++it) {
-        if (name == QLatin1String(it->first.c_str()))
+    for (const auto & it : lmap) {
+        if (name == QLatin1String(it.first.c_str()))
         {
             QMessageBox::critical( this, tr("Existing item"),
                 tr("The item '%1' already exists.").arg( name ) );
@@ -712,24 +867,24 @@ void ParameterValue::onCreateUIntItem()
 void ParameterValue::onCreateFloatItem()
 {
     bool ok;
-    QString name = QInputDialog::getText(this, QObject::tr("New float item"), QObject::tr("Enter the name:"), 
-                                         QLineEdit::Normal, QString::null, &ok);
+    QString name = QInputDialog::getText(this, QObject::tr("New float item"), QObject::tr("Enter the name:"),
+                                         QLineEdit::Normal, QString(), &ok, Qt::MSWindowsFixedSizeDialogHint);
 
     if (!ok || !Gui::validateInput(this, name))
         return;
 
     std::vector<std::pair<std::string,double> > fmap = _hcGrp->GetFloatMap();
-    for (std::vector<std::pair<std::string,double> >::iterator it = fmap.begin(); it != fmap.end(); ++it) {
-        if (name == QLatin1String(it->first.c_str()))
+    for (const auto & it : fmap) {
+        if (name == QLatin1String(it.first.c_str()))
         {
             QMessageBox::critical( this, tr("Existing item"),
                 tr("The item '%1' already exists.").arg( name ) );
             return;
         }
     }
-  
-    double val = QInputDialog::getDouble(this, QObject::tr("New float item"), QObject::tr("Enter your number:"), 
-                                         0, -2147483647, 2147483647, 12, &ok);
+
+    double val = QInputDialog::getDouble(this, QObject::tr("New float item"), QObject::tr("Enter your number:"),
+                                         0, -2147483647, 2147483647, 12, &ok, Qt::MSWindowsFixedSizeDialogHint);
     if ( ok )
     {
         ParameterValueItem *pcItem;
@@ -741,15 +896,15 @@ void ParameterValue::onCreateFloatItem()
 void ParameterValue::onCreateBoolItem()
 {
     bool ok;
-    QString name = QInputDialog::getText(this, QObject::tr("New Boolean item"), QObject::tr("Enter the name:"), 
-                                         QLineEdit::Normal, QString::null, &ok);
+    QString name = QInputDialog::getText(this, QObject::tr("New Boolean item"), QObject::tr("Enter the name:"),
+                                         QLineEdit::Normal, QString(), &ok, Qt::MSWindowsFixedSizeDialogHint);
 
     if (!ok || !Gui::validateInput(this, name))
         return;
 
     std::vector<std::pair<std::string,bool> > bmap = _hcGrp->GetBoolMap();
-    for (std::vector<std::pair<std::string,bool> >::iterator it = bmap.begin(); it != bmap.end(); ++it) {
-        if (name == QLatin1String(it->first.c_str()))
+    for (const auto & it : bmap) {
+        if (name == QLatin1String(it.first.c_str()))
         {
             QMessageBox::critical( this, tr("Existing item"),
                 tr("The item '%1' already exists.").arg( name ) );
@@ -757,10 +912,10 @@ void ParameterValue::onCreateBoolItem()
         }
     }
 
-    QStringList list; list << QString::fromAscii("true")
-                           << QString::fromAscii("false");
+    QStringList list; list << QString::fromLatin1("true")
+                           << QString::fromLatin1("false");
     QString val = QInputDialog::getItem (this, QObject::tr("New boolean item"), QObject::tr("Choose an item:"),
-                                         list, 0, false, &ok);
+                                         list, 0, false, &ok, Qt::MSWindowsFixedSizeDialogHint);
     if ( ok )
     {
         ParameterValueItem *pcItem;
@@ -793,14 +948,14 @@ ParameterGroupItem::~ParameterGroupItem()
     _hcGrp->ClearObserver();
 }
 
-void ParameterGroupItem::fillUp(void)
+void ParameterGroupItem::fillUp()
 {
-    // filing up groups
+    // filling up groups
     std::vector<Base::Reference<ParameterGrp> > vhcParamGrp = _hcGrp->GetGroups();
 
     setText(0,QString::fromUtf8(_hcGrp->GetGroupName()));
-    for(std::vector<Base::Reference<ParameterGrp> >::iterator It=vhcParamGrp.begin();It!=vhcParamGrp.end();It++)
-        (void)new ParameterGroupItem(this,*It);
+    for(const auto & It : vhcParamGrp)
+        (void)new ParameterGroupItem(this,It);
 }
 
 void ParameterGroupItem::setData ( int column, int role, const QVariant & value )
@@ -815,26 +970,24 @@ void ParameterGroupItem::setData ( int column, int role, const QVariant & value 
             return;
 
         // first check if there is already a group with name "newName"
-        ParameterGroupItem* item = static_cast<ParameterGroupItem*>(parent());
+        auto item = static_cast<ParameterGroupItem*>(parent());
         if ( !item )
         {
             QMessageBox::critical( treeWidget(), QObject::tr("Rename group"),
                 QObject::tr("The group '%1' cannot be renamed.").arg( oldName ) );
             return;
         }
-        if ( item->_hcGrp->HasGroup( newName.toAscii() ) )
+        if ( item->_hcGrp->HasGroup( newName.toLatin1() ) )
         {
             QMessageBox::critical( treeWidget(), QObject::tr("Existing group"),
                 QObject::tr("The group '%1' already exists.").arg( newName ) );
             return;
-        } 
-        else 
+        }
+        else
         {
             // rename the group by adding a new group, copy the content and remove the old group
-            Base::Reference<ParameterGrp> hOldGrp = item->_hcGrp->GetGroup( oldName.toAscii() );
-            Base::Reference<ParameterGrp> hNewGrp = item->_hcGrp->GetGroup( newName.toAscii() );
-            hOldGrp->copyTo( hNewGrp );
-            item->_hcGrp->RemoveGrp( oldName.toAscii() );
+            if (!item->_hcGrp->RenameGrp(oldName.toLatin1(), newName.toLatin1()))
+                return;
         }
     }
 
@@ -846,7 +999,7 @@ QVariant ParameterGroupItem::data ( int column, int role ) const
     if (role == Qt::DecorationRole) {
         // The root item should keep its special pixmap
         if (parent()) {
-            return treeWidget()->isItemExpanded(this) ?
+            return this->isExpanded() ?
                 QApplication::style()->standardPixmap(QStyle::SP_DirOpenIcon):
                 QApplication::style()->standardPixmap(QStyle::SP_DirClosedIcon);
         }
@@ -863,9 +1016,7 @@ ParameterValueItem::ParameterValueItem ( QTreeWidget* parent, const Base::Refere
     setFlags(flags() | Qt::ItemIsEditable);
 }
 
-ParameterValueItem::~ParameterValueItem()
-{
-}
+ParameterValueItem::~ParameterValueItem() = default;
 
 void ParameterValueItem::setData ( int column, int role, const QVariant & value )
 {
@@ -889,43 +1040,41 @@ void ParameterValueItem::setData ( int column, int role, const QVariant & value 
 ParameterText::ParameterText ( QTreeWidget * parent, QString label, const char* value, const Base::Reference<ParameterGrp> &hcGrp)
   :ParameterValueItem( parent, hcGrp)
 {
-    setIcon(0,BitmapFactory().pixmap("Param_Text") );
+    setIcon(0, BitmapFactory().iconFromTheme("Param_Text") );
     setText(0, label);
-    setText(1, QString::fromAscii("Text"));
+    setText(1, QString::fromLatin1("Text"));
     setText(2, QString::fromUtf8(value));
 }
 
-ParameterText::~ParameterText()
-{
-}
+ParameterText::~ParameterText() = default;
 
 void ParameterText::changeValue()
 {
     bool ok;
-    QString txt = QInputDialog::getText(treeWidget(), QObject::tr("Change value"), QObject::tr("Enter your text:"), 
-                                        QLineEdit::Normal, text(2), &ok);
+    QString txt = QInputDialog::getText(treeWidget(), QObject::tr("Change value"), QObject::tr("Enter your text:"),
+                                        QLineEdit::Normal, text(2), &ok, Qt::MSWindowsFixedSizeDialogHint);
     if ( ok )
     {
         setText( 2, txt );
-        _hcGrp->SetASCII(text(0).toAscii(), txt.toUtf8());
+        _hcGrp->SetASCII(text(0).toLatin1(), txt.toUtf8());
     }
 }
 
 void ParameterText::removeFromGroup ()
 {
-    _hcGrp->RemoveASCII(text(0).toAscii());
+    _hcGrp->RemoveASCII(text(0).toLatin1());
 }
 
 void ParameterText::replace( const QString& oldName, const QString& newName )
 {
-    std::string val = _hcGrp->GetASCII(oldName.toAscii());
-    _hcGrp->RemoveASCII(oldName.toAscii());
-    _hcGrp->SetASCII(newName.toAscii(), val.c_str());
+    std::string val = _hcGrp->GetASCII(oldName.toLatin1());
+    _hcGrp->RemoveASCII(oldName.toLatin1());
+    _hcGrp->SetASCII(newName.toLatin1(), val.c_str());
 }
 
 void ParameterText::appendToGroup()
 {
-    _hcGrp->SetASCII(text(0).toAscii(), text(2).toUtf8());
+    _hcGrp->SetASCII(text(0).toLatin1(), text(2).toUtf8());
 }
 
 // --------------------------------------------------------------------
@@ -933,43 +1082,41 @@ void ParameterText::appendToGroup()
 ParameterInt::ParameterInt ( QTreeWidget * parent, QString label, long value, const Base::Reference<ParameterGrp> &hcGrp)
   :ParameterValueItem( parent, hcGrp)
 {
-    setIcon(0,BitmapFactory().pixmap("Param_Int") );
+    setIcon(0, BitmapFactory().iconFromTheme("Param_Int") );
     setText(0, label);
-    setText(1, QString::fromAscii("Integer"));
-    setText(2, QString::fromAscii("%1").arg(value));
+    setText(1, QString::fromLatin1("Integer"));
+    setText(2, QString::fromLatin1("%1").arg(value));
 }
 
-ParameterInt::~ParameterInt()
-{
-}
+ParameterInt::~ParameterInt() = default;
 
 void ParameterInt::changeValue()
 {
     bool ok;
-    int num = QInputDialog::getInteger(treeWidget(), QObject::tr("Change value"), QObject::tr("Enter your number:"), 
-                                       text(2).toInt(), -2147483647, 2147483647, 1, &ok);
+    int num = QInputDialog::getInt(treeWidget(), QObject::tr("Change value"), QObject::tr("Enter your number:"),
+                                   text(2).toInt(), -2147483647, 2147483647, 1, &ok, Qt::MSWindowsFixedSizeDialogHint);
     if ( ok )
     {
-        setText(2, QString::fromAscii("%1").arg(num));
-        _hcGrp->SetInt(text(0).toAscii(), (long)num);
+        setText(2, QString::fromLatin1("%1").arg(num));
+        _hcGrp->SetInt(text(0).toLatin1(), (long)num);
     }
 }
 
 void ParameterInt::removeFromGroup ()
 {
-    _hcGrp->RemoveInt(text(0).toAscii());
+    _hcGrp->RemoveInt(text(0).toLatin1());
 }
 
 void ParameterInt::replace( const QString& oldName, const QString& newName )
 {
-    long val = _hcGrp->GetInt(oldName.toAscii());
-    _hcGrp->RemoveInt(oldName.toAscii());
-    _hcGrp->SetInt(newName.toAscii(), val);
+    long val = _hcGrp->GetInt(oldName.toLatin1());
+    _hcGrp->RemoveInt(oldName.toLatin1());
+    _hcGrp->SetInt(newName.toLatin1(), val);
 }
 
 void ParameterInt::appendToGroup()
 {
-    _hcGrp->SetInt(text(0).toAscii(), text(2).toLong());
+    _hcGrp->SetInt(text(0).toLatin1(), text(2).toLong());
 }
 
 // --------------------------------------------------------------------
@@ -977,15 +1124,13 @@ void ParameterInt::appendToGroup()
 ParameterUInt::ParameterUInt ( QTreeWidget * parent, QString label, unsigned long value, const Base::Reference<ParameterGrp> &hcGrp)
   :ParameterValueItem( parent, hcGrp)
 {
-    setIcon(0,BitmapFactory().pixmap("Param_UInt") );
+    setIcon(0, BitmapFactory().iconFromTheme("Param_UInt") );
     setText(0, label);
-    setText(1, QString::fromAscii("Unsigned"));
-    setText(2, QString::fromAscii("%1").arg(value));
+    setText(1, QString::fromLatin1("Unsigned"));
+    setText(2, QString::fromLatin1("%1").arg(value));
 }
 
-ParameterUInt::~ParameterUInt()
-{
-}
+ParameterUInt::~ParameterUInt() = default;
 
 void ParameterUInt::changeValue()
 {
@@ -1002,27 +1147,27 @@ void ParameterUInt::changeValue()
 
         if ( ok )
         {
-            setText(2, QString::fromAscii("%1").arg(num));
-            _hcGrp->SetUnsigned(text(0).toAscii(), (unsigned long)num);
+            setText(2, QString::fromLatin1("%1").arg(num));
+            _hcGrp->SetUnsigned(text(0).toLatin1(), (unsigned long)num);
         }
     }
 }
 
 void ParameterUInt::removeFromGroup ()
 {
-    _hcGrp->RemoveUnsigned(text(0).toAscii());
+    _hcGrp->RemoveUnsigned(text(0).toLatin1());
 }
 
 void ParameterUInt::replace( const QString& oldName, const QString& newName )
 {
-    unsigned long val = _hcGrp->GetUnsigned(oldName.toAscii());
-    _hcGrp->RemoveUnsigned(oldName.toAscii());
-    _hcGrp->SetUnsigned(newName.toAscii(), val);
+    unsigned long val = _hcGrp->GetUnsigned(oldName.toLatin1());
+    _hcGrp->RemoveUnsigned(oldName.toLatin1());
+    _hcGrp->SetUnsigned(newName.toLatin1(), val);
 }
 
 void ParameterUInt::appendToGroup()
 {
-    _hcGrp->SetUnsigned(text(0).toAscii(), text(2).toULong());
+    _hcGrp->SetUnsigned(text(0).toLatin1(), text(2).toULong());
 }
 
 // --------------------------------------------------------------------
@@ -1030,43 +1175,41 @@ void ParameterUInt::appendToGroup()
 ParameterFloat::ParameterFloat ( QTreeWidget * parent, QString label, double value, const Base::Reference<ParameterGrp> &hcGrp)
   :ParameterValueItem( parent, hcGrp)
 {
-    setIcon(0,BitmapFactory().pixmap("Param_Float") );
+    setIcon(0, BitmapFactory().iconFromTheme("Param_Float") );
     setText(0, label);
-    setText(1, QString::fromAscii("Float"));
-    setText(2, QString::fromAscii("%1").arg(value));
+    setText(1, QString::fromLatin1("Float"));
+    setText(2, QString::fromLatin1("%1").arg(value));
 }
 
-ParameterFloat::~ParameterFloat()
-{
-}
+ParameterFloat::~ParameterFloat() = default;
 
 void ParameterFloat::changeValue()
 {
     bool ok;
-    double num = QInputDialog::getDouble(treeWidget(), QObject::tr("Change value"), QObject::tr("Enter your number:"), 
-                                         text(2).toDouble(), -2147483647, 2147483647, 12, &ok);
+    double num = QInputDialog::getDouble(treeWidget(), QObject::tr("Change value"), QObject::tr("Enter your number:"),
+                                         text(2).toDouble(), -2147483647, 2147483647, 12, &ok, Qt::MSWindowsFixedSizeDialogHint);
     if ( ok )
     {
-        setText(2, QString::fromAscii("%1").arg(num));
-        _hcGrp->SetFloat(text(0).toAscii(), num);
+        setText(2, QString::fromLatin1("%1").arg(num));
+        _hcGrp->SetFloat(text(0).toLatin1(), num);
     }
 }
 
 void ParameterFloat::removeFromGroup ()
 {
-    _hcGrp->RemoveFloat(text(0).toAscii());
+    _hcGrp->RemoveFloat(text(0).toLatin1());
 }
 
 void ParameterFloat::replace( const QString& oldName, const QString& newName )
 {
-    double val = _hcGrp->GetFloat(oldName.toAscii());
-    _hcGrp->RemoveFloat(oldName.toAscii());
-    _hcGrp->SetFloat(newName.toAscii(), val);
+    double val = _hcGrp->GetFloat(oldName.toLatin1());
+    _hcGrp->RemoveFloat(oldName.toLatin1());
+    _hcGrp->SetFloat(newName.toLatin1(), val);
 }
 
 void ParameterFloat::appendToGroup()
 {
-    _hcGrp->SetFloat(text(0).toAscii(), text(2).toDouble());
+    _hcGrp->SetFloat(text(0).toLatin1(), text(2).toDouble());
 }
 
 // --------------------------------------------------------------------
@@ -1074,48 +1217,46 @@ void ParameterFloat::appendToGroup()
 ParameterBool::ParameterBool ( QTreeWidget * parent, QString label, bool value, const Base::Reference<ParameterGrp> &hcGrp)
   :ParameterValueItem( parent, hcGrp)
 {
-    setIcon(0,BitmapFactory().pixmap("Param_Bool") );
+    setIcon(0, BitmapFactory().iconFromTheme("Param_Bool") );
     setText(0, label);
-    setText(1, QString::fromAscii("Boolean"));
-    setText(2, QString::fromAscii((value ? "true" : "false")));
+    setText(1, QString::fromLatin1("Boolean"));
+    setText(2, QString::fromLatin1((value ? "true" : "false")));
 }
 
-ParameterBool::~ParameterBool()
-{
-}
+ParameterBool::~ParameterBool() = default;
 
 void ParameterBool::changeValue()
 {
     bool ok;
-    QStringList list; list << QString::fromAscii("true") 
-                           << QString::fromAscii("false");
+    QStringList list; list << QString::fromLatin1("true")
+                           << QString::fromLatin1("false");
     int pos = (text(2) == list[0] ? 0 : 1);
 
     QString txt = QInputDialog::getItem (treeWidget(), QObject::tr("Change value"), QObject::tr("Choose an item:"),
-                                         list, pos, false, &ok);
+                                         list, pos, false, &ok, Qt::MSWindowsFixedSizeDialogHint);
     if ( ok )
     {
         setText( 2, txt );
-        _hcGrp->SetBool(text(0).toAscii(), (txt == list[0] ? true : false) );
+        _hcGrp->SetBool(text(0).toLatin1(), (txt == list[0] ? true : false) );
     }
 }
 
 void ParameterBool::removeFromGroup ()
 {
-    _hcGrp->RemoveBool(text(0).toAscii());
+    _hcGrp->RemoveBool(text(0).toLatin1());
 }
 
 void ParameterBool::replace( const QString& oldName, const QString& newName )
 {
-    bool val = _hcGrp->GetBool(oldName.toAscii());
-    _hcGrp->RemoveBool(oldName.toAscii());
-    _hcGrp->SetBool(newName.toAscii(), val);
+    bool val = _hcGrp->GetBool(oldName.toLatin1());
+    _hcGrp->RemoveBool(oldName.toLatin1());
+    _hcGrp->SetBool(newName.toLatin1(), val);
 }
 
 void ParameterBool::appendToGroup()
 {
     bool val = (text(2) == QLatin1String("true") ? true : false);
-    _hcGrp->SetBool(text(0).toAscii(), val);
+    _hcGrp->SetBool(text(0).toLatin1(), val);
 }
 
 #include "moc_DlgParameterImp.cpp"

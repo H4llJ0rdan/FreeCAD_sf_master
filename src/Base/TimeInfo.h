@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Riegel         <juergen.riegel@web.de>                  *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -27,12 +27,27 @@
 // Std. configurations
 
 
-#include <stdio.h>
+#include <cstdio>
+#if defined(FC_OS_BSD)
+#include <sys/time.h>
+#else
 #include <sys/timeb.h>
-#include <time.h>
+#endif
+#include <ctime>
 
 #ifdef __GNUC__
-# include <stdint.h>
+# include <cstdint>
+#endif
+
+#include <string>
+#include <FCGlobal.h>
+
+#if defined(FC_OS_BSD)
+struct timeb
+{
+    int64_t time;
+    unsigned short millitm;
+};
 #endif
 
 namespace Base
@@ -44,17 +59,18 @@ class BaseExport TimeInfo
 public:
     /// Construction
     TimeInfo();
+    TimeInfo(const TimeInfo&) = default;
     /// Destruction
     virtual ~TimeInfo();
 
     /// sets the object to the actual system time
-    void setCurrent(void);
-    void setTime_t (uint64_t seconds);
+    void setCurrent();
+    void setTime_t (int64_t seconds);
 
-    uint64_t getSeconds(void) const; 
-    unsigned short  getMiliseconds(void) const; 
+    int64_t getSeconds() const;
+    unsigned short  getMiliseconds() const;
 
-    void operator =  (const TimeInfo &time); 
+    void operator =  (const TimeInfo &time);
     bool operator == (const TimeInfo &time) const;
     bool operator != (const TimeInfo &time) const;
 
@@ -63,7 +79,7 @@ public:
     bool operator >= (const TimeInfo &time) const;
     bool operator >  (const TimeInfo &time) const;
 
-    static const char* currentDateTimeString();
+    static std::string currentDateTimeString();
     static std::string diffTime(const TimeInfo &timeStart,const TimeInfo &timeEnd = TimeInfo());
     static float diffTimeF(const TimeInfo &timeStart,const TimeInfo &timeEnd  = TimeInfo());
     bool isNull() const;
@@ -78,15 +94,15 @@ protected:
 };
 
 
- inline uint64_t TimeInfo::getSeconds(void) const
+ inline int64_t TimeInfo::getSeconds() const
  {
      return timebuffer.time;
  }
 
- inline unsigned short  TimeInfo::getMiliseconds(void) const
+ inline unsigned short  TimeInfo::getMiliseconds() const
  {
      return timebuffer.millitm;
- } 
+ }
 
 inline bool
 TimeInfo::operator != (const TimeInfo &time) const
@@ -95,7 +111,7 @@ TimeInfo::operator != (const TimeInfo &time) const
 }
 
 inline void
-TimeInfo::operator = (const TimeInfo &time) 
+TimeInfo::operator = (const TimeInfo &time)
 {
     timebuffer = time.timebuffer;
 }

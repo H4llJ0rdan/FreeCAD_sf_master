@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,15 +20,12 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
+#include <App/DocumentObjectPy.h>
 
 #include "FemSetFacesObject.h"
-#include <App/DocumentObjectPy.h>
-#include <Base/Placement.h>
+
 
 using namespace Fem;
 using namespace App;
@@ -36,25 +33,20 @@ using namespace App;
 PROPERTY_SOURCE(Fem::FemSetFacesObject, Fem::FemSetObject)
 
 
-FemSetFacesObject::FemSetFacesObject()
-{
-}
+FemSetFacesObject::FemSetFacesObject() = default;
 
-FemSetFacesObject::~FemSetFacesObject()
-{
-}
+FemSetFacesObject::~FemSetFacesObject() = default;
 
-short FemSetFacesObject::mustExecute(void) const
+short FemSetFacesObject::mustExecute() const
 {
     return 0;
 }
 
-PyObject *FemSetFacesObject::getPyObject()
+PyObject* FemSetFacesObject::getPyObject()
 {
-    if (PythonObject.is(Py::_None())){
+    if (PythonObject.is(Py::_None())) {
         // ref counter is set to 1
-        PythonObject = Py::Object(new DocumentObjectPy(this),true);
+        PythonObject = Py::Object(new DocumentObjectPy(this), true);
     }
-    return Py::new_reference_to(PythonObject); 
+    return Py::new_reference_to(PythonObject);
 }
-

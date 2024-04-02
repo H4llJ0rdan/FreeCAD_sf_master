@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Juergen Riegel (FreeCAD@juergen-riegel.net)        *
+ *   Copyright (c) 2009 Jürgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -22,105 +22,147 @@
 
 #include "PreCompiled.h"
 
-#include "Gui/SelectionObject.h"
-#include "App/Document.h"
-#include "App/DocumentObject.h"
-#include "App/Application.h"
+#include <App/Document.h>
+#include <App/DocumentObject.h>
+#include <Base/GeometryPyCXX.h>
+
+#include "Selection.h"
+#include "SelectionObject.h"
+
 
 // inclusion of the generated files (generated out of SelectionObjectPy.xml)
 #include "SelectionObjectPy.h"
 #include "SelectionObjectPy.cpp"
 
+
 using namespace Gui;
 
 // returns a string which represents the object e.g. when printed in python
-std::string SelectionObjectPy::representation(void) const
+std::string SelectionObjectPy::representation() const
 {
     return "<SelectionObject>";
 }
 
-
-
-PyObject* SelectionObjectPy::remove(PyObject * /*args*/)
+PyObject* SelectionObjectPy::remove(PyObject * args)
 {
-    PyErr_SetString(PyExc_NotImplementedError, "Not yet implemented");
-    return 0;
+    if (!PyArg_ParseTuple(args, ""))
+        return nullptr;
+    Selection().rmvSelection(getSelectionObjectPtr()->getDocName(),
+                             getSelectionObjectPtr()->getFeatName());
+    Py_Return;
 }
 
-PyObject* SelectionObjectPy::isA(PyObject * /*args*/)
+PyObject* SelectionObjectPy::isObjectTypeOf(PyObject * args)
 {
-    PyErr_SetString(PyExc_NotImplementedError, "Not yet implemented");
-    return 0;
+    char* type;
+    if (!PyArg_ParseTuple(args, "s", &type))
+        return nullptr;
+    Base::Type id = Base::Type::fromName(type);
+    if (id.isBad()) {
+        PyErr_SetString(PyExc_TypeError, "Not a valid type");
+        return nullptr;
+    }
+
+    bool ok = getSelectionObjectPtr()->isObjectTypeOf(id);
+
+    return Py_BuildValue("O", (ok ? Py_True : Py_False));
 }
 
-
-
-Py::String SelectionObjectPy::getObjectName(void) const
+Py::String SelectionObjectPy::getObjectName() const
 {
-    return Py::String(getSelectionObjectPtr()->getFeatName());
+    return {getSelectionObjectPtr()->getFeatName()};
 }
 
-Py::List SelectionObjectPy::getSubElementNames(void) const
+Py::Tuple SelectionObjectPy::getSubElementNames() const
 {
-    Py::List temp;
     std::vector<std::string> objs = getSelectionObjectPtr()->getSubNames();
 
-    for(std::vector<std::string>::const_iterator it= objs.begin();it!=objs.end();++it)
-        temp.append(Py::String(*it));
+    Py::Tuple temp(objs.size());
+    Py::sequence_index_type index = 0;
+    for(const auto & obj : objs)
+        temp.setItem(index++, Py::String(obj));
 
     return temp;
 }
 
-Py::String SelectionObjectPy::getFullName(void) const
+Py::String SelectionObjectPy::getFullName() const
 {
-	std::string buf;
-	//buf = getSelectionObjectPtr()->getDocName();
-	//buf += ".";
-	//buf += getSelectionObjectPtr()->getFeatName();
-	//if(getSelectionObjectPtr()->getSubName()){
-	//	buf += ".";
-	//	buf += getSelectionObjectPtr()->getSubName();
-	//}
-    return Py::String(buf.c_str());
+    return {getSelectionObjectPtr()->getAsPropertyLinkSubString()};
 }
 
-Py::String SelectionObjectPy::getDocumentName(void) const
+Py::String SelectionObjectPy::getTypeName() const
 {
-    return Py::String(getSelectionObjectPtr()->getDocName());
+    return {getSelectionObjectPtr()->getTypeName()};
 }
 
-Py::Object SelectionObjectPy::getDocument(void) const
+Py::String SelectionObjectPy::getDocumentName() const
 {
-    return Py::Object(getSelectionObjectPtr()->getObject()->getDocument()->getPyObject(), true);
+    return {getSelectionObjectPtr()->getDocName()};
 }
 
-Py::Object SelectionObjectPy::getObject(void) const
+Py::Object SelectionObjectPy::getDocument() const
 {
-    return Py::Object(getSelectionObjectPtr()->getObject()->getPyObject(), true);
+    App::DocumentObject *obj = getSelectionObjectPtr()->getObject();
+    if (!obj)
+        throw Py::RuntimeError("Cannot get document of deleted object");
+    return Py::Object(obj->getDocument()->getPyObject(), true);
 }
 
-Py::List SelectionObjectPy::getSubObjects(void) const
+Py::Object SelectionObjectPy::getObject() const
 {
-    Py::List temp;
-    std::vector<PyObject *> objs = getSelectionObjectPtr()->getObject()->getPySubObjects(getSelectionObjectPtr()->getSubNames());
-    for(std::vector<PyObject *>::const_iterator it= objs.begin();it!=objs.end();++it)
-        temp.append(Py::Object(*it,true));
+    App::DocumentObject *obj = getSelectionObjectPtr()->getObject();
+    if (!obj)
+        throw Py::RuntimeError("Object already deleted");
+    return Py::Object(obj->getPyObject(), true);
+}
+
+Py::Tuple SelectionObjectPy::getSubObjects() const
+{
+    App::DocumentObject *obj = getSelectionObjectPtr()->getObject();
+    if (!obj)
+        throw Py::RuntimeError("Cannot get sub-objects of deleted object");
+
+    std::vector<PyObject *> subObjs;
+
+    for(const auto &subname : getSelectionObjectPtr()->getSubNames()) {
+        PyObject *pyObj=nullptr;
+        Base::Matrix4D mat;
+        obj->getSubObject(subname.c_str(),&pyObj,&mat);
+        if(pyObj)
+            subObjs.push_back(pyObj);
+    }
+
+    Py::Tuple temp(subObjs.size());
+    Py::sequence_index_type index = 0;
+    for(const auto & subObj : subObjs)
+        temp.setItem(index++, Py::asObject(subObj));
+
     return temp;
 }
 
-Py::Boolean SelectionObjectPy::getHasSubObjects(void) const
+Py::Boolean SelectionObjectPy::getHasSubObjects() const
 {
-    return Py::Boolean(getSelectionObjectPtr()->hasSubNames());
+    return {getSelectionObjectPtr()->hasSubNames()};
+}
+
+Py::Tuple SelectionObjectPy::getPickedPoints() const
+{
+    const std::vector<Base::Vector3d>& points = getSelectionObjectPtr()->getPickedPoints();
+
+    Py::Tuple temp(points.size());
+    Py::sequence_index_type index = 0;
+    for(const auto & point : points)
+        temp.setItem(index++, Py::Vector(point));
+
+    return temp;
 }
 
 PyObject *SelectionObjectPy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int SelectionObjectPy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }
-
-

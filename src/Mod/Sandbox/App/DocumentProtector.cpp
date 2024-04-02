@@ -95,7 +95,7 @@ public:
     }
     void execute()
     {
-        doc->remObject(this->name.c_str());
+        doc->removeObject(this->name.c_str());
     }
 
 protected:
@@ -254,10 +254,6 @@ void DocumentProtector::init()
         moveToThread(QCoreApplication::instance()->thread());
 }
 
-void DocumentProtector::slotCreatedDocument(const App::Document& Doc)
-{
-}
-
 void DocumentProtector::slotDeletedDocument(const App::Document& Doc)
 {
     if (&Doc == getDocument()) {
@@ -265,22 +261,10 @@ void DocumentProtector::slotDeletedDocument(const App::Document& Doc)
     }
 }
 
-void DocumentProtector::slotCreatedObject(const App::DocumentObject& Obj)
-{
-}
-
-void DocumentProtector::slotDeletedObject(const App::DocumentObject& Obj)
-{
-}
-
-void DocumentProtector::slotChangedObject(const App::DocumentObject& Obj, const App::Property& Prop)
-{
-}
-
 void DocumentProtector::validate()
 {
     if (!this->getDocument())
-        throw Base::Exception("Handled document is null");
+        throw Base::ValueError("Handled document is null");
 }
 
 App::DocumentObject *DocumentProtector::addObject(const std::string& type, const std::string& name)
@@ -319,7 +303,7 @@ DocumentObjectProtector::~DocumentObjectProtector()
 void DocumentObjectProtector::validate()
 {
     if (!obj)
-        throw Base::Exception("Handled document object is null");
+        throw Base::ValueError("Handled document object is null");
 }
 
 App::DocumentObject* DocumentObjectProtector::getObject() const

@@ -20,64 +20,78 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef SKETCHERGUI_TASKSKETCHERVALIDATION_H
 #define SKETCHERGUI_TASKSKETCHERVALIDATION_H
 
-#include <vector>
 #include <memory>
+#include <vector>
+
+#include <App/DocumentObserver.h>
 #include <Base/Vector3D.h>
 #include <Gui/TaskView/TaskDialog.h>
+#include <Mod/Sketcher/App/SketchAnalysis.h>
+
 
 class SoGroup;
-namespace Sketcher { class SketchObject; } 
+namespace Sketcher
+{
+class SketchObject;
+}
 
-namespace SketcherGui {
+namespace SketcherGui
+{
 
 class Ui_TaskSketcherValidation;
-class SketcherValidation : public QWidget
+class SketcherValidation: public QWidget
 {
     Q_OBJECT
 
 public:
-    SketcherValidation(Sketcher::SketchObject* Obj, QWidget* parent = 0);
-    ~SketcherValidation();
+    explicit SketcherValidation(Sketcher::SketchObject* Obj, QWidget* parent = nullptr);
+    ~SketcherValidation() override;
 
 protected:
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent* e) override;
 
-private Q_SLOTS:
-    void on_findButton_clicked();
-    void on_fixButton_clicked();
+private:
+    void setupConnections();
+    void onFindButtonClicked();
+    void onFixButtonClicked();
+    void onHighlightButtonClicked();
+    void onFindConstraintClicked();
+    void onFixConstraintClicked();
+    void onFindReversedClicked();
+    void onSwapReversedClicked();
+    void onOrientLockEnableClicked();
+    void onOrientLockDisableClicked();
+    void onDelConstrExtrClicked();
+    void onFindDegeneratedClicked();
+    void onFixDegeneratedClicked();
 
 private:
     void showPoints(const std::vector<Base::Vector3d>&);
     void hidePoints();
 
 private:
-    std::auto_ptr<Ui_TaskSketcherValidation> ui;
-    Sketcher::SketchObject* sketch;
+    std::unique_ptr<Ui_TaskSketcherValidation> ui;
+    App::WeakPtrT<Sketcher::SketchObject> sketch;
+    Sketcher::SketchAnalysis sketchAnalyser;
     SoGroup* coincidenceRoot;
-
-    struct VertexIds;
-    struct Vertex_Less;
-    struct Vertex_EqualTo;
-    struct ConstraintIds;
-    struct Constraint_Less;
-    std::vector<ConstraintIds> vertexConstraints;
 };
 
-class TaskSketcherValidation : public Gui::TaskView::TaskDialog
+class TaskSketcherValidation: public Gui::TaskView::TaskDialog
 {
     Q_OBJECT
 
 public:
-    TaskSketcherValidation(Sketcher::SketchObject* Obj);
-    ~TaskSketcherValidation();
-    virtual QDialogButtonBox::StandardButtons getStandardButtons(void) const
-    { return QDialogButtonBox::Close; }
+    explicit TaskSketcherValidation(Sketcher::SketchObject* Obj);
+    ~TaskSketcherValidation() override;
+    QDialogButtonBox::StandardButtons getStandardButtons() const override
+    {
+        return QDialogButtonBox::Close;
+    }
 };
 
-} //namespace SketcherGui
+}  // namespace SketcherGui
 
-#endif // SKETCHERGUI_TASKSKETCHERVALIDATION_H
+#endif  // SKETCHERGUI_TASKSKETCHERVALIDATION_H

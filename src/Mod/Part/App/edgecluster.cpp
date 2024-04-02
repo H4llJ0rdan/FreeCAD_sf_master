@@ -1,6 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2010                                                    *
- *   Joachim Zettler <Joachim.Zettler@gmx.de>                              *
+ *   Copyright (c) 2010 Joachim Zettler <Joachim.Zettler@gmx.de>           *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -21,36 +20,29 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
+#ifndef _PreComp_
+# include <BRep_Tool.hxx>
+# include <BRepAdaptor_Curve.hxx>
+# include <TopExp.hxx>
+# include <TopoDS.hxx>
+# include <TopoDS_Vertex.hxx>
+#endif
 
 #include "edgecluster.h"
-#include <TopExp_Explorer.hxx>
-#include <TopAbs_ShapeEnum.hxx>
-#include <BRep_Tool.hxx>
-#include <TopExp.hxx>
-#include <TopoDS.hxx>
-#include <TopoDS_Shape.hxx>
-#include <TopoDS_Vertex.hxx>
-#include <TopoDS_Compound.hxx>
-#include <BRepAdaptor_Curve.hxx>
-#include <GCPnts_QuasiUniformDeflection.hxx>
-#include <BRep_Builder.hxx>
 
 
 using namespace Part;
 
 Edgecluster::Edgecluster(const std::vector<TopoDS_Edge>& unsorted_edges)
-        :m_unsortededges(unsorted_edges),m_done(false)
+        :m_unsortededges(unsorted_edges)
 {
     m_edges.clear();
     m_vertices.clear();
     m_final_cluster.clear();
 }
 
-Edgecluster::~Edgecluster(void)
-{
-}
+Edgecluster::~Edgecluster() = default;
 
 tEdgeClusterVector Edgecluster::GetClusters()
 {
@@ -64,19 +56,12 @@ void Edgecluster::Perform()
         return;
 
     //adds all the vertices to a map, and store the associated edges
-    Standard_Integer nbEdges = 0;
-    Standard_Integer nbNonEdges = 0;
     std::vector<TopoDS_Edge>::iterator aVectorIt;
-    for (aVectorIt = m_unsortededges.begin();aVectorIt != m_unsortededges.end();aVectorIt++)
+    for (aVectorIt = m_unsortededges.begin();aVectorIt != m_unsortededges.end();++aVectorIt)
     {
         if (IsValidEdge(*aVectorIt))
         {
             Perform(*aVectorIt);
-            nbEdges++;
-        }
-        else
-        {
-            nbNonEdges++;
         }
     }
 
@@ -85,18 +70,19 @@ void Edgecluster::Perform()
     do
     {
         m_edges.clear();
-		//Lets start with a vertice that only has one edge (that means start or end point of the merged edges!)
-        tMapPntEdge::iterator iter; 
-		bool closed = true;
-		for(iter=m_vertices.begin();iter!=m_vertices.end();iter++)
-		{
-			if (iter->second.size()==1)
-			{
-				closed = false;
-				break;
-			}
-		}
-		if(closed)iter = m_vertices.begin();
+        //Lets start with a vertice that only has one edge (that means start or end point of the merged edges!)
+        tMapPntEdge::iterator iter;
+        bool closed = true;
+        for(iter=m_vertices.begin();iter!=m_vertices.end();++iter)
+        {
+            if (iter->second.size()==1)
+            {
+                closed = false;
+                break;
+            }
+        }
+        if(closed)
+            iter = m_vertices.begin();
         const gp_Pnt& firstPoint = iter->first;
         gp_Pnt currentPoint = firstPoint;
         Standard_Boolean toContinue;
@@ -210,7 +196,6 @@ void Edgecluster::Perform(const TopoDS_Edge& edge)
     iter.first->second.push_back(edge);
 }
 
-#include <BRepAdaptor_Curve.hxx>
 
 bool Edgecluster::IsValidEdge(const TopoDS_Edge& edge)
 {

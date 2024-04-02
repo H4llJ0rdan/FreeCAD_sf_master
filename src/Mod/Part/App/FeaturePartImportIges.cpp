@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,15 +20,14 @@
  *                                                                         *
  ***************************************************************************/
 
- 
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <fcntl.h>
 #endif
 
 #include <Base/Console.h>
-#include <Base/Exception.h>
 #include <Base/FileInfo.h>
+
 #include "FeaturePartImportIges.h"
 
 
@@ -37,7 +36,7 @@ using namespace Part;
 PROPERTY_SOURCE(Part::ImportIges, Part::Feature)
 
 
-ImportIges::ImportIges(void)
+ImportIges::ImportIges()
 {
     ADD_PROPERTY(FileName,(""));
 }
@@ -49,7 +48,7 @@ short ImportIges::mustExecute() const
     return 0;
 }
 
-App::DocumentObjectExecReturn *ImportIges::execute(void)
+App::DocumentObjectExecReturn *ImportIges::execute()
 {
     Base::FileInfo fi(FileName.getValue());
     if (!fi.isReadable()) {
@@ -59,7 +58,7 @@ App::DocumentObjectExecReturn *ImportIges::execute(void)
     }
 
     TopoShape aShape;
-    aShape.importIges((const Standard_CString)FileName.getValue());
+    aShape.importIges(FileName.getValue());
     this->Shape.setValue(aShape);
 
     return App::DocumentObject::StdReturn;

@@ -25,6 +25,15 @@
 #define PARTDESIGN_WORKBENCH_H
 
 #include <Gui/Workbench.h>
+#include <Mod/PartDesign/PartDesignGlobal.h>
+
+namespace Gui {
+
+class MenuItem;
+class Document;
+class ViewProviderDocumentObject;
+
+}
 
 namespace PartDesignGui {
 
@@ -33,24 +42,47 @@ namespace PartDesignGui {
  */
 class PartDesignGuiExport Workbench : public Gui::StdWorkbench
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     Workbench();
-    virtual ~Workbench();
+    ~Workbench() override;
 
       /** Run some actions when the workbench gets activated. */
-    virtual void activated();
+    void activated() override;
     /** Run some actions when the workbench gets deactivated. */
-    virtual void deactivated();
+    void deactivated() override;
+
+    /// Add custom entries to the context menu
+    void setupContextMenu(const char* recipient, Gui::MenuItem*) const override;
 
 protected:
-  Gui::MenuItem* setupMenuBar() const;
-  Gui::ToolBarItem* setupToolBars() const;
-  Gui::ToolBarItem* setupCommandBars() const;
+  Gui::MenuItem* setupMenuBar() const override;
+  Gui::ToolBarItem* setupToolBars() const override;
+  Gui::ToolBarItem* setupCommandBars() const override;
+
+private:
+   /// Refresh the Body's highlighting when a document becomes active
+   void slotActiveDocument(const Gui::Document&);
+   /// Refresh the highlighting. Migrate legacy documents on loading
+   void slotFinishRestoreDocument(const App::Document&);
+   /// Ensure that there are base planes and a body in a new document
+   void slotNewDocument(const App::Document&);
+   /// Update the ActivePartObject etc. when a document is closed
+   void slotDeleteDocument(const App::Document&);
+   // Add new objects to the body, if appropriate
+   //void slotNewObject(const App::DocumentObject& obj);
+
+   void _switchToDocument(const App::Document* doc);
+
+private:
+   boost::signals2::connection activeDoc;
+   boost::signals2::connection createDoc;
+   boost::signals2::connection finishDoc;
+   boost::signals2::connection deleteDoc;
 };
 
 } // namespace PartDesignGui
 
 
-#endif // PARTDESIGN_WORKBENCH_H 
+#endif // PARTDESIGN_WORKBENCH_H

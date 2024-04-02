@@ -28,160 +28,59 @@
 # include <Inventor/nodes/SoCamera.h>
 #endif
 #include <Inventor/SbVec2s.h>
-#include "View3DInventorViewer.h"
 
 #include "Flag.h"
+#include "View3DInventorViewer.h"
+
 
 using namespace Gui;
 
-#if 0 // Test functions with transparency
-
-#if 1
-    QDialog* dlg = Gui::getMainWindow()->findChild<QDialog*>();
-    QImage image;
-    if (dlg) {
-        QPixmap p = QPixmap::grabWidget(dlg);
-        image = p.toImage();
-    }
-    else {
-        QImage img(128,128, QImage::Format_ARGB32);
-        img.fill(qRgba(255, 255, 255, 127));
-        QPainter painter;
-        painter.begin(&img);
-        painter.setPen(Qt::black);
-        painter.drawText(25, 50, QLatin1String("Hello, World!"));
-        painter.end();
-        image = img;
-    }
-#else
-    QPixmap pm (128,128);
-    QBitmap mask (128,128);
-    mask.fill(Qt::color0);
-
-    QPainter painter(&mask);
-    painter.drawText(QPoint(0, 0), QLatin1String("Hello, World!"));
-    pm.setMask(mask);
-
-    QImage img = pm.toImage();
-    img.load(QLatin1String("C:/Temp/tux.png"),"PNG");
-#endif
-
-#include "MainWindow.h"
-void drawImage(QGLWidget* w,double x1, double y1, double x2, double y2, QImage pic)
-{
-    //pic.save(QLatin1String("C:/Temp/texture.png"),"PNG");
-#if 0
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glEnable(GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4d(0.0,0.0,1.0,0.2f);
-    glBegin(GL_QUADS);
-    glTexCoord2d(0,0); glVertex2f(x1,y1);
-    glTexCoord2d(1,0); glVertex2f(x2,y1);
-    glTexCoord2d(1,1); glVertex2f(x2,y2);
-    glTexCoord2d(0,1); glVertex2f(x1,y2);
-    glEnd();
-    glPopAttrib();
-#elif 0
-    pic = QGLWidget::convertToGLFormat(pic);
-    int texid = w->bindTexture(pic);
-    glColor3f(1,1,1);
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glDisable(GL_LIGHTING);
-    glBegin(GL_QUADS);
-    glTexCoord2d(0,0); glVertex2f(x1,y1);
-    glTexCoord2d(1,0); glVertex2f(x2,y1);
-    glTexCoord2d(1,1); glVertex2f(x2,y2);
-    glTexCoord2d(0,1); glVertex2f(x1,y2);
-    glEnd();
-    //    glEnable(GL_LIGHTING);
-    w->deleteTexture(texid);
-#elif 0
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glEnable(GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4d(0.0,0.0,1.0,0.2f);
-    int texid = w->bindTexture(pic);
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glDisable(GL_LIGHTING);
-    glBegin(GL_QUADS);
-    glTexCoord2d(0,0); glVertex2f(x1,y1);
-    glTexCoord2d(1,0); glVertex2f(x2,y1);
-    glTexCoord2d(1,1); glVertex2f(x2,y2);
-    glTexCoord2d(0,1); glVertex2f(x1,y2);
-    glEnd();
-    //    glEnable(GL_LIGHTING);
-    w->deleteTexture(texid);
-    glPopAttrib();
-#elif 1
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glEnable(GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4d(0.0,0.0,1.0,0.2f);
-    pic = QGLWidget::convertToGLFormat(pic);
-    glRasterPos2d(x1,y1);
-    glDrawPixels(pic.width(),pic.height(),GL_RGBA,GL_UNSIGNED_BYTE,pic.bits());
-    glPopAttrib();
-#endif
-}
-
-#endif
 
 /* TRANSLATOR Gui::Flag */
-
-#if 1
 
 // TODO: Rename to Annotation
 //       Support transparency
 //       Embed complete widgets
 
 Flag::Flag(QWidget* parent)
-  : QGLWidget(parent), coord(0.0f, 0.0f, 0.0f)
+  : QtGLWidget(parent), coord(0.0f, 0.0f, 0.0f)
 {
     this->setFixedHeight(20);
+    setAutoFillBackground(true);
 }
+
+Flag::~Flag() = default;
 
 void Flag::initializeGL()
 {
     const QPalette& p = this->palette();
-    qglClearColor(/*Qt::white*/p.color(QPalette::Window));
+    QColor c(p.color(QPalette::Window));
+    glClearColor(c.redF(), c.greenF(), c.blueF(), c.alphaF());
 }
 
 void Flag::paintGL()
 {
+    QOpenGLWidget::paintGL();
+}
+
+void Flag::paintEvent(QPaintEvent* e)
+{
     const QPalette& p = this->palette();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    qglColor(/*Qt::black*/p.color(QPalette::Text));
-    renderText(10,15,this->text);
+    QColor c(p.color(QPalette::Text));
+
+    QPainter painter;
+    painter.begin(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.fillRect(e->rect(), p.color(QPalette::Window));
+    painter.setPen(c);
+    painter.drawText(10, 15, this->text);
+    painter.end();
 }
 
 void Flag::resizeGL(int width, int height)
 {
-    return;
-    //int side = qMin(width, height);
-    //glViewport((width - side) / 2, (height - side) / 2, side, side);
-
-    //glMatrixMode(GL_PROJECTION);
-    //glLoadIdentity();
-    //glFrustum(-1.0, +1.0, -1.0, 1.0, 5.0, 60.0);
-    //glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();
-    //glTranslated(0.0, 0.0, -40.0);
-}
-
-#else
-
-Flag::Flag(QWidget* parent)
-  : QWidget(parent), coord(0.0f, 0.0f, 0.0f)
-{
-    this->setFixedHeight(20);
-}
-#endif
-
-Flag::~Flag()
-{
+    Q_UNUSED(width);
+    Q_UNUSED(height);
 }
 
 void Flag::setOrigin(const SbVec3f& v)
@@ -208,7 +107,6 @@ void Flag::drawLine (View3DInventorViewer* v, int tox, int toy)
 
     GLPainter p;
     p.begin(v->getGLWidget());
-    p.setDrawBuffer(GL_BACK);
 
     // the line
     p.setLineWidth(1.0f);
@@ -224,56 +122,34 @@ void Flag::setText(const QString& t)
     this->text = t;
 }
 
-void Flag::resizeEvent(QResizeEvent * e)
+void Flag::resizeEvent(QResizeEvent* e)
 {
-#if 0
-    image = QImage(this->size(), QImage::Format_ARGB32);
-
-    QPainter painter;
-    painter.begin(&image);
-    painter.fillRect(image.rect(), Qt::white);
-    painter.setPen(Qt::black);
-    painter.drawText(10, 15, this->text);
-    painter.end();
-#endif
-}
-
-void Flag::paintEvent(QPaintEvent* e)
-{
-#if 1
-    QGLWidget::paintEvent(e);
-#else
-#if 1
-    QPainter painter;
-    painter.begin(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    painter.drawImage((width() - image.width())/2, 0, image);
-    painter.end();
-#else
-    // draw the overlayed text using QPainter
-    QPainter p(this);
-    p.fillRect(this->rect(), Qt::white);
-    p.setPen(Qt::black);
-    p.setBrush(Qt::NoBrush);
-    QFontMetrics fm(p.font());
-    p.drawText(10, 15, this->text);
-#endif
-#endif
+    QtGLWidget::resizeEvent(e);
 }
 
 void Flag::mouseMoveEvent(QMouseEvent *e)
 {
     if (e->buttons() & Qt::LeftButton) {
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
         move(e->globalPos() - dragPosition);
+#else
+        move(e->globalPosition().toPoint() - dragPosition);
+#endif
         e->accept();
+        auto viewer = dynamic_cast<View3DInventorViewer*>(parentWidget());
+        if (viewer)
+            viewer->getSoRenderManager()->scheduleRedraw();
     }
 }
 
 void Flag::mousePressEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton) {
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
         dragPosition = e->globalPos() - frameGeometry().topLeft();
+#else
+        dragPosition = e->globalPosition().toPoint() - frameGeometry().topLeft();
+#endif
         e->accept();
     }
 }
@@ -305,7 +181,7 @@ QSize Flag::sizeHint() const
     QRect r = metric.boundingRect(text);
     w = std::max<int>(w, r.width()+20);
     h = std::max<int>(h, r.height());
-    return QSize(w, h);
+    return {w, h};
 }
 
 // ------------------------------------------------------------------------
@@ -313,7 +189,7 @@ QSize Flag::sizeHint() const
 FlagLayout::FlagLayout(QWidget *parent, int margin, int spacing)
     : QLayout(parent)
 {
-    setMargin(margin);
+    setContentsMargins(margin, margin, margin, margin);
     setSpacing(spacing);
 }
 
@@ -360,7 +236,7 @@ QLayoutItem *FlagLayout::itemAt(int index) const
     if (wrapper)
         return wrapper->item;
     else
-        return 0;
+        return nullptr;
 }
 
 QSize FlagLayout::minimumSize() const
@@ -376,20 +252,19 @@ void FlagLayout::setGeometry(const QRect &rect)
     QLayout::setGeometry(rect);
 
     // left side
-    for (int i = 0; i < list.size(); ++i) {
-        ItemWrapper *wrapper = list.at(i);
+    for (ItemWrapper *wrapper : list) {
         QLayoutItem *item = wrapper->item;
         Position position = wrapper->position;
 
         if (position == TopLeft) {
             topHeight += spacing();
-            item->setGeometry(QRect(rect.x() + spacing(), topHeight, 
+            item->setGeometry(QRect(rect.x() + spacing(), topHeight,
                                     item->sizeHint().width(), item->sizeHint().height()));
 
             topHeight += item->geometry().height();
         } else if (position == BottomLeft) {
             bottomHeight += item->geometry().height() + spacing();
-            item->setGeometry(QRect(rect.x() + spacing(), rect.height() - bottomHeight, 
+            item->setGeometry(QRect(rect.x() + spacing(), rect.height() - bottomHeight,
                                     item->sizeHint().width(), item->sizeHint().height()));
         }
     }
@@ -397,21 +272,20 @@ void FlagLayout::setGeometry(const QRect &rect)
     // right side
     topHeight = 0;
     bottomHeight = 0;
-    for (int i = 0; i < list.size(); ++i) {
-        ItemWrapper *wrapper = list.at(i);
+    for (ItemWrapper *wrapper : list) {
         QLayoutItem *item = wrapper->item;
         Position position = wrapper->position;
 
         int rightpos = item->sizeHint().width() + spacing();
         if (position == TopRight) {
             topHeight += spacing();
-            item->setGeometry(QRect(rect.x() + rect.width() - rightpos, topHeight, 
+            item->setGeometry(QRect(rect.x() + rect.width() - rightpos, topHeight,
                                     item->sizeHint().width(), item->sizeHint().height()));
 
             topHeight += item->geometry().height();
         } else if (position == BottomRight) {
             bottomHeight += item->geometry().height() + spacing();
-            item->setGeometry(QRect(rect.x() + rect.width() - rightpos, rect.height() - bottomHeight, 
+            item->setGeometry(QRect(rect.x() + rect.width() - rightpos, rect.height() - bottomHeight,
                                     item->sizeHint().width(), item->sizeHint().height()));
         }
     }
@@ -428,7 +302,7 @@ QLayoutItem *FlagLayout::takeAt(int index)
         ItemWrapper *layoutStruct = list.takeAt(index);
         return layoutStruct->item;
     }
-    return 0;
+    return nullptr;
 }
 
 void FlagLayout::add(QLayoutItem *item, Position position)
@@ -440,8 +314,7 @@ QSize FlagLayout::calculateSize(SizeType sizeType) const
 {
     QSize totalSize;
 
-    for (int i = 0; i < list.size(); ++i) {
-        ItemWrapper *wrapper = list.at(i);
+    for (ItemWrapper *wrapper : list) {
         QSize itemSize;
 
         if (sizeType == MinimumSize)
@@ -456,9 +329,9 @@ QSize FlagLayout::calculateSize(SizeType sizeType) const
 }
 
 
-TYPESYSTEM_SOURCE_ABSTRACT(Gui::GLFlagWindow, Gui::GLGraphicsItem);
+TYPESYSTEM_SOURCE_ABSTRACT(Gui::GLFlagWindow, Gui::GLGraphicsItem)
 
-GLFlagWindow::GLFlagWindow(View3DInventorViewer* view) : _viewer(view), _flagLayout(0)
+GLFlagWindow::GLFlagWindow(View3DInventorViewer* view) : _viewer(view), _flagLayout(nullptr)
 {
 }
 
@@ -480,6 +353,8 @@ void GLFlagWindow::deleteFlags()
                 flag->deleteLater();
             }
         }
+        if (ct > 0)
+            _viewer->getSoRenderManager()->scheduleRedraw();
     }
 }
 
@@ -500,6 +375,7 @@ void GLFlagWindow::removeFlag(Flag* item)
 {
     if (_flagLayout) {
         _flagLayout->removeWidget(item);
+        _viewer->getSoRenderManager()->scheduleRedraw();
     }
 }
 
@@ -509,7 +385,7 @@ Flag* GLFlagWindow::getFlag(int index) const
         QWidget* flag = _flagLayout->itemAt(index)->widget();
         return qobject_cast<Flag*>(flag);
     }
-    return 0;
+    return nullptr;
 }
 
 int GLFlagWindow::countFlags() const

@@ -23,10 +23,6 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-# include <qobject.h>
-#endif
-
 #include "Workbench.h"
 #include <Gui/MenuManager.h>
 #include <Gui/ToolBarManager.h>
@@ -40,18 +36,20 @@ using namespace PartGui;
     qApp->translate("Workbench", "Solids");
     qApp->translate("Workbench", "Part tools");
     qApp->translate("Workbench", "Boolean");
+    qApp->translate("Workbench", "Primitives");
+    qApp->translate("Workbench", "Join");
+    qApp->translate("Workbench", "Split");
+    qApp->translate("Workbench", "Compound");
+    qApp->translate("Workbench", "Create a copy");
+    qApp->translate("Workbench", "Measure");
 #endif
 
 /// @namespace PartGui @class Workbench
 TYPESYSTEM_SOURCE(PartGui::Workbench, Gui::StdWorkbench)
 
-Workbench::Workbench()
-{
-}
+Workbench::Workbench() = default;
 
-Workbench::~Workbench()
-{
-}
+Workbench::~Workbench() = default;
 
 Gui::MenuItem* Workbench::setupMenuBar() const
 {
@@ -60,35 +58,100 @@ Gui::MenuItem* Workbench::setupMenuBar() const
 
     Gui::MenuItem* prim = new Gui::MenuItem;
     prim->setCommand("Primitives");
-    *prim << "Part_Box" << "Part_Cylinder" << "Part_Sphere"
-          << "Part_Cone" << "Part_Torus";
+    *prim << "Part_Box"
+          << "Part_Cylinder"
+          << "Part_Sphere"
+          << "Part_Cone"
+          << "Part_Torus"
+          << "Separator"
+          << "Part_Tube";
+
+    Gui::MenuItem* copy = new Gui::MenuItem;
+    copy->setCommand("Create a copy");
+    *copy << "Part_SimpleCopy"
+          << "Part_TransformedCopy"
+          << "Part_ElementCopy"
+          << "Part_RefineShape";
 
     Gui::MenuItem* bop = new Gui::MenuItem;
     bop->setCommand("Boolean");
-    *bop << "Part_Boolean" << "Part_Cut" << "Part_Fuse" << "Part_Common";
-    
+    *bop << "Part_Boolean"
+         << "Part_Cut"
+         << "Part_Fuse"
+         << "Part_Common";
+
+    Gui::MenuItem* join = new Gui::MenuItem;
+    join->setCommand("Join");
+    *join << "Part_JoinConnect"
+          << "Part_JoinEmbed"
+          << "Part_JoinCutout";
+
+    Gui::MenuItem* split = new Gui::MenuItem;
+    split->setCommand("Split");
+    *split << "Part_BooleanFragments"
+           << "Part_SliceApart"
+           << "Part_Slice"
+           << "Part_XOR";
+
+    Gui::MenuItem* compound = new Gui::MenuItem;
+    compound->setCommand("Compound");
+    *compound << "Part_Compound"
+              << "Part_ExplodeCompound"
+              << "Part_CompoundFilter";
 
     Gui::MenuItem* part = new Gui::MenuItem;
     root->insertItem(item, part);
     part->setCommand("&Part");
-    *part << "Part_Import" << "Part_Export" << "Separator";
-    *part << prim << "Part_Primitives" << "Part_Builder" << "Separator"
-          << "Part_ShapeFromMesh" << "Part_MakeSolid" << "Part_ReverseShape"
-          << "Part_SimpleCopy" << "Part_RefineShape" << "Part_CheckGeometry"
-	      << "Separator" << bop << "Separator"
-          << "Part_CrossSections" << "Part_Compound" << "Part_Extrude"
-          << "Part_Revolve" << "Part_Mirror" << "Part_Fillet" << "Part_Chamfer"
-          << "Part_RuledSurface" << "Part_Loft" << "Part_Sweep"
-          << "Part_Offset" << "Part_Thickness";
+    *part << "Part_Import"
+          << "Part_Export"
+          << "Separator"
+          << "Part_BoxSelection"
+          << "Separator";
+    *part << prim
+          << "Part_Primitives"
+          << "Part_Builder"
+          << "Separator"
+          << "Part_ShapeFromMesh"
+          << "Part_PointsFromMesh"
+          << "Part_MakeSolid"
+          << "Part_ReverseShape"
+          << copy
+          << "Part_CheckGeometry"
+          << "Part_Defeaturing"
+          << "Separator"
+          << bop << join << split << compound
+          << "Separator"
+          << "Part_Extrude"
+          << "Part_Revolve"
+          << "Part_Mirror"
+          << "Part_Scale"
+          << "Part_Fillet"
+          << "Part_Chamfer"
+          << "Part_MakeFace"
+          << "Part_RuledSurface"
+          << "Part_Loft"
+          << "Part_Sweep"
+          << "Part_Section"
+          << "Part_CrossSections"
+          << "Part_Offset"
+          << "Part_Offset2D"
+          << "Part_Thickness"
+          << "Part_ProjectionOnSurface"
+          << "Separator"
+          << "Part_EditAttachment";
 
     Gui::MenuItem* measure = new Gui::MenuItem;
     root->insertItem(item,measure);
     measure->setCommand("Measure");
-    *measure << "Part_Measure_Linear" << "Part_Measure_Angular" << "Separator" << "Part_Measure_Clear_All" << "Part_Measure_Toggle_All" <<
-      "Part_Measure_Toggle_3d" << "Part_Measure_Toggle_Delta";
+    *measure << "Part_Measure_Linear"
+             << "Part_Measure_Angular"
+             << "Separator"
+             << "Part_Measure_Refresh"
+             << "Part_Measure_Clear_All"
+             << "Part_Measure_Toggle_All"
+             << "Part_Measure_Toggle_3D"
+             << "Part_Measure_Toggle_Delta";
 
-    // leave this for 0.14 until #0000477 is fixed
-#if 0
     Gui::MenuItem* view = root->findItem("&View");
     if (view) {
         Gui::MenuItem* appr = view->findItem("Std_RandomColor");
@@ -97,7 +160,6 @@ Gui::MenuItem* Workbench::setupMenuBar() const
         face->setCommand("Part_ColorPerFace");
         view->insertItem(appr, face);
     }
-#endif
 
     return root;
 }
@@ -108,24 +170,56 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
 
     Gui::ToolBarItem* solids = new Gui::ToolBarItem(root);
     solids->setCommand("Solids");
-    *solids << "Part_Box" << "Part_Cylinder" << "Part_Sphere" << "Part_Cone"
-            << "Part_Torus" << "Part_Primitives" << "Part_Builder";
+    *solids << "Part_Box"
+            << "Part_Cylinder"
+            << "Part_Sphere"
+            << "Part_Cone"
+            << "Part_Torus"
+            << "Part_Tube"
+            << "Part_Primitives"
+            << "Part_Builder";
 
     Gui::ToolBarItem* tool = new Gui::ToolBarItem(root);
     tool->setCommand("Part tools");
-    *tool << "Part_Extrude" << "Part_Revolve" << "Part_Mirror" << "Part_Fillet"
-          << "Part_Chamfer" << "Part_RuledSurface" << "Part_Loft" << "Part_Sweep"
-          << "Part_Offset" << "Part_Thickness";
+    *tool << "Part_Extrude"
+          << "Part_Revolve"
+          << "Part_Mirror"
+          << "Part_Scale"
+          << "Part_Fillet"
+          << "Part_Chamfer"
+          << "Part_MakeFace"
+          << "Part_RuledSurface"
+          << "Part_Loft"
+          << "Part_Sweep"
+          << "Part_Section"
+          << "Part_CrossSections"
+          << "Part_CompOffset"
+          << "Part_Thickness"
+          << "Part_ProjectionOnSurface"
+          << "Part_ColorPerFace";  // See issues #0477 and #1954 in the tracker
 
     Gui::ToolBarItem* boolop = new Gui::ToolBarItem(root);
     boolop->setCommand("Boolean");
-    *boolop << "Part_Boolean" << "Part_Cut" << "Part_Fuse" << "Part_Common"
-             << "Part_CheckGeometry" << "Part_Section" << "Part_CrossSections";
-	     
+    *boolop << "Part_CompCompoundTools"
+            << "Part_Boolean"
+            << "Part_Cut"
+            << "Part_Fuse"
+            << "Part_Common"
+            << "Part_CompJoinFeatures"
+            << "Part_CompSplitFeatures"
+            << "Part_CheckGeometry"
+            << "Part_Defeaturing";
+
     Gui::ToolBarItem* measure = new Gui::ToolBarItem(root);
     measure->setCommand("Measure");
-    *measure << "Part_Measure_Linear" << "Part_Measure_Angular"  << "Separator" << "Part_Measure_Clear_All" << "Part_Measure_Toggle_All"
-             << "Part_Measure_Toggle_3d" << "Part_Measure_Toggle_Delta";
+    *measure << "Part_Measure_Linear"
+             << "Part_Measure_Angular"
+             << "Separator"
+             << "Part_Measure_Refresh"
+             << "Part_Measure_Clear_All"
+             << "Part_Measure_Toggle_All"
+             << "Part_Measure_Toggle_3D"
+             << "Part_Measure_Toggle_Delta";
 
     return root;
 }

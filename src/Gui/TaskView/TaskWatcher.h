@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,18 +24,11 @@
 #ifndef GUI_TASKVIEW_TASKWATCHER_H
 #define GUI_TASKVIEW_TASKWATCHER_H
 
-#include <map>
-#include <string>
 #include <vector>
 #include <QObject>
 
-#include <Gui/iisTaskPanel/include/iisTaskPanel>
-#include <Gui/Selection.h>
 #include <Gui/SelectionFilter.h>
 
-namespace App {
-
-}
 
 namespace Gui {
 namespace TaskView {
@@ -48,14 +41,14 @@ class GuiExport TaskWatcher : public QObject, public Gui::SelectionFilter
     Q_OBJECT
 
 public:
-    TaskWatcher(const char* Filter);
-    ~TaskWatcher();
+    explicit TaskWatcher(const char* Filter);
+    ~TaskWatcher() override;
 
-    std::vector<QWidget*> &getWatcherContent(void);
+    std::vector<QWidget*> &getWatcherContent();
 
 public:
     /// is called wenn the document or the Selection changes. 
-    virtual bool shouldShow(void);
+    virtual bool shouldShow();
 
 protected:
     /// List of TaskBoxes of that dialog
@@ -72,11 +65,10 @@ class GuiExport TaskWatcherCommands : public TaskWatcher
 
 public:
     TaskWatcherCommands(const char* Filter,const char* commands[], const char* name, const char* pixmap);
-    ~TaskWatcherCommands();
 
 public:
     /// is called wenn the document or the Selection changes. 
-    virtual bool shouldShow(void);
+    bool shouldShow() override;
 
 };
 
@@ -89,11 +81,10 @@ class GuiExport TaskWatcherCommandsEmptyDoc : public TaskWatcherCommands
 
 public:
     TaskWatcherCommandsEmptyDoc(const char* commands[], const char* name, const char* pixmap);
-    ~TaskWatcherCommandsEmptyDoc();
 
 public:
     /// is called wenn the document or the Selection changes. 
-    virtual bool shouldShow(void);
+    bool shouldShow() override;
 
 };
 
@@ -106,11 +97,11 @@ class GuiExport TaskWatcherCommandsEmptySelection : public TaskWatcherCommands
 
 public:
     TaskWatcherCommandsEmptySelection(const char* commands[], const char* name, const char* pixmap);
-    ~TaskWatcherCommandsEmptySelection();
+    ~TaskWatcherCommandsEmptySelection() override;
 
 public:
     /// is called wenn the document or the Selection changes. 
-    virtual bool shouldShow(void);
+    bool shouldShow() override;
 
 };
 

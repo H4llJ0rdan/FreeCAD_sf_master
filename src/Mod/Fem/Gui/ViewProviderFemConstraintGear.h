@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jan Rheinländer <jrheinlaender[at]users.sourceforge.net>     *
+ *   Copyright (c) 2013 Jan Rheinländer                                    *
+ *                                   <jrheinlaender@users.sourceforge.net> *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,51 +25,27 @@
 #ifndef GUI_VIEWPROVIDERFEMCONSTRAINTGear_H
 #define GUI_VIEWPROVIDERFEMCONSTRAINTGear_H
 
-#include <TopoDS_Shape.hxx>
-
 #include "ViewProviderFemConstraint.h"
-#include <QObject>
-
-class SoFontStyle;
-class SoText2;
-class SoBaseColor;
-class SoTranslation;
-class SbRotation;
-class SoMaterial;
-class SoLightModel;
-class SoCoordinate3;
-class SoIndexedLineSet;
-class SoIndexedFaceSet;
-class SoEventCallback;
-class SoMarkerSet;
-
-namespace Gui  {
-class View3DInventorViewer;
-    namespace TaskView {
-        class TaskDialog;
-    }
-}
 
 namespace FemGui
 {
 
-class FemGuiExport ViewProviderFemConstraintGear : public FemGui::ViewProviderFemConstraint
+class FemGuiExport ViewProviderFemConstraintGear: public FemGui::ViewProviderFemConstraint
 {
-    PROPERTY_HEADER(FemGui::ViewProviderFemConstraintGear);
+    PROPERTY_HEADER_WITH_OVERRIDE(FemGui::ViewProviderFemConstraintGear);
 
 public:
     /// Constructor
     ViewProviderFemConstraintGear();
-    virtual ~ViewProviderFemConstraintGear();
+    ~ViewProviderFemConstraintGear() override;
 
-    virtual void updateData(const App::Property*);
+    void updateData(const App::Property*) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-
+    bool setEdit(int ModNum) override;
 };
 
-} //namespace FemGui
+}  // namespace FemGui
 
 
-#endif // GUI_VIEWPROVIDERFEMCONSTRAINTGear_H
+#endif  // GUI_VIEWPROVIDERFEMCONSTRAINTGear_H

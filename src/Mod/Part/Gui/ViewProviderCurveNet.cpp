@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,54 +20,44 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
 # include <BRep_Tool.hxx>
 # include <Geom_Curve.hxx>
-# include <TColgp_Array1OfPnt.hxx>
-# include <TopoDS.hxx>
 # include <TopExp_Explorer.hxx>
+# include <TopoDS.hxx>
+# include <Inventor/events/SoKeyboardEvent.h>
+# include <Inventor/events/SoLocation2Event.h>
+# include <Inventor/events/SoMouseButtonEvent.h>
 # include <Inventor/nodes/SoComplexity.h>
 # include <Inventor/nodes/SoCoordinate3.h>
 # include <Inventor/nodes/SoDrawStyle.h>
 # include <Inventor/nodes/SoLineSet.h>
 # include <Inventor/nodes/SoLocateHighlight.h>
 # include <Inventor/nodes/SoMaterial.h>
-# include <Inventor/nodes/SoTransform.h>
 # include <Inventor/nodes/SoSphere.h>
-# include <Inventor/events/SoMouseButtonEvent.h>
-# include <Inventor/events/SoKeyboardEvent.h>
-# include <Inventor/events/SoLocation2Event.h>
+# include <Inventor/nodes/SoTransform.h>
 #endif
 
-/// Here the FreeCAD includes sorted by Base,App,Gui......
+#include <App/Application.h>
 #include <Base/Console.h>
 #include <Base/Parameter.h>
-#include <Base/Exception.h>
-#include <Base/Sequencer.h>
-#include <Gui/View3DInventorViewer.h>
 #include <Gui/SoFCSelection.h>
-#include <App/Application.h>
-
-#include <Mod/Part/App/PartFeature.h>
+#include <Gui/View3DInventorViewer.h>
 
 #include "ViewProviderCurveNet.h"
 
 
-
 using namespace PartGui;
-
 
 //**************************************************************************
 // Construction/Destruction
 
 PROPERTY_SOURCE(PartGui::ViewProviderCurveNet,PartGui::ViewProviderPart)
 
-       
+
 ViewProviderCurveNet::ViewProviderCurveNet()
-  : bInEdit(false),bMovePointMode(false)
 {
     LineWidth.setValue(4.0f);
     PointSize.setValue(0.05f);
@@ -81,22 +71,19 @@ ViewProviderCurveNet::ViewProviderCurveNet()
     */
 }
 
-ViewProviderCurveNet::~ViewProviderCurveNet()
-{
-
-}
+ViewProviderCurveNet::~ViewProviderCurveNet() = default;
 
 void ViewProviderCurveNet::attach(App::DocumentObject *pcFeat)
 {
     // call parent attach method
-    ViewProviderGeometryObject::attach(pcFeat);
+    ViewProviderGeometryObject::attach(pcFeat); // clazy:exclude=skipped-base-method
 
     // setup the root and material for the edges
     SoSeparator* ModeRoot = new SoSeparator();
     EdgeRoot = new SoSeparator();
     ModeRoot->addChild(EdgeRoot);
-    EdgeRoot->addChild(pcLineStyle);  
-    EdgeRoot->addChild(pcLineMaterial);  
+    EdgeRoot->addChild(pcLineStyle);
+    EdgeRoot->addChild(pcLineMaterial);
 
     // setup the root and material for the vertexes
     VertexRoot = new SoSeparator();
@@ -111,14 +98,14 @@ void ViewProviderCurveNet::attach(App::DocumentObject *pcFeat)
 
 void ViewProviderCurveNet::updateData(const App::Property* prop)
 {
-    Gui::ViewProviderGeometryObject::updateData(prop);
+    Gui::ViewProviderGeometryObject::updateData(prop); // clazy:exclude=skipped-base-method
     if (prop->getTypeId() == Part::PropertyPartShape::getClassTypeId()) {
         TopoDS_Shape cShape = static_cast<const Part::PropertyPartShape*>(prop)->getValue();
         if (cShape.IsNull())
             return;
 
-        EdgeRoot->removeAllChildren();
-        VertexRoot->removeAllChildren();
+        Gui::coinRemoveAllChildren(EdgeRoot);
+        Gui::coinRemoveAllChildren(VertexRoot);
 
         try{
             computeEdges   (EdgeRoot,cShape);
@@ -138,13 +125,13 @@ void ViewProviderCurveNet::setDisplayMode(const char* ModeName)
     ViewProviderGeometryObject::setDisplayMode(ModeName);
 }
 
-std::vector<std::string> ViewProviderCurveNet::getDisplayModes(void) const
+std::vector<std::string> ViewProviderCurveNet::getDisplayModes() const
 {
     // get the modes of the father
     std::vector<std::string> StrList;
 
     // add your own modes
-    StrList.push_back("Edge");
+    StrList.emplace_back("Edge");
 
     return StrList;
 }
@@ -170,9 +157,9 @@ bool ViewProviderCurveNet::handleEvent(const SoEvent * const ev, Gui::View3DInve
     // get the position of the mouse
     const SbVec2s pos(ev->getPosition());
 
-    // Keybooard events
+    // Keyboard events
     if (ev->getTypeId().isDerivedFrom(SoKeyboardEvent::getClassTypeId())) {
-        SoKeyboardEvent * ke = (SoKeyboardEvent *)ev;
+        const SoKeyboardEvent * ke = static_cast<const SoKeyboardEvent *>(ev);
         switch (ke->getKey()) {
             case SoKeyboardEvent::LEFT_ALT:
             case SoKeyboardEvent::RIGHT_ALT:
@@ -188,9 +175,9 @@ bool ViewProviderCurveNet::handleEvent(const SoEvent * const ev, Gui::View3DInve
 
     // switching the mouse buttons
     if (ev->getTypeId().isDerivedFrom(SoMouseButtonEvent::getClassTypeId())) {
-        const SoMouseButtonEvent * const event = (const SoMouseButtonEvent *) ev;
+        const SoMouseButtonEvent * const event = static_cast<const SoMouseButtonEvent *>(ev);
         const int button = event->getButton();
-        const SbBool press = event->getState() == SoButtonEvent::DOWN ? TRUE : FALSE;
+        const SbBool press = event->getState() == SoButtonEvent::DOWN ? true : false;
 
         // which button pressed?
         switch (button) {
@@ -199,12 +186,12 @@ bool ViewProviderCurveNet::handleEvent(const SoEvent * const ev, Gui::View3DInve
                     Base::Console().Log("ViewProviderCurveNet::handleEvent() press left\n");
 
                     bool bIsNode =  false;
-                    for (std::list<Node>::iterator It = NodeList.begin();It != NodeList.end(); It++)
+                    for (const auto & It : NodeList)
                     {
-                        if (It->pcHighlight->isHighlighted())
+                        if (It.pcHighlight->isHighlighted())
                         {
                             bIsNode = true;
-                            PointToMove = *It;
+                            PointToMove = It;
                             break;
                         }
                     }
@@ -234,7 +221,7 @@ bool ViewProviderCurveNet::handleEvent(const SoEvent * const ev, Gui::View3DInve
                         VertexRoot->addChild(TransRoot);
 
                         NodeList.push_back(n);
-      
+
                         return true;
                     }
                 }
@@ -255,7 +242,7 @@ bool ViewProviderCurveNet::handleEvent(const SoEvent * const ev, Gui::View3DInve
         //    const SoLocation2Event * const event = (const SoLocation2Event *) ev;
 
         if (bMovePointMode && Viewer.pickPoint(pos,point,norm) ){
-            PointToMove.pcTransform->translation.setValue(point);     
+            PointToMove.pcTransform->translation.setValue(point);
             return true;
         }
     }
@@ -272,8 +259,8 @@ Standard_Boolean ViewProviderCurveNet::computeEdges(SoSeparator* root, const Top
     SoSeparator *EdgeRoot = new SoSeparator();
     root->addChild(EdgeRoot);
 
-    EdgeRoot->addChild(pcLineStyle);  
-    EdgeRoot->addChild(pcLineMaterial);  
+    EdgeRoot->addChild(pcLineStyle);
+    EdgeRoot->addChild(pcLineMaterial);
 
     for (ex.Init(myShape, TopAbs_EDGE); ex.More(); ex.Next())
     {
@@ -323,7 +310,7 @@ Standard_Boolean ViewProviderCurveNet::computeVertices(SoSeparator* root, const 
 
     for (ex.Init(myShape, TopAbs_VERTEX); ex.More(); ex.Next())
     {
-        // get the shape 
+        // get the shape
         const TopoDS_Vertex& aVertex = TopoDS::Vertex(ex.Current());
         gp_Pnt gpPt = BRep_Tool::Pnt (aVertex);
 

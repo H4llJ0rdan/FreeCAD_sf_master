@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,94 +20,145 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef WEBGUI_BROWSERVIEW_H
 #define WEBGUI_BROWSERVIEW_H
 
-
-#include <Gui/MDIView.h>
-#include <Gui/Window.h>
-
-# if QT_VERSION >= 0x040400
+#include <QLineEdit>
+#include <QPointer>
+#if defined(QTWEBENGINE)
+#include <QWebEngineView>
+namespace WebGui
+{
+class WebEngineUrlRequestInterceptor;
+}
+#elif defined(QTWEBKIT)
 #include <QWebView>
 #endif
 
-class QWebView;
-class QUrl;
-class QNetworkRequest;
+#include <Gui/MDIView.h>
+#include <Gui/Window.h>
+#include <Mod/Web/WebGlobal.h>
+
 class QNetworkReply;
+class QNetworkRequest;
+class QUrl;
 
-namespace WebGui {
+namespace WebGui
+{
+class UrlWidget;
 
-class WebGuiExport WebView : public QWebView
+#ifdef QTWEBENGINE
+class WebGuiExport WebView: public QWebEngineView
+#else
+class WebGuiExport WebView: public QWebView
+#endif
 {
     Q_OBJECT
 
 public:
-    WebView(QWidget *parent = 0);
-    void wheelEvent(QWheelEvent *event);
-    void contextMenuEvent(QContextMenuEvent *event);
-protected Q_SLOTS:
-    void openLinkInExternalBrowser(const QString& url);
+    explicit WebView(QWidget* parent = nullptr);
+
+protected:
+    void mousePressEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
+
+private Q_SLOTS:
+    void triggerContextMenuAction(int);
+
+Q_SIGNALS:
+    void openLinkInExternalBrowser(const QUrl&);
+    void openLinkInNewWindow(const QUrl&);
+    void viewSource(const QUrl&);
 };
 
 /**
  * A special view class which sends the messages from the application to
  * the editor and embeds it in a window.
  */
-class WebGuiExport BrowserView : public Gui::MDIView, public Gui::WindowParameter
+class WebGuiExport BrowserView: public Gui::MDIView, public Gui::WindowParameter
 {
     Q_OBJECT
 
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
+
 public:
-    BrowserView(QWidget* parent);
-    ~BrowserView();
+    explicit BrowserView(QWidget* parent);
+    ~BrowserView() override;
 
     void load(const char* URL);
-    void load(const QUrl & url);
-    void setHtml(const QString& HtmlCode,const QUrl & BaseUrl,const QString& TabName=QString::fromAscii("Browser"));
-    void stop(void);
+    void load(const QUrl& url);
+    void setHtml(const QString& HtmlCode, const QUrl& BaseUrl);
+    void stop();
+    QUrl url() const;
 
-    void OnChange(Base::Subject<const char*> &rCaller,const char* rcReason);
+    void OnChange(Base::Subject<const char*>& rCaller, const char* rcReason) override;
 
-    const char *getName(void) const {return "BrowserView";}
-    void onUpdate(void){};
+    const char* getName() const override
+    {
+        return "BrowserView";
+    }
+    PyObject* getPyObject() override;
 
-    bool onMsg(const char* pMsg,const char** ppReturn);
-    bool onHasMsg(const char* pMsg) const;
+    bool onMsg(const char* pMsg, const char** ppReturn) override;
+    bool onHasMsg(const char* pMsg) const override;
 
-    bool canClose(void);
+    bool canClose() override;
 
-    /** @name Standard actions of the editor */
-    //@{
-    //bool open   (const QString &f);
-    //bool saveAs ();
-    //void cut    ();
-    //void copy   ();
-    //void paste  ();
-    //void undo   ();
-    //void redo   ();
-    //void run    ();
-    //void print  ();
-    //void printPdf();
-    //@}
-
+#ifdef QTWEBENGINE
+public Q_SLOTS:
+    void setWindowIcon(const QIcon& icon);
+#endif
 
 protected Q_SLOTS:
     void onLoadStarted();
     void onLoadProgress(int);
     void onLoadFinished(bool);
-    void onLinkClicked (const QUrl& url);
     bool chckHostAllowed(const QString& host);
+    void urlFilter(const QUrl& url);
+#ifdef QTWEBENGINE
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    void onDownloadRequested(QWebEngineDownloadItem* request);
+#else
+    void onDownloadRequested(QWebEngineDownloadRequest* request);
+#endif
+    void onLinkHovered(const QString& url);
+#else
     void onDownloadRequested(const QNetworkRequest& request);
     void onUnsupportedContent(QNetworkReply* reply);
+    void onLinkHovered(const QString& link, const QString& title, const QString& textContent);
+#endif
+    void onViewSource(const QUrl& url);
+    void onOpenLinkInExternalBrowser(const QUrl& url);
+    void onOpenLinkInNewWindow(const QUrl&);
+    void onUpdateBrowserActions();
 
 private:
-    WebView* view;
+    QPointer<WebView> view;
     bool isLoading;
+    UrlWidget* urlWgt;
+#ifdef QTWEBENGINE
+    WebEngineUrlRequestInterceptor* interceptLinks;
+#else
     float textSizeMultiplier;
+#endif
 };
 
-} // namespace WebGui
+// the URL ardressbar lineedit
+class UrlWidget: public QLineEdit
+{
+    Q_OBJECT
+    BrowserView* m_view;
 
-#endif // WEBGUI_BROWSERVIEW_H
+public:
+    explicit UrlWidget(BrowserView* view);
+    ~UrlWidget() override;
+    void display();
+
+protected:
+    void keyPressEvent(QKeyEvent* keyEvt) override;
+};
+
+}  // namespace WebGui
+
+#endif  // WEBGUI_BROWSERVIEW_H

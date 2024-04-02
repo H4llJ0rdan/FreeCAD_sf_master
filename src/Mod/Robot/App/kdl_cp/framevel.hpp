@@ -3,7 +3,7 @@
  *      This file contains the definition of classes for a
  *      Rall Algebra of (subset of) the classes defined in frames,
  *      i.e. classes that contain a pair (value,derivative) and define operations on that pair
- *      this classes are usefull for automatic differentiation ( <-> symbolic diff , <-> numeric diff)
+ *      this classes are useful for automatic differentiation ( <-> symbolic diff , <-> numeric diff)
  *      Defines VectorVel, RotationVel, FrameVel.  Look at Frames.h for details on how to work
  *      with Frame objects.
  *  \author
@@ -19,6 +19,7 @@
  *      $Id: rframes.h,v 1.1.1.1 2002/08/26 14:14:21 rmoreas Exp $
  *      $Name:  $
  ****************************************************************************/
+// clazy:excludeall=rule-of-two-soft
 
 #ifndef KDL_FRAMEVEL_H
 #define KDL_FRAMEVEL_H
@@ -67,6 +68,20 @@ class VectorVel;
 class FrameVel;
 class RotationVel;
 
+// Equal is friend function, but default arguments for friends are forbidden (§8.3.6.4)
+IMETHOD bool Equal(const VectorVel& r1,const VectorVel& r2,double eps=epsilon);
+IMETHOD bool Equal(const Vector& r1,const VectorVel& r2,double eps=epsilon);
+IMETHOD bool Equal(const VectorVel& r1,const Vector& r2,double eps=epsilon);
+IMETHOD bool Equal(const RotationVel& r1,const RotationVel& r2,double eps=epsilon);
+IMETHOD bool Equal(const Rotation& r1,const RotationVel& r2,double eps=epsilon);
+IMETHOD bool Equal(const RotationVel& r1,const Rotation& r2,double eps=epsilon);
+IMETHOD bool Equal(const FrameVel& r1,const FrameVel& r2,double eps=epsilon);
+IMETHOD bool Equal(const Frame& r1,const FrameVel& r2,double eps=epsilon);
+IMETHOD bool Equal(const FrameVel& r1,const Frame& r2,double eps=epsilon);
+IMETHOD bool Equal(const TwistVel& a,const TwistVel& b,double eps=epsilon);
+IMETHOD bool Equal(const Twist& a,const TwistVel& b,double eps=epsilon);
+IMETHOD bool Equal(const TwistVel& a,const Twist& b,double eps=epsilon);
+
 class VectorVel
 // = TITLE
 //     An VectorVel is a Vector and its first derivative
@@ -111,9 +126,9 @@ public:
     IMETHOD friend void SetToZero(VectorVel& v);
 
 
-    IMETHOD friend bool Equal(const VectorVel& r1,const VectorVel& r2,double eps=epsilon);
-    IMETHOD friend bool Equal(const Vector& r1,const VectorVel& r2,double eps=epsilon);
-    IMETHOD friend bool Equal(const VectorVel& r1,const Vector& r2,double eps=epsilon);
+    IMETHOD friend bool Equal(const VectorVel& r1,const VectorVel& r2,double eps);
+    IMETHOD friend bool Equal(const Vector& r1,const VectorVel& r2,double eps);
+    IMETHOD friend bool Equal(const VectorVel& r1,const Vector& r2,double eps);
     IMETHOD friend VectorVel operator - (const VectorVel& r);
     IMETHOD friend doubleVel dot(const VectorVel& lhs,const VectorVel& rhs);
     IMETHOD friend doubleVel dot(const VectorVel& lhs,const Vector& rhs);
@@ -167,9 +182,9 @@ public:
     IMETHOD friend RotationVel operator* (const RotationVel& r1,const RotationVel& r2);
     IMETHOD friend RotationVel operator* (const Rotation& r1,const RotationVel& r2);
     IMETHOD friend RotationVel operator* (const RotationVel& r1,const Rotation& r2);
-    IMETHOD friend bool Equal(const RotationVel& r1,const RotationVel& r2,double eps=epsilon);
-    IMETHOD friend bool Equal(const Rotation& r1,const RotationVel& r2,double eps=epsilon);
-    IMETHOD friend bool Equal(const RotationVel& r1,const Rotation& r2,double eps=epsilon);
+    IMETHOD friend bool Equal(const RotationVel& r1,const RotationVel& r2,double eps);
+    IMETHOD friend bool Equal(const Rotation& r1,const RotationVel& r2,double eps);
+    IMETHOD friend bool Equal(const RotationVel& r1,const Rotation& r2,double eps);
 
     IMETHOD TwistVel Inverse(const TwistVel& arg) const;
     IMETHOD TwistVel Inverse(const Twist& arg) const;
@@ -221,9 +236,9 @@ public:
     IMETHOD friend FrameVel operator * (const FrameVel& f1,const FrameVel& f2);
     IMETHOD friend FrameVel operator * (const Frame& f1,const FrameVel& f2);
     IMETHOD friend FrameVel operator * (const FrameVel& f1,const Frame& f2);
-    IMETHOD friend bool Equal(const FrameVel& r1,const FrameVel& r2,double eps=epsilon);
-    IMETHOD friend bool Equal(const Frame& r1,const FrameVel& r2,double eps=epsilon);
-    IMETHOD friend bool Equal(const FrameVel& r1,const Frame& r2,double eps=epsilon);
+    IMETHOD friend bool Equal(const FrameVel& r1,const FrameVel& r2,double eps);
+    IMETHOD friend bool Equal(const Frame& r1,const FrameVel& r2,double eps);
+    IMETHOD friend bool Equal(const FrameVel& r1,const Frame& r2,double eps);
 
     IMETHOD TwistVel  Inverse(const TwistVel& arg) const;
     IMETHOD TwistVel  Inverse(const Twist& arg) const;
@@ -293,9 +308,9 @@ public:
      // = Equality operators
      // do not use operator == because the definition of Equal(.,.) is slightly
      // different.  It compares whether the 2 arguments are equal in an eps-interval
-     IMETHOD friend bool Equal(const TwistVel& a,const TwistVel& b,double eps=epsilon);
-     IMETHOD friend bool Equal(const Twist& a,const TwistVel& b,double eps=epsilon);
-     IMETHOD friend bool Equal(const TwistVel& a,const Twist& b,double eps=epsilon);
+     IMETHOD friend bool Equal(const TwistVel& a,const TwistVel& b,double eps);
+     IMETHOD friend bool Equal(const Twist& a,const TwistVel& b,double eps);
+     IMETHOD friend bool Equal(const TwistVel& a,const Twist& b,double eps);
 
 // = Conversion to other entities
      IMETHOD Twist GetTwist() const;

@@ -1,12 +1,5 @@
-/** \file PyExport.cpp
- *  \brief implementation of the python export facility
- *  \author $Author: wmayer $
- *  \version $Revision: 2.2 $
- *  \date    $Date: 2006/01/24 14:26:42 $
- */
-
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2002                        *   
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -17,26 +10,27 @@
  *   for detail see the LICENCE text file.                                 *
  *                                                                         *
  *   FreeCAD is distributed in the hope that it will be useful,            *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        * 
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU Library General Public License for more details.                  *
  *                                                                         *
  *   You should have received a copy of the GNU Library General Public     *
- *   License along with FreeCAD; if not, write to the Free Software        * 
+ *   License along with FreeCAD; if not, write to the Free Software        *
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
  *   USA                                                                   *
  *                                                                         *
- *   Juergen Riegel 2002                                                   *
  ***************************************************************************/
 
+/** \file PyExport.cpp
+ *  \brief implementation of the python export facility
+ *  \author $Author: wmayer $
+ *  \version $Revision: 2.2 $
+ *  \date    $Date: 2006/01/24 14:26:42 $
+ */
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#   include <stdlib.h>
-#endif
 
 #include "PyExport.h"
-#include "PyObjectBase.h"
 
 using namespace Base;

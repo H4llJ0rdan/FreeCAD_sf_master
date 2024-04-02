@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) YEAR YOUR NAME         <Your e-mail address>            *
+ *   Copyright (c) 2004 Werner Mayer <wmayer[at]users.sourceforge.net>     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,36 +20,48 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
+#include <Base/PyObjectBase.h>
+
 #include "InspectionFeature.h"
 
 
-/* registration table  */
-extern struct PyMethodDef Inspection_methods[];
+namespace Inspection
+{
+class Module: public Py::ExtensionModule<Module>
+{
+public:
+    Module()
+        : Py::ExtensionModule<Module>("Inspection")
+    {
+        initialize("This module is the Inspection module.");  // register with Python
+    }
 
-PyDoc_STRVAR(module_Inspection_doc,
-"This module is the Inspection module.");
+private:
+};
+
+PyObject* initModule()
+{
+    return Base::Interpreter().addModule(new Module);
+}
+
+}  // namespace Inspection
 
 
 /* Python entry */
-extern "C" {
-void InspectionExport initInspection() {
-
+PyMOD_INIT_FUNC(Inspection)
+{
     // ADD YOUR CODE HERE
     //
     //
-    (void) Py_InitModule3("Inspection", Inspection_methods, module_Inspection_doc);   /* mod name, table ptr */
+    PyObject* mod = Inspection::initModule();
     Base::Console().Log("Loading Inspection module... done\n");
-
+    // clang-format off
     Inspection::PropertyDistanceList    ::init();
     Inspection::Feature                 ::init();
     Inspection::Group                   ::init();
+    // clang-format on
+    PyMOD_Return(mod);
 }
-
-} // extern "C"

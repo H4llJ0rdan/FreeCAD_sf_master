@@ -20,55 +20,42 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_VIEWPROVIDER_DOCUMENTOBJECTGROUP_H
 #define GUI_VIEWPROVIDER_DOCUMENTOBJECTGROUP_H
 
-
 #include "ViewProviderDocumentObject.h"
+#include "ViewProviderGroupExtension.h"
 #include "ViewProviderPythonFeature.h"
+
 
 namespace Gui {
 
-class GuiExport ViewProviderDocumentObjectGroup : public ViewProviderDocumentObject
+class GuiExport ViewProviderDocumentObjectGroup : public ViewProviderDocumentObject,
+                                                  public ViewProviderGroupExtension
 {
-    PROPERTY_HEADER(Gui::ViewProviderDocumentObjectGroup);
+    PROPERTY_HEADER_WITH_EXTENSIONS(Gui::ViewProviderDocumentObjectGroup);
 
 public:
     /// constructor.
     ViewProviderDocumentObjectGroup();
     /// destructor.
-    virtual ~ViewProviderDocumentObjectGroup();
+    ~ViewProviderDocumentObjectGroup() override;
 
-    virtual std::vector<App::DocumentObject*> claimChildren(void)const;
-    virtual bool canDragObjects() const;
-    virtual void dragObject(App::DocumentObject*);
-    virtual bool canDropObjects() const;
-    virtual void dropObject(App::DocumentObject*);
-
-    void attach(App::DocumentObject *pcObject);
-    void updateData(const App::Property*);
-    void Restore(Base::XMLReader &reader);
-    QIcon getIcon(void) const;
     /// returns a list of all possible modes
-    std::vector<std::string> getDisplayModes(void) const;
-    void hide(void);
-    void show(void);
-    bool isShow(void) const;
+    std::vector<std::string> getDisplayModes() const override;
+    bool isShow() const override;
 
-    virtual bool onDelete(const std::vector<std::string> &);
+    /// deliver the icon shown in the tree view
+    QIcon getIcon() const override;
 
 protected:
-    /// get called by the container whenever a property has been changed
-    void onChanged(const App::Property* prop);
     void getViewProviders(std::vector<ViewProviderDocumentObject*>&) const;
 
 private:
-    bool visible; // helper variable
     std::vector<ViewProvider*> nodes;
 };
 
-typedef ViewProviderPythonFeatureT<ViewProviderDocumentObjectGroup> ViewProviderDocumentObjectGroupPython;
+using ViewProviderDocumentObjectGroupPython = ViewProviderPythonFeatureT<ViewProviderDocumentObjectGroup>;
 
 } // namespace Gui
 

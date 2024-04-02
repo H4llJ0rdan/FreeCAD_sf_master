@@ -23,27 +23,30 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
+#include <QComboBox>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QSplitter>
-#include <QPushButton>
 #include <QHeaderView>
+#include <QLabel>
+#include <QPainter>
 #include <QPrintDialog>
 #include <QPrinter>
-#include <QPainter>
+#include <QPushButton>
+#include <QSplitter>
 #include <QTableView>
+#include <QVBoxLayout>
 #endif
 
 #include "Base/Console.h"
+
+#include "Command.h"
+#include "DlgCustomizeSpaceball.h"
 #include "Application.h"
+#include "BitmapFactory.h"
 #include "GuiApplicationNativeEventAware.h"
 #include "SpaceballEvent.h"
-#include "Command.h"
-#include "BitmapFactory.h"
-#include "DlgCustomizeSpaceball.h"
 
-typedef std::vector<Base::Reference<ParameterGrp> > GroupVector;
+
+using GroupVector = std::vector<Base::Reference<ParameterGrp> >;
 
 using namespace Gui::Dialog;
 
@@ -55,20 +58,22 @@ ButtonView::ButtonView(QWidget *parent) : QListView(parent)
 void ButtonView::selectButton(int number)
 {
     this->selectionModel()->select(this->model()->index(number, 0), QItemSelectionModel::ClearAndSelect);
+    this->scrollTo(this->model()->index(number, 0), QAbstractItemView::EnsureVisible);
 }
 
 void ButtonView::goSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
+    Q_UNUSED(deselected);
     if (selected.indexes().isEmpty())
         return;
     QModelIndex select(selected.indexes().at(0));
-    changeCommandSelection(this->model()->data(select, Qt::UserRole).toString());
+    Q_EMIT changeCommandSelection(this->model()->data(select, Qt::UserRole).toString());
 }
 
 void ButtonView::goChangedCommand(const QString& commandName)
 {
     QModelIndex index(this->currentIndex());
-    ButtonModel *model = dynamic_cast<ButtonModel*>(this->model());
+    auto model = dynamic_cast<ButtonModel*>(this->model());
     if (model && index.isValid())
         model->setCommand(index.row(), commandName);
 }
@@ -77,11 +82,117 @@ void ButtonView::goChangedCommand(const QString& commandName)
 
 ButtonModel::ButtonModel(QObject *parent) : QAbstractListModel(parent)
 {
+   //load3DConnexionButtons("SpacePilot Pro");
+}
 
+// Process the given Mapping tree to load in the Button mappings.
+void ButtonModel::load3DConnexionButtonMapping(boost::property_tree::ptree ButtonMapTree)
+{
+   spaceballButtonGroup()->Clear();
+
+   BOOST_FOREACH(const boost::property_tree::ptree::value_type &Map, ButtonMapTree.get_child("Mapping"))
+   {
+      if ("Map" == Map.first)
+      {
+         std::string ButtonDescription;
+         std::string ButtonCode;
+         std::string ButtonCommand;
+         std::string ButtonDownTime;
+
+         // Inspect Map attributes
+         BOOST_FOREACH(const boost::property_tree::ptree::value_type &kv, Map.second.get_child("<xmlattr>"))
+         {
+            std::string Attribute;
+            std::string Value;
+
+            Attribute = kv.first.data();
+            Value = kv.second.data();
+
+            if (0 == Attribute.compare("Description"))
+            {
+               ButtonDescription = Value;
+            }
+            if (0 == Attribute.compare("KeyCode"))
+            {
+               ButtonCode = Value;
+            }
+            if (0 == Attribute.compare("DownTime"))
+            {
+               ButtonDownTime = Value;
+            }
+            if (0 == Attribute.compare("Command"))
+            {
+               ButtonCommand = Value;
+            }
+         }
+
+         // ButtonCode is mandatory, the remaining attributes optional.
+         if (!ButtonCode.empty())
+         {
+            Base::Reference<ParameterGrp> newGroup;
+
+            newGroup = spaceballButtonGroup()->GetGroup(ButtonCode.c_str());
+            newGroup->SetASCII("Command", ButtonCommand.c_str());
+            newGroup->SetASCII("Description", ButtonDescription.c_str());
+         }
+      }
+   }
+}
+
+// Optionally preload Button model with 3DConnexion configuration to match Solidworks
+// For now the Button mapping file (3DConnexion.xml) is held the same folder as the FreeCAD executable.
+void ButtonModel::load3DConnexionButtons(const char *RequiredDeviceName)
+{
+   try
+   {
+      boost::property_tree::ptree tree;
+      boost::property_tree::ptree DeviceTree;
+
+      // exception thrown if no file found
+      std::string path = App::Application::getResourceDir();
+      path += "3Dconnexion/3DConnexion.xml";
+      read_xml(path.c_str(), tree);
+
+      BOOST_FOREACH(const boost::property_tree::ptree::value_type &ButtonMap, tree.get_child(""))
+      {
+         if ("ButtonMap" == ButtonMap.first)
+         {
+            // Inspect ButtonMap attributes for DeviceName
+            BOOST_FOREACH(const boost::property_tree::ptree::value_type &kv, ButtonMap.second.get_child("<xmlattr>"))
+            {
+               std::string Attribute;
+               std::string Value;
+
+               Attribute = kv.first.data();
+               Value = kv.second.data();
+
+               if (0 == Attribute.compare("DeviceName"))
+               {
+                  if (0 == Value.compare(RequiredDeviceName))
+                  {
+                     // We found the ButtonMap we want to load up
+                     DeviceTree = ButtonMap.second;
+                  }
+               }
+            }
+         }
+      }
+      // If we found the required devices ButtonMap
+      if (!DeviceTree.empty())
+      {
+         load3DConnexionButtonMapping(DeviceTree);
+      }
+   }
+   catch (const std::exception& e)
+   {
+      // We don't mind not finding the file to be opened
+      Base::Console().Warning("%s\n", e.what());
+   }
 }
 
 int ButtonModel::rowCount (const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return spaceballButtonGroup()->GetGroups().size();
 }
 
@@ -91,21 +202,21 @@ QVariant ButtonModel::data (const QModelIndex &index, int role) const
     if (index.row() >= (int)groupVector.size())
     {
         Base::Console().Log("index error in ButtonModel::data\n");
-        return QVariant();
+        return {};
     }
     if (role == Qt::DisplayRole)
-        return QVariant(getLabel(index.row()));
+        return {getLabel(index.row())};
     if (role == Qt::DecorationRole)
     {
         static QPixmap icon(BitmapFactory().pixmap("spaceball_button").scaled
                             (32, 32, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-        return QVariant(icon);
+        return {icon};
     }
     if (role == Qt::UserRole)
-        return QVariant(QString::fromStdString(groupVector.at(index.row())->GetASCII("Command")));
+        return {QString::fromStdString(groupVector.at(index.row())->GetASCII("Command"))};
     if (role == Qt::SizeHintRole)
-        return QVariant(QSize(32, 32));
-    return QVariant();
+        return {QSize(32, 32)};
+    return {};
 }
 
 void ButtonModel::insertButtonRows(int number)
@@ -116,8 +227,9 @@ void ButtonModel::insertButtonRows(int number)
     {
         QString groupName;
         groupName.setNum(index);
-        Base::Reference<ParameterGrp> newGroup = spaceballButtonGroup()->GetGroup(groupName.toAscii());//builds the group.
+        Base::Reference<ParameterGrp> newGroup = spaceballButtonGroup()->GetGroup(groupName.toLatin1());//builds the group.
         newGroup->SetASCII("Command", "");
+        newGroup->SetASCII("Description", "");
     }
     endInsertRows();
     return;
@@ -126,23 +238,23 @@ void ButtonModel::insertButtonRows(int number)
 void ButtonModel::setCommand(int row, QString command)
 {
     GroupVector groupVector = spaceballButtonGroup()->GetGroups();
-    groupVector.at(row)->SetASCII("Command", command.toAscii());
+    groupVector.at(row)->SetASCII("Command", command.toLatin1());
 }
 
 void ButtonModel::goButtonPress(int number)
 {
     QString numberString;
     numberString.setNum(number);
-    if (!spaceballButtonGroup()->HasGroup(numberString.toAscii()))
+    if (!spaceballButtonGroup()->HasGroup(numberString.toLatin1()))
         insertButtonRows(number);
 }
 
 void ButtonModel::goMacroRemoved(const QByteArray& macroName)
 {
     GroupVector groupVector = spaceballButtonGroup()->GetGroups();
-    for (GroupVector::iterator it = groupVector.begin(); it != groupVector.end(); ++it)
-        if (std::string(macroName.data()) == (*it)->GetASCII("Command"))
-            (*it)->SetASCII("Command", "");
+    for (auto & it : groupVector)
+        if (std::string(macroName.data()) == it->GetASCII("Command"))
+            it->SetASCII("Command", "");
 }
 
 void ButtonModel::goClear()
@@ -163,10 +275,26 @@ ParameterGrp::handle ButtonModel::spaceballButtonGroup() const
 
 QString ButtonModel::getLabel(const int &number) const
 {
-    if (number > -1 && number < 20)
-        return tr("Button %1").arg(number+1);
-    else
+    if (number > -1 && number < 32) {
+        QString numberString;
+        numberString.setNum(number);
+        QString desc = QString::fromStdString(spaceballButtonGroup()->
+                                              GetGroup(numberString.toLatin1())->
+                                              GetASCII("Description",""));
+        if (desc.length())
+            desc = QString::fromUtf8(" \"") + desc + QString::fromUtf8("\"");
+        return tr("Button %1").arg(number + 1) + desc;
+    } else
         return tr("Out Of Range");
+}
+
+void ButtonModel::loadConfig(const char *RequiredDeviceName)
+{
+    goClear();
+    if (!RequiredDeviceName) {
+        return;
+    }
+    load3DConnexionButtons(RequiredDeviceName);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -174,8 +302,7 @@ QString ButtonModel::getLabel(const int &number) const
 CommandView::CommandView(QWidget *parent) : QTreeView(parent)
 {
     this->setEnabled(false);
-    connect(this, SIGNAL(clicked(const QModelIndex&)),
-            this, SLOT(goClicked(const QModelIndex&)));
+    connect(this, &QTreeView::clicked, this, &CommandView::goClicked);
 }
 
 void CommandView::goChangeCommandSelection(const QString& commandName)
@@ -188,7 +315,7 @@ void CommandView::goChangeCommandSelection(const QString& commandName)
         return;
     QModelIndexList index(this->model()->match(this->model()->index(0,0), Qt::UserRole, QVariant(commandName), 1,
                                                Qt::MatchWrap | Qt::MatchRecursive));
-    if (index.size() < 1)
+    if (index.empty())
         return;
     this->expand(index.at(0));
     this->setCurrentIndex(index.at(0));
@@ -201,7 +328,7 @@ void CommandView::goClicked(const QModelIndex &index)
         QString commandName = this->model()->data(index, Qt::UserRole).toString();
         if (commandName.isEmpty())
             return;
-        changedCommand(commandName);
+        Q_EMIT changedCommand(commandName);
     }
 }
 
@@ -209,10 +336,12 @@ void CommandView::goClicked(const QModelIndex &index)
 
 CommandNode::CommandNode(NodeType typeIn)
 {
+    //NOLINTBEGIN
     nodeType = typeIn;
-    parent = 0;
+    parent = nullptr;
     children.clear();
-    aCommand = 0;
+    aCommand = nullptr;
+    //NOLINTEND
 }
 
 CommandNode::~CommandNode()
@@ -224,26 +353,28 @@ CommandNode::~CommandNode()
 
 CommandModel::CommandModel(QObject *parent) : QAbstractItemModel(parent)
 {
-    rootNode = 0;
+    //NOLINTBEGIN
+    rootNode = nullptr;
     initialize();
+    //NOLINTEND
 }
 
 CommandModel::~CommandModel()
 {
     delete rootNode;
-    rootNode = 0;
+    rootNode = nullptr;
 }
 
 QModelIndex CommandModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!rootNode)
-        return QModelIndex();
+        return {};
     if (!parent.isValid())
         return createIndex(row, column, rootNode->children.at(row));
 
     CommandNode *parentNode = nodeFromIndex(parent);
     if (!parentNode)
-        return QModelIndex();
+        return {};
     return createIndex(row, column, parentNode->children.at(row));
 }
 
@@ -251,17 +382,17 @@ QModelIndex CommandModel::parent(const QModelIndex &index) const
 {
     CommandNode *base = nodeFromIndex(index);
     if (!base)
-        return QModelIndex();
+        return {};
     CommandNode *parentNode = base->parent;
     if (!parentNode)
-        return QModelIndex();
+        return {};
     CommandNode *grandParentNode = parentNode->parent;
     if (!grandParentNode)
-        return QModelIndex();
+        return {};
 
     int row = grandParentNode->children.indexOf(parentNode);
     if (row == -1)
-        return QModelIndex();
+        return {};
     return createIndex(row, index.column(), parentNode);
 }
 
@@ -278,6 +409,7 @@ int CommandModel::rowCount(const QModelIndex &parent) const
 
 int CommandModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 
@@ -285,19 +417,19 @@ QVariant CommandModel::data(const QModelIndex &index, int role) const
 {
     CommandNode *node = nodeFromIndex(index);
     if (!node)
-        return QVariant();
+        return {};
     if (role == Qt::DisplayRole)
     {
         if (node->nodeType == CommandNode::CommandType)
-            return QVariant(qApp->translate(node->aCommand->className(), node->aCommand->getMenuText()));
+            return {qApp->translate(node->aCommand->className(), node->aCommand->getMenuText())};
         if (node->nodeType == CommandNode::GroupType)
         {
-            if (node->children.size() < 1)
-                return QVariant();
+            if (node->children.empty())
+                return {};
             CommandNode *childNode = node->children.at(0);
-            return QVariant(qApp->translate(childNode->aCommand->className(), childNode->aCommand->getGroupName()));
+            return {qApp->translate(childNode->aCommand->className(), childNode->aCommand->getGroupName())};
         }
-        return QVariant();
+        return {};
     }
     if (role == Qt::DecorationRole)
     {
@@ -308,33 +440,35 @@ QVariant CommandModel::data(const QModelIndex &index, int role) const
                                 (32, 32, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
         }
     }
-    if (role == Qt::SizeHintRole)
+    if (role == Qt::SizeHintRole) {
         if (node->nodeType == CommandNode::CommandType)
-            return QVariant(QSize(32, 32));
+            return {QSize(32, 32)};
+    }
     if (role == Qt::UserRole)
     {
         if (node->nodeType == CommandNode::CommandType)
-            return QVariant(QString::fromAscii(node->aCommand->getName()));
+            return {QString::fromLatin1(node->aCommand->getName())};
         if (node->nodeType == CommandNode::GroupType)
         {
-            if (node->children.size() < 1)
-                return QVariant();
+            if (node->children.empty())
+                return {};
             CommandNode *childNode = node->children.at(0);
-            return QVariant(QString::fromAscii(childNode->aCommand->getGroupName()));
+            return {QString::fromLatin1(childNode->aCommand->getGroupName())};
         }
-        return QVariant();
+        return {};
     }
-    if (role == Qt::ToolTipRole)
+    if (role == Qt::ToolTipRole) {
         if (node->nodeType == CommandNode::CommandType)
-            return QVariant(QString::fromAscii(node->aCommand->getToolTipText()));
-    return QVariant();
+            return {QString::fromLatin1(node->aCommand->getToolTipText())};
+    }
+    return {};
 }
 
 QVariant CommandModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal && section == 0)
-        return QVariant(tr("Commands"));
-    return QVariant();
+        return {tr("Commands")};
+    return {};
 }
 
 Qt::ItemFlags CommandModel::flags (const QModelIndex &index) const
@@ -358,20 +492,20 @@ CommandNode* CommandModel::nodeFromIndex(const QModelIndex &index) const
 
 void CommandModel::goAddMacro(const QByteArray &macroName)
 {
-    QModelIndexList indexList(this->match(this->index(0,0), Qt::UserRole, QVariant(QString::fromAscii("Macros")),
+    QModelIndexList indexList(this->match(this->index(0,0), Qt::UserRole, QVariant(QString::fromLatin1("Macros")),
                                           1, Qt::MatchWrap | Qt::MatchRecursive));
     QModelIndex macrosIndex;
-    if (indexList.size() < 1)
+    if (indexList.empty())
     {
         //this is the first macro and we have to add the Macros item.
         //figure out where to insert it. Should be in the command groups now.
         QStringList groups = orderedGroups();
-        int location(groups.indexOf(QString::fromAscii("Macros")));
+        int location(groups.indexOf(QString::fromLatin1("Macros")));
         if (location == -1)
             location = groups.size();
         //add row
         this->beginInsertRows(QModelIndex(), location, location);
-        CommandNode *macroNode = new CommandNode(CommandNode::GroupType);
+        auto macroNode = new CommandNode(CommandNode::GroupType);
         macroNode->parent = rootNode;
         rootNode->children.insert(location, macroNode);
         this->endInsertRows();
@@ -380,7 +514,7 @@ void CommandModel::goAddMacro(const QByteArray &macroName)
     else
         macrosIndex = indexList.at(0);
 
-    Command *command = 0;
+    Command *command = nullptr;
     command = Application::Instance->commandManager().getCommandByName(macroName);
     if (!command)
         return;
@@ -390,7 +524,7 @@ void CommandModel::goAddMacro(const QByteArray &macroName)
         return;
 
     this->beginInsertRows(macrosIndex, parentNode->children.size(), parentNode->children.size());
-    CommandNode *childNode = new CommandNode(CommandNode::CommandType);
+    auto childNode = new CommandNode(CommandNode::CommandType);
     childNode->parent = parentNode;
     parentNode->children.push_back(childNode);
     childNode->aCommand = command;
@@ -399,7 +533,7 @@ void CommandModel::goAddMacro(const QByteArray &macroName)
 
 void CommandModel::goRemoveMacro(const QByteArray &macroName)
 {
-    QModelIndexList macroList(this->match(this->index(0,0), Qt::UserRole, QVariant(QString::fromAscii(macroName.data())),
+    QModelIndexList macroList(this->match(this->index(0,0), Qt::UserRole, QVariant(QString::fromLatin1(macroName.data())),
                                           1, Qt::MatchWrap | Qt::MatchRecursive));
     if (macroList.isEmpty())
         return;
@@ -430,22 +564,22 @@ void CommandModel::initialize()
 {
     rootNode = new CommandNode(CommandNode::RootType);
     QStringList groups(orderedGroups());
-    for (QStringList::iterator it = groups.begin(); it != groups.end(); ++it)
-        groupCommands(*it);
+    for (const auto & group : groups)
+        groupCommands(group);
 }
 
 void CommandModel::groupCommands(const QString& groupName)
 {
-    CommandNode *parentNode = new CommandNode(CommandNode::GroupType);
+    auto parentNode = new CommandNode(CommandNode::GroupType);
     parentNode->parent = rootNode;
     rootNode->children.push_back(parentNode);
-    std::vector <Command*> commands = Application::Instance->commandManager().getGroupCommands(groupName.toAscii());
-    for (std::vector <Command*>::iterator it = commands.begin(); it != commands.end(); ++it)
+    std::vector <Command*> commands = Application::Instance->commandManager().getGroupCommands(groupName.toLatin1());
+    for (const auto & command : commands)
     {
-        CommandNode *childNode = new CommandNode(CommandNode::CommandType);
+        auto childNode = new CommandNode(CommandNode::CommandType);
         childNode->parent = parentNode;
         parentNode->children.push_back(childNode);
-        childNode->aCommand = *it;
+        childNode->aCommand = command;
     }
 }
 
@@ -453,9 +587,9 @@ QStringList CommandModel::orderedGroups()
 {
     QStringList groups;
     std::vector <Command*> commands = Application::Instance->commandManager().getAllCommands();
-    for (std::vector <Command*>::iterator it = commands.begin(); it != commands.end(); ++it)
+    for (const auto & command : commands)
     {
-        QString groupName(QString::fromAscii((*it)->getGroupName()));
+        QString groupName(QString::fromLatin1(command->getGroupName()));
         if (!groups.contains(groupName))
             groups << groupName;
     }
@@ -468,17 +602,21 @@ QStringList CommandModel::orderedGroups()
 
 PrintModel::PrintModel(QObject *parent, ButtonModel *buttonModelIn, CommandModel *commandModelIn) : QAbstractTableModel(parent)
 {
+    //NOLINTBEGIN
     buttonModel = buttonModelIn;
     commandModel = commandModelIn;
+    //NOLINTEND
 }
 
 int PrintModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return buttonModel->rowCount();
 }
 
 int PrintModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return 2;
 }
 
@@ -495,38 +633,44 @@ QVariant PrintModel::data(const QModelIndex &index, int role) const
         //command column;
         QString commandName(buttonModel->data(buttonModel->index(index.row(), 0), Qt::UserRole).toString());
         if (commandName.isEmpty())
-            return (QVariant());
+            return {};
 
         QModelIndexList indexList(commandModel->match(commandModel->index(0,0), Qt::UserRole, QVariant(commandName), 1,
                                                    Qt::MatchWrap | Qt::MatchRecursive));
         if (indexList.isEmpty())
-            return QVariant();
+            return {};
 
         return commandModel->data(indexList.at(0), role);
     }
-    return QVariant();
+    return {};
 }
 
 QVariant PrintModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole || orientation != Qt::Horizontal)
-        return QVariant();
+        return {};
     if (section == 0)
-        return QVariant(tr("Button"));
+        return {tr("Button")};
     if (section == 1)
-        return QVariant(tr("Command"));
+        return {tr("Command")};
     else
-        return QVariant();
+        return {};
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
 DlgCustomizeSpaceball::DlgCustomizeSpaceball(QWidget *parent)
-  : CustomizeActionPage(parent), buttonView(0), buttonModel(0),
-    commandView(0), commandModel(0), clearButton(0), printReference(0)
+  : CustomizeActionPage(parent)
+  , buttonView(nullptr)
+  , buttonModel(nullptr)
+  , commandView(nullptr)
+  , commandModel(nullptr)
+  , clearButton(nullptr)
+  , printReference(nullptr)
+  , devModel(nullptr)
 {
     this->setWindowTitle(tr("Spaceball Buttons"));
-    GUIApplicationNativeEventAware *app = qobject_cast<GUIApplicationNativeEventAware *>(QApplication::instance());
+    auto app = qobject_cast<GUIApplicationNativeEventAware *>(QApplication::instance());
     if (!app)
         return;
     if (!app->isSpaceballPresent())
@@ -537,25 +681,22 @@ DlgCustomizeSpaceball::DlgCustomizeSpaceball(QWidget *parent)
 
     setupButtonModelView();
     setupCommandModelView();
-    connect(buttonView, SIGNAL(changeCommandSelection(const QString&)),
-            commandView, SLOT(goChangeCommandSelection(const QString&)));
-    connect(commandView, SIGNAL(changedCommand(const QString&)),
-            buttonView, SLOT(goChangedCommand(const QString&)));
+    connect(buttonView, &ButtonView::changeCommandSelection,
+            commandView, &CommandView::goChangeCommandSelection);
+    connect(commandView, &CommandView::changedCommand,
+            buttonView, &ButtonView::goChangedCommand);
     setupLayout();
-    connect(clearButton, SIGNAL(clicked()), this, SLOT(goClear()));
-    connect(printReference, SIGNAL(clicked()), this, SLOT(goPrint()));
+    connect(clearButton, &QPushButton::clicked, this, &DlgCustomizeSpaceball::goClear);
+    connect(printReference, &QPushButton::clicked, this, &DlgCustomizeSpaceball::goPrint);
 }
 
-DlgCustomizeSpaceball::~DlgCustomizeSpaceball()
-{
-
-}
+DlgCustomizeSpaceball::~DlgCustomizeSpaceball() = default;
 
 void DlgCustomizeSpaceball::setMessage(const QString& message)
 {
-    QLabel *messageLabel = new QLabel(message,this);
-    QVBoxLayout *layout = new QVBoxLayout();
-    QHBoxLayout *layout2 = new QHBoxLayout();
+    auto messageLabel = new QLabel(message,this);
+    auto layout = new QVBoxLayout();
+    auto layout2 = new QHBoxLayout();
     layout2->addStretch();
     layout2->addWidget(messageLabel);
     layout2->addStretch();
@@ -570,8 +711,8 @@ void DlgCustomizeSpaceball::setupButtonModelView()
     buttonView->setModel(buttonModel);
 
     //had to do this here as the views default selection model is not created until after construction.
-    connect(buttonView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-            buttonView, SLOT(goSelectionChanged(const QItemSelection&, const QItemSelection&)));
+    connect(buttonView->selectionModel(), &QItemSelectionModel::selectionChanged,
+            buttonView, &ButtonView::goSelectionChanged);
 }
 
 void DlgCustomizeSpaceball::setupCommandModelView()
@@ -583,28 +724,43 @@ void DlgCustomizeSpaceball::setupCommandModelView()
 
 void DlgCustomizeSpaceball::setupLayout()
 {
-    QLabel *buttonLabel = new QLabel(tr("Buttons"), this);
-    clearButton = new QPushButton(tr("Clear"), this);
-    QVBoxLayout *buttonGroup = new QVBoxLayout();
+    auto buttonLabel = new QLabel(tr("Buttons"), this);
+    clearButton = new QPushButton(tr("Reset"), this);
+    devModel = new QComboBox(this);
+
+    // Load the devModel(s) from the config xml file
+    devModel->addItems(getModels());
+
+    // Select the current preference or the first entry
+    QString model = QString::fromStdString(App::GetApplication().GetUserParameter().GetGroup("BaseApp")->
+            GetGroup("Spaceball")->GetASCII("Model",""));
+    if (model.length() > 0) {
+        devModel->setCurrentIndex(devModel->findText(model));
+    } else {
+        devModel->setCurrentIndex(0);
+    }
+
+    auto buttonGroup = new QVBoxLayout();
     buttonGroup->addWidget(buttonLabel);
     buttonGroup->addWidget(buttonView);
-    QHBoxLayout *clearLayout = new QHBoxLayout();
+    auto clearLayout = new QHBoxLayout();
+    clearLayout->addWidget(devModel);
     clearLayout->addWidget(clearButton);
     clearLayout->addStretch();
     buttonGroup->addLayout(clearLayout);
 
-    QSplitter *splitter = new QSplitter(this);
-    QWidget *leftPane = new QWidget(this);
+    auto splitter = new QSplitter(this);
+    auto leftPane = new QWidget(this);
     leftPane->setLayout(buttonGroup);
     splitter->addWidget(leftPane);
     splitter->addWidget(commandView);
 
     printReference = new QPushButton(tr("Print Reference"), this);
-    QHBoxLayout *printLayout = new QHBoxLayout();
+    auto printLayout = new QHBoxLayout();
     printLayout->addStretch();
     printLayout->addWidget(printReference);
 
-    QVBoxLayout *layout = new QVBoxLayout();
+    auto layout = new QVBoxLayout();
     layout->addWidget(splitter);
     layout->addLayout(printLayout);
 
@@ -621,14 +777,19 @@ void DlgCustomizeSpaceball::goClear()
     commandView->clearSelection();
     commandView->collapseAll();
     commandView->setDisabled(true);
-    buttonModel->goClear();
+    //buttonModel->goClear();
+
+    QByteArray currentDevice = devModel->currentText().toLocal8Bit();
+    App::GetApplication().GetUserParameter().GetGroup("BaseApp")->
+            GetGroup("Spaceball")->SetASCII("Model", currentDevice.data());
+    buttonModel->loadConfig(currentDevice.data());
 }
 
 void DlgCustomizeSpaceball::goPrint()
 {
-    QTableView *view = new QTableView(this);
-    PrintModel *model = new PrintModel(this, buttonModel, commandModel);
-    view->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
+    auto view = new QTableView(this);
+    auto model = new PrintModel(this, buttonModel, commandModel);
+    view->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     view->setModel(model);
     view->horizontalHeader()->resizeSection(0, 150);
     view->horizontalHeader()->resizeSection(1, 300);
@@ -647,7 +808,7 @@ bool DlgCustomizeSpaceball::event(QEvent *event)
 {
     if (event->type() != Spaceball::ButtonEvent::ButtonEventType)
         return CustomizeActionPage::event(event);
-    Spaceball::ButtonEvent *buttonEvent = dynamic_cast<Spaceball::ButtonEvent *>(event);
+    auto buttonEvent = dynamic_cast<Spaceball::ButtonEvent *>(event);
     if (!buttonEvent)
         return true;
     buttonEvent->setHandled(true);
@@ -712,6 +873,50 @@ void DlgCustomizeSpaceball::onRemoveMacroAction(const QByteArray &macroName)
 void DlgCustomizeSpaceball::onModifyMacroAction(const QByteArray &macroName)
 {
     //don't think I need to do anything here.
+    Q_UNUSED(macroName);
+}
+
+QStringList DlgCustomizeSpaceball::getModels()
+{
+    QStringList modelList;
+    try
+    {
+       boost::property_tree::ptree tree;
+       boost::property_tree::ptree DeviceTree;
+
+       // exception thrown if no file found
+       std::string path = App::Application::getResourceDir();
+       path += "3Dconnexion/3DConnexion.xml";
+       read_xml(path.c_str(), tree);
+
+       BOOST_FOREACH(const boost::property_tree::ptree::value_type &ButtonMap, tree.get_child(""))
+       {
+          if ("ButtonMap" == ButtonMap.first)
+          {
+             // Inspect ButtonMap attributes for DeviceName
+             BOOST_FOREACH(const boost::property_tree::ptree::value_type &kv, ButtonMap.second.get_child("<xmlattr>"))
+             {
+                std::string Attribute;
+                std::string Value;
+
+                Attribute = kv.first.data();
+                Value = kv.second.data();
+
+                if (0 == Attribute.compare("DeviceName"))
+                {
+                    modelList << QString::fromStdString(Value);
+                }
+             }
+          }
+       }
+    }
+    catch (const std::exception& e)
+    {
+       // We don't mind not finding the file to be opened
+       Base::Console().Warning("%s\n", e.what());
+    }
+
+    return modelList;
 }
 
 #include "moc_DlgCustomizeSpaceball.cpp"

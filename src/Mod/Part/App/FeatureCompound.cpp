@@ -20,34 +20,29 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <BRep_Builder.hxx>
+# include <Standard_Failure.hxx>
 # include <TopoDS_Compound.hxx>
 # include <TopExp.hxx>
 # include <TopTools_IndexedMapOfShape.hxx>
-# include <Standard_Failure.hxx>
 #endif
-
 
 #include "FeatureCompound.h"
 
 
 using namespace Part;
 
-
 PROPERTY_SOURCE(Part::Compound, Part::Feature)
 
 Compound::Compound()
 {
-    ADD_PROPERTY(Links,(0));
+    ADD_PROPERTY(Links,(nullptr));
     Links.setSize(0);
 }
 
-Compound::~Compound()
-{
-}
+Compound::~Compound() = default;
 
 short Compound::mustExecute() const
 {
@@ -56,7 +51,7 @@ short Compound::mustExecute() const
     return 0;
 }
 
-App::DocumentObjectExecReturn *Compound::execute(void)
+App::DocumentObjectExecReturn *Compound::execute()
 {
     try {
         std::vector<ShapeHistory> history;
@@ -66,34 +61,57 @@ App::DocumentObjectExecReturn *Compound::execute(void)
         TopoDS_Compound comp;
         builder.MakeCompound(comp);
 
+        // avoid duplicates without changing the order
+        // See also ViewProviderCompound::updateData
+        std::set<DocumentObject*> tempLinks;
+
         const std::vector<DocumentObject*>& links = Links.getValues();
-        for (std::vector<DocumentObject*>::const_iterator it = links.begin(); it != links.end(); ++it) {
-            if (*it && (*it)->getTypeId().isDerivedFrom(Part::Feature::getClassTypeId())) {
-                Part::Feature* fea = static_cast<Part::Feature*>(*it);
-                const TopoDS_Shape& sh = fea->Shape.getValue();
-                if (!sh.IsNull()) {
-                    builder.Add(comp, sh);
-                    TopTools_IndexedMapOfShape faceMap;
-                    TopExp::MapShapes(sh, TopAbs_FACE, faceMap);
-                    ShapeHistory hist;
-                    hist.type = TopAbs_FACE;
-                    for (int i=1; i<=faceMap.Extent(); i++) {
-                        hist.shapeMap[i-1].push_back(countFaces++);
+        for (auto link : links) {
+            if (link) {
+                auto pos = tempLinks.insert(link);
+                if (pos.second) {
+                    const TopoDS_Shape& sh = Feature::getShape(link);
+                    if (!sh.IsNull()) {
+                        builder.Add(comp, sh);
+                        TopTools_IndexedMapOfShape faceMap;
+                        TopExp::MapShapes(sh, TopAbs_FACE, faceMap);
+                        ShapeHistory hist;
+                        hist.type = TopAbs_FACE;
+                        for (int i=1; i<=faceMap.Extent(); i++) {
+                            hist.shapeMap[i-1].push_back(countFaces++);
+                        }
+                        history.push_back(hist);
                     }
-                    history.push_back(hist);
                 }
             }
         }
 
         this->Shape.setValue(comp);
+
+        // make sure the 'PropertyShapeHistory' is not safed in undo/redo (#0001889)
         PropertyShapeHistory prop;
-        prop.setContainer(this);
         prop.setValues(history);
+        prop.setContainer(this);
+        prop.touch();
+
         return App::DocumentObject::StdReturn;
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 }
 
+////////////////////////////////////////////////////////////////////////
+
+PROPERTY_SOURCE(Part::Compound2, Part::Compound)
+
+Compound2::Compound2() {
+    Shape.setStatus(App::Property::Transient,true);
+}
+
+void Compound2::onDocumentRestored() {
+    Base::Placement pla = Placement.getValue();
+    auto res = execute();
+    delete res;
+    Placement.setValue(pla);
+}

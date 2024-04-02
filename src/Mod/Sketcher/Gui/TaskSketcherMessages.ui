@@ -6,48 +6,65 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>228</width>
-    <height>89</height>
+    <width>253</width>
+    <height>48</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true">Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QLabel" name="labelConstrainStatus">
-     <property name="font">
-      <font>
-       <family>Bitstream Charter</family>
-       <pointsize>9</pointsize>
-      </font>
-     </property>
+    <widget class="Gui::StatefulLabel" name="labelConstrainStatus">
      <property name="text">
-      <string>Undefined degrees of freedom</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
+      <string>DOF</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="labelSolverStatus">
-     <property name="font">
-      <font>
-       <family>Bitstream Charter</family>
-       <pointsize>9</pointsize>
-      </font>
+    <widget class="Gui::UrlLabel" name="labelConstrainStatusLink">
+     <property name="text">
+      <string>Link</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="manualUpdate">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Forces recomputation of active document</string>
      </property>
      <property name="text">
-      <string>Not solved yet</string>
+      <string/>
      </property>
-     <property name="wordWrap">
-      <bool>true</bool>
+     <property name="icon">
+      <iconset>
+       <normaloff>:/icons/view-refresh.svg</normaloff>:/icons/view-refresh.svg</iconset>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::MenuButtonPopup</enum>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Gui::StatefulLabel</class>
+   <extends>QLabel</extends>
+   <header>Gui/Widgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::UrlLabel</class>
+   <extends>QLabel</extends>
+   <header>Gui/Widgets.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

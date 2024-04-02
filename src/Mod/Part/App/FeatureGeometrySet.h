@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2010     *
+ *   Copyright (c) 2010 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,34 +20,31 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 #ifndef PART_FeatureGeometrySet_H
 #define PART_FeatureGeometrySet_H
 
+#include "PartFeature.h"
 #include "PropertyGeometryList.h"
 
-#include "PartFeature.h"
 
 namespace Part
 {
 
-
 class PartExport FeatureGeometrySet :public Part::Feature
 {
-    PROPERTY_HEADER(Part::FeatureGeometrySet);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::FeatureGeometrySet);
 
 public:
     FeatureGeometrySet();
 
     PropertyGeometryList GeometrySet;
 
-    /** @name methods overide Feature */
+    /** @name methods override Feature */
     //@{
     /// recalculate the Feature
-    App::DocumentObjectExecReturn *execute(void);
+    App::DocumentObjectExecReturn *execute() override;
      /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderGeometrySet";
     }
     //@}

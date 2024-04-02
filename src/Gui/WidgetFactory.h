@@ -25,47 +25,23 @@
 #define GUI_WIDGETFACTORY_H
 
 #include <vector>
-#include <QUiLoader>
 
 #include <Base/Factory.h>
-#include <Base/PyObjectBase.h>
-#include "DlgPreferencesImp.h"
 #include "DlgCustomizeImp.h"
+#include "DlgPreferencesImp.h"
 #include "PropertyPage.h"
 #include <CXX/Extensions.hxx>
+
+QT_BEGIN_NAMESPACE
+class QDir;
+QT_END_NAMESPACE
 
 namespace Gui {
   namespace Dialog{
     class PreferencePage;
   }
 
-class GuiExport PythonWrapper
-{
-public:
-    PythonWrapper();
-    bool loadCoreModule();
-    bool loadGuiModule();
-
-    bool toCString(const Py::Object&, std::string&);
-    QObject* toQObject(const Py::Object&);
-    Py::Object fromQWidget(QWidget*, const char* className=0);
-    static void createChildrenNameAttributes(PyObject* root, QObject* object);
-    static void setParent(PyObject* pyWdg, QObject* parent);
-};
-
-class PySideUicModule : public Py::ExtensionModule<PySideUicModule>
-{
-
-public:
-    PySideUicModule();
-    virtual ~PySideUicModule() {}
-
-private:
-    Py::Object loadUiType(const Py::Tuple& args);
-    Py::Object loadUi(const Py::Tuple& args);
-};
-
-/** 
+/**
  * The widget factory provides methods for the dynamic creation of widgets.
  * To create these widgets once they must be registered to the factory.
  * To register them use WidgetProducer or any subclasses; to register a
@@ -78,15 +54,15 @@ public:
     static WidgetFactoryInst& instance();
     static void destruct ();
 
-    QWidget* createWidget (const char* sName, QWidget* parent=0) const;
-    Gui::Dialog::PreferencePage* createPreferencePage (const char* sName, QWidget* parent=0) const;
+    QWidget* createWidget (const char* sName, QWidget* parent=nullptr) const;
+    Gui::Dialog::PreferencePage* createPreferencePage (const char* sName, QWidget* parent=nullptr) const;
     QWidget* createPrefWidget(const char* sName, QWidget* parent, const char* sPref);
 
 private:
     static WidgetFactoryInst* _pcSingleton;
 
-    WidgetFactoryInst(){}
-    ~WidgetFactoryInst(){}
+    WidgetFactoryInst() = default;
+    ~WidgetFactoryInst() override = default;
 };
 
 inline WidgetFactoryInst& WidgetFactory()
@@ -97,60 +73,15 @@ inline WidgetFactoryInst& WidgetFactory()
 // --------------------------------------------------------------------
 
 /**
- * The UiLoader class provides the abitlity to use the widget factory 
- * framework of FreeCAD within the framework provided by Qt. This class
- * extends QUiLoader by the creation of FreeCAD specific widgets.
- * @author Werner Mayer
- */
-class UiLoader : public QUiLoader
-{
-public:
-    UiLoader(QObject* parent=0);
-    virtual ~UiLoader();
-
-    /**
-     * Creates a widget of the type \a className withe the parent \a parent.
-     * Fore more details see the documentation to QWidgetFactory.
-     */
-    QWidget* createWidget(const QString & className, QWidget * parent=0, 
-                          const QString& name = QString());
-private:
-    QStringList cw;
-};
-
-// --------------------------------------------------------------------
-
-class UiLoaderPy : public Py::PythonExtension<UiLoaderPy> 
-{
-public:
-    static void init_type(void);    // announce properties and methods
-
-    UiLoaderPy();
-    ~UiLoaderPy();
-
-    Py::Object repr();
-    Py::Object createWidget(const Py::Tuple&);
-    Py::Object load(const Py::Tuple&);
-
-private:
-    static PyObject *PyMake(struct _typeobject *, PyObject *, PyObject *);
-
-private:
-    UiLoader loader;
-};
-
-// --------------------------------------------------------------------
-
-/**
- * The WidgetProducer class is a value-based template class that provides 
- * the ability to create widgets dynamically. 
+ * The WidgetProducer class is a value-based template class that provides
+ * the ability to create widgets dynamically.
  * \author Werner Mayer
  */
 template <class CLASS>
 class WidgetProducer : public Base::AbstractProducer
 {
 public:
-    /** 
+    /**
      * Register a special type of widget to the WidgetFactoryInst.
      */
     WidgetProducer ()
@@ -159,29 +90,29 @@ public:
         WidgetFactoryInst::instance().AddProducer(cname, this);
     }
 
-    virtual ~WidgetProducer (){}
+    ~WidgetProducer () override = default;
 
-    /** 
+    /**
      * Creates an instance of the specified widget.
      */
-    virtual void* Produce () const
+    void* Produce () const override
     {
-        return (void*)(new CLASS);
+        return (new CLASS);
     }
 };
 
 // --------------------------------------------------------------------
 
 /**
- * The PrefPageProducer class is a value-based template class that provides 
- * the ability to create preference pages dynamically. 
+ * The PrefPageProducer class is a value-based template class that provides
+ * the ability to create preference pages dynamically.
  * \author Werner Mayer
  */
 template <class CLASS>
 class PrefPageProducer : public Base::AbstractProducer
 {
 public:
-    /** 
+    /**
      * Register a special type of preference page to the WidgetFactoryInst.
      */
     PrefPageProducer (const char* group)
@@ -198,14 +129,14 @@ public:
         }
     }
 
-    virtual ~PrefPageProducer (){}
+    ~PrefPageProducer () override = default;
 
     /**
      * Creates an instance of the specified widget.
      */
-    virtual void* Produce () const
+    void* Produce () const override
     {
-        return (void*)(new CLASS);
+        return (new CLASS);
     }
 };
 
@@ -217,32 +148,54 @@ public:
 class GuiExport PrefPageUiProducer : public Base::AbstractProducer
 {
 public:
-    /** 
+    /**
      * Register a special type of preference page to the WidgetFactoryInst.
      */
     PrefPageUiProducer (const char* filename, const char* group);
-    virtual ~PrefPageUiProducer ();
+    ~PrefPageUiProducer () override;
     /**
      * Creates an instance of the specified widget.
      */
-    virtual void* Produce () const;
+    void* Produce () const override;
 
 private:
     QString fn;
 };
 
+/**
+ * The PrefPagePyProducer class provides the ability to create preference pages
+ * dynamically from a Python class.
+ * @author Werner Mayer
+ */
+class GuiExport PrefPagePyProducer : public Base::AbstractProducer
+{
+public:
+    /**
+     * Register a special type of preference page to the WidgetFactoryInst.
+     */
+    PrefPagePyProducer (const Py::Object&, const char* group);
+    ~PrefPagePyProducer () override;
+    /**
+     * Creates an instance of the specified widget.
+     */
+    void* Produce () const override;
+
+private:
+    Py::Object type;
+};
+
 // --------------------------------------------------------------------
 
 /**
- * The CustomPageProducer class is a value-based template class that provides 
- * the ability to create custom pages dynamically. 
+ * The CustomPageProducer class is a value-based template class that provides
+ * the ability to create custom pages dynamically.
  * \author Werner Mayer
  */
 template <class CLASS>
 class CustomPageProducer : public Base::AbstractProducer
 {
 public:
-    /** 
+    /**
      * Register a special type of customize page to the WidgetFactoryInst.
      */
     CustomPageProducer ()
@@ -259,14 +212,14 @@ public:
         }
     }
 
-    virtual ~CustomPageProducer (){}
+    ~CustomPageProducer () override = default;
 
-    /** 
+    /**
      * Creates an instance of the specified widget.
      */
-    virtual void* Produce () const
+    void* Produce () const override
     {
-        return (void*)(new CLASS);
+        return (new CLASS);
     }
 };
 
@@ -309,7 +262,7 @@ class ContainerDialog : public QDialog
 
 public:
     ContainerDialog( QWidget* templChild );
-    ~ContainerDialog();
+    ~ContainerDialog() override;
 
     QPushButton* buttonOk; /**< The Ok button. */
     QPushButton* buttonCancel; /**< The cancel button. */
@@ -324,13 +277,13 @@ private:
  * The PyResource class provides an interface to create widgets or to load .ui files from Python.
  * With
  * \code
- * d = Gui.CreateDialog("test.ui")
+ * d = Gui.createDialog("test.ui")
  * \endcode
  *
- * you can create a PyResource object containing the widget. If a relative file name 
- * is given PyResource looks first in the current working directory and afterwards in 
+ * you can create a PyResource object containing the widget. If a relative file name
+ * is given PyResource looks first in the current working directory and afterwards in
  * the home path where FreeCAD resides.
- * 
+ *
  * If the appropriate .ui file cannot be found or creation fails an exception is thrown.
  * In case the widget in the .ui file does not inherit from QDialog it is embedded in a
  * \ref ContainerDialog object.
@@ -347,12 +300,12 @@ private:
  * # define a callback function with one argument
  * def TestCall(obj):
  *      # sets the value from lineedit if "Button_Name" was pressed
- *      obj.SetValue("lineedit", "text", "Show this text here!")
+ *      obj.setValue("lineedit", "text", "Show this text here!")
  *      print "Button clicked"
  *
- * d = Gui.CreateDialog("test.ui")
- * d.Connect("Button_Name", "clicked()", TestCall)
- * d.Show()
+ * d = Gui.createDialog("test.ui")
+ * d.connect("Button_Name", "clicked()", TestCall)
+ * d.show()
  * \endcode
  *
  * If the button with the name "Button_Name" is clicked the message "Button clicked" is
@@ -360,50 +313,39 @@ private:
  * For example if you have a QLineEdit inside your widget you can set the text with
  * \code
  * # sets "Show this text here!" to the text property
- * d.SetValue("lineedit", "text", "Show this text here!")
- * d.Show()
+ * d.setValue("lineedit", "text", "Show this text here!")
+ * d.show()
  * \endcode
  *
  * or retrieve the entered text with
  * \code
- * f = d.GetValue("lineedit", "text")
+ * f = d.getValue("lineedit", "text")
  * print f
  * \endcode
  *
  * \author Werner Mayer
  */
-class PyResource : public Base::PyObjectBase
+
+class PyResource : public Py::PythonExtension<PyResource>
 {
-    // always start with Py_Header
-    Py_Header;
-
-protected:
-    ~PyResource();
-
 public:
-    PyResource(PyTypeObject *T = &Type);
+    static void init_type();    // announce properties and methods
+
+    PyResource();
+    ~PyResource() override;
 
     void load(const char* name);
     bool connect(const char* sender, const char* signal, PyObject* cb);
 
-    /// for construction in Python
-    static PyObject *PyMake(PyObject *, PyObject *);
+    Py::Object repr() override;
 
-    //---------------------------------------------------------------------
-    // python exports goes here +++++++++++++++++++++++++++++++++++++++++++
-    //---------------------------------------------------------------------
-    PyObject *_getattr(char *attr);             // __getattr__ function
-    // getter setter
-    int _setattr(char *attr, PyObject *value);  // __setattr__ function
-
-    // methods
-    PYFUNCDEF_D(PyResource, value);
-    PYFUNCDEF_D(PyResource, setValue);
-    PYFUNCDEF_D(PyResource, show);
-    PYFUNCDEF_D(PyResource, connect);
+    Py::Object value(const Py::Tuple&);
+    Py::Object setValue(const Py::Tuple&);
+    Py::Object show(const Py::Tuple&);
+    Py::Object connect(const Py::Tuple&);
 
 private:
-    std::vector<class SignalConnect*> mySingals;
+    std::vector<class SignalConnect*> mySignals;
     QDialog* myDlg;
 };
 
@@ -418,8 +360,8 @@ class SignalConnect : public QObject
     Q_OBJECT
 
 public:
-    SignalConnect( Base::PyObjectBase* res, PyObject* cb, QObject* sender);
-    ~SignalConnect();
+    SignalConnect(PyObject* res, PyObject* cb);
+    ~SignalConnect() override;
 
 public Q_SLOTS:
     void onExecute();
@@ -427,8 +369,33 @@ public Q_SLOTS:
 private:
     PyObject* myResource;
     PyObject* myCallback;
-    QObject*  mySender;
 };
+
+// ----------------------------------------------------
+namespace Dialog {
+
+/** Subclass that embeds a form from a Python class.
+ * \author Werner Mayer
+ */
+class GuiExport PreferencePagePython : public PreferencePage
+{
+    Q_OBJECT
+
+public:
+    PreferencePagePython(const Py::Object& dlg, QWidget* parent = nullptr);
+    ~PreferencePagePython() override;
+
+    void loadSettings() override;
+    void saveSettings() override;
+
+protected:
+    void changeEvent(QEvent *e) override;
+
+private:
+    Py::Object page;
+};
+
+} // namespace Dialog
 
 } // namespace Gui
 

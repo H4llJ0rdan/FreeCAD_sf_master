@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,56 +20,41 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
-/// Here the FreeCAD includes sorted by Base,App,Gui......
-#include <Base/Parameter.h>
-
 #include "ViewProviderCylinderParametric.h"
-
-
-//#include "Tree.h"
-
 
 
 using namespace PartGui;
 using namespace std;
 
-
 //**************************************************************************
 // Construction/Destruction
 
-PROPERTY_SOURCE(PartGui::ViewProviderCylinderParametric, PartGui::ViewProviderPart)
+PROPERTY_SOURCE(PartGui::ViewProviderCylinderParametric, PartGui::ViewProviderPrimitive)
 
-       
+
 ViewProviderCylinderParametric::ViewProviderCylinderParametric()
 {
-  sPixmap = "Tree_Part_Cylinder_Parametric.svg";
+  sPixmap = "Part_Cylinder_Parametric";
 }
 
-ViewProviderCylinderParametric::~ViewProviderCylinderParametric()
-{
-
-}
+ViewProviderCylinderParametric::~ViewProviderCylinderParametric() = default;
 
 
 
 // **********************************************************************************
 
-std::vector<std::string> ViewProviderCylinderParametric::getDisplayModes(void) const
+std::vector<std::string> ViewProviderCylinderParametric::getDisplayModes() const
 {
   // get the modes of the father
   std::vector<std::string> StrList;
 
   // add your own modes
-  StrList.push_back("Flat Lines");
-  StrList.push_back("Shaded");
-  StrList.push_back("Wireframe");
-  StrList.push_back("Points");
+  StrList.emplace_back("Flat Lines");
+  StrList.emplace_back("Shaded");
+  StrList.emplace_back("Wireframe");
+  StrList.emplace_back("Points");
 
   return StrList;
 }

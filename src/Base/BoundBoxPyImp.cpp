@@ -23,9 +23,8 @@
 
 #include "PreCompiled.h"
 
-#include "Base/BoundBox.h"
-
 // inclusion of the generated files (generated out of BoundBoxPy.xml)
+#include "MatrixPy.h"
 #include "VectorPy.h"
 #include "GeometryPyCXX.h"
 #include "BoundBoxPy.h"
@@ -34,7 +33,7 @@
 using namespace Base;
 
 // returns a string which represent the object e.g. when printed in python
-std::string BoundBoxPy::representation(void) const
+std::string BoundBoxPy::representation() const
 {
     std::stringstream str;
     str << "BoundBox (";
@@ -51,17 +50,22 @@ std::string BoundBoxPy::representation(void) const
 
 PyObject *BoundBoxPy::PyMake(struct _typeobject *, PyObject *, PyObject *)  // Python wrapper
 {
-    // create a new instance of BoundBoxPy and the Twin object 
+    // create a new instance of BoundBoxPy and the Twin object
     return new BoundBoxPy(new BoundBox3d);
 }
 
 // constructor method
 int BoundBoxPy::PyInit(PyObject* args, PyObject* /*kwd*/)
 {
+    if (PyArg_ParseTuple(args, "")) {
+        return 0;
+    }
+    PyErr_Clear(); // set by PyArg_ParseTuple()
+
     double xMin=0.0,yMin=0.0,zMin=0.0,xMax=0.0,yMax=0.0,zMax=0.0;
-    PyObject *object1, *object2;
+    PyObject *object1{}, *object2{};
     BoundBoxPy::PointerType ptr = getBoundBoxPtr();
-    if (PyArg_ParseTuple(args, "|dddddd", &xMin, &yMin, &zMin, &xMax, &yMax, &zMax)) {
+    if (PyArg_ParseTuple(args, "d|ddddd", &xMin, &yMin, &zMin, &xMax, &yMax, &zMax)) {
         ptr->MaxX = xMax;
         ptr->MaxY = yMax;
         ptr->MaxZ = zMax;
@@ -87,14 +91,12 @@ int BoundBoxPy::PyInit(PyObject* args, PyObject* /*kwd*/)
     PyErr_Clear(); // set by PyArg_ParseTuple()
     if (PyArg_ParseTuple(args,"O!O!",&(Base::VectorPy::Type), &object1,
                                      &(Base::VectorPy::Type), &object2)) {
-        // Note: must be static_cast, not reinterpret_cast
         ptr->Add(*(static_cast<Base::VectorPy*>(object1)->getVectorPtr()));
         ptr->Add(*(static_cast<Base::VectorPy*>(object2)->getVectorPtr()));
         return 0;
     }
     PyErr_Clear(); // set by PyArg_ParseTuple()
     if (PyArg_ParseTuple(args,"O!",&(Base::BoundBoxPy::Type), &object1)) {
-        // Note: must be static_cast, not reinterpret_cast
         *ptr = *(static_cast<Base::BoundBoxPy*>(object1)->getBoundBoxPtr());
         return 0;
     }
@@ -104,10 +106,27 @@ int BoundBoxPy::PyInit(PyObject* args, PyObject* /*kwd*/)
     return -1;
 }
 
+PyObject*  BoundBoxPy::setVoid(PyObject *args)
+{
+    if (!PyArg_ParseTuple(args,""))
+        return nullptr;
+
+    getBoundBoxPtr()->SetVoid();
+    Py_Return;
+}
+
+PyObject*  BoundBoxPy::isValid(PyObject *args)
+{
+    if (!PyArg_ParseTuple(args,""))
+        return nullptr;
+
+    return PyBool_FromLong(getBoundBoxPtr()->IsValid() ? 1 : 0);
+}
+
 PyObject*  BoundBoxPy::add(PyObject *args)
 {
-    double x,y,z;
-    PyObject *object;
+    double x{},y{},z{};
+    PyObject *object{};
     if (PyArg_ParseTuple(args, "ddd", &x,&y,&z)) {
         getBoundBoxPtr()->Add(Vector3d(x,y,z));
         Py_Return;
@@ -132,100 +151,214 @@ PyObject*  BoundBoxPy::add(PyObject *args)
     }
 
     PyErr_SetString(PyExc_TypeError, "Either three floats, instance of Vector or instance of BoundBox expected");
-    return 0;
+    return nullptr;
 }
 
-PyObject*  BoundBoxPy::isIntersection(PyObject *args)
+PyObject*  BoundBoxPy::getPoint(PyObject *args)
 {
-    double x,y,z;
-    PyObject *object,*object2;
+    unsigned short index{};
+    if (!PyArg_ParseTuple(args,"H",&index))
+        return nullptr;
+
+    if (index > 7) {
+        PyErr_SetString (PyExc_IndexError, "Invalid point index");
+        return nullptr;
+    }
+
+    Base::Vector3d pnt = getBoundBoxPtr()->CalcPoint(index);
+    return new Base::VectorPy(new Base::Vector3d(pnt));
+}
+
+PyObject*  BoundBoxPy::getEdge(PyObject *args)
+{
+    unsigned short index{};
+    if (!PyArg_ParseTuple(args,"H",&index))
+        return nullptr;
+
+    if (index > 11) {
+        PyErr_SetString (PyExc_IndexError, "Invalid edge index");
+        return nullptr;
+    }
+
+    Base::Vector3d pnt1, pnt2;
+    getBoundBoxPtr()->CalcEdge(index, pnt1, pnt2);
+    Py::Tuple tuple(2);
+    tuple.setItem(0, Py::Vector(pnt1));
+    tuple.setItem(1, Py::Vector(pnt2));
+    return Py::new_reference_to(tuple);
+}
+
+PyObject*  BoundBoxPy::closestPoint(PyObject *args)
+{
+    double x{},y{},z{};
+    PyObject *object{};
+
+    Base::Vector3d vec;
+
+    do {
+        if (PyArg_ParseTuple(args, "ddd", &x,&y,&z)) {
+            vec = Vector3d(x,y,z);
+            break;
+        }
+
+        PyErr_Clear();
+        if (PyArg_ParseTuple(args,"O!",&PyTuple_Type, &object)) {
+            vec = getVectorFromTuple<double>(object);
+            break;
+        }
+
+        PyErr_Clear();
+        if (PyArg_ParseTuple(args,"O!",&(Base::VectorPy::Type), &object)) {
+            vec = *(static_cast<Base::VectorPy*>(object)->getVectorPtr());
+            break;
+        }
+        else {
+            PyErr_SetString(PyExc_TypeError, "Either three floats or vector expected");
+            return nullptr;
+        }
+    }
+    while(false);
+
+    Base::Vector3d point = getBoundBoxPtr()->ClosestPoint(vec);
+    return new Base::VectorPy(new Base::Vector3d(point));
+}
+
+PyObject*  BoundBoxPy::intersect(PyObject *args)
+{
+    PyObject *object{},*object2{};
     Py::Boolean retVal;
-    if (PyArg_ParseTuple(args, "ddd", &x,&y,&z)) {
-        retVal = getBoundBoxPtr()->IsInBox(Vector3d(x,y,z));
+
+    if (!getBoundBoxPtr()->IsValid()) {
+        PyErr_SetString (PyExc_FloatingPointError, "Invalid bounding box");
+        return nullptr;
     }
-    else if (PyArg_ParseTuple(args,"O!",&PyTuple_Type, &object)) {
+
+    do {
+        if (PyArg_ParseTuple(args,"O!O!",&(Base::VectorPy::Type), &object,
+                                         &(Base::VectorPy::Type), &object2)) {
+            retVal = getBoundBoxPtr()->IsCutLine(
+                *(static_cast<Base::VectorPy*>(object )->getVectorPtr()),
+                *(static_cast<Base::VectorPy*>(object2)->getVectorPtr()));
+            break;
+        }
+
         PyErr_Clear();
-        retVal = getBoundBoxPtr()->IsInBox(getVectorFromTuple<double>(object));
+        if (PyArg_ParseTuple(args,"O!",&(Base::BoundBoxPy::Type), &object)) {
+            if (!static_cast<Base::BoundBoxPy*>(object)->getBoundBoxPtr()->IsValid()) {
+                PyErr_SetString (PyExc_FloatingPointError, "Invalid bounding box argument");
+                return nullptr;
+            }
+            retVal = getBoundBoxPtr()->Intersect(*(static_cast<Base::BoundBoxPy*>(object)->getBoundBoxPtr()));
+            break;
+        }
+
+        PyErr_SetString(PyExc_TypeError, "Either BoundBox or two Vectors expected");
+        return nullptr;
     }
-    else if (PyArg_ParseTuple(args,"O!",&(Base::VectorPy::Type), &object)) {
-        PyErr_Clear();
-        retVal = getBoundBoxPtr()->IsInBox(*(static_cast<Base::VectorPy*>(object)->getVectorPtr()));
-    }
-    else if (PyArg_ParseTuple(args,"O!O!",&(Base::VectorPy::Type), &object,
-                                          &(Base::VectorPy::Type), &object2)) {
-        PyErr_Clear();
-        retVal = getBoundBoxPtr()->IsCutLine(
-            *(static_cast<Base::VectorPy*>(object )->getVectorPtr()),
-            *(static_cast<Base::VectorPy*>(object2)->getVectorPtr()));
-    }
-    else if (PyArg_ParseTuple(args,"O!;Need vector, bounding box or three floats as argument",
-        &(Base::BoundBoxPy::Type), &object)) {
-        PyErr_Clear();
-        retVal = getBoundBoxPtr()->IsInBox(*(static_cast<Base::BoundBoxPy*>(object)->getBoundBoxPtr()));
-    }
-    else {
-        PyErr_SetString(PyExc_TypeError, "Either three floats, Vector(s) or BoundBox expected");
-        return 0;
-    }
+    while(false);
 
     return Py::new_reference_to(retVal);
 }
 
+PyObject*  BoundBoxPy::intersected(PyObject *args)
+{
+    if (!getBoundBoxPtr()->IsValid()) {
+        PyErr_SetString (PyExc_FloatingPointError, "Invalid bounding box");
+        return nullptr;
+    }
+
+    PyObject *object{};
+    if (!PyArg_ParseTuple(args,"O!",&(Base::BoundBoxPy::Type), &object))
+        return nullptr;
+    if (!static_cast<Base::BoundBoxPy*>(object)->getBoundBoxPtr()->IsValid()) {
+        PyErr_SetString (PyExc_FloatingPointError, "Invalid bounding box argument");
+        return nullptr;
+    }
+
+    Base::BoundBox3d bbox = getBoundBoxPtr()->Intersected(*static_cast<Base::BoundBoxPy*>(object)->getBoundBoxPtr());
+    return new Base::BoundBoxPy(new Base::BoundBox3d(bbox));
+}
+
+PyObject*  BoundBoxPy::united(PyObject *args)
+{
+    if (!getBoundBoxPtr()->IsValid()) {
+        PyErr_SetString (PyExc_FloatingPointError, "Invalid bounding box");
+        return nullptr;
+    }
+
+    PyObject *object{};
+    if (!PyArg_ParseTuple(args,"O!",&(Base::BoundBoxPy::Type), &object))
+        return nullptr;
+    if (!static_cast<Base::BoundBoxPy*>(object)->getBoundBoxPtr()->IsValid()) {
+        PyErr_SetString (PyExc_FloatingPointError, "Invalid bounding box argument");
+        return nullptr;
+    }
+
+    Base::BoundBox3d bbox = getBoundBoxPtr()->United(*static_cast<Base::BoundBoxPy*>(object)->getBoundBoxPtr());
+    return new Base::BoundBoxPy(new Base::BoundBox3d(bbox));
+}
+
 PyObject*  BoundBoxPy::enlarge(PyObject *args)
 {
-    double s;
+    double s{};
     if (!PyArg_ParseTuple(args, "d;Need float parameter to enlarge", &s))
-        return 0;
+        return nullptr;
     getBoundBoxPtr()->Enlarge(s);
     Py_Return;
 }
 
 PyObject*  BoundBoxPy::getIntersectionPoint(PyObject *args)
 {
-    PyObject *object,*object2;
+    PyObject *object{},*object2{};
     double epsilon=0.0001;
-    if (PyArg_ParseTuple(args,"O!O!|d:Need base and direction vector",
-        &(Base::VectorPy::Type), &object,&(Base::VectorPy::Type), &object2, &epsilon)) {
-        Base::Vector3d point;
-        bool ok = getBoundBoxPtr()->IntersectionPoint(
-            *(static_cast<Base::VectorPy*>(object)->getVectorPtr()),
-            *(static_cast<Base::VectorPy*>(object2)->getVectorPtr()),
-            point, epsilon);
-        // IsInBox() doesn't handle border points correctly
-        if (ok) {
-            return new VectorPy(point);
-        }
-        else {
-            PyErr_SetString(Base::BaseExceptionFreeCADError, "No intersection");
-            return 0;
-        }
+    if (!PyArg_ParseTuple(args,"O!O!|d;Need base and direction vector",
+        &(Base::VectorPy::Type), &object,&(Base::VectorPy::Type), &object2, &epsilon))
+        return nullptr;
+
+    Base::Vector3d point;
+    bool ok = getBoundBoxPtr()->IntersectionPoint(
+        *(static_cast<Base::VectorPy*>(object)->getVectorPtr()),
+        *(static_cast<Base::VectorPy*>(object2)->getVectorPtr()),
+        point, epsilon);
+    if (ok) {
+        return new VectorPy(point);
     }
-    else
-        return 0;
+    else {
+        PyErr_SetString(Base::PyExc_FC_GeneralError, "No intersection");
+        return nullptr;
+    }
 }
 
 PyObject*  BoundBoxPy::move(PyObject *args)
 {
-   double x,y,z;
-    PyObject *object;
+    double x{},y{},z{};
+    PyObject *object{};
 
     Base::Vector3d vec;
 
-    if (PyArg_ParseTuple(args, "ddd", &x,&y,&z)) {
-        vec = Vector3d(x,y,z);
-    }
-    else if (PyArg_ParseTuple(args,"O!:Need vector to move",&PyTuple_Type, &object)) {
+    do {
+        if (PyArg_ParseTuple(args, "ddd", &x,&y,&z)) {
+            vec = Vector3d(x,y,z);
+            break;
+        }
+
         PyErr_Clear();
-        vec = getVectorFromTuple<double>(object);
-    }
-    else if (PyArg_ParseTuple(args,"O!:Need vector to move",&(Base::VectorPy::Type), &object)) {
+        if (PyArg_ParseTuple(args,"O!",&PyTuple_Type, &object)) {
+            vec = getVectorFromTuple<double>(object);
+            break;
+        }
+
         PyErr_Clear();
-        vec = *(static_cast<Base::VectorPy*>(object)->getVectorPtr());
+        if (PyArg_ParseTuple(args,"O!",&(Base::VectorPy::Type), &object)) {
+            vec = *(static_cast<Base::VectorPy*>(object)->getVectorPtr());
+            break;
+        }
+        else {
+            PyErr_SetString(PyExc_TypeError, "Either three floats or vector expected");
+            return nullptr;
+        }
     }
-    else {
-        PyErr_SetString(PyExc_TypeError, "Either three floats or vector expected");
-        return 0;
-    }
+    while(false);
 
     getBoundBoxPtr()->MoveX(vec.x);
     getBoundBoxPtr()->MoveY(vec.y);
@@ -234,51 +367,131 @@ PyObject*  BoundBoxPy::move(PyObject *args)
     Py_Return;
 }
 
+PyObject*  BoundBoxPy::scale(PyObject *args)
+{
+    double x{},y{},z{};
+    PyObject *object{};
+
+    Base::Vector3d vec;
+
+    do {
+        if (PyArg_ParseTuple(args, "ddd", &x,&y,&z)) {
+            vec = Vector3d(x,y,z);
+            break;
+        }
+
+        PyErr_Clear();
+        if (PyArg_ParseTuple(args,"O!",&PyTuple_Type, &object)) {
+            vec = getVectorFromTuple<double>(object);
+            break;
+        }
+
+        PyErr_Clear();
+        if (PyArg_ParseTuple(args,"O!",&(Base::VectorPy::Type), &object)) {
+            vec = *(static_cast<Base::VectorPy*>(object)->getVectorPtr());
+            break;
+        }
+        else {
+            PyErr_SetString(PyExc_TypeError, "Either three floats or vector expected");
+            return nullptr;
+        }
+    }
+    while(false);
+
+    getBoundBoxPtr()->ScaleX(vec.x);
+    getBoundBoxPtr()->ScaleY(vec.y);
+    getBoundBoxPtr()->ScaleZ(vec.z);
+
+    Py_Return;
+}
+
+PyObject*  BoundBoxPy::transformed(PyObject *args)
+{
+    PyObject *mat{};
+
+    if (!PyArg_ParseTuple(args,"O!", &(Base::MatrixPy::Type), &mat))
+        return nullptr;
+
+    if (!getBoundBoxPtr()->IsValid())
+        throw Py::FloatingPointError("Cannot transform invalid bounding box");
+    Base::BoundBox3d bbox = getBoundBoxPtr()->Transformed(*static_cast<Base::MatrixPy*>(mat)->getMatrixPtr());
+    return new Base::BoundBoxPy(new Base::BoundBox3d(bbox));
+}
+
 PyObject*  BoundBoxPy::isCutPlane(PyObject *args)
 {
-    PyObject *object,*object2;
+    PyObject *object{},*object2{};
     Py::Boolean retVal;
 
-    if (PyArg_ParseTuple(args,"O!O!:Need base and normal vector of a plane",
+    if (!getBoundBoxPtr()->IsValid()) {
+        PyErr_SetString (PyExc_FloatingPointError, "Invalid bounding box");
+        return nullptr;
+    }
+
+    if (!PyArg_ParseTuple(args,"O!O!;Need base and normal vector of a plane",
         &(Base::VectorPy::Type), &object,&(Base::VectorPy::Type), &object2))
-        retVal = getBoundBoxPtr()->IsCutPlane(
-            *(static_cast<Base::VectorPy*>(object)->getVectorPtr()),
-            *(static_cast<Base::VectorPy*>(object2)->getVectorPtr()));
-    else
-        return 0;
+        return nullptr;
+
+    retVal = getBoundBoxPtr()->IsCutPlane(
+        *(static_cast<Base::VectorPy*>(object)->getVectorPtr()),
+        *(static_cast<Base::VectorPy*>(object2)->getVectorPtr()));
 
     return Py::new_reference_to(retVal);
 }
 
 PyObject*  BoundBoxPy::isInside(PyObject *args)
 {
-    PyObject *object;
+    double x{},y{},z{};
+    PyObject *object{};
     Py::Boolean retVal;
 
-    if (!PyArg_ParseTuple(args,"O", &object))
-        return 0;
-    if (PyObject_TypeCheck(object, &(Base::VectorPy::Type))) {
-        Base::VectorPy *vec = static_cast<Base::VectorPy*>(object);
-        retVal = getBoundBoxPtr()->IsInBox(*vec->getVectorPtr());
+    if (!getBoundBoxPtr()->IsValid()) {
+        PyErr_SetString (PyExc_FloatingPointError, "Invalid bounding box");
+        return nullptr;
     }
-    else if (PyObject_TypeCheck(object, &(Base::BoundBoxPy::Type))) {
-        Base::BoundBoxPy *box = static_cast<Base::BoundBoxPy*>(object);
-        retVal = getBoundBoxPtr()->IsInBox(*box->getBoundBoxPtr());
+
+    do {
+        if (PyArg_ParseTuple(args, "ddd", &x,&y,&z)) {
+            retVal = getBoundBoxPtr()->IsInBox(Vector3d(x,y,z));
+            break;
+        }
+
+        PyErr_Clear();
+        if (PyArg_ParseTuple(args,"O!",&PyTuple_Type, &object)) {
+            retVal = getBoundBoxPtr()->IsInBox(getVectorFromTuple<double>(object));
+            break;
+        }
+
+        PyErr_Clear();
+        if (PyArg_ParseTuple(args,"O!",&(Base::VectorPy::Type), &object)) {
+            retVal = getBoundBoxPtr()->IsInBox(*(static_cast<Base::VectorPy*>(object)->getVectorPtr()));
+            break;
+        }
+
+        PyErr_Clear();
+        if (PyArg_ParseTuple(args,"O!",&(Base::BoundBoxPy::Type), &object)) {
+            if (!static_cast<Base::BoundBoxPy*>(object)->getBoundBoxPtr()->IsValid()) {
+                PyErr_SetString (PyExc_FloatingPointError, "Invalid bounding box argument");
+                return nullptr;
+            }
+            retVal = getBoundBoxPtr()->IsInBox(*(static_cast<Base::BoundBoxPy*>(object)->getBoundBoxPtr()));
+            break;
+        }
+
+        PyErr_SetString(PyExc_TypeError, "Either three floats, Vector(s) or BoundBox expected");
+        return nullptr;
     }
-    else {
-        PyErr_SetString(PyExc_TypeError, "Either a Vector or BoundBox object expected");
-        return 0;
-    }
+    while(false);
 
     return Py::new_reference_to(retVal);
 }
 
-Py::Object BoundBoxPy::getCenter(void) const
+Py::Object BoundBoxPy::getCenter() const
 {
-    return Py::Vector(getBoundBoxPtr()->CalcCenter());
+    return Py::Vector(getBoundBoxPtr()->GetCenter()); // NOLINT
 }
 
-Py::Float BoundBoxPy::getXMax(void) const
+Py::Float BoundBoxPy::getXMax() const
 {
     return Py::Float(getBoundBoxPtr()->MaxX);
 }
@@ -288,7 +501,7 @@ void  BoundBoxPy::setXMax(Py::Float arg)
     getBoundBoxPtr()->MaxX = arg;
 }
 
-Py::Float BoundBoxPy::getYMax(void) const
+Py::Float BoundBoxPy::getYMax() const
 {
     return Py::Float(getBoundBoxPtr()->MaxY);
 }
@@ -298,7 +511,7 @@ void  BoundBoxPy::setYMax(Py::Float arg)
     getBoundBoxPtr()->MaxY = arg;
 }
 
-Py::Float BoundBoxPy::getZMax(void) const
+Py::Float BoundBoxPy::getZMax() const
 {
     return Py::Float(getBoundBoxPtr()->MaxZ);
 }
@@ -308,7 +521,7 @@ void  BoundBoxPy::setZMax(Py::Float arg)
     getBoundBoxPtr()->MaxZ = arg;
 }
 
-Py::Float BoundBoxPy::getXMin(void) const
+Py::Float BoundBoxPy::getXMin() const
 {
     return Py::Float(getBoundBoxPtr()->MinX);
 }
@@ -318,7 +531,7 @@ void  BoundBoxPy::setXMin(Py::Float arg)
     getBoundBoxPtr()->MinX = arg;
 }
 
-Py::Float BoundBoxPy::getYMin(void) const
+Py::Float BoundBoxPy::getYMin() const
 {
     return Py::Float(getBoundBoxPtr()->MinY);
 }
@@ -328,7 +541,7 @@ void  BoundBoxPy::setYMin(Py::Float arg)
     getBoundBoxPtr()->MinY = arg;
 }
 
-Py::Float BoundBoxPy::getZMin(void) const
+Py::Float BoundBoxPy::getZMin() const
 {
     return Py::Float(getBoundBoxPtr()->MinZ);
 }
@@ -338,34 +551,36 @@ void  BoundBoxPy::setZMin(Py::Float arg)
     getBoundBoxPtr()->MinZ = arg;
 }
 
-Py::Float BoundBoxPy::getXLength(void) const
+Py::Float BoundBoxPy::getXLength() const
 {
     return Py::Float(getBoundBoxPtr()->LengthX());
 }
 
-Py::Float BoundBoxPy::getYLength(void) const
+Py::Float BoundBoxPy::getYLength() const
 {
     return Py::Float(getBoundBoxPtr()->LengthY());
 }
 
-Py::Float BoundBoxPy::getZLength(void) const
+Py::Float BoundBoxPy::getZLength() const
 {
     return Py::Float(getBoundBoxPtr()->LengthZ());
 }
 
-Py::Float BoundBoxPy::getDiagonalLength(void) const
+Py::Float BoundBoxPy::getDiagonalLength() const
 {
+    if (!getBoundBoxPtr()->IsValid())
+        throw Py::FloatingPointError("Cannot determine diagonal length of invalid bounding box");
     return Py::Float(getBoundBoxPtr()->CalcDiagonalLength());
 }
 
 PyObject *BoundBoxPy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int BoundBoxPy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }
 
 

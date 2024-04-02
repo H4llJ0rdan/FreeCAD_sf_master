@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2008     *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,168 +20,161 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <sstream>
+#include <sstream>
 #endif
-
-#include "Mesh.h"
-#include "MeshPoint.h"
-#include "MeshPointPy.h"
-#include "MeshPointPy.cpp"
 
 #include <Base/VectorPy.h>
 
+#include "Mesh.h"
+#include "MeshPoint.h"
+// clang-format off
+#include "MeshPointPy.h"
+#include "MeshPointPy.cpp"
+// clang-format on
+
+
 using namespace Mesh;
 
-// returns a string which represent the object e.g. when printed in python
-std::string MeshPointPy::representation(void) const
+// returns a string which represents the object e.g. when printed in python
+std::string MeshPointPy::representation() const
 {
     MeshPointPy::PointerType ptr = getMeshPointPtr();
+    Base::Vector3d vec = *ptr;  // NOLINT
+
     std::stringstream str;
     str << "MeshPoint (";
-    if(ptr->isBound())
-        str << ptr->x << ", "<< ptr->y << ", "<< ptr->z << ", Idx=" << ptr->Index;
-    else
-        str << ptr->x << ", "<< ptr->y << ", "<< ptr->z ;
+    if (ptr->isBound()) {
+        if (getMeshPointPtr()->Mesh->countPoints() <= getMeshPointPtr()->Index) {
+            str << vec.x << ", " << vec.y << ", " << vec.z << ", Idx=" << ptr->Index
+                << " (Out of range)";
+        }
+        else {
+            vec = getMeshPointPtr()->Mesh->getPoint(getMeshPointPtr()->Index);
+            str << vec.x << ", " << vec.y << ", " << vec.z << ", Idx=" << ptr->Index;
+        }
+    }
+    else {
+        str << vec.x << ", " << vec.y << ", " << vec.z;
+    }
+
     str << ")";
- 
     return str.str();
 }
 
-PyObject *MeshPointPy::PyMake(struct _typeobject *, PyObject *, PyObject *)  // Python wrapper
+PyObject* MeshPointPy::PyMake(struct _typeobject*, PyObject*, PyObject*)  // Python wrapper
 {
-    // create a new instance of MeshPointPy and the Twin object 
+    // create a new instance of MeshPointPy and the Twin object
     return new MeshPointPy(new MeshPoint);
 }
 
 // constructor method
-int MeshPointPy::PyInit(PyObject* args, PyObject*k)
+int MeshPointPy::PyInit(PyObject* args, PyObject* /*kwds*/)
 {
-    double  x=0.0,y=0.0,z=0.0;
-    if (!PyArg_ParseTuple(args, "|ddd", &x,&y,&z))
+    double x = 0.0, y = 0.0, z = 0.0;
+    if (!PyArg_ParseTuple(args, "|ddd", &x, &y, &z)) {
         return -1;
+    }
 
-    getMeshPointPtr()->Set(x,y,z);
+    getMeshPointPtr()->Set(x, y, z);
     return 0;
 }
 
-PyObject*  MeshPointPy::unbound(PyObject *args)
+PyObject* MeshPointPy::unbound(PyObject* args)
 {
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
     getMeshPointPtr()->Index = UINT_MAX;
-    getMeshPointPtr()->Mesh = 0;
+    getMeshPointPtr()->Mesh = nullptr;
     Py_Return;
 }
 
-PyObject*  MeshPointPy::move(PyObject *args)
+Py::Long MeshPointPy::getIndex() const
 {
-    if (!getMeshPointPtr()->isBound())
-        PyErr_SetString(Base::BaseExceptionFreeCADError, "This object is not bounded to a mesh, so no topological operation is possible!");
+    return Py::Long((long)getMeshPointPtr()->Index);
+}
 
-    double  x=0.0,y=0.0,z=0.0;
-    PyObject *object;
-    Base::Vector3d vec;
-    if (PyArg_ParseTuple(args, "ddd", &x,&y,&z)) {
-        vec.Set(x,y,z);
-    } 
-    else if (PyArg_ParseTuple(args,"O!",&(Base::VectorPy::Type), &object)) {
-        PyErr_Clear(); // set by PyArg_ParseTuple()
-        // Note: must be static_cast, not reinterpret_cast
-        vec = *(static_cast<Base::VectorPy*>(object)->getVectorPtr());
+Py::Boolean MeshPointPy::getBound() const
+{
+    return {getMeshPointPtr()->Index != UINT_MAX};
+}
+
+Py::Object MeshPointPy::getNormal() const
+{
+    if (!getMeshPointPtr()->isBound()) {
+        throw Py::RuntimeError(
+            "This object is not bound to a mesh, so no topological operation is possible!");
     }
-    else {
-        return 0;
+    if (getMeshPointPtr()->Mesh->countPoints() <= getMeshPointPtr()->Index) {
+        throw Py::IndexError("Index out of range");
     }
 
-    getMeshPointPtr()->Mesh->movePoint(getMeshPointPtr()->Index,vec);
-    Py_Return;
-}
-
-Py::Int MeshPointPy::getIndex(void) const
-{
-    return Py::Int((long) getMeshPointPtr()->Index);
-}
-
-Py::Boolean MeshPointPy::getBound(void) const
-{
-    return Py::Boolean(getMeshPointPtr()->Index != UINT_MAX);
-}
-
-Py::Object MeshPointPy::getNormal(void) const
-{
-    if (!getMeshPointPtr()->isBound())
-        PyErr_SetString(Base::BaseExceptionFreeCADError, "This object is not bounded to a mesh, so no topological operation is possible!");
-
-    Base::Vector3d* v = new Base::Vector3d(getMeshPointPtr()->Mesh->getPointNormal(getMeshPointPtr()->Index));
+    Base::Vector3d* v =
+        new Base::Vector3d(getMeshPointPtr()->Mesh->getPointNormal(getMeshPointPtr()->Index));
     Base::VectorPy* normal = new Base::VectorPy(v);
     normal->setConst();
-    return Py::Object(normal,true);
+    return Py::Object(normal, true);
 }
 
-Py::Object MeshPointPy::getVector(void) const
+Py::Object MeshPointPy::getVector() const
 {
-    MeshPointPy::PointerType ptr = reinterpret_cast<MeshPointPy::PointerType>(_pcTwinPointer);
-    
+    MeshPointPy::PointerType ptr = static_cast<MeshPointPy::PointerType>(_pcTwinPointer);
+
     Base::VectorPy* vec = new Base::VectorPy(*ptr);
     vec->setConst();
-    return Py::Object(vec,true);
+    return Py::Object(vec, true);
 }
 
-Py::Float MeshPointPy::getx(void) const
+Py::Float MeshPointPy::getx() const
 {
-    MeshPointPy::PointerType ptr = reinterpret_cast<MeshPointPy::PointerType>(_pcTwinPointer);
-    return Py::Float(ptr->x);
-}
-
-void  MeshPointPy::setx(Py::Float arg)
-{
-    MeshPointPy::PointerType ptr = reinterpret_cast<MeshPointPy::PointerType>(_pcTwinPointer);
-    ptr->x = (double)arg;
+    MeshPointPy::PointerType ptr = static_cast<MeshPointPy::PointerType>(_pcTwinPointer);
+    double x = ptr->x;
 
     if (getMeshPointPtr()->isBound()) {
-        getMeshPointPtr()->Mesh->movePoint(getMeshPointPtr()->Index,*ptr);
+        if (getMeshPointPtr()->Mesh->countPoints() > getMeshPointPtr()->Index) {
+            x = getMeshPointPtr()->Mesh->getPoint(getMeshPointPtr()->Index).x;
+        }
     }
+
+    return Py::Float(x);
 }
 
-Py::Float MeshPointPy::gety(void) const
+Py::Float MeshPointPy::gety() const
 {
-    MeshPointPy::PointerType ptr = reinterpret_cast<MeshPointPy::PointerType>(_pcTwinPointer);
-    return Py::Float(ptr->y);
-}
-
-void  MeshPointPy::sety(Py::Float arg)
-{
-    MeshPointPy::PointerType ptr = reinterpret_cast<MeshPointPy::PointerType>(_pcTwinPointer);
-    ptr->y = (double)arg;
+    MeshPointPy::PointerType ptr = static_cast<MeshPointPy::PointerType>(_pcTwinPointer);
+    double y = ptr->y;
 
     if (getMeshPointPtr()->isBound()) {
-        getMeshPointPtr()->Mesh->movePoint(getMeshPointPtr()->Index,*ptr);
+        if (getMeshPointPtr()->Mesh->countPoints() > getMeshPointPtr()->Index) {
+            y = getMeshPointPtr()->Mesh->getPoint(getMeshPointPtr()->Index).y;
+        }
     }
+
+    return Py::Float(y);
 }
 
-Py::Float MeshPointPy::getz(void) const
+Py::Float MeshPointPy::getz() const
 {
-    MeshPointPy::PointerType ptr = reinterpret_cast<MeshPointPy::PointerType>(_pcTwinPointer);
-    return Py::Float(ptr->z);
-}
-
-void  MeshPointPy::setz(Py::Float arg)
-{
-    MeshPointPy::PointerType ptr = reinterpret_cast<MeshPointPy::PointerType>(_pcTwinPointer);
-    ptr->z = (double)arg;
+    MeshPointPy::PointerType ptr = static_cast<MeshPointPy::PointerType>(_pcTwinPointer);
+    double z = ptr->z;
 
     if (getMeshPointPtr()->isBound()) {
-        getMeshPointPtr()->Mesh->movePoint(getMeshPointPtr()->Index,*ptr);
+        if (getMeshPointPtr()->Mesh->countPoints() > getMeshPointPtr()->Index) {
+            z = getMeshPointPtr()->Mesh->getPoint(getMeshPointPtr()->Index).z;
+        }
     }
+
+    return Py::Float(z);
 }
 
-PyObject *MeshPointPy::getCustomAttributes(const char* attr) const
+PyObject* MeshPointPy::getCustomAttributes(const char* /*attr*/) const
+{
+    return nullptr;
+}
+
+int MeshPointPy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
     return 0;
-}
-
-int MeshPointPy::setCustomAttributes(const char* attr, PyObject *obj)
-{
-    return 0; 
 }

@@ -20,39 +20,56 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 #ifndef PARTGUI_VIEWPROVIDERPARTSPLINE_H
 #define PARTGUI_VIEWPROVIDERPARTSPLINE_H
 
-#include "ViewProviderExt.h"
+#include <Mod/Part/Gui/ViewProviderExt.h>
+#include <Gui/ViewProviderExtensionPython.h>
 
 namespace PartGui
 {
 
+class PartGuiExport ViewProviderSplineExtension : public Gui::ViewProviderExtension
+{
+    EXTENSION_PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderSplineExtension);
+
+public:
+    /// Constructor
+    ViewProviderSplineExtension();
+    ~ViewProviderSplineExtension() override = default;
+
+    App::PropertyBool ControlPoints;
+
+    void extensionUpdateData(const App::Property*) override;
+    void extensionSetupContextMenu(QMenu*, QObject*, const char*) override;
+
+protected:
+    void extensionOnChanged(const App::Property* p) override;
+    void toggleControlPoints(bool);
+    void showControlPoints(bool, const App::Property* prop);
+    void showControlPointsOfEdge(const TopoDS_Edge&);
+    void showControlPointsOfFace(const TopoDS_Face&);
+
+    SoSwitch     *pcControlPoints{nullptr};
+};
+
 class PartGuiExport ViewProviderSpline : public ViewProviderPartExt
 {
-    PROPERTY_HEADER(PartGui::ViewProviderSpline);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderSpline);
 
 public:
     /// constructor
     ViewProviderSpline();
     /// destructor
-    virtual ~ViewProviderSpline();
+    ~ViewProviderSpline() override;
 
-    // Display properties
-    App::PropertyBool ControlPoints;
+    QIcon getIcon() const override;
 
-    void updateData(const App::Property* prop);
-
-protected:
-    void onChanged(const App::Property* prop);
-    void showControlPoints(bool, const App::Property* prop);
-    void showControlPointsOfEdge(const TopoDS_Edge&);
-    void showControlPointsOfFace(const TopoDS_Face&);
-
-    SoSwitch     *pcControlPoints;
+private:
+    ViewProviderSplineExtension extension;
 };
+
+using ViewProviderSplineExtensionPython = Gui::ViewProviderExtensionPythonT<PartGui::ViewProviderSplineExtension>;
 
 } //namespace PartGui
 

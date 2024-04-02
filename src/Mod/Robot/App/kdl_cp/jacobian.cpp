@@ -23,7 +23,7 @@
 
 namespace KDL
 {
-    USING_PART_OF_NAMESPACE_EIGEN
+    using namespace Eigen;
 
     Jacobian::Jacobian()
     {
@@ -83,7 +83,7 @@ namespace KDL
     }
 
     void Jacobian::changeRefPoint(const Vector& base_AB){
-        for(unsigned int i=0;i<data.cols();i++)
+        for(auto i=0;i<data.cols();i++)
             this->setColumn(i,this->getColumn(i).RefPoint(base_AB));
     }
 
@@ -97,7 +97,7 @@ namespace KDL
     }
     
     void Jacobian::changeBase(const Rotation& rot){
-        for(unsigned int i=0;i<data.cols();i++)
+        for(auto i=0;i<data.cols();i++)
             this->setColumn(i,rot*this->getColumn(i));;
     }
 
@@ -111,7 +111,7 @@ namespace KDL
     }
 
     void Jacobian::changeRefFrame(const Frame& frame){
-        for(unsigned int i=0;i<data.cols();i++)
+        for(auto i=0;i<data.cols();i++)
             this->setColumn(i,frame*this->getColumn(i));
     }
     
@@ -126,12 +126,12 @@ namespace KDL
 
     bool Jacobian::operator ==(const Jacobian& arg)const
     {
-        return Equal((*this),arg);
+        return Equal((*this),arg,epsilon);
     }
     
     bool Jacobian::operator!=(const Jacobian& arg)const
     {
-        return !Equal((*this),arg);
+        return !Equal((*this),arg,epsilon);
     }
     
     bool Equal(const Jacobian& a,const Jacobian& b,double eps)
@@ -147,8 +147,8 @@ namespace KDL
     }
     
     void Jacobian::setColumn(unsigned int i,const Twist& t){
-        data.col(i).start<3>()=Eigen::Map<Vector3d>(t.vel.data);
-        data.col(i).end<3>()=Eigen::Map<Vector3d>(t.rot.data);
+        data.col(i).head<3>()=Eigen::Map<const Vector3d>(t.vel.data);
+        data.col(i).tail<3>()=Eigen::Map<const Vector3d>(t.rot.data);
     }
 
 }

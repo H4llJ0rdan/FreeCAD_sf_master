@@ -1,156 +1,195 @@
-<html>
-  <head>
-    <title>FreeCAD - Start page</title>
-    <script language="javascript">
-      function show(theText) {
-        ddiv = document.getElementById("description");
-        if (theText == "") theText = "&nbsp;";
-        ddiv.innerHTML = theText;
-      }
-    </script>
-    <style type="text/css">
-      body {
-        background: #171A2B url(Background.jpg);
-        color: white;
-        font-family: Arial, Helvetica, Sans;
-      }
-      a {
-        color: #0092E8;
-        font-weight: bold;
-        text-decoration: none;
-        padding: 2px;
-      }
-      a:hover {
-        color: white;
-        background: #0092E8;
-        border-radius: 5px;
-      }
-      p {
-        text-align: justify;
-      }
-      h1 {
-        font-size: 3em;
-        letter-spacing: 2px;
-        padding: 20px 0 0 80px;
-      }
-      h2 {
-        padding-left: 40px;
-        font-size: 1.2em;
-      }
-      ul {
-        list-style-type: none;
-      }
-      .column {
-        width: 340px;
-        float: left;
-        margin-left: 10px;
-      }
-      .block {
-        background: rgba(30,31,33,0.6);;
-        border-radius: 5px;
-        padding: 8px;
-        margin-bottom: 10px;
-      }
-      .options {
-        clear: both;
-      }
+<!DOCTYPE html>
+<html lang="BCP47_LANGUAGE">
+
+<head>
+    <title>T_TITLE</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script>JS</script>
+    <style>
+        DEFAULT_CSS
+        CUSTOM_CSS
     </style>
-  </head>
+    <!--QSS-->
+</head>
 
-  <body>
+<body onload="load()">
+    <div id="main-container">
+        <div id="title-bar">
+            <ul id="tabs" class="tabs">
+                <li>
+                    <a id="htab1" class="active" onClick="toggle('tab1')" href="#">
+                        <img src="IMAGE_SRC_ICON_DOCUMENTS" alt="documents">
+                        T_DOCUMENTS
+                    </a>
+                </li>
+                <li>
+                    <a id="htab2" onClick="toggle('tab2')" href="#">
+                        <img src="IMAGE_SRC_ICON_HELP" alt="help">
+                        T_HELP
+                    </a>
+                </li>
+                <li>
+                    <a id="htab3" onClick="toggle('tab3')" href="#">
+                        <img src="IMAGE_SRC_ICON_ACTIVITY" alt="activity">
+                        T_ACTIVITY
+                    </a>
+                </li>
+                <li>
+                    <a href="https://blog.freecad.org/" title="T_TOOLTIP_BLOG">
+                        <img src="IMAGE_SRC_ICON_BLOG" alt="blog">
+                        T_BLOG
+                    </a>
+                </li>
+            </ul>
+            <div class="version">
+                VERSIONSTRING
+                <a title="T_VTOOLTIP" href="OpenSettings.py">
+                    <img class="settingsicon" src="IMAGE_SRC_SETTINGS" alt="T_VTOOLTIP">
+                </a>
+            </div>
+            <div style="flex-grow: 1"></div>
+            <div class="welcome">
+                <img src="IMAGE_SRC_FREECAD" alt="freecad">
+                <p>T_WELCOME</p>
+            </div>
+        </div>
+        <div id="tab1" class="panel">
 
-    <h1>FreeCAD Start Center</h1>
+            <div class="thumbnails">
 
-    <div class="column">
+                SECTION_NEW_FILE
 
-      <div class="block">
-        <h2>Start a new project</h2>
-        <ul>    
-          <li><a onMouseover="show('<p>The <b>Part Design</b> workbench is designed \
-                              to create complex pieces based on constrained 2D sketches. \
-                              Use it to draw 2D shapes, constrain some of their elements \
-                              and extrude them to form 3D pieces.</p>')" 
-                 onMouseout="show('')" 
-                 href="PartDesign.py">Part Design</a></li>
-          <li><a onMouseover="show('<p>The <b>Architectural Design</b> workbench \
-                              is specially designed for working with architectural \
-                              elements such as walls or windows. Start by drawing \
-                              2D shapes, and use them as guides to build architecutral \
-                              objects.</p>')" 
-                 onMouseout="show('')"
-                 href="ArchDesign.py">Architectual Design</a></li>
-          <li><a onMouseover="show('<p>The <b>Mesh Workbench</b> is used to work with \
-                              Mesh objects. Meshes are simpler 3D objects than Part objects, \
-                              but they are often easier to import and export to/from other \
-                              applications.</p><p>FreeCAD offers you several tools to convert \
-                              between Mesh and Part objects.</p>')" 
-                 onMouseout="show('')" 
-                 href="Mesh.py">Work with Meshes</a></li>
-          <li><a onMouseover="show('<p>This is the <b>FreeCAD default workbench</b>, \
-                              populated with some of the most commonly used tools.</p>')" 
-                 onMouseout="show('')" 
-                 href="Complete.py">The Default Workbench</a></li>
-        </ul>
-      </div>
+                SECTION_RECENTFILES
 
-      <div class="block">
-        <h2>Recent Files</h2>
-      </div>
+                <div class="footnote">
+                    <b>T_TIP</b>: T_ADJUSTRECENT
+                </div>
 
-      <div class="block">
-        <h2>Demos</h2>
-      </div>
+                SECTION_EXAMPLES
 
-      <div class="block">
-        <h2>Tutorials</h2>
-      </div>
+                SECTION_CUSTOM
 
+                <div id="customtip" class="footnote">
+                    T_CUSTOM
+                </div>
+
+            </div>
+
+            <div class="notes">
+
+                <h2>T_NOTES</h2>
+
+                <textarea id="notepad"></textarea>
+
+            </div>
+
+        </div>
+        <div id="tab2" class="panel hidden">
+            <div id="help-tab-wrapper">
+                <div class="docbox">
+
+                    <h2>T_GENERALDOCUMENTATION</h2>
+
+                    <h3>
+                        <img src="IMAGE_SRC_USERHUB" alt="T_USERHUB" />
+                        <a href="https://www.freecad.org/wiki/User_hub">T_USERHUB</a>
+                    </h3>
+                    <p>T_DESCR_USERHUB</p>
+
+                    <h3>
+                        <img src="IMAGE_SRC_POWERHUB" alt="T_POWERHUB" />
+                        <a href="https://www.freecad.org/wiki/Power_users_hub">T_POWERHUB</a>
+                    </h3>
+                    <p>T_DESCR_POWERHUB</p>
+
+                    <h3>
+                        <img src="IMAGE_SRC_DEVHUB" alt="T_DEVHUB" />
+                        <a href="https://www.freecad.org/wiki/Developer_hub">T_DEVHUB</a>
+                    </h3>
+                    <p>T_DESCR_DEVHUB</p>
+
+                    <h3>
+                        <img src="IMAGE_SRC_MANUAL" alt="T_MANUAL" />
+                        <a href="https://www.freecad.org/wiki/Manual:Introduction">T_MANUAL</a>
+                    </h3>
+                    <p>T_DESCR_MANUAL</p>
+
+                </div>
+
+                <div class="docbox">
+
+                    <h2>T_WBHELP</h2>
+
+                    <p>T_DESCR_WBHELP</p>
+
+                    UL_WORKBENCHES
+
+                </div>
+
+                <div class="docbox">
+
+                    <h2>T_COMMUNITYHELP</h2>
+
+                    <p>T_DESCR_COMMUNITYHELP1</p>
+
+                    <p>T_DESCR_COMMUNITYHELP2</p>
+
+                    <p>T_DESCR_COMMUNITYHELP3</p>
+
+                </div>
+
+                <div class="docbox">
+
+                    <h2>T_ADDONS</h2>
+
+                    <p>T_DESCR_ADDONS</p>
+
+                    <div id="addons">T_OFFLINEPLACEHOLDER</div>
+
+                </div>
+            </div>
+
+                <div class="footnote">
+                    <b>T_TIP</b>: T_OFFLINEHELP
+                </div>
+
+                <div class="footnote">
+                    <b>T_TIP</b>: T_EXTERNALLINKS
+                </div>
+        </div>
+
+        <div id="tab3" class="panel tab3 hidden">
+
+            <h2>T_RECENTCOMMITS</h2>
+
+            <div class="docbox allwidth">
+
+                <div class="footnote">T_DESCR_RECENTCOMMITS</div>
+
+                <div id="commits">T_OFFLINEPLACEHOLDER</div>
+
+                <div class="footnote">
+                    <a href="http://github.com/FreeCAD/FreeCAD/commits/master">T_SEEONGITHUB</a>
+                </div>
+
+            </div>
+
+            <h2 class="forum">T_FORUM</h2>
+
+            <div class="docbox allwidth forum">
+
+                <div class="footnote">T_DESCR_FORUM</div>
+
+                <div id="forum">T_OFFLINEPLACEHOLDER</div>
+
+            </div>
+
+            <div class="footnote">
+                <b>T_TIP</b>: T_EXTERNALLINKS
+            </div>
+
+        </div>
     </div>
+</body>
 
-    <div class="column">
-
-      <div class="block">
-        <h2>Homepage</h2>
-        <ul>
-          <li><a onMouseover="show('<p>This is the FreeCAD Homepage. Here you will be \
-                              able to find a lot of information about FreeCAD, tutorials, \
-                              examples and user documentation.</p>')" 
-                 onMouseout="show('')"
-                 href="http://www.freecadweb.org/">FreeCAD Homepage</a></li>
-        </ul>
-      </div>
-
-      <div class="block">
-        <h2>Example projects</h2>
-        <ul>
-          <li><a href="LoadSchenkel.py">Schenkel STEP file</a></li>
-          <li><a href="LoadPartDesignExample.py">Load a PartDesign example</a></li>
-          <li><a href="LoadDrawingExample.py">Load a Drawing extraction</a></li>
-          <li><a href="LoadRobotExample.py">Load a Robot simulation example</a></li>
-        </ul>
-      </div>
-
-      <div class="block">
-        <h2>Projects from the Web</h2>
-        <ul>
-          <li><a href="http://freecad-project.de/svn/ExampleData/FileFormates/Schenkel.stp">Schenkel STEP</a></li>
-          <li><a href="http://freecad-project.de/svn/ExampleData/Examples/CAD/Complex.FCStd">Complex Part</a></li>
-        </ul>
-      </div>
-
-    </div>
-
-    <div class="column" id="description">
-      &nbsp;
-    </div>
-
-    <form class="options">
-      <input type="checkbox" name="closeThisDialog">
-      Close this window after opening or creating a file<br/>
-      <input type="checkbox" name="dontShowAgain">
-      Don't show me this window again next time
-    </form>
-
-  </body>
 </html>
-

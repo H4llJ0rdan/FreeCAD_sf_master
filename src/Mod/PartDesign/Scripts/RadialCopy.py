@@ -3,7 +3,7 @@
 # (c) 2010 Werner Mayer LGPL
 
 """
-An example for a high-level cutsom feature object to make a so called "radial copy".
+An example for a high-level custom feature object to make a so called "radial copy".
 """
 __author__ = "Werner Mayer <wmayer@users.sourceforge.net>"
 
@@ -47,7 +47,7 @@ def makeRadialCopy():
         sel = sel[0]
         shape = sel.Shape
         name = sel.Label
-    except IndexError, AttributeError:
+    except (IndexError, AttributeError):
         QtGui.QMessageBox.critical(None,"Wrong selection","Please select a shape object")
         #raise Exception("Nothing selected")
     else:

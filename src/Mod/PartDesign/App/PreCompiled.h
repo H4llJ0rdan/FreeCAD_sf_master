@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,40 +20,22 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef __PRECOMPILED__
 #define __PRECOMPILED__
 
 #include <FCConfig.h>
 
-// Exporting of App classes
-#ifdef FC_OS_WIN32
-# define PartDesignExport __declspec(dllexport)
-# define PartExport  __declspec(dllimport)
-# define MeshExport     __declspec(dllimport)
-#else // for Linux
-# define PartDesignExport
-# define PartExport 
-# define MeshExport   
+#ifdef _MSC_VER
+// disable warning triggered by use of Part::FaceMaker
+// see forum thread "Warning C4275 non-dll class used as base for dll class"
+// http://forum.freecad.org/viewtopic.php?f=10&t=17542
+#   pragma warning( disable : 4275)
 #endif
 
 #ifdef _PreComp_
 
-// standard
-#include <iostream>
-#include <sstream>
-#include <stdio.h>
-#include <assert.h>
-#include <string>
-#include <map>
-#include <vector>
-#include <set>
-#include <bitset>
-
-// OpenCasCade =====================================================================================
+// OpenCasCade
 #include <Mod/Part/App/OpenCascadeAll.h>
-
-#include <Python.h>
 
 #endif // _PreComp_
 #endif

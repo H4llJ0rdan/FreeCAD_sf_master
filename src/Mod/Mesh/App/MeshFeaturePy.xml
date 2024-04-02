@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <GenerateModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="generateMetaModel_Module.xsd">
-	<PythonExport 
-		Father="DocumentObjectPy"  
-		Name="MeshFeaturePy" 
-		Twin="Feature" 
-		TwinPointer="Feature" 
-		Include="Mod/Mesh/App/MeshFeature.h" 
-		Namespace="Mesh" 
-		FatherInclude="App/DocumentObjectPy.h" 
+	<PythonExport
+        Father="GeoFeaturePy"
+		Name="MeshFeaturePy"
+		Twin="Feature"
+		TwinPointer="Feature"
+		Include="Mod/Mesh/App/MeshFeature.h"
+		Namespace="Mesh"
+        FatherInclude="App/GeoFeaturePy.h"
 		FatherNamespace="App">
 		<Documentation>
 			<Author Licence="LGPL" Name="Werner Mayer" EMail="wmayer@users.sourceforge.net" />
 			<UserDocu>The Mesh::Feature class handles meshes.
 The Mesh.MeshFeature() function is for internal use only and cannot be used to create instances of this class.
 Therefore you must have a reference to a document, e.g. 'd' then you can create an instance with
-d.addObject(\"Mesh::Feature\").
+d.addObject("Mesh::Feature").
 			</UserDocu>
 		</Documentation>
 		<Methode Name="countPoints">
@@ -40,6 +40,11 @@ d.addObject(\"Mesh::Feature\").
 		<Methode Name="removeNonManifolds">
 			<Documentation>
 				<UserDocu>Remove non-manifolds</UserDocu>
+			</Documentation>
+		</Methode>
+		<Methode Name="removeNonManifoldPoints">
+			<Documentation>
+				<UserDocu>Remove non-manifold points</UserDocu>
 			</Documentation>
 		</Methode>
 		<Methode Name="fixIndices">

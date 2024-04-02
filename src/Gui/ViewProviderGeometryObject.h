@@ -24,14 +24,14 @@
 #ifndef GUI_VIEWPROVIDER_GEOMETRYOBJECT_H
 #define GUI_VIEWPROVIDER_GEOMETRYOBJECT_H
 
-#include <Inventor/lists/SoPickedPointList.h> 
-#include "ViewProviderDocumentObject.h"
+#include "ViewProviderDragger.h"
+#include <Inventor/lists/SoPickedPointList.h>
 
 class SoPickedPointList;
 class SoSwitch;
 class SoSensor;
-class SoDragger;
 class SbVec2s;
+class SoBaseColor;
 
 namespace Gui {
 
@@ -40,19 +40,19 @@ class SoFCBoundingBox;
 class View3DInventorViewer;
 
 /**
- * The base class for all view providers that display geometric data, like mesh, point cloudes and shapes.
+ * The base class for all view providers that display geometric data, like mesh, point clouds and shapes.
  * @author Werner Mayer
  */
-class GuiExport ViewProviderGeometryObject : public ViewProviderDocumentObject
+class GuiExport ViewProviderGeometryObject : public ViewProviderDragger
 {
-    PROPERTY_HEADER(Gui::ViewProviderGeometryObject);
+    PROPERTY_HEADER_WITH_OVERRIDE(Gui::ViewProviderGeometryObject);
 
 public:
     /// constructor.
     ViewProviderGeometryObject();
 
     /// destructor.
-    virtual ~ViewProviderGeometryObject();
+    ~ViewProviderGeometryObject() override;
 
     // Display properties
     App::PropertyColor ShapeColor;
@@ -64,16 +64,15 @@ public:
     /**
      * Attaches the document object to this view provider.
      */
-    void attach(App::DocumentObject *pcObject);
-    void updateData(const App::Property*);
+    void attach(App::DocumentObject *pcObject) override;
+    void updateData(const App::Property*) override;
 
-    SoFCSelection* getHighlightNode() const { return pcHighlight; }
-    bool isSelectable(void) const {return Selectable.getValue();}
+    bool isSelectable() const override {return Selectable.getValue();}
 
     /**
-     * Returns a list of picked points from the geometry under \a pcHighlight.
+     * Returns a list of picked points from the geometry under \a getRoot().
      * If \a pickAll is false (the default) only the intersection point closest to the camera will be picked, otherwise
-     * all intersection points will be picked. 
+     * all intersection points will be picked.
      */
     SoPickedPointList getPickedPoints(const SbVec2s& pos, const View3DInventorViewer& viewer,bool pickAll=false) const;
     /**
@@ -85,37 +84,24 @@ public:
 
     /** @name Edit methods */
     //@{
-    bool doubleClicked(void);
-    void setupContextMenu(QMenu*, QObject*, const char*);
-protected:
-    bool setEdit(int ModNum);
-    void unsetEdit(int ModNum);
-    void setEditViewer(View3DInventorViewer*, int ModNum);
-    void unsetEditViewer(View3DInventorViewer*);
+    virtual void showBoundingBox(bool);
     //@}
 
 protected:
-    void showBoundingBox(bool);
     /// get called by the container whenever a property has been changed
-    void onChanged(const App::Property* prop);
-    SoFCSelection* createFromSettings() const;
+    void onChanged(const App::Property* prop) override;
     void setSelectable(bool Selectable=true);
 
-private:
-    static void sensorCallback(void * data, SoSensor * sensor);
-    static void dragStartCallback(void * data, SoDragger * d);
-    static void dragFinishCallback(void * data, SoDragger * d);
-    static void dragMotionCallback(void * data, SoDragger * d);
+    virtual unsigned long getBoundColor() const;
 
 protected:
-    SoFCSelection    * pcHighlight;
-    SoMaterial       * pcShapeMaterial;
-    SoFCBoundingBox  * pcBoundingBox;
-    SoSwitch         * pcBoundSwitch;
+    SoMaterial       * pcShapeMaterial{nullptr};
+    SoFCBoundingBox  * pcBoundingBox{nullptr};
+    SoSwitch         * pcBoundSwitch{nullptr};
+    SoBaseColor      * pcBoundColor{nullptr};
 };
 
 } // namespace Gui
 
 
 #endif // GUI_VIEWPROVIDER_GEOMETRYOBJECT_H
-

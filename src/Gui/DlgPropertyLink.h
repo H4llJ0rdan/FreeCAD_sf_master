@@ -20,35 +20,107 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_DIALOG_DLGPROPERTYLINK_H
 #define GUI_DIALOG_DLGPROPERTYLINK_H
 
 #include <QDialog>
+#include <QPointer>
+#include <QPushButton>
+#include <QTimer>
+#include "Selection.h"
+
+#define FC_XLINK_VALUE_INDEX 5
+
+class QTreeWidgetItem;
 
 namespace Gui { namespace Dialog {
 
 class Ui_DlgPropertyLink;
-class DlgPropertyLink : public QDialog
+class DlgPropertyLink : public QDialog, public Gui::SelectionObserver
 {
     Q_OBJECT
 
 public:
-    DlgPropertyLink(const QStringList& list, QWidget* parent = 0, Qt::WFlags fl = 0);
-    ~DlgPropertyLink();
+    explicit DlgPropertyLink(QWidget* parent = nullptr);
+    ~DlgPropertyLink() override;
 
-    void accept();
-    QStringList propertyLink() const;
+    void accept() override;
 
-private Q_SLOTS:
-    void on_checkObjectType_toggled(bool);
+    QList<App::SubObjectT> currentLinks() const;
+    QList<App::SubObjectT> originalLinks() const;
+
+    void init(const App::DocumentObjectT &prop, bool tryFilter=true);
+
+    static QString linksToPython(const QList<App::SubObjectT>& links);
+
+    static QList<App::SubObjectT> getLinksFromProperty(const App::PropertyLinkBase *prop);
+
+    static QString formatObject(App::Document *ownerDoc, App::DocumentObject *obj, const char *sub);
+
+    static inline QString formatObject(App::Document *ownerDoc, const App::SubObjectT &sobj) {
+        return formatObject(ownerDoc, sobj.getObject(), sobj.getSubName().c_str());
+    }
+
+    static QString formatLinks(App::Document *ownerDoc, QList<App::SubObjectT> links);
+
+protected:
+    void showEvent(QShowEvent *) override;
+    void hideEvent(QHideEvent *) override;
+    void closeEvent (QCloseEvent * e) override;
+    void leaveEvent(QEvent *) override;
+    bool eventFilter(QObject *obj, QEvent *ev) override;
+    void keyPressEvent(QKeyEvent *ev) override;
+
+    void detachObserver();
+    void attachObserver();
+
+    void onSelectionChanged(const Gui::SelectionChanges& msg) override;
 
 private:
-    void findObjects(bool on);
+    void onObjectTypeToggled(bool);
+    void onTypeTreeItemSelectionChanged();
+    void onSearchBoxTextChanged(const QString&);
+    void onItemExpanded(QTreeWidgetItem * item);
+    void onItemSelectionChanged();
+    void onItemEntered(QTreeWidgetItem *item);
+    void onItemSearch();
+    void onTimer();
+    void onClicked(QAbstractButton *);
 
 private:
-    QStringList link;
+    QTreeWidgetItem *createItem(App::DocumentObject *obj, QTreeWidgetItem *parent);
+    QTreeWidgetItem *createTypeItem(Base::Type type);
+    void filterObjects();
+    void filterItem(QTreeWidgetItem *item);
+    bool filterType(QTreeWidgetItem *item);
+    QTreeWidgetItem *findItem(App::DocumentObject *obj, const char *subname=nullptr, bool *found=nullptr);
+    void itemSearch(const QString &text, bool select);
+    QList<App::SubObjectT> getLinkFromItem(QTreeWidgetItem *, bool needSubName=true) const;
+
+private:
     Ui_DlgPropertyLink* ui;
+    QTimer *timer;
+    QPushButton *resetButton;
+    QPushButton *refreshButton;
+
+    QPointer<QWidget> parentView;
+    std::vector<App::SubObjectT> savedSelections;
+
+    App::DocumentObjectT objProp;
+    std::set<App::DocumentObject*> inList;
+    std::map<App::Document*, QTreeWidgetItem*> docItems;
+    std::map<App::DocumentObject*, QTreeWidgetItem*> itemMap;
+    std::map<QByteArray, QTreeWidgetItem*> typeItems;
+    std::set<QTreeWidgetItem*> subSelections;
+    QList<QTreeWidgetItem*> selections;
+    std::set<QByteArray> selectedTypes;
+    QList<App::SubObjectT> oldLinks;
+    bool allowSubObject = false;
+    bool singleSelect = false;
+    bool singleParent = false;
+    App::DocumentObject *currentObj = nullptr;
+    QTreeWidgetItem *searchItem = nullptr;
+    QBrush bgBrush;
 };
 
 } // namespace Dialog

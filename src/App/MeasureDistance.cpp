@@ -23,9 +23,6 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
 #include "MeasureDistance.h"
 
 using namespace App;
@@ -33,7 +30,7 @@ using namespace App;
 PROPERTY_SOURCE(App::MeasureDistance, App::DocumentObject)
 
 
-MeasureDistance::MeasureDistance() 
+MeasureDistance::MeasureDistance()
 {
     ADD_PROPERTY_TYPE(P1,(Base::Vector3d()),"Measurement",Prop_None,"First point of measurement");
     ADD_PROPERTY_TYPE(P2,(Base::Vector3d()),"Measurement",Prop_None,"Second point of measurement");
@@ -42,11 +39,9 @@ MeasureDistance::MeasureDistance()
 
 }
 
-MeasureDistance::~MeasureDistance()
-{
-}
+MeasureDistance::~MeasureDistance() = default;
 
-DocumentObjectExecReturn *MeasureDistance::execute(void)
+DocumentObjectExecReturn *MeasureDistance::execute()
 {
     Distance.setValue(Base::Distance(P1.getValue(), P2.getValue()));
     return DocumentObject::StdReturn;

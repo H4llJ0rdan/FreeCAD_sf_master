@@ -1,11 +1,5 @@
-# OpenSCAD gui init module
-#
-# Gathering all the information to start FreeCAD
-# This is the second one of three init scripts, the third one
-# runs when the gui is up
-
 #***************************************************************************
-#*   (c) Juergen Riegel (juergen.riegel@web.de) 2002                       *
+#*   Copyright (c) 2002 Juergen Riegel <juergen.riegel@web.de>             *
 #*                                                                         *
 #*   This file is part of the FreeCAD CAx development system.              *
 #*                                                                         *
@@ -25,118 +19,153 @@
 #*   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
 #*   USA                                                                   *
 #*                                                                         *
-#*   Juergen Riegel 2002                                                   *
 #***************************************************************************/
 
+# OpenSCAD gui init module
+#
+# Gathering all the information to start FreeCAD
+# This is the second one of three init scripts, the third one
+# runs when the gui is up
+
 import FreeCAD
-param = FreeCAD.ParamGet(\
-    "User parameter:BaseApp/Preferences/Mod/OpenSCAD")
-openscadfilename = param.GetString('openscadexecutable')
+import sys
 
 
-class OpenSCADWorkbench ( Workbench ):
+class OpenSCADWorkbench(Workbench):
     "OpenSCAD workbench object"
-    Icon = """
-/* XPM */
-static char * openscadlogo_xpm[] = {
-"16 16 33 1",
-" 	c None",
-".	c #61320B",
-"+	c #5D420B",
-"@	c #4F4C09",
-"#	c #564930",
-"$	c #754513",
-"%	c #815106",
-"&	c #666509",
-"*	c #875F55",
-"=	c #6E7000",
-"-	c #756A53",
-";	c #717037",
-">	c #946637",
-",	c #92710E",
-"'	c #797A0A",
-")	c #7C7720",
-"!	c #8A8603",
-"~	c #88886F",
-"{	c #AF8181",
-"]	c #999908",
-"^	c #BB8D8D",
-"/	c #AAAA00",
-"(	c #A9A880",
-"_	c #B5B419",
-":	c #C1A9A9",
-"<	c #B1B19A",
-"[	c #BEBE00",
-"}	c #B9B8B4",
-"|	c #CACC00",
-"1	c #D4D4BC",
-"2	c #DBD2D0",
-"3	c #EEEEED",
-"4	c None",
-"4444444444444444",
-"4444443113444444",
-"4444<;']]!;<^^24",
-"444(&@!]]]=&#^{3",
-"44<']')@++)!&*{^",
-"44)]/[|//[/]'@{{",
-"42=/_|||||[]!&*{",
-"4(&][|||||[/'@#}",
-"3-..,|||||[)&&~4",
-"^*$%.!|||[!+/](4",
-"^{%%%._[[_&/[_14",
-":{>%%.!//])_[_44",
-"2{{%%+!]!!)]]344",
-"4:{{#@&=&&@#3444",
-"44224}~--~}44444",
-"4444444444444444"};
-"""
-    MenuText = "OpenSCAD"
-    ToolTip = "OpenSCAD workbench"
+
+    def __init__(self):
+        self.__class__.Icon = (
+            FreeCAD.getResourceDir()
+            + "Mod/OpenSCAD/Resources/icons/OpenSCADWorkbench.svg"
+        )
+        self.__class__.MenuText = "OpenSCAD"
+        self.__class__.ToolTip = (
+            "OpenSCAD is an application for creating solid 3D CAD.\n"
+            "FreeCAD utizes OpenSCAD's capability as a script-only based modeller that uses its own description language\n"
+            "Note: the Mesh workbench heavily uses the boolean operations of this workbench because they are quite robust"
+        )
+
     def Initialize(self):
         def QT_TRANSLATE_NOOP(scope, text):
             return text
-        import OpenSCAD_rc,OpenSCADCommands
-        commands=['OpenSCAD_ReplaceObject','OpenSCAD_RemoveSubtree',\
-            'OpenSCAD_RefineShapeFeature',\
-            'OpenSCAD_IncreaseToleranceFeature', 'OpenSCAD_Edgestofaces', \
-            'OpenSCAD_ExpandPlacements','OpenSCAD_ExplodeGroup']
-        toolbarcommands=['OpenSCAD_ReplaceObject','OpenSCAD_RemoveSubtree',\
-            'OpenSCAD_ExplodeGroup','OpenSCAD_RefineShapeFeature']
-            #'OpenSCAD_IncreaseToleranceFeature' #icon still missing
+
+        import OpenSCAD_rc, OpenSCADCommands
+
+        commands = [
+            "OpenSCAD_ReplaceObject",
+            "OpenSCAD_RemoveSubtree",
+            "OpenSCAD_RefineShapeFeature",
+            "OpenSCAD_MirrorMeshFeature",
+            "OpenSCAD_ScaleMeshFeature",
+            "OpenSCAD_ResizeMeshFeature",
+            "OpenSCAD_IncreaseToleranceFeature",
+            "OpenSCAD_Edgestofaces",
+            "OpenSCAD_ExpandPlacements",
+            "OpenSCAD_ExplodeGroup",
+        ]
+        toolbarcommands = [
+            "OpenSCAD_ReplaceObject",
+            "OpenSCAD_RemoveSubtree",
+            "OpenSCAD_ExplodeGroup",
+            "OpenSCAD_RefineShapeFeature",
+            "OpenSCAD_IncreaseToleranceFeature",
+        ]
         import PartGui
-        parttoolbarcommands = ['Part_CheckGeometry',"Part_Primitives",\
-            "Part_Builder",'Part_Cut','Part_Fuse','Part_Common',\
-            'Part_Extrude',"Part_Revolve"]
+
+        parttoolbarcommands = [
+            "Part_CheckGeometry",
+            "Part_Primitives",
+            "Part_Builder",
+            "Part_Cut",
+            "Part_Fuse",
+            "Part_Common",
+            "Part_Extrude",
+            "Part_Revolve",
+        ]
         import FreeCAD
-        param = FreeCAD.ParamGet(\
-            "User parameter:BaseApp/Preferences/Mod/OpenSCAD")
-        openscadfilename = param.GetString('openscadexecutable')
+        translate = FreeCAD.Qt.translate
+
+        param = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/OpenSCAD")
+        openscadfilename = param.GetString("openscadexecutable")
         if not openscadfilename:
-
             import OpenSCADUtils
-            openscadfilename = OpenSCADUtils.searchforopenscadexe()
-            if openscadfilename: #automatic search was succsessful
-                FreeCAD.addImportType("OpenSCAD Format (*.scad)","importCSG") 
-                param.SetString('openscadexecutable',openscadfilename) #save the result
-        if openscadfilename:
-            commands.extend(['OpenSCAD_AddOpenSCADElement',
-                'OpenSCAD_MeshBoolean','OpenSCAD_Hull','OpenSCAD_Minkowski'])
-            toolbarcommands.extend(['OpenSCAD_AddOpenSCADElement',
-                'OpenSCAD_MeshBoolean','OpenSCAD_Hull','OpenSCAD_Minkowski'])
-        else:
-            FreeCAD.Console.PrintWarning('OpenSCAD executable not found\n')
 
-        self.appendToolbar(QT_TRANSLATE_NOOP('Workbench','OpenSCADTools'),toolbarcommands)
-        self.appendMenu('OpenSCAD',commands)
-        self.appendToolbar(QT_TRANSLATE_NOOP('Workbech','OpenSCAD Part tools'),parttoolbarcommands)
-        #self.appendMenu('OpenSCAD',["AddOpenSCADElement"])
+            openscadfilename = OpenSCADUtils.searchforopenscadexe()
+            if openscadfilename:  # automatic search was successful
+                FreeCAD.addImportType("OpenSCAD Format (*.scad)", "importCSG")
+                param.SetString(
+                    "openscadexecutable", openscadfilename
+                )  # save the result
+        if openscadfilename:
+            commands.extend(
+                [
+                    "OpenSCAD_AddOpenSCADElement",
+                    "OpenSCAD_MeshBoolean",
+                    "OpenSCAD_Hull",
+                    "OpenSCAD_Minkowski",
+                ]
+            )
+
+            toolbarcommands.extend(
+                [
+                    "OpenSCAD_AddOpenSCADElement",
+                    "OpenSCAD_MeshBoolean",
+                    "OpenSCAD_Hull",
+                    "OpenSCAD_Minkowski",
+                ]
+            )
+        else:
+            FreeCAD.Console.PrintWarning("OpenSCAD executable not found\n")
+
+        transferMechanism = param.GetInt("transfermechanism", 0)
+        if openscadfilename and transferMechanism == 0:
+            # We are using the Python temp-directory creation function
+            if "snap" in openscadfilename:
+                FreeCAD.Console.PrintMessage(
+                    translate(
+                        "OpenSCAD",
+                        "It looks like you may be using a Snap version of OpenSCAD.",
+                    )
+                    + " "
+                    + translate(
+                        "OpenSCAD",
+                        "If OpenSCAD execution fails to load the temporary file, use FreeCAD's OpenSCAD Workbench Preferences to change the transfer mechanism.",
+                    )
+                    + "\n"
+                )
+            elif sys.executable.startswith("/tmp/"):  # Heuristic for AppImages
+                FreeCAD.Console.PrintMessage(
+                    translate(
+                        "OpenSCAD",
+                        "It looks like you may be using a sandboxed version of FreeCAD.",
+                    )
+                    + " "
+                    + translate(
+                        "OpenSCAD",
+                        "If OpenSCAD execution fails to load the temporary file, use FreeCAD's OpenSCAD Workbench Preferences to change the transfer mechanism.",
+                    )
+                    + "\n"
+                )
+
+        self.appendToolbar(
+            QT_TRANSLATE_NOOP("Workbench", "OpenSCAD Tools"), toolbarcommands
+        )
+        self.appendMenu("OpenSCAD", commands)
+        self.appendToolbar(
+            QT_TRANSLATE_NOOP("Workbench", "Frequently-used Part WB tools"), parttoolbarcommands
+        )
+        # self.appendMenu('OpenSCAD',["AddOpenSCADElement"])
         ###self.appendCommandbar("&Generic Tools",["ColorCodeShape"])
         FreeCADGui.addIconPath(":/icons")
         FreeCADGui.addLanguagePath(":/translations")
-        FreeCADGui.addPreferencePage(":/ui/openscadprefs-base.ui","OpenSCAD")
+        FreeCADGui.addPreferencePage(":/ui/openscadprefs-base.ui", "OpenSCAD")
+
     def GetClassName(self):
-        #return "OpenSCADGui::Workbench"
         return "Gui::PythonWorkbench"
 
 
 Gui.addWorkbench(OpenSCADWorkbench())
+
+# Not all of the GUI tests will require an OpenSCAD binary (CSG import and export don't)
+FreeCAD.__unit_test__ += ["TestOpenSCADGui"]

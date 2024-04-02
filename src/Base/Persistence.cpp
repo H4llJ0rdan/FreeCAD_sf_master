@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Riegel         <juergen.riegel@web.de>                  *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,14 +24,24 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
+#include <cassert>
 #endif
+
+#include "Exception.h"
+#include "Reader.h"
+#include "Writer.h"
 
 /// Here the FreeCAD includes sorted by Base,App,Gui......
 #include "Persistence.h"
 
+#ifndef _PreComp_
+# include <xercesc/dom/DOM.hpp>
+#endif
+
+
 using namespace Base;
 
-TYPESYSTEM_SOURCE_ABSTRACT(Base::Persistence,Base::BaseClass);
+TYPESYSTEM_SOURCE_ABSTRACT(Base::Persistence,Base::BaseClass)
 
 
 //**************************************************************************
@@ -40,9 +50,9 @@ TYPESYSTEM_SOURCE_ABSTRACT(Base::Persistence,Base::BaseClass);
 
 
 //**************************************************************************
-// separator for other implemetation aspects
+// separator for other implementation aspects
 
-unsigned int Persistence::getMemSize (void) const
+unsigned int Persistence::getMemSize () const
 {
     // you have to implement this method in all descending classes!
     assert(0);
@@ -52,6 +62,20 @@ unsigned int Persistence::getMemSize (void) const
 void Persistence::Save (Writer &/*writer*/) const
 {
     // you have to implement this method in all descending classes!
+    assert(0);
+}
+
+
+void Persistence::Restore(DocumentReader &/*reader*/)
+{
+	// you have to implement this method in all descending classes!
+    assert(0);
+}
+
+
+void Persistence::Restore(DocumentReader &/*reader*/,XERCES_CPP_NAMESPACE_QUALIFIER DOMElement */*containerEl*/)
+{
+	// you have to implement this method in all descending classes!
     assert(0);
 }
 
@@ -67,4 +91,64 @@ void Persistence::SaveDocFile (Writer &/*writer*/) const
 
 void Persistence::RestoreDocFile(Reader &/*reader*/)
 {
+}
+
+std::string Persistence::encodeAttribute(const std::string& str)
+{
+    std::string tmp;
+    for (char it : str) {
+        if (it == '<')
+            tmp += "&lt;";
+        else if (it == '\"')
+            tmp += "&quot;";
+        else if (it == '\'')
+            tmp += "&apos;";
+        else if (it == '&')
+            tmp += "&amp;";
+        else if (it == '>')
+            tmp += "&gt;";
+        else if (it == '\r')
+            tmp += "&#13;";
+        else if (it == '\n')
+            tmp += "&#10;";
+        else if (it == '\t')
+            tmp += "&#9;";
+        else
+            tmp += it;
+    }
+
+    return tmp;
+}
+
+void Persistence::dumpToStream(std::ostream& stream, int compression)
+{
+    //we need to close the zipstream to get a good result, the only way to do this is to delete the ZipWriter.
+    //Hence the scope...
+    {
+        //create the writer
+        Base::ZipWriter writer(stream);
+        writer.setLevel(compression);
+        writer.putNextEntry("Persistence.xml");
+        writer.setMode("BinaryBrep");
+
+        //save the content (we need to encapsulate it with xml tags to be able to read single element xmls like happen for properties)
+        writer.Stream() << "<Content>" << std::endl;
+        Save(writer);
+        writer.Stream() << "</Content>";
+        writer.writeFiles();
+    }
+}
+
+void Persistence::restoreFromStream(std::istream& stream)
+{
+    zipios::ZipInputStream zipstream(stream);
+    Base::XMLReader reader("", zipstream);
+
+    if (!reader.isValid())
+        throw Base::ValueError("Unable to construct reader");
+
+    reader.readElement("Content");
+    Restore(reader);
+    reader.readFiles(zipstream);
+    restoreFinished();
 }

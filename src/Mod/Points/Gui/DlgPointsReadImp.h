@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2002 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,29 +20,34 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef POINTSGUI_DLGREADPOINTS_H
 #define POINTSGUI_DLGREADPOINTS_H
 
-#include <string>
-#include "ui_DlgPointsRead.h"
+#include <QDialog>
+#include <memory>
 
-namespace PointsGui {
+
+namespace PointsGui
+{
+class Ui_DlgPointsRead;
 
 /** The points read dialog
  */
-class DlgPointsReadImp : public QDialog, public Ui_DlgPointsRead
-{ 
-  Q_OBJECT
+class DlgPointsReadImp: public QDialog
+{
+    Q_OBJECT
 
 public:
-  DlgPointsReadImp(const char *FileName, QWidget* parent = 0, Qt::WFlags fl = 0 );
-  ~DlgPointsReadImp();
+    explicit DlgPointsReadImp(const char* FileName,
+                              QWidget* parent = nullptr,
+                              Qt::WindowFlags fl = Qt::WindowFlags());
+    ~DlgPointsReadImp() override;
 
 private:
-  std::string _FileName;
+    std::unique_ptr<Ui_DlgPointsRead> ui;
+    std::string _FileName;
 };
 
-} // namespace PointsGui
+}  // namespace PointsGui
 
-#endif // POINTSGUI_DLGREADPOINTS_H
+#endif  // POINTSGUI_DLGREADPOINTS_H

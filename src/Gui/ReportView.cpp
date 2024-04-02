@@ -20,23 +20,29 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <QGridLayout>
 # include <QApplication>
-# include <QMenu>
 # include <QContextMenuEvent>
+# include <QGridLayout>
+# include <QMenu>
 # include <QTextCursor>
 # include <QTextStream>
+# include <QTime>
 #endif
 
 #include <Base/Interpreter.h>
+#include <App/Color.h>
+
 #include "ReportView.h"
+#include "Application.h"
+#include "BitmapFactory.h"
+#include "DockWindowManager.h"
 #include "FileDialog.h"
 #include "PythonConsole.h"
 #include "PythonConsolePy.h"
-#include "BitmapFactory.h"
+#include "Tools.h"
+
 
 using namespace Gui;
 using namespace Gui::DockWnd;
@@ -44,8 +50,8 @@ using namespace Gui::DockWnd;
 /* TRANSLATOR Gui::DockWnd::ReportView */
 
 /**
- *  Constructs a ReportView which is a child of 'parent', with the 
- *  name 'name' and widget flags set to 'f' 
+ *  Constructs a ReportView which is a child of 'parent', with the
+ *  name 'name' and widget flags set to 'f'
  */
 ReportView::ReportView( QWidget* parent )
   : QWidget(parent)
@@ -53,9 +59,9 @@ ReportView::ReportView( QWidget* parent )
     setObjectName(QLatin1String("ReportOutput"));
 
     resize( 529, 162 );
-    QGridLayout* tabLayout = new QGridLayout( this );
+    auto tabLayout = new QGridLayout( this );
     tabLayout->setSpacing( 0 );
-    tabLayout->setMargin( 0 );
+    tabLayout->setContentsMargins( 0, 0, 0, 0 );
 
     tabWidget = new QTabWidget( this );
     tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
@@ -64,9 +70,9 @@ ReportView::ReportView( QWidget* parent )
     tabLayout->addWidget( tabWidget, 0, 0 );
 
 
-    // create the output window
+    // create the output window for 'Report view'
     tabOutput = new ReportOutput();
-    tabOutput->setWindowTitle(trUtf8("Output"));
+    tabOutput->setWindowTitle(tr("Output"));
     tabOutput->setWindowIcon(BitmapFactory().pixmap("MacroEditor"));
     int output = tabWidget->addTab(tabOutput, tabOutput->windowTitle());
     tabWidget->setTabIcon(output, tabOutput->windowIcon());
@@ -74,8 +80,8 @@ ReportView::ReportView( QWidget* parent )
     // create the python console
     tabPython = new PythonConsole();
     tabPython->setWordWrapMode(QTextOption::NoWrap);
-    tabPython->setWindowTitle(trUtf8("Python console"));
-    tabPython->setWindowIcon(BitmapFactory().pixmap("applications-python"));
+    tabPython->setWindowTitle(tr("Python console"));
+    tabPython->setWindowIcon(BitmapFactory().iconFromTheme("applications-python"));
     int python = tabWidget->addTab(tabPython, tabPython->windowTitle());
     tabWidget->setTabIcon(python, tabPython->windowIcon());
     tabWidget->setCurrentIndex(0);
@@ -89,17 +95,14 @@ ReportView::ReportView( QWidget* parent )
 /**
  *  Destroys the object and frees any allocated resources
  */
-ReportView::~ReportView()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
+ReportView::~ReportView() = default;
 
 void ReportView::changeEvent(QEvent *e)
 {
     QWidget::changeEvent(e);
     if (e->type() == QEvent::LanguageChange) {
-        tabOutput->setWindowTitle(trUtf8("Output"));
-        tabPython->setWindowTitle(trUtf8("Python console"));
+        tabOutput->setWindowTitle(tr("Output"));
+        tabPython->setWindowTitle(tr("Python console"));
         for (int i=0; i<tabWidget->count();i++)
             tabWidget->setTabText(i, tabWidget->widget(i)->windowTitle());
     }
@@ -128,15 +131,13 @@ ReportHighlighter::ReportHighlighter(QTextEdit* edit)
     errCol = Qt::red;
 }
 
-ReportHighlighter::~ReportHighlighter()
-{
-}
+ReportHighlighter::~ReportHighlighter() = default;
 
 void ReportHighlighter::highlightBlock (const QString & text)
 {
     if (text.isEmpty())
         return;
-    TextBlockData* ud = static_cast<TextBlockData*>(this->currentBlockUserData());
+    auto ud = static_cast<TextBlockData*>(this->currentBlockUserData());
     if (!ud) {
         ud = new TextBlockData;
         this->setCurrentBlockUserData(ud);
@@ -149,26 +150,29 @@ void ReportHighlighter::highlightBlock (const QString & text)
 
     QVector<TextBlockData::State> block = ud->block;
     int start = 0;
-    for (QVector<TextBlockData::State>::Iterator it = block.begin(); it != block.end(); ++it) {
-        switch (it->type)
+    for (const auto & it : block) {
+        switch (it.type)
         {
         case Message:
-            setFormat(start, it->length-start, txtCol);
+            setFormat(start, it.length-start, txtCol);
             break;
         case Warning:
-            setFormat(start, it->length-start, warnCol);
+            setFormat(start, it.length-start, warnCol);
             break;
         case Error:
-            setFormat(start, it->length-start, errCol);
+            setFormat(start, it.length-start, errCol);
             break;
         case LogText:
-            setFormat(start, it->length-start, logCol);
+            setFormat(start, it.length-start, logCol);
+            break;
+        case Critical:
+            setFormat(start, it.length-start, criticalCol);
             break;
         default:
             break;
         }
 
-        start = it->length;
+        start = it.length;
     }
 }
 
@@ -197,10 +201,76 @@ void ReportHighlighter::setErrorColor( const QColor& col )
     errCol = col;
 }
 
+void ReportHighlighter::setCriticalColor( const QColor& col )
+{
+    criticalCol = col;
+}
+
+// ----------------------------------------------------------------------------
+
+namespace Gui {
+class ReportOutputParameter
+{
+public:
+    static bool showOnLogMessage()
+    {
+        return getGroup()->GetBool("checkShowReportViewOnLogMessage", false);
+    }
+    static void toggleShowOnLogMessage()
+    {
+        bool show = showOnLogMessage();
+        getGroup()->SetBool("checkShowReportViewOnLogMessage", !show);
+    }
+    static bool showOnMessage()
+    {
+        return getGroup()->GetBool("checkShowReportViewOnNormalMessage", false);
+    }
+    static void toggleShowOnMessage()
+    {
+        bool show = showOnMessage();
+        getGroup()->SetBool("checkShowReportViewOnNormalMessage", !show);
+    }
+    static bool showOnWarning()
+    {
+        return getGroup()->GetBool("checkShowReportViewOnWarning", false);
+    }
+    static void toggleShowOnWarning()
+    {
+        bool show = showOnWarning();
+        getGroup()->SetBool("checkShowReportViewOnWarning", !show);
+    }
+    static bool showOnError()
+    {
+        return getGroup()->GetBool("checkShowReportViewOnError", true);
+    }
+    static void toggleShowOnError()
+    {
+        bool show = showOnError();
+        getGroup()->SetBool("checkShowReportViewOnError", !show);
+    }
+    static bool showOnCritical()
+    {
+        return getGroup()->GetBool("checkShowReportViewOnCritical", false);
+    }
+    static void toggleShowOnCritical()
+    {
+        bool show = showOnMessage();
+        getGroup()->SetBool("checkShowReportViewOnCritical", !show);
+    }
+
+private:
+    static ParameterGrp::handle getGroup()
+    {
+        return App::GetApplication().GetUserParameter().
+                GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("OutputWindow");
+    }
+};
+}
+
 // ----------------------------------------------------------
 
 /**
- * The CustomReportEvent class is used to send report events in the methods Log(), 
+ * The CustomReportEvent class is used to send report events in the methods Log(),
  * Error(), Warning() and Message() of the ReportOutput class to itself instead of
  * printing the messages directly in its text view.
  *
@@ -211,10 +281,9 @@ class CustomReportEvent : public QEvent
 {
 public:
     CustomReportEvent(ReportHighlighter::Paragraph p, const QString& s)
-    : QEvent(QEvent::Type(QEvent::User)) 
+    : QEvent(QEvent::Type(QEvent::User))
     { par = p; msg = s;}
-    ~CustomReportEvent()
-    { }
+    ~CustomReportEvent() override = default;
     const QString& message() const
     { return msg; }
     ReportHighlighter::Paragraph messageType() const
@@ -226,6 +295,66 @@ private:
 
 // ----------------------------------------------------------
 
+/**
+ * The ReportOutputObserver class is used to check if messages sent to the
+ * report view are warnings or errors, and if so and if the user has not
+ * disabled this in preferences, the report view is toggled on so the
+ * user always gets the warnings/errors
+ */
+
+ReportOutputObserver::ReportOutputObserver(ReportOutput *report)
+  : QObject(report)
+{
+    this->reportView = report;
+}
+
+void ReportOutputObserver::showReportView()
+{
+    // get the QDockWidget parent of the report view
+    DockWindowManager::instance()->activate(reportView);
+}
+
+bool ReportOutputObserver::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::User && obj == reportView.data()) {
+        auto cr = dynamic_cast<CustomReportEvent*>(event);
+        if (cr) {
+            ReportHighlighter::Paragraph msgType = cr->messageType();
+            if (msgType == ReportHighlighter::Warning) {
+                if (ReportOutputParameter::showOnWarning()) {
+                    showReportView();
+                }
+            }
+            else if (msgType == ReportHighlighter::Error) {
+                if (ReportOutputParameter::showOnError()) {
+                    showReportView();
+                }
+            }
+            else if (msgType == ReportHighlighter::Message) {
+                if (ReportOutputParameter::showOnMessage()) {
+                    showReportView();
+                }
+            }
+            else if (msgType == ReportHighlighter::LogText) {
+                if (ReportOutputParameter::showOnLogMessage()) {
+                    showReportView();
+                }
+            }
+            else if (msgType == ReportHighlighter::Critical) {
+                if (ReportOutputParameter::showOnCritical()) {
+                    showReportView();
+                }
+            }
+        }
+        return false;  //true would prevent the messages reaching the report view
+    }
+
+    // standard event processing
+    return QObject::eventFilter(obj, event);
+}
+
+// ----------------------------------------------------------
+
 class ReportOutput::Data
 {
 public:
@@ -233,14 +362,14 @@ public:
     {
         if (!default_stdout) {
             Base::PyGILStateLocker lock;
-            default_stdout = PySys_GetObject(const_cast<char*>("stdout"));
+            default_stdout = PySys_GetObject("stdout");
             replace_stdout = new OutputStdout();
             redirected_stdout = false;
         }
 
         if (!default_stderr) {
             Base::PyGILStateLocker lock;
-            default_stderr = PySys_GetObject(const_cast<char*>("stderr"));
+            default_stderr = PySys_GetObject("stderr");
             replace_stderr = new OutputStderr();
             redirected_stderr = false;
         }
@@ -249,12 +378,12 @@ public:
     {
         if (replace_stdout) {
             Py_DECREF(replace_stdout);
-            replace_stdout = 0;
+            replace_stdout = nullptr;
         }
 
         if (replace_stderr) {
             Py_DECREF(replace_stderr);
-            replace_stderr = 0;
+            replace_stderr = nullptr;
         }
     }
 
@@ -266,24 +395,33 @@ public:
     static bool redirected_stderr;
     static PyObject* default_stderr;
     static PyObject* replace_stderr;
+#ifdef FC_DEBUG
+    long logMessageSize = 0;
+#else
+    long logMessageSize = 2048;
+#endif
 };
 
 bool ReportOutput::Data::redirected_stdout = false;
-PyObject* ReportOutput::Data::default_stdout = 0;
-PyObject* ReportOutput::Data::replace_stdout = 0;
+PyObject* ReportOutput::Data::default_stdout = nullptr;
+PyObject* ReportOutput::Data::replace_stdout = nullptr;
 
 bool ReportOutput::Data::redirected_stderr = false;
-PyObject* ReportOutput::Data::default_stderr = 0;
-PyObject* ReportOutput::Data::replace_stderr = 0;
+PyObject* ReportOutput::Data::default_stderr = nullptr;
+PyObject* ReportOutput::Data::replace_stderr = nullptr;
 
 /* TRANSLATOR Gui::DockWnd::ReportOutput */
 
 /**
- *  Constructs a ReportOutput which is a child of 'parent', with the 
- *  name 'name' and widget flags set to 'f' 
+ *  Constructs a ReportOutput which is a child of 'parent', with the
+ *  name 'name' and widget flags set to 'f'
  */
 ReportOutput::ReportOutput(QWidget* parent)
-  : QTextEdit(parent), WindowParameter("OutputWindow"), d(new Data), gotoEnd(false)
+  : QTextEdit(parent)
+  , WindowParameter("OutputWindow")
+  , d(new Data)
+  , gotoEnd(false)
+  , blockStart(true)
 {
     bLog = false;
     reportHl = new ReportHighlighter(this);
@@ -295,11 +433,16 @@ ReportOutput::ReportOutput(QWidget* parent)
 
     Base::Console().AttachObserver(this);
     getWindowParameter()->Attach(this);
-
     getWindowParameter()->NotifyAll();
+    // do this explicitly because the keys below might not yet be part of a group
+    getWindowParameter()->Notify("RedirectPythonOutput");
+    getWindowParameter()->Notify("RedirectPythonErrors");
+
     _prefs = WindowParameter::getDefaultParameter()->GetGroup("Editor");
     _prefs->Attach(this);
     _prefs->Notify("FontSize");
+
+    messageSize = _prefs->GetInt("LogMessageSize", d->logMessageSize);
 
     // scroll to bottom at startup to make sure that last appended text is visible
     ensureCursorVisible();
@@ -323,49 +466,75 @@ void ReportOutput::restoreFont()
     setFont(serifFont);
 }
 
-void ReportOutput::Warning(const char * s)
+void ReportOutput::SendLog(const std::string& notifiername, const std::string& msg, Base::LogStyle level,
+                           Base::IntendedRecipient recipient, Base::ContentType content)
 {
-    // Send the event to itself to allow thread-safety. Qt will delete it when done.
-    CustomReportEvent* ev = new CustomReportEvent(ReportHighlighter::Warning, QString::fromUtf8(s));
-    QApplication::postEvent(this, ev);
-}
+    (void) notifiername;
 
-void ReportOutput::Message(const char * s)
-{
-    // Send the event to itself to allow thread-safety. Qt will delete it when done.
-    CustomReportEvent* ev = new CustomReportEvent(ReportHighlighter::Message, QString::fromUtf8(s));
-    QApplication::postEvent(this, ev);
-}
+    // Do not log translated messages, or messages intended only to the user to the Report View
+    if( recipient == Base::IntendedRecipient::User ||
+        content == Base::ContentType::Translated)
+        return;
 
-void ReportOutput::Error  (const char * s)
-{
-    // Send the event to itself to allow thread-safety. Qt will delete it when done.
-    CustomReportEvent* ev = new CustomReportEvent(ReportHighlighter::Error, QString::fromUtf8(s));
-    QApplication::postEvent(this, ev);
-}
-
-void ReportOutput::Log (const char * s)
-{
-    QString msg = QString::fromUtf8(s);
-    if (msg.length() < 1000){
-        // Send the event to itself to allow thread-safety. Qt will delete it when done.
-        CustomReportEvent* ev = new CustomReportEvent(ReportHighlighter::LogText, msg);
-        QApplication::postEvent(this, ev);
+    ReportHighlighter::Paragraph style = ReportHighlighter::LogText;
+    switch (level) {
+        case Base::LogStyle::Warning:
+            style = ReportHighlighter::Warning;
+            break;
+        case Base::LogStyle::Message:
+            style = ReportHighlighter::Message;
+            break;
+        case Base::LogStyle::Error:
+            style = ReportHighlighter::Error;
+            break;
+        case Base::LogStyle::Log:
+            style = ReportHighlighter::LogText;
+            break;
+        case Base::LogStyle::Critical:
+            style = ReportHighlighter::Critical;
+            break;
+        default:
+            break;
     }
+
+    QString qMsg = QString::fromUtf8(msg.c_str());
+
+    // This truncates log messages that are too long
+    if (style == ReportHighlighter::LogText) {
+        if (messageSize > 0 && qMsg.size()>messageSize) {
+            qMsg.truncate(messageSize);
+            qMsg += QString::fromLatin1("...\n");
+        }
+    }
+
+    // Send the event to itself to allow thread-safety. Qt will delete it when done.
+    auto ev = new CustomReportEvent(style, qMsg);
+    QApplication::postEvent(this, ev);
 }
 
 void ReportOutput::customEvent ( QEvent* ev )
 {
     // Appends the text stored in the event to the text view
     if ( ev->type() ==  QEvent::User ) {
-        CustomReportEvent* ce = (CustomReportEvent*)ev;
+        auto ce = static_cast<CustomReportEvent*>(ev);
         reportHl->setParagraphType(ce->messageType());
+
+        bool showTimecode = getWindowParameter()->GetBool("checkShowReportTimecode", true);
+        QString text = ce->message();
+
+        // The time code can only be set when the cursor is at the block start
+        if (showTimecode && blockStart) {
+            QTime time = QTime::currentTime();
+            text.prepend(time.toString(QLatin1String("hh:mm:ss  ")));
+        }
 
         QTextCursor cursor(this->document());
         cursor.beginEditBlock();
         cursor.movePosition(QTextCursor::End);
-        cursor.insertText(ce->message());
+        cursor.insertText(text);
         cursor.endEditBlock();
+
+        blockStart = cursor.atBlockStart();
         if (gotoEnd) {
             setTextCursor(cursor);
         }
@@ -373,59 +542,126 @@ void ReportOutput::customEvent ( QEvent* ev )
     }
 }
 
+
+bool ReportOutput::event(QEvent* event)
+{
+    if (event && event->type() == QEvent::ShortcutOverride) {
+        auto kevent = static_cast<QKeyEvent*>(event);
+        if (kevent == QKeySequence::Copy)
+            kevent->accept();
+    }
+    return QTextEdit::event(event);
+}
+
 void ReportOutput::changeEvent(QEvent *ev)
 {
     if (ev->type() == QEvent::StyleChange) {
-        QPalette pal = palette();
+        QPalette pal = qApp->palette();
         QColor color = pal.windowText().color();
-        unsigned long text = (color.red() << 24) | (color.green() << 16) | (color.blue() << 8);
+        unsigned int text = App::Color::asPackedRGB<QColor>(color);
+        auto value = static_cast<unsigned long>(text);
         // if this parameter is not already set use the style's window text color
-        text = getWindowParameter()->GetUnsigned("colorText", text);
-        getWindowParameter()->SetUnsigned("colorText", text);
+        value = getWindowParameter()->GetUnsigned("colorText", value);
+        getWindowParameter()->SetUnsigned("colorText", value);
     }
     QTextEdit::changeEvent(ev);
 }
 
 void ReportOutput::contextMenuEvent ( QContextMenuEvent * e )
 {
-    QMenu* menu = createStandardContextMenu();
-    QAction* first = menu->actions().front();
+    bool bShowOnLog = ReportOutputParameter::showOnLogMessage();
+    bool bShowOnNormal = ReportOutputParameter::showOnMessage();
+    bool bShowOnWarn = ReportOutputParameter::showOnWarning();
+    bool bShowOnError = ReportOutputParameter::showOnError();
+    bool bShowOnCritical = ReportOutputParameter::showOnCritical();
 
-    QMenu* submenu = new QMenu( menu );
-    QAction* logAct = submenu->addAction(tr("Logging"), this, SLOT(onToggleLogging()));
+    auto menu = new QMenu(this);
+    auto optionMenu = new QMenu( menu );
+    optionMenu->setTitle(tr("Options"));
+    menu->addMenu(optionMenu);
+    menu->addSeparator();
+
+    auto displayMenu = new QMenu(optionMenu);
+    displayMenu->setTitle(tr("Display message types"));
+    optionMenu->addMenu(displayMenu);
+
+    QAction* logMsg = displayMenu->addAction(tr("Normal messages"), this, &ReportOutput::onToggleNormalMessage);
+    logMsg->setCheckable(true);
+    logMsg->setChecked(bMsg);
+
+    QAction* logAct = displayMenu->addAction(tr("Log messages"), this, &ReportOutput::onToggleLogMessage);
     logAct->setCheckable(true);
     logAct->setChecked(bLog);
 
-    QAction* wrnAct = submenu->addAction(tr("Warning"), this, SLOT(onToggleWarning()));
+    QAction* wrnAct = displayMenu->addAction(tr("Warnings"), this, &ReportOutput::onToggleWarning);
     wrnAct->setCheckable(true);
     wrnAct->setChecked(bWrn);
 
-    QAction* errAct = submenu->addAction(tr("Error"), this, SLOT(onToggleError()));
+    QAction* errAct = displayMenu->addAction(tr("Errors"), this, &ReportOutput::onToggleError);
     errAct->setCheckable(true);
     errAct->setChecked(bErr);
 
-    submenu->addSeparator();
+    QAction* logCritical = displayMenu->addAction(tr("Critical messages"), this, &ReportOutput::onToggleCritical);
+    logCritical->setCheckable(true);
+    logCritical->setChecked(bCritical);
 
-    QAction* stdoutAct = submenu->addAction(tr("Redirect Python output"), this, SLOT(onToggleRedirectPythonStdout()));
+    auto showOnMenu = new QMenu (optionMenu);
+    showOnMenu->setTitle(tr("Show Report view on"));
+    optionMenu->addMenu(showOnMenu);
+
+    QAction* showNormAct = showOnMenu->addAction(tr("Normal messages"), this, &ReportOutput::onToggleShowReportViewOnNormalMessage);
+    showNormAct->setCheckable(true);
+    showNormAct->setChecked(bShowOnNormal);
+
+    QAction* showLogAct = showOnMenu->addAction(tr("Log messages"), this, &ReportOutput::onToggleShowReportViewOnLogMessage);
+    showLogAct->setCheckable(true);
+    showLogAct->setChecked(bShowOnLog);
+
+    QAction* showWrnAct = showOnMenu->addAction(tr("Warnings"), this, &ReportOutput::onToggleShowReportViewOnWarning);
+    showWrnAct->setCheckable(true);
+    showWrnAct->setChecked(bShowOnWarn);
+
+    QAction* showErrAct = showOnMenu->addAction(tr("Errors"), this, &ReportOutput::onToggleShowReportViewOnError);
+    showErrAct->setCheckable(true);
+    showErrAct->setChecked(bShowOnError);
+
+    QAction* showCriticalAct = showOnMenu->addAction(tr("Critical messages"), this, SLOT(onToggleShowReportViewOnCritical()));
+    showCriticalAct->setCheckable(true);
+    showCriticalAct->setChecked(bShowOnCritical);
+
+    optionMenu->addSeparator();
+
+    QAction* stdoutAct = optionMenu->addAction(tr("Redirect Python output"), this, &ReportOutput::onToggleRedirectPythonStdout);
     stdoutAct->setCheckable(true);
     stdoutAct->setChecked(d->redirected_stdout);
 
-    QAction* stderrAct = submenu->addAction(tr("Redirect Python errors"), this, SLOT(onToggleRedirectPythonStderr()));
+    QAction* stderrAct = optionMenu->addAction(tr("Redirect Python errors"), this, &ReportOutput::onToggleRedirectPythonStderr);
     stderrAct->setCheckable(true);
     stderrAct->setChecked(d->redirected_stderr);
 
-    submenu->addSeparator();
-    QAction* botAct = submenu->addAction(tr("Go to end"), this, SLOT(onToggleGoToEnd()));
+    optionMenu->addSeparator();
+    QAction* botAct = optionMenu->addAction(tr("Go to end"), this, &ReportOutput::onToggleGoToEnd);
     botAct->setCheckable(true);
     botAct->setChecked(gotoEnd);
 
-    submenu->setTitle(tr("Options"));
-    menu->insertMenu(first, submenu);
-    menu->insertSeparator(first);
+    // Use Qt's internal translation of the Copy & Select All commands
+    const char* context = "QWidgetTextControl";
+    QString copyStr = QCoreApplication::translate(context, "&Copy");
+    QAction* copy = menu->addAction(copyStr, this, &ReportOutput::copy);
+    copy->setShortcut(QKeySequence(QKeySequence::Copy));
+    copy->setEnabled(textCursor().hasSelection());
+    QIcon icon = QIcon::fromTheme(QString::fromLatin1("edit-copy"));
+    if (!icon.isNull())
+        copy->setIcon(icon);
 
-    menu->addAction(tr("Clear"), this, SLOT(clear()));
     menu->addSeparator();
-    menu->addAction(tr("Save As..."), this, SLOT(onSaveAs()));
+    QString selectStr = QCoreApplication::translate(context, "Select All");
+    QAction* select = menu->addAction(selectStr, this, &ReportOutput::selectAll);
+    select->setShortcut(QKeySequence(QKeySequence::SelectAll));
+
+    menu->addAction(tr("Clear"), this, &ReportOutput::clear);
+    menu->addSeparator();
+    menu->addAction(tr("Save As..."), this, &ReportOutput::onSaveAs);
 
     menu->exec(e->globalPos());
     delete menu;
@@ -433,7 +669,8 @@ void ReportOutput::contextMenuEvent ( QContextMenuEvent * e )
 
 void ReportOutput::onSaveAs()
 {
-    QString fn = QFileDialog::getSaveFileName(this, tr("Save Report Output"), QString(), tr("Plain Text Files (*.txt *.log)"));
+    QString fn = QFileDialog::getSaveFileName(this, tr("Save Report Output"), QString(),
+        QString::fromLatin1("%1 (*.txt *.log)").arg(tr("Plain Text Files")));
     if (!fn.isEmpty()) {
         QFileInfo fi(fn);
         if (fi.completeSuffix().isEmpty())
@@ -457,9 +694,20 @@ bool ReportOutput::isWarning() const
     return bWrn;
 }
 
-bool ReportOutput::isLogging() const
+bool ReportOutput::isLogMessage() const
 {
     return bLog;
+}
+
+bool ReportOutput::isNormalMessage() const
+{
+    return bMsg;
+}
+
+
+bool ReportOutput::isCritical() const
+{
+    return bCritical;
 }
 
 void ReportOutput::onToggleError()
@@ -474,10 +722,47 @@ void ReportOutput::onToggleWarning()
     getWindowParameter()->SetBool( "checkWarning", bWrn );
 }
 
-void ReportOutput::onToggleLogging()
+void ReportOutput::onToggleLogMessage()
 {
     bLog = bLog ? false : true;
     getWindowParameter()->SetBool( "checkLogging", bLog );
+}
+
+void ReportOutput::onToggleNormalMessage()
+{
+    bMsg = bMsg ? false : true;
+    getWindowParameter()->SetBool( "checkMessage", bMsg );
+}
+
+void ReportOutput::onToggleCritical()
+{
+    bCritical = bCritical ? false : true;
+    getWindowParameter()->SetBool( "checkCritical", bCritical );
+}
+
+void ReportOutput::onToggleShowReportViewOnWarning()
+{
+    ReportOutputParameter::toggleShowOnWarning();
+}
+
+void ReportOutput::onToggleShowReportViewOnError()
+{
+    ReportOutputParameter::toggleShowOnError();
+}
+
+void ReportOutput::onToggleShowReportViewOnNormalMessage()
+{
+    ReportOutputParameter::toggleShowOnMessage();
+}
+
+void ReportOutput::onToggleShowReportViewOnCritical()
+{
+    ReportOutputParameter::toggleShowOnCritical();
+}
+
+void ReportOutput::onToggleShowReportViewOnLogMessage()
+{
+    ReportOutputParameter::toggleShowOnLogMessage();
 }
 
 void ReportOutput::onToggleRedirectPythonStdout()
@@ -485,12 +770,12 @@ void ReportOutput::onToggleRedirectPythonStdout()
     if (d->redirected_stdout) {
         d->redirected_stdout = false;
         Base::PyGILStateLocker lock;
-        PySys_SetObject(const_cast<char*>("stdout"), d->default_stdout);
+        PySys_SetObject("stdout", d->default_stdout);
     }
     else {
         d->redirected_stdout = true;
         Base::PyGILStateLocker lock;
-        PySys_SetObject(const_cast<char*>("stdout"), d->replace_stdout);
+        PySys_SetObject("stdout", d->replace_stdout);
     }
 
     getWindowParameter()->SetBool("RedirectPythonOutput", d->redirected_stdout);
@@ -501,12 +786,12 @@ void ReportOutput::onToggleRedirectPythonStderr()
     if (d->redirected_stderr) {
         d->redirected_stderr = false;
         Base::PyGILStateLocker lock;
-        PySys_SetObject(const_cast<char*>("stderr"), d->default_stderr);
+        PySys_SetObject("stderr", d->default_stderr);
     }
     else {
         d->redirected_stderr = true;
         Base::PyGILStateLocker lock;
-        PySys_SetObject(const_cast<char*>("stderr"), d->replace_stderr);
+        PySys_SetObject("stderr", d->replace_stderr);
     }
 
     getWindowParameter()->SetBool("RedirectPythonErrors", d->redirected_stderr);
@@ -530,44 +815,61 @@ void ReportOutput::OnChange(Base::Subject<const char*> &rCaller, const char * sR
     else if (strcmp(sReason, "checkError") == 0) {
         bErr = rclGrp.GetBool( sReason, bErr );
     }
+    else if (strcmp(sReason, "checkMessage") == 0) {
+        bMsg = rclGrp.GetBool( sReason, bMsg );
+    }
+    else if (strcmp(sReason, "checkCritical") == 0) {
+        bMsg = rclGrp.GetBool( sReason, bMsg );
+    }
     else if (strcmp(sReason, "colorText") == 0) {
+        unsigned long col = rclGrp.GetUnsigned( sReason );
+        reportHl->setTextColor(App::Color::fromPackedRGB<QColor>(col));
+    }
+    else if (strcmp(sReason, "colorCriticalText") == 0) {
         unsigned long col = rclGrp.GetUnsigned( sReason );
         reportHl->setTextColor( QColor( (col >> 24) & 0xff,(col >> 16) & 0xff,(col >> 8) & 0xff) );
     }
     else if (strcmp(sReason, "colorLogging") == 0) {
         unsigned long col = rclGrp.GetUnsigned( sReason );
-        reportHl->setLogColor( QColor( (col >> 24) & 0xff,(col >> 16) & 0xff,(col >> 8) & 0xff) );
+        reportHl->setLogColor(App::Color::fromPackedRGB<QColor>(col));
     }
     else if (strcmp(sReason, "colorWarning") == 0) {
         unsigned long col = rclGrp.GetUnsigned( sReason );
-        reportHl->setWarningColor( QColor( (col >> 24) & 0xff,(col >> 16) & 0xff,(col >> 8) & 0xff) );
+        reportHl->setWarningColor(App::Color::fromPackedRGB<QColor>(col));
     }
     else if (strcmp(sReason, "colorError") == 0) {
         unsigned long col = rclGrp.GetUnsigned( sReason );
-        reportHl->setErrorColor( QColor( (col >> 24) & 0xff,(col >> 16) & 0xff,(col >> 8) & 0xff) );
+        reportHl->setErrorColor(App::Color::fromPackedRGB<QColor>(col));
     }
     else if (strcmp(sReason, "checkGoToEnd") == 0) {
         gotoEnd = rclGrp.GetBool(sReason, gotoEnd);
     }
     else if (strcmp(sReason, "FontSize") == 0 || strcmp(sReason, "Font") == 0) {
         int fontSize = rclGrp.GetInt("FontSize", 10);
-        QString fontFamily = QString::fromAscii(rclGrp.GetASCII("Font", "Courier").c_str());
-        
+        QString fontFamily = QString::fromLatin1(rclGrp.GetASCII("Font", "Courier").c_str());
+
         QFont font(fontFamily, fontSize);
         setFont(font);
         QFontMetrics metric(font);
-        int width = metric.width(QLatin1String("0000"));
+        int width = QtTools::horizontalAdvance(metric, QLatin1String("0000"));
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
         setTabStopWidth(width);
+#else
+        setTabStopDistance(width);
+#endif
     }
     else if (strcmp(sReason, "RedirectPythonOutput") == 0) {
-        bool checked = rclGrp.GetBool(sReason);
+        bool checked = rclGrp.GetBool(sReason, true);
         if (checked != d->redirected_stdout)
             onToggleRedirectPythonStdout();
     }
     else if (strcmp(sReason, "RedirectPythonErrors") == 0) {
-        bool checked = rclGrp.GetBool(sReason);
+        bool checked = rclGrp.GetBool(sReason, true);
         if (checked != d->redirected_stderr)
             onToggleRedirectPythonStderr();
+    }
+    else if (strcmp(sReason, "LogMessageSize") == 0) {
+        messageSize = rclGrp.GetInt(sReason, d->logMessageSize);
     }
 }
 

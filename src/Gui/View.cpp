@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,8 +24,8 @@
 #include "PreCompiled.h"
 
 #include "View.h"
-#include "Document.h"
 #include "Application.h"
+#include "Document.h"
 
 using namespace Gui;
 
@@ -33,11 +33,11 @@ using namespace Gui;
 // BaseView
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TYPESYSTEM_SOURCE_ABSTRACT(Gui::BaseView,Base::BaseClass);
+TYPESYSTEM_SOURCE_ABSTRACT(Gui::BaseView,Base::BaseClass)
 
 
 BaseView::BaseView( Gui::Document* pcDocument)
-  :_pcDocument(pcDocument), bIsDetached(false)
+  :_pcDocument(pcDocument)
 {
     if (pcDocument){
         pcDocument->attachView(this);
@@ -54,7 +54,7 @@ BaseView::~BaseView()
     onClose();
 }
 
-void BaseView::onClose(void)
+void BaseView::onClose()
 {
     if (bIsDetached)
         return;
@@ -69,7 +69,7 @@ void BaseView::onClose(void)
             _pcDocument->detachView(this);
     }
 
-    _pcDocument = 0;
+    _pcDocument = nullptr;
     bIsDetached = true;
 }
 
@@ -86,7 +86,7 @@ void BaseView::setDocument(Gui::Document* pcDocument)
     if (_pcDocument)
         _pcDocument->detachView(this, true);
     if (pcDocument)
-        pcDocument->attachView(this,true);	
+        pcDocument->attachView(this,true);
 
     // set the new document as the active one
     _pcDocument = pcDocument;
@@ -95,5 +95,5 @@ void BaseView::setDocument(Gui::Document* pcDocument)
 /// returns the document the view is attached to
 App::Document* BaseView::getAppDocument() const
 {
-    return _pcDocument ? _pcDocument->getDocument() : 0;
+    return _pcDocument ? _pcDocument->getDocument() : nullptr;
 }

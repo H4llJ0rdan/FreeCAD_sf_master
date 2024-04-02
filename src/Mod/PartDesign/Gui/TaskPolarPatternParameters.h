@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -20,16 +20,12 @@
  *                                                                            *
  ******************************************************************************/
 
-
 #ifndef GUI_TASKVIEW_TaskPolarPatternParameters_H
 #define GUI_TASKVIEW_TaskPolarPatternParameters_H
 
-#include <Gui/TaskView/TaskView.h>
-#include <Gui/Selection.h>
-#include <Gui/TaskView/TaskDialog.h>
-
 #include "TaskTransformedParameters.h"
 #include "ViewProviderPolarPattern.h"
+
 
 class QTimer;
 class Ui_TaskPolarPatternParameters;
@@ -52,37 +48,49 @@ class TaskPolarPatternParameters : public TaskTransformedParameters
 
 public:
     /// Constructor for task with ViewProvider
-    TaskPolarPatternParameters(ViewProviderTransformed *TransformedView, QWidget *parent = 0);
+    explicit TaskPolarPatternParameters(ViewProviderTransformed *TransformedView, QWidget *parent = nullptr);
     /// Constructor for task with parent task (MultiTransform mode)
     TaskPolarPatternParameters(TaskMultiTransformParameters *parentTask, QLayout *layout);
-    virtual ~TaskPolarPatternParameters();
+    ~TaskPolarPatternParameters() override;
 
-    const std::string getStdAxis(void) const;
-    const std::string getAxis(void) const;
-    const bool getReverse(void) const;
-    const double getAngle(void) const;
-    const unsigned getOccurrences(void) const;
+    void apply() override;
 
 private Q_SLOTS:
     void onUpdateViewTimer();
     void onAxisChanged(int num);
+    void onModeChanged(const int mode);
     void onCheckReverse(const bool on);
     void onAngle(const double a);
-    void onOccurrences(const int n);
-    virtual void onUpdateView(bool);
+    void onOffset(const double a);
+    void onOccurrences(const uint n);
+    void onUpdateView(bool) override;
+    void onFeatureDeleted() override;
 
 protected:
-    virtual void changeEvent(QEvent *e);
-    virtual void onSelectionChanged(const Gui::SelectionChanges& msg);
+    void addObject(App::DocumentObject*) override;
+    void removeObject(App::DocumentObject*) override;
+    void changeEvent(QEvent *e) override;
+    void onSelectionChanged(const Gui::SelectionChanges& msg) override;
+    void clearButtons() override;
+    void getAxis(App::DocumentObject*& obj, std::vector<std::string>& sub) const;
+    const std::string getStdAxis() const;
+    const std::string getAxis() const;
+    bool getReverse() const;
+    double getAngle() const;
+    unsigned getOccurrences() const;
 
 private:
+    void connectSignals();
     void setupUI();
     void updateUI();
     void kickUpdateViewTimer() const;
+    void adaptVisibilityToMode();
 
 private:
-    Ui_TaskPolarPatternParameters* ui;
+    std::unique_ptr<Ui_TaskPolarPatternParameters> ui;
     QTimer* updateViewTimer;
+
+    ComboLinks axesLinks;
 };
 
 
@@ -92,12 +100,8 @@ class TaskDlgPolarPatternParameters : public TaskDlgTransformedParameters
     Q_OBJECT
 
 public:
-    TaskDlgPolarPatternParameters(ViewProviderPolarPattern *PolarPatternView);
-    virtual ~TaskDlgPolarPatternParameters() {}
-
-public:
-    /// is called by the framework if the dialog is accepted (Ok)
-    virtual bool accept();
+    explicit TaskDlgPolarPatternParameters(ViewProviderPolarPattern *PolarPatternView);
+    ~TaskDlgPolarPatternParameters() override = default;
 };
 
 } //namespace PartDesignGui

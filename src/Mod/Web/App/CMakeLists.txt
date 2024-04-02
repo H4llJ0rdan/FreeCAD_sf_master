@@ -3,48 +3,34 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${Boost_INCLUDE_DIRS}
     ${OCC_INCLUDE_DIR}
-    ${PYTHON_INCLUDE_PATH}
+    ${PYTHON_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIR}
-    ${XERCESC_INCLUDE_DIR}
-    ${QT_INCLUDE_DIR}
 )
 
-if(MSVC)
-    set(Web_LIBS
-         FreeCADApp
-         ${QT_DEBUG_LIBRARIES}
-         ${QT_LIBRARIES}
-    )
-else(MSVC)
-    set(Web_LIBS
-        FreeCADApp
-        ${QT_LIBRARIES}
-    )
-endif(MSVC)
-
-set(Web_MOC_HDRS
-    Server.h
+include_directories(
+    ${QtNetwork_INCLUDE_DIRS}
 )
-fc_wrap_cpp(Web_MOC_SRCS ${Web_MOC_HDRS})
-SOURCE_GROUP("Moc" FILES ${Web_MOC_SRCS})
+set(Web_LIBS
+    FreeCADApp
+    ${QtNetwork_LIBRARIES}
+)
 
 SET(Web_SRCS
     AppWeb.cpp
-    AppWebPy.cpp
     PreCompiled.cpp
     PreCompiled.h
     Server.cpp
     Server.h
 )
 
+if(FREECAD_USE_PCH)
+    add_definitions(-D_PreComp_)
+    GET_MSVC_PRECOMPILED_SOURCE("PreCompiled.cpp" PCH_SRCS ${Web_SRCS})
+    ADD_MSVC_PRECOMPILED_HEADER(Web PreCompiled.h PreCompiled.cpp PCH_SRCS)
+endif(FREECAD_USE_PCH)
+
 add_library(Web SHARED ${Web_SRCS})
 target_link_libraries(Web ${Web_LIBS})
-
-
-fc_target_copy_resource(Web 
-    ${CMAKE_SOURCE_DIR}/src/Mod/Web
-    ${CMAKE_BINARY_DIR}/Mod/Web
-    Init.py)
 
 SET_BIN_DIR(Web Web /Mod/Web)
 SET_PYTHON_PREFIX_SUFFIX(Web)

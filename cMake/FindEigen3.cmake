@@ -17,10 +17,10 @@
 
 if(NOT Eigen3_FIND_VERSION)
   if(NOT Eigen3_FIND_VERSION_MAJOR)
-    set(Eigen3_FIND_VERSION_MAJOR 2)
+    set(Eigen3_FIND_VERSION_MAJOR 3)
   endif(NOT Eigen3_FIND_VERSION_MAJOR)
   if(NOT Eigen3_FIND_VERSION_MINOR)
-    set(Eigen3_FIND_VERSION_MINOR 91)
+    set(Eigen3_FIND_VERSION_MINOR 0)
   endif(NOT Eigen3_FIND_VERSION_MINOR)
   if(NOT Eigen3_FIND_VERSION_PATCH)
     set(Eigen3_FIND_VERSION_PATCH 0)
@@ -73,7 +73,7 @@ else (EIGEN3_INCLUDE_DIR)
   endif(EIGEN3_INCLUDE_DIR)
 
   include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(Eigen3 DEFAULT_MSG EIGEN3_INCLUDE_DIR EIGEN3_VERSION_OK)
+  find_package_handle_standard_args(Eigen3 REQUIRED_VARS EIGEN3_INCLUDE_DIR EIGEN3_VERSION_OK VERSION_VAR EIGEN3_VERSION)
 
   mark_as_advanced(EIGEN3_INCLUDE_DIR)
 

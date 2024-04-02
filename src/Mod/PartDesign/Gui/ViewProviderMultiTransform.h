@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -30,19 +30,23 @@ namespace PartDesignGui {
 
 class PartDesignGuiExport ViewProviderMultiTransform : public ViewProviderTransformed
 {
-    PROPERTY_HEADER(PartGui::ViewProviderMultiTransform);
+    Q_DECLARE_TR_FUNCTIONS(PartDesignGui::ViewProviderMultiTransform)
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderMultiTransform);
 public:
-    ViewProviderMultiTransform()
-        { featureName = std::string("MultiTransform");
-	   sPixmap = "PartDesign_MultiTransform.svg"; }
+    ViewProviderMultiTransform() {
+        menuName = tr("MultiTransform parameters");
+        sPixmap = "PartDesign_MultiTransform.svg";
+    }
 
-    std::vector<App::DocumentObject*> claimChildren(void) const;
+    const std::string & featureName() const override;
+    std::vector<App::DocumentObject*> claimChildren() const override;
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
 
-    virtual bool onDelete(const std::vector<std::string> &);
+    bool onDelete(const std::vector<std::string> &) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-
+    /// Returns a newly create dialog for the part to be placed in the task view
+    TaskDlgFeatureParameters *getEditDialog() override;
 };
 
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2002                        *   
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -10,27 +10,27 @@
  *   for detail see the LICENCE text file.                                 *
  *                                                                         *
  *   FreeCAD is distributed in the hope that it will be useful,            *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        * 
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU Library General Public License for more details.                  *
  *                                                                         *
  *   You should have received a copy of the GNU Library General Public     *
- *   License along with FreeCAD; if not, write to the Free Software        * 
+ *   License along with FreeCAD; if not, write to the Free Software        *
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
  *   USA                                                                   *
  *                                                                         *
- *   Juergen Riegel 2002                                                   *
  ***************************************************************************/
 
 
 #ifndef BASE_FACTORY_H
 #define BASE_FACTORY_H
 
-#include<typeinfo>
-#include<string>
-#include<map>
-#include<list>
-#include"../FCConfig.h"
+#include <list>
+#include <map>
+#include <string>
+#ifndef FC_GLOBAL_H
+#include <FCGlobal.h>
+#endif
 
 
 namespace Base
@@ -40,17 +40,17 @@ namespace Base
 class BaseExport AbstractProducer
 {
 public:
-    AbstractProducer() {}
-    virtual ~AbstractProducer() {}
-    /// overwriten by a concret producer to produce the needed object
-    virtual void* Produce (void) const = 0;
+    AbstractProducer() = default;
+    virtual ~AbstractProducer() = default;
+    /// overwritten by a concrete producer to produce the needed object
+    virtual void* Produce () const = 0;
 };
 
 
- 
+
 /** Base class of all factories
-  * This class has the purpose to produce at runtime instances 
-  * of classes not known at compile time. It holds a map of so called
+  * This class has the purpose to produce instances of classes at runtime
+  * that are unknown at compile time. It holds a map of so called
   * producers which are able to produce an instance of a special class.
   * Producer can be registered at runtime through e.g. application modules
   */
@@ -69,8 +69,8 @@ protected:
     void* Produce (const char* sClassName) const;
     std::map<const std::string, AbstractProducer*> _mpcProducers;
     /// construction
-    Factory (void){}
-    /// destruction 
+    Factory () = default;
+    /// destruction
     virtual ~Factory ();
 };
 
@@ -81,19 +81,19 @@ protected:
 class BaseExport ScriptFactorySingleton : public Factory
 {
 public:
-    static ScriptFactorySingleton& Instance(void);
-    static void Destruct (void);
+    static ScriptFactorySingleton& Instance();
+    static void Destruct ();
 
     const char* ProduceScript (const char* sScriptName) const;
 
 private:
     static ScriptFactorySingleton* _pcSingleton;
 
-    ScriptFactorySingleton(){}
-    ~ScriptFactorySingleton(){}
+    ScriptFactorySingleton() = default;
+    ~ScriptFactorySingleton() override = default;
 };
 
-inline ScriptFactorySingleton& ScriptFactory(void)
+inline ScriptFactorySingleton& ScriptFactory()
 {
     return ScriptFactorySingleton::Instance();
 }
@@ -101,7 +101,7 @@ inline ScriptFactorySingleton& ScriptFactory(void)
 // --------------------------------------------------------------------
 
 /** Script Factory
-  * This class produce Scirpts. 
+  * This class produce Scripts.
   * @see Factory
   */
 class BaseExport ScriptProducer: public AbstractProducer
@@ -113,12 +113,12 @@ public:
         ScriptFactorySingleton::Instance().AddProducer(name, this);
     }
 
-    virtual ~ScriptProducer (void){}
+    ~ScriptProducer () override = default;
 
     /// Produce an instance
-    virtual void* Produce (void) const
-    { 
-        return (void*)mScript;
+    void* Produce () const override
+    {
+        return const_cast<char*>(mScript);
     }
 
 private:

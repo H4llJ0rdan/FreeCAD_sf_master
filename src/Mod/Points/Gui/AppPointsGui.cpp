@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,13 +20,11 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-#endif
 
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
+#include <Base/PyObjectBase.h>
 #include <Gui/Application.h>
 #include <Gui/Language/Translator.h>
 #include <Mod/Points/App/PropertyPointKernel.h>
@@ -34,55 +32,73 @@
 #include "ViewProvider.h"
 #include "Workbench.h"
 
+
 // use a different name to CreateCommand()
-void CreatePointsCommands(void);
+void CreatePointsCommands();
 
 void loadPointsResource()
 {
     // add resources and reloads the translators
     Q_INIT_RESOURCE(Points);
+    Q_INIT_RESOURCE(Points_translation);
     Gui::Translator::instance()->refresh();
 }
 
-
-/* registration table  */
-static struct PyMethodDef PointsGui_methods[] = {
-    {NULL, NULL}                   /* end of table marker */
+namespace PointsGui
+{
+class Module: public Py::ExtensionModule<Module>
+{
+public:
+    Module()
+        : Py::ExtensionModule<Module>("PointsGui")
+    {
+        initialize("This module is the PointsGui module.");  // register with Python
+    }
 };
 
+PyObject* initModule()
+{
+    return Base::Interpreter().addModule(new Module);
+}
+
+}  // namespace PointsGui
+
+
 /* Python entry */
-extern "C" {
-void PointsGuiExport initPointsGui()
+PyMOD_INIT_FUNC(PointsGui)
 {
     if (!Gui::Application::Instance) {
         PyErr_SetString(PyExc_ImportError, "Cannot load Gui module in console application.");
-        return;
+        PyMOD_Return(nullptr);
     }
 
     // load dependent module
     try {
         Base::Interpreter().loadModule("Points");
     }
-    catch(const Base::Exception& e) {
+    catch (const Base::Exception& e) {
         PyErr_SetString(PyExc_ImportError, e.what());
-        return;
+        PyMOD_Return(nullptr);
     }
 
     Base::Console().Log("Loading GUI of Points module... done\n");
-    (void) Py_InitModule("PointsGui", PointsGui_methods);   /* mod name, table ptr */
+    PyObject* mod = PointsGui::initModule();
 
     // instantiating the commands
     CreatePointsCommands();
 
-    PointsGui::ViewProviderPoints::init();
-    PointsGui::ViewProviderPython::init();
-    PointsGui::Workbench         ::init();
-    Gui::ViewProviderBuilder::add(
-        Points::PropertyPointKernel::getClassTypeId(),
-        PointsGui::ViewProviderPoints::getClassTypeId());
+    // clang-format off
+    PointsGui::ViewProviderPoints       ::init();
+    PointsGui::ViewProviderScattered    ::init();
+    PointsGui::ViewProviderStructured   ::init();
+    PointsGui::ViewProviderPython       ::init();
+    PointsGui::Workbench                ::init();
+    // clang-format on
+    Gui::ViewProviderBuilder::add(Points::PropertyPointKernel::getClassTypeId(),
+                                  PointsGui::ViewProviderPoints::getClassTypeId());
 
     // add resources and reloads the translators
     loadPointsResource();
-}
 
-} // extern "C"
+    PyMOD_Return(mod);
+}

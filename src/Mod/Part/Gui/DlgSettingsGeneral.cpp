@@ -20,36 +20,39 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
+#ifndef _PreComp_
+# include <QButtonGroup>
+# include <QRegularExpression>
+# include <QRegularExpressionValidator>
+# include <QVBoxLayout>
+# include <Interface_Static.hxx>
+#endif
 
-#include <Interface_Static.hxx>
-
-#include <Base/Parameter.h>
-#include <App/Application.h>
+#include <Mod/Part/App/Interface.h>
+#include <Mod/Part/App/IGES/ImportExportSettings.h>
+#include <Mod/Part/App/OCAF/ImportExportSettings.h>
+#include <Mod/Part/App/STEP/ImportExportSettings.h>
 
 #include "DlgSettingsGeneral.h"
 #include "ui_DlgSettingsGeneral.h"
 #include "ui_DlgImportExportIges.h"
-#include "ui_DlgImportExportStep.h"
+#include "DlgExportStep.h"
+#include "DlgImportStep.h"
+
 
 using namespace PartGui;
 
 DlgSettingsGeneral::DlgSettingsGeneral(QWidget* parent)
-  : PreferencePage(parent)
+  : PreferencePage(parent), ui(new Ui_DlgSettingsGeneral)
 {
-    ui = new Ui_DlgSettingsGeneral();
     ui->setupUi(this);
 }
 
-/** 
+/**
  *  Destroys the object and frees any allocated resources
  */
-DlgSettingsGeneral::~DlgSettingsGeneral()
-{
-    // no need to delete child widgets, Qt does it all for us
-    delete ui;
-}
+DlgSettingsGeneral::~DlgSettingsGeneral() = default;
 
 void DlgSettingsGeneral::saveSettings()
 {
@@ -83,72 +86,65 @@ void DlgSettingsGeneral::changeEvent(QEvent *e)
 // ----------------------------------------------------------------------------
 
 DlgImportExportIges::DlgImportExportIges(QWidget* parent)
-  : PreferencePage(parent)
+  : PreferencePage(parent), ui(new Ui_DlgImportExportIges)
 {
-    ui = new Ui_DlgImportExportIges();
     ui->setupUi(this);
     ui->lineEditProduct->setReadOnly(true);
+
+    bg = new QButtonGroup(this);
+    bg->addButton(ui->radioButtonBRepOff, 0);
+    bg->addButton(ui->radioButtonBRepOn, 1);
+
+    QRegularExpression rx;
+    rx.setPattern(QString::fromLatin1("[\\x00-\\x7F]+"));
+    QRegularExpressionValidator* companyValidator = new QRegularExpressionValidator(ui->lineEditCompany);
+    companyValidator->setRegularExpression(rx);
+    ui->lineEditCompany->setValidator(companyValidator);
+    QRegularExpressionValidator* authorValidator = new QRegularExpressionValidator(ui->lineEditAuthor);
+    authorValidator->setRegularExpression(rx);
+    ui->lineEditAuthor->setValidator(authorValidator);
 }
 
-/** 
+/**
  *  Destroys the object and frees any allocated resources
  */
-DlgImportExportIges::~DlgImportExportIges()
-{
-    // no need to delete child widgets, Qt does it all for us
-    delete ui;
-}
+DlgImportExportIges::~DlgImportExportIges() = default;
 
 void DlgImportExportIges::saveSettings()
 {
-    int unit = ui->comboBoxUnits->currentIndex();
-    Base::Reference<ParameterGrp> hGrp = App::GetApplication().GetUserParameter()
-        .GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("Mod/Part")->GetGroup("IGES");
-    hGrp->SetInt("Unit", unit);
-    switch (unit) {
-        case 1:
-            Interface_Static::SetCVal("write.iges.unit","M");
-            break;
-        case 2:
-            Interface_Static::SetCVal("write.iges.unit","IN");
-            break;
-        default:
-            Interface_Static::SetCVal("write.iges.unit","MM");
-            break;
-    }
+    Part::IGES::ImportExportSettings settings;
 
-    hGrp->SetBool("BrepMode", ui->checkBrepMode->isChecked());
-    Interface_Static::SetIVal("write.iges.brep.mode",ui->checkBrepMode->isChecked() ? 1 : 0);
+    int unit = ui->comboBoxUnits->currentIndex();
+    settings.setUnit(static_cast<Part::Interface::Unit>(unit));
+    settings.setBRepMode(bg->checkedId() == 1);
+
+    // Import
+    settings.setSkipBlankEntities(ui->checkSkipBlank->isChecked());
 
     // header info
-    hGrp->SetASCII("Company", ui->lineEditCompany->text().toLatin1());
-    hGrp->SetASCII("Author", ui->lineEditAuthor->text().toLatin1());
-  //hGrp->SetASCII("Product", ui->lineEditProduct->text().toLatin1());
-
-    Interface_Static::SetCVal("write.iges.header.company", ui->lineEditCompany->text().toLatin1());
-    Interface_Static::SetCVal("write.iges.header.author", ui->lineEditAuthor->text().toLatin1());
-  //Interface_Static::SetCVal("write.iges.header.product", ui->lineEditProduct->text().toLatin1());
+    settings.setCompany(ui->lineEditCompany->text().toLatin1());
+    settings.setAuthor(ui->lineEditAuthor->text().toLatin1());
 }
 
 void DlgImportExportIges::loadSettings()
 {
-    Base::Reference<ParameterGrp> hGrp = App::GetApplication().GetUserParameter()
-        .GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("Mod/Part")->GetGroup("IGES");
-    int unit = hGrp->GetInt("Unit", 0);
-    ui->comboBoxUnits->setCurrentIndex(unit);
+    Part::IGES::ImportExportSettings settings;
 
-    int value = Interface_Static::IVal("write.iges.brep.mode");
-    bool brep = hGrp->GetBool("BrepMode", value > 0);
-    ui->checkBrepMode->setChecked(brep);
+    ui->comboBoxUnits->setCurrentIndex(static_cast<int>(settings.getUnit()));
+
+    bool brep = settings.getBRepMode();
+    if (brep)
+        ui->radioButtonBRepOn->setChecked(true);
+    else
+        ui->radioButtonBRepOff->setChecked(true);
+
+    // Import
+    ui->checkSkipBlank->setChecked(settings.getSkipBlankEntities());
 
     // header info
-    ui->lineEditCompany->setText(QString::fromStdString(hGrp->GetASCII("Company",
-        Interface_Static::CVal("write.iges.header.company"))));
-    ui->lineEditAuthor->setText(QString::fromStdString(hGrp->GetASCII("Author",
-        Interface_Static::CVal("write.iges.header.author"))));
-  //ui->lineEditProduct->setText(QString::fromStdString(hGrp->GetASCII("Product")));
-    ui->lineEditProduct->setText(QString::fromLatin1(
-        Interface_Static::CVal("write.iges.header.product")));
+    ui->lineEditCompany->setText(QString::fromStdString(settings.getCompany()));
+    ui->lineEditAuthor->setText(QString::fromStdString(settings.getAuthor()));
+    ui->lineEditProduct->setText(QString::fromStdString(settings.getProductName()));
 }
 
 /**
@@ -168,89 +164,47 @@ void DlgImportExportIges::changeEvent(QEvent *e)
 
 DlgImportExportStep::DlgImportExportStep(QWidget* parent)
   : PreferencePage(parent)
+  , exportStep(new DlgExportStep(this))
+  , importStep(new DlgImportStep(this))
+  , headerStep(new DlgExportHeaderStep(this))
 {
-    ui = new Ui_DlgImportExportStep();
-    ui->setupUi(this);
-    ui->lineEditProduct->setReadOnly(true);
+    setWindowTitle(tr("STEP"));
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setSpacing(0);
+    layout->setContentsMargins(0, 0, 0, 0);
+    setLayout(layout);
+
+    layout->addWidget(exportStep);
+    layout->addWidget(importStep);
+    layout->addWidget(headerStep);
+
+    QSpacerItem* verticalSpacer = new QSpacerItem(20, 82, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    layout->addItem(verticalSpacer);
 }
 
-/** 
+/**
  *  Destroys the object and frees any allocated resources
  */
-DlgImportExportStep::~DlgImportExportStep()
-{
-    // no need to delete child widgets, Qt does it all for us
-    delete ui;
-}
+DlgImportExportStep::~DlgImportExportStep() = default;
 
 void DlgImportExportStep::saveSettings()
 {
-    int unit = ui->comboBoxUnits->currentIndex();
-    Base::Reference<ParameterGrp> hGrp = App::GetApplication().GetUserParameter()
-        .GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("Mod/Part")->GetGroup("STEP");
-    hGrp->SetInt("Unit", unit);
-    switch (unit) {
-        case 1:
-            Interface_Static::SetCVal("write.step.unit","M");
-            break;
-        case 2:
-            Interface_Static::SetCVal("write.step.unit","IN");
-            break;
-        default:
-            Interface_Static::SetCVal("write.step.unit","MM");
-            break;
-    }
-
-    // scheme
-    if (ui->radioButtonAP203->isChecked()) {
-        Interface_Static::SetCVal("write.step.schema","AP203");
-        hGrp->GetASCII("Scheme", "AP203");
-    }
-    else {
-        // possible values: AP214CD (1996), AP214DIS (1998), AP214IS (2002)
-        Interface_Static::SetCVal("write.step.schema","AP214CD");
-        hGrp->GetASCII("Scheme", "AP214CD");
-    }
-
-    // header info
-    hGrp->SetASCII("Company", ui->lineEditCompany->text().toLatin1());
-    hGrp->SetASCII("Author", ui->lineEditAuthor->text().toLatin1());
-  //hGrp->SetASCII("Product", ui->lineEditProduct->text().toLatin1());
+    exportStep->saveSettings();
+    importStep->saveSettings();
+    headerStep->saveSettings();
 }
 
 void DlgImportExportStep::loadSettings()
 {
-    Base::Reference<ParameterGrp> hGrp = App::GetApplication().GetUserParameter()
-        .GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("Mod/Part")->GetGroup("STEP");
-    int unit = hGrp->GetInt("Unit", 0);
-    ui->comboBoxUnits->setCurrentIndex(unit);
-
-    // scheme
-    QString ap = QString::fromStdString(hGrp->GetASCII("Scheme", 
-        Interface_Static::CVal("write.step.schema")));
-    if (ap.startsWith(QLatin1String("AP203")))
-        ui->radioButtonAP203->setChecked(true);
-    else
-        ui->radioButtonAP214->setChecked(true);
-
-    // header info
-    ui->lineEditCompany->setText(QString::fromStdString(hGrp->GetASCII("Company")));
-    ui->lineEditAuthor->setText(QString::fromStdString(hGrp->GetASCII("Author")));
-    ui->lineEditProduct->setText(QString::fromLatin1(
-        Interface_Static::CVal("write.step.product.name")));
+    exportStep->loadSettings();
+    importStep->loadSettings();
+    headerStep->loadSettings();
 }
 
-/**
- * Sets the strings of the subwidgets using the current language.
- */
-void DlgImportExportStep::changeEvent(QEvent *e)
+void DlgImportExportStep::changeEvent(QEvent *)
 {
-    if (e->type() == QEvent::LanguageChange) {
-        ui->retranslateUi(this);
-    }
-    else {
-        QWidget::changeEvent(e);
-    }
+    // do nothing
 }
+
 
 #include "moc_DlgSettingsGeneral.cpp"

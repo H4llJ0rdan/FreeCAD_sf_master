@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,54 +20,52 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef Fem_FemResultObject_H
 #define Fem_FemResultObject_H
 
 #include <App/DocumentObject.h>
-#include <App/PropertyUnits.h>
-#include <App/PropertyStandard.h>
 #include <App/FeaturePython.h>
-#include "FemResultObject.h"
+#include <Mod/Fem/FemGlobal.h>
+
 
 namespace Fem
 {
 /// Father of all result data in a Fem Analysis
-class AppFemExport FemResultObject : public App::DocumentObject
+class FemExport FemResultObject: public App::DocumentObject
 {
-    PROPERTY_HEADER(Fem::FemResultObject);
+    PROPERTY_HEADER_WITH_OVERRIDE(Fem::FemResultObject);
 
 public:
     /// Constructor
-    FemResultObject(void);
-    virtual ~FemResultObject();
+    FemResultObject();
+    ~FemResultObject() override;
 
-    /// Data type specifier of the data stored in this object
-    App::PropertyString DataType;
-    /// Unit and factor of the values
-    App::PropertyQuantity Unit;
-    /// List of element numbers in this result object
-    App::PropertyIntegerList ElementNumbers;
-    /// Link to the corosbonding mesh
+    App::PropertyIntegerList NodeNumbers;
+    /// Link to the corresponding mesh
     App::PropertyLink Mesh;
+    /// Stats of analysis
+    App::PropertyFloat Time;
+    /// User defined results
+    App::PropertyFloatList Stats;
+    /// Displacement vectors of analysis
 
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override
+    {
         return "FemGui::ViewProviderResult";
     }
-    virtual App::DocumentObjectExecReturn *execute(void) {
+    App::DocumentObjectExecReturn* execute() override
+    {
         return App::DocumentObject::StdReturn;
     }
-    virtual short mustExecute(void) const;
-    virtual PyObject *getPyObject(void);
-
-
+    short mustExecute() const override;
+    PyObject* getPyObject() override;
 };
 
-typedef App::FeaturePythonT<FemResultObject> FemResultPython;
+using FemResultObjectPython = App::FeaturePythonT<FemResultObject>;
 
 
-} //namespace Fem
+}  // namespace Fem
 
 
-#endif // Fem_FemResultObject_H
+#endif  // Fem_FemResultObject_H

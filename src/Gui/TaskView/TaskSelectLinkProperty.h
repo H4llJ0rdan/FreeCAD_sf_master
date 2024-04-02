@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -26,7 +26,6 @@
 
 #include "TaskView.h"
 #include <Gui/Selection.h>
-#include <boost/signals.hpp>
 #include <App/PropertyLinks.h>
 
 
@@ -40,7 +39,7 @@ namespace Gui {
 class ViewProvider;
 namespace TaskView {
 
-/** General Link/Selction editor for the Task view
+/** General Link/Selection editor for the Task view
  *  This can be used as part of a TaskDialog to alter
  *  the content of a LinkProperty by user input/selection.
  *  If set active it reflects the selection to the Property 
@@ -57,43 +56,44 @@ class GuiExport TaskSelectLinkProperty : public TaskBox, public Gui::SelectionSi
     Q_OBJECT
 
 public:
-    TaskSelectLinkProperty(const char *,App::Property *,QWidget *parent = 0);
-    ~TaskSelectLinkProperty();
+    TaskSelectLinkProperty(const char *,App::Property *,QWidget *parent = nullptr);
+    ~TaskSelectLinkProperty() override;
     /// Observer message from the Selection
     void OnChange(Gui::SelectionSingleton::SubjectType &rCaller,
-                  Gui::SelectionSingleton::MessageType Reason);
+                  Gui::SelectionSingleton::MessageType Reason) override;
 
     /// set the filter criterion (same as in constructor)
     bool setFilter(const char*);
 
-    /// set the TaskSelectLinkProperty active, means seting the selection and controls it
-    void activate(void);
+    /// set the TaskSelectLinkProperty active, means setting the selection and control it
+    void activate();
 
-    /// call this to accept the changes the user have made and put back to the Propterty (Ok)
-    bool accept(void);
-    /// This discard the changes of the user and leaf the Property untouched (Cancel)
-    bool reject(void);
+    /// call this to accept the changes the user has made and send back to the Property (Ok)
+    bool accept();
+    /// This discards the changes of the user and leaves the Property untouched (Cancel)
+    bool reject();
     /// send the selection to the Property for e.g. forced recomputation of a feature
-    void sendSelection2Property(void);
-    /// checkes if the filter is current met
-    inline bool isSelectionValid(void) const {return Filter->match();}
+    void sendSelection2Property();
+    /// checks if the filter is currently met
+    inline bool isSelectionValid() const {return Filter->match();}
 
-private Q_SLOTS:
-    void on_Remove_clicked(bool);
-    void on_Add_clicked(bool);
-    void on_Invert_clicked(bool);
-    void on_Help_clicked(bool);
+private:
+    void setupConnections();
+    void onRemoveClicked(bool);
+    void onAddClicked(bool);
+    void onInvertClicked(bool);
+    void onHelpClicked(bool);
 
 Q_SIGNALS:
-    void emitSelectionFit(void);
-    void emitSelectionMisfit(void);
+    void emitSelectionFit();
+    void emitSelectionMisfit();
 
 protected:
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent *e) override;
 
 private:
     // checks for selection and set background color and signals
-    void checkSelectionStatus(void);
+    void checkSelectionStatus();
 
     QWidget* proxy;
     Ui_TaskSelectLinkProperty* ui;
@@ -101,7 +101,7 @@ private:
     // selection filter for the session 
     Gui::SelectionFilter *Filter;
 
-    // posible used propetry types, only one is used
+    // possible used property types, only one is used
     App::PropertyLinkSub  *LinkSub;
     App::PropertyLinkList *LinkList;
 

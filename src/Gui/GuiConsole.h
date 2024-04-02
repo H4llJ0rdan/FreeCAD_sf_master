@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -30,31 +30,26 @@
 namespace Gui {
 
 /** The console window class
- *  This class opens a console window when instanciated 
- *  and redirect the stdio streams to it as long it exists. 
+ *  This class opens a console window when instantiated
+ *  and redirects the stdio streams to it as long it exists.
  *  This is for Windows only!
- *  After instanciation it automaticly register itself at
+ *  After instantiation it automatically registers itself at
  *  the FCConsole class and gets all the FCConsoleObserver
- *  massages. The class must not used directly! Only the 
- *  over the FCConsole class is allowed!
+ *  messages. The class must not used directly! Only the
+ *  FCConsole class is allowed!
  *  @see FCConsole
- *  \author Jürgen Riegel
+ *  \author JÃ¼rgen Riegel
  */
-class GuiExport GUIConsole :public Base::ConsoleObserver
+class GuiExport GUIConsole :public Base::ILogger
 {
 public:
   /// Constructor
-  GUIConsole(void);
+  GUIConsole();
   /// Destructor
-  virtual ~GUIConsole(void);
-  //@{
-    /** Observer implementation */
-  virtual void Warning(const char *sWarn);
-  virtual void Message(const char *sMsg);
-  virtual void Error  (const char *sErr);
-  virtual void Log    (const char *sErr);
-  const char* Name(void){return "GUIConsole";}
-  //@}
+  ~GUIConsole() override;
+  void SendLog(const std::string& notifiername, const std::string& msg, Base::LogStyle level,
+                 Base::IntendedRecipient recipient, Base::ContentType content) override;
+  const char* Name() override {return "GUIConsole";}
 
 protected:
   static const unsigned int s_nMaxLines;

@@ -20,24 +20,24 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
 # include <sstream>
 #endif
 
-#include "Gui/ViewProviderDocumentObject.h"
-#include <App/DocumentObject.h>
+#include <App/DocumentObjectPy.h>
+#include "Document.h"
 
 // inclusion of the generated files (generated out of ViewProviderDocumentObjectPy.xml)
 #include "ViewProviderDocumentObjectPy.h"
 #include "ViewProviderDocumentObjectPy.cpp"
 
+
 using namespace Gui;
 
 // returns a string which represents the object e.g. when printed in python
-std::string ViewProviderDocumentObjectPy::representation(void) const
+std::string ViewProviderDocumentObjectPy::representation() const
 {
     std::stringstream str;
     str << "<View provider object at " << getViewProviderDocumentObjectPtr() << ">";
@@ -47,26 +47,53 @@ std::string ViewProviderDocumentObjectPy::representation(void) const
 
 PyObject* ViewProviderDocumentObjectPy::update(PyObject *args)
 {
-    if (!PyArg_ParseTuple(args, ""))     // convert args: Python->C 
-        return NULL;                       // NULL triggers exception 
+    if (!PyArg_ParseTuple(args, ""))
+        return nullptr;
     PY_TRY {
         getViewProviderDocumentObjectPtr()->updateView();
         Py_Return;
     } PY_CATCH;
 }
 
-Py::Object ViewProviderDocumentObjectPy::getObject(void) const
+Py::Object ViewProviderDocumentObjectPy::getObject() const
 {
     App::DocumentObject* obj = getViewProviderDocumentObjectPtr()->getObject();
     return Py::Object(obj->getPyObject(), true); // do not inc'ref twice
 }
 
+void ViewProviderDocumentObjectPy::setObject(Py::Object pyobj)
+{
+    if(!PyObject_TypeCheck(*pyobj,&App::DocumentObjectPy::Type))
+        throw Py::TypeError("Expect document object");
+    App::DocumentObject* obj = getViewProviderDocumentObjectPtr()->getObject();
+    if(obj)
+        throw Py::RuntimeError("View object already attached");
+    getViewProviderDocumentObjectPtr()->attach(
+            static_cast<App::DocumentObjectPy*>(*pyobj)->getDocumentObjectPtr());
+}
+
+Py::Boolean ViewProviderDocumentObjectPy::getForceUpdate() const
+{
+    return {getViewProviderDocumentObjectPtr()->isUpdateForced()};
+}
+
+void ViewProviderDocumentObjectPy::setForceUpdate(Py::Boolean arg)
+{
+    getViewProviderDocumentObjectPtr()->forceUpdate(arg);
+}
+
+Py::Object ViewProviderDocumentObjectPy::getDocument() const
+{
+    Document* doc = getViewProviderDocumentObjectPtr()->getDocument();
+    return Py::asObject(doc->getPyObject()); // do not inc'ref twice
+}
+
 PyObject *ViewProviderDocumentObjectPy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int ViewProviderDocumentObjectPy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }

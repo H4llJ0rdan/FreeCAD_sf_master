@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) YEAR YOUR NAME         <Your e-mail address>            *
+ *   Copyright (c) YEAR YOUR NAME <Your e-mail address>                    *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -25,8 +25,8 @@
 #ifndef _PreComp_
 #endif
 
-#include <Base/Console.h>
 #include <App/Document.h>
+#include <Base/Console.h>
 #include <Gui/Application.h>
 #include <Gui/Command.h>
 
@@ -36,28 +36,28 @@
 //===========================================================================
 // Cmd_TEMPLATE_Test THIS IS JUST A TEST COMMAND
 //===========================================================================
-DEF_STD_CMD(Cmd_TEMPLATE_Test);
+DEF_STD_CMD(Cmd_TEMPLATE_Test)
 
 Cmd_TEMPLATE_Test::Cmd_TEMPLATE_Test()
-  :Command("_TEMPLATE__Test")
+    : Command("_TEMPLATE__Test")
 {
-    sAppModule    = "_TEMPLATE_";
-    sGroup        = QT_TR_NOOP("_TEMPLATE_");
-    sMenuText     = QT_TR_NOOP("Hello");
-    sToolTipText  = QT_TR_NOOP("_TEMPLATE_ Test function");
-    sWhatsThis    = QT_TR_NOOP("_TEMPLATE_ Test function");
-    sStatusTip    = QT_TR_NOOP("_TEMPLATE_ Test function");
-    sPixmap       = "Test1";
-    sAccel        = "CTRL+H";
+    sAppModule = "_TEMPLATE_";
+    sGroup = QT_TR_NOOP("_TEMPLATE_");
+    sMenuText = QT_TR_NOOP("Hello");
+    sToolTipText = QT_TR_NOOP("_TEMPLATE_ Test function");
+    sWhatsThis = "_TEMPLATE__Test";
+    sStatusTip = QT_TR_NOOP("_TEMPLATE_ Test function");
+    sPixmap = "_TEMPLATE_Workbench";
+    sAccel = "CTRL+H";
 }
 
-void Cmd_TEMPLATE_Test::activated(int iMsg)
+void Cmd_TEMPLATE_Test::activated(int)
 {
     Base::Console().Message("Hello, World!\n");
 }
 
 void Create_TEMPLATE_Commands(void)
 {
-    Gui::CommandManager &rcCmdMgr = Gui::Application::Instance->commandManager();
+    Gui::CommandManager& rcCmdMgr = Gui::Application::Instance->commandManager();
     rcCmdMgr.addCommand(new Cmd_TEMPLATE_Test());
 }

@@ -23,13 +23,60 @@
 #ifndef APP_FEATUREPYTHONPYIMP_H
 #define APP_FEATUREPYTHONPYIMP_H
 
-#include <map>
-#include <string>
-#include <Base/Console.h>
-#include <App/DocumentObjectPy.h>
+#include <Base/BaseClass.h>
+#include <Base/Interpreter.h>
+#include <Base/PyObjectBase.h>
+
+#if defined(__clang__)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#elif defined(__GNUC__) || defined(__GNUG__)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+
+#define PYTHON_TYPE_DEF(_class_, _subclass_) \
+    class _class_ : public _subclass_ \
+    { \
+    public: \
+        static PyTypeObject Type; \
+    public: \
+        _class_(Base::BaseClass *pcObject, PyTypeObject *T = &Type); \
+        virtual ~_class_(); \
+    };
+
+#if PY_VERSION_HEX >= 0x03090000
+#define PYTHON_TYPE_SLOTS 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#elif PY_VERSION_HEX >= 0x03080000
+#define PYTHON_TYPE_SLOTS 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#else
+#define PYTHON_TYPE_SLOTS 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+#endif \
+
+#define PYTHON_TYPE_IMP(_class_, _subclass_) \
+    PyTypeObject _class_::Type = { \
+        PyVarObject_HEAD_INIT(&PyType_Type, 0) \
+        ""#_class_"",  \
+        sizeof(_class_),  \
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+        Py_TPFLAGS_BASETYPE|Py_TPFLAGS_DEFAULT, \
+        ""#_class_"", \
+        0, 0, 0, 0, 0, 0, 0, 0, 0, \
+        &_subclass_::Type, \
+        PYTHON_TYPE_SLOTS \
+    }; \
+    _class_::_class_(Base::BaseClass *pcObject, PyTypeObject *T) \
+        : _subclass_(reinterpret_cast<_subclass_::PointerType>(pcObject), T) \
+    { \
+    } \
+    _class_::~_class_() \
+    { \
+    }
 
 namespace App
 {
+
+class Property;
 
 /**
  * @author Werner Mayer
@@ -39,38 +86,20 @@ class FeaturePythonPyT : public FeaturePyT
 {
 public:
     static PyTypeObject   Type;
-    static PyMethodDef    Methods[];
 
 public:
-    FeaturePythonPyT(DocumentObject *pcObject, PyTypeObject *T = &Type);
-    virtual ~FeaturePythonPyT();
+    explicit FeaturePythonPyT(Base::BaseClass *pcObject, PyTypeObject *T = &Type);
+    ~FeaturePythonPyT() override;
 
     /** @name callbacks and implementers for the python object methods */
     //@{
-    static  int __setattr(PyObject *PyObj, char *attr, PyObject *value);
-    /// callback for the addProperty() method
-    static PyObject * staticCallback_addProperty (PyObject *self, PyObject *args);
-    /// implementer for the addProperty() method
-    PyObject*  addProperty(PyObject *args);
-    /// callback for the removeProperty() method
-    static PyObject * staticCallback_removeProperty (PyObject *self, PyObject *args);
-    /// implementer for the removeProperty() method
-    PyObject*  removeProperty(PyObject *args);
-    /// callback for the supportedProperties() method
-    static PyObject * staticCallback_supportedProperties (PyObject *self, PyObject *args);
-    /// implementer for the supportedProperties() method
-    PyObject*  supportedProperties(PyObject *args);
+    static  int __setattro(PyObject *PyObj, PyObject *attro, PyObject *value);
     //@}
-
-    /// getter method for special attributes (e.g. dynamic ones)
-    PyObject *getCustomAttributes(const char* attr) const;
-    /// setter for special attributes (e.g. dynamic ones)
-    int setCustomAttributes(const char* attr, PyObject *obj);
-    PyObject *_getattr(char *attr);              // __getattr__ function
-    int _setattr(char *attr, PyObject *value);        // __setattr__ function
+    PyObject *_getattr(const char *attr) override;
+    int _setattr(const char *attr, PyObject *value) override;
 
 protected:
-    std::map<std::string, PyObject*> dyn_methods;
+    PyObject * dict_methods;
 
 private:
 };
@@ -78,5 +107,11 @@ private:
 } //namespace App
 
 #include "FeaturePythonPyImp.inl"
+
+#if defined(__clang__)
+# pragma clang diagnostic pop
+#elif defined(__GNUC__) || defined(__GNUG__)
+# pragma GCC diagnostic pop
+#endif
 
 #endif // APP_FEATUREPYTHONPYIMP_H

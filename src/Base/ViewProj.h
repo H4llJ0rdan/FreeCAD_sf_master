@@ -36,8 +36,11 @@ namespace Base {
 class BaseExport ViewProjMethod
 {
 public:
-    virtual ~ViewProjMethod(){}
-    virtual bool isValid() const { return true; }
+    ViewProjMethod(const ViewProjMethod&) = default;
+    ViewProjMethod& operator= (const ViewProjMethod&) = default;
+    virtual ~ViewProjMethod() = default;
+
+    virtual bool isValid() const;
     /** Convert 3D point to 2D projection plane */
     virtual Vector3f operator()(const Vector3f &rclPt) const = 0;
     /** Convert 3D point to 2D projection plane */
@@ -47,10 +50,23 @@ public:
     /** Convert a 2D point on the projection plane in 3D space */
     virtual Vector3d inverse (const Vector3d &rclPt) const = 0;
     /** Calculate the projection (+ mapping) matrix */
-    virtual Matrix4D getProjectionMatrix (void) const = 0; 
+    virtual Matrix4D getProjectionMatrix () const = 0;
+    /** Calculate the composed projection matrix */
+    Matrix4D getComposedProjectionMatrix () const;
+    /** Apply an additional transformation to the input points */
+    void setTransform(const Base::Matrix4D&);
+    const Base::Matrix4D& getTransform() const {
+        return transform;
+    }
 
 protected:
-    ViewProjMethod(){}
+    ViewProjMethod();
+    void transformInput(const Base::Vector3f&, Base::Vector3f&) const;
+    void transformInput(const Base::Vector3d&, Base::Vector3d&) const;
+
+private:
+    bool hasTransform{false};
+    Base::Matrix4D transform;
 };
 
 /**
@@ -60,39 +76,41 @@ protected:
 class BaseExport ViewProjMatrix : public ViewProjMethod
 {
 public:
-    ViewProjMatrix (const Matrix4D &rclMtx) : _clMtx(rclMtx) {  _clMtxInv = _clMtx; _clMtxInv.inverse(); }
-    virtual ~ViewProjMatrix(){}
+    ViewProjMatrix (const Matrix4D &rclMtx);
 
-    inline Vector3f operator()(const Vector3f &rclPt) const;
-    inline Vector3d operator()(const Vector3d &rclPt) const;
-    inline Vector3f inverse (const Vector3f &rclPt) const;
-    inline Vector3d inverse (const Vector3d &rclPt) const;
+    Vector3f operator()(const Vector3f &rclPt) const override;
+    Vector3d operator()(const Vector3d &rclPt) const override;
+    Vector3f inverse (const Vector3f &rclPt) const override;
+    Vector3d inverse (const Vector3d &rclPt) const override;
 
-    Matrix4D getProjectionMatrix (void) const { return _clMtx; }
+    Matrix4D getProjectionMatrix () const override;
+
+protected:
+    bool isOrthographic;
+    Matrix4D _clMtx, _clMtxInv;
+};
+
+/**
+ * The ViewOrthoProjMatrix class returns the result of the multiplication
+ * of the 3D vector and the transformation matrix.
+ * Unlike ViewProjMatrix this class is not supposed to project points onto
+ * a viewport but project points onto a plane in 3D.
+ */
+class BaseExport ViewOrthoProjMatrix : public ViewProjMethod
+{
+public:
+    ViewOrthoProjMatrix (const Matrix4D &rclMtx);
+
+    Vector3f operator()(const Vector3f &rclPt) const override;
+    Vector3d operator()(const Vector3d &rclPt) const override;
+    Vector3f inverse (const Vector3f &rclPt) const override;
+    Vector3d inverse (const Vector3d &rclPt) const override;
+
+    Matrix4D getProjectionMatrix () const override;
 
 protected:
     Matrix4D _clMtx, _clMtxInv;
 };
-
-inline Vector3f ViewProjMatrix::operator()(const Vector3f &rclPt) const
-{
-    return Vector3f(_clMtx * rclPt);
-}
-
-inline Vector3d ViewProjMatrix::operator()(const Vector3d &rclPt) const
-{
-    return Vector3d(_clMtx * rclPt);
-}
-
-inline Vector3f ViewProjMatrix::inverse (const Vector3f &rclPt) const
-{
-    return Vector3f(_clMtxInv * rclPt);
-}
-
-inline Vector3d ViewProjMatrix::inverse (const Vector3d &rclPt) const
-{
-    return Vector3d(_clMtxInv * rclPt);
-}
 
 } // namespace Base
 

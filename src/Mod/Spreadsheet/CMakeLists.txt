@@ -1,21 +1,32 @@
 
-SET(Spreadsheet_SRCS
+add_subdirectory(App)
+if(BUILD_GUI)
+    add_subdirectory(Gui)
+endif(BUILD_GUI)
+
+set(Spreadsheet_Scripts
     Init.py
-    InitGui.py
-    Spreadsheet.py
-    Spreadsheet_rc.py
-)
-SOURCE_GROUP("" FILES ${Spreadsheet_SRCS})
-
-SET(all_files ${Spreadsheet_SRCS})
-
-ADD_CUSTOM_TARGET(Spreadsheet ALL
-    SOURCES ${all_files}
+    TestSpreadsheet.py
+    importXLSX.py
 )
 
-fc_copy_sources(Spreadsheet "${CMAKE_BINARY_DIR}/Mod/Spreadsheet" ${all_files})
+if(BUILD_GUI)
+    list (APPEND Spreadsheet_Scripts InitGui.py)
+endif(BUILD_GUI)
 
-INSTALL(
-    FILES ${Spreadsheet_SRCS}
-    DESTINATION Mod/Spreadsheet
+add_custom_target(SpreadsheetScripts ALL
+    SOURCES ${Spreadsheet_Scripts}
+)
+
+fc_target_copy_resource(SpreadsheetScripts
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BINARY_DIR}/Mod/Spreadsheet
+    ${Spreadsheet_Scripts}
+)
+
+install(
+    FILES
+        ${Spreadsheet_Scripts}
+    DESTINATION
+        Mod/Spreadsheet
 )

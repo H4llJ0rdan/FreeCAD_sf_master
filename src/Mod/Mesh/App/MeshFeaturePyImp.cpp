@@ -22,22 +22,20 @@
 
 #include "PreCompiled.h"
 
-#include <Base/Console.h>
-#include <Base/Handle.h>
-
-#include "Core/Evaluation.h"
-#include "MeshPy.h"
 #include "MeshFeature.h"
-
 // inclusion of the generated files (generated out of MeshFeaturePy.xml)
-#include "MeshFeaturePy.h"
-#include "MeshFeaturePy.cpp"
+// clang-format off
+#include <Mod/Mesh/App/MeshPy.h>
+#include <Mod/Mesh/App/MeshFeaturePy.h>
+#include <Mod/Mesh/App/MeshFeaturePy.cpp>
+// clang-format on
+
 
 using namespace Mesh;
 
 
 // returns a string which represent the object e.g. when printed in python
-std::string MeshFeaturePy::representation(void) const
+std::string MeshFeaturePy::representation() const
 {
     std::stringstream str;
     str << getFeaturePtr()->getTypeId().getName() << " object at " << getFeaturePtr();
@@ -45,122 +43,155 @@ std::string MeshFeaturePy::representation(void) const
     return str.str();
 }
 
-PyObject*  MeshFeaturePy::countPoints(PyObject * /*args*/)
+PyObject* MeshFeaturePy::countPoints(PyObject* /*args*/)
 {
-    return Py_BuildValue("i",getFeaturePtr()->Mesh.getValue().countPoints()); 
+    return Py_BuildValue("i", getFeaturePtr()->Mesh.getValue().countPoints());
 }
 
-PyObject*  MeshFeaturePy::countFacets(PyObject * /*args*/)
+PyObject* MeshFeaturePy::countFacets(PyObject* /*args*/)
 {
-    return Py_BuildValue("i",getFeaturePtr()->Mesh.getValue().countFacets()); 
+    return Py_BuildValue("i", getFeaturePtr()->Mesh.getValue().countFacets());
 }
 
-PyObject*  MeshFeaturePy::harmonizeNormals(PyObject *args)
+PyObject* MeshFeaturePy::harmonizeNormals(PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
 
-    PY_TRY {
-        Mesh::MeshObject *mesh = getFeaturePtr()->Mesh.startEditing();
+    PY_TRY
+    {
+        Mesh::MeshObject* mesh = getFeaturePtr()->Mesh.startEditing();
         mesh->harmonizeNormals();
         getFeaturePtr()->Mesh.finishEditing();
-    } PY_CATCH;
+    }
+    PY_CATCH;
 
-    Py_Return; 
+    Py_Return;
 }
 
-PyObject*  MeshFeaturePy::smooth(PyObject *args)
+PyObject* MeshFeaturePy::smooth(PyObject* args)
 {
-    int iter=1;
-    float d_max=FLOAT_MAX;
-    if (!PyArg_ParseTuple(args, "|if", &iter,&d_max))
-        return NULL;
+    int iter = 1;
+    float d_max = FLOAT_MAX;
+    if (!PyArg_ParseTuple(args, "|if", &iter, &d_max)) {
+        return nullptr;
+    }
 
-    PY_TRY {
+    PY_TRY
+    {
         Mesh::Feature* obj = getFeaturePtr();
         MeshObject* kernel = obj->Mesh.startEditing();
         kernel->smooth(iter, d_max);
         obj->Mesh.finishEditing();
-    } PY_CATCH;
+    }
+    PY_CATCH;
 
-    Py_Return; 
+    Py_Return;
 }
 
-PyObject*  MeshFeaturePy::removeNonManifolds(PyObject *args)
+PyObject* MeshFeaturePy::removeNonManifolds(PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
     Mesh::Feature* obj = getFeaturePtr();
     MeshObject* kernel = obj->Mesh.startEditing();
     kernel->removeNonManifolds();
     obj->Mesh.finishEditing();
-    Py_Return
+    Py_Return;
 }
 
-PyObject*  MeshFeaturePy::fixIndices(PyObject *args)
+PyObject* MeshFeaturePy::removeNonManifoldPoints(PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
+    Mesh::Feature* obj = getFeaturePtr();
+    MeshObject* kernel = obj->Mesh.startEditing();
+    kernel->removeNonManifoldPoints();
+    obj->Mesh.finishEditing();
+    Py_Return;
+}
 
-    PY_TRY {
+PyObject* MeshFeaturePy::fixIndices(PyObject* args)
+{
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
+
+    PY_TRY
+    {
         Mesh::Feature* obj = getFeaturePtr();
         MeshObject* kernel = obj->Mesh.startEditing();
         kernel->validateIndices();
         obj->Mesh.finishEditing();
-    } PY_CATCH;
+    }
+    PY_CATCH;
 
-    Py_Return; 
+    Py_Return;
 }
 
-PyObject*  MeshFeaturePy::fixDegenerations(PyObject *args)
+PyObject* MeshFeaturePy::fixDegenerations(PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
+    float fEpsilon = MeshCore::MeshDefinitions::_fMinPointDistanceP2;
+    if (!PyArg_ParseTuple(args, "|f", &fEpsilon)) {
+        return nullptr;
+    }
 
-    PY_TRY {
+    PY_TRY
+    {
         Mesh::Feature* obj = getFeaturePtr();
         MeshObject* kernel = obj->Mesh.startEditing();
-        kernel->validateDegenerations();
+        kernel->validateDegenerations(fEpsilon);
         obj->Mesh.finishEditing();
-    } PY_CATCH;
+    }
+    PY_CATCH;
 
-    Py_Return; 
+    Py_Return;
 }
 
-PyObject*  MeshFeaturePy::removeDuplicatedFacets(PyObject *args)
+PyObject* MeshFeaturePy::removeDuplicatedFacets(PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
 
-    PY_TRY {
+    PY_TRY
+    {
         Mesh::Feature* obj = getFeaturePtr();
         MeshObject* kernel = obj->Mesh.startEditing();
         kernel->removeDuplicatedFacets();
         obj->Mesh.finishEditing();
-    } PY_CATCH;
+    }
+    PY_CATCH;
 
-    Py_Return; 
+    Py_Return;
 }
 
-PyObject*  MeshFeaturePy::removeDuplicatedPoints(PyObject *args)
+PyObject* MeshFeaturePy::removeDuplicatedPoints(PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
 
-    PY_TRY {
+    PY_TRY
+    {
         Mesh::Feature* obj = getFeaturePtr();
         MeshObject* kernel = obj->Mesh.startEditing();
         kernel->removeDuplicatedPoints();
         obj->Mesh.finishEditing();
-    } PY_CATCH;
+    }
+    PY_CATCH;
 
-    Py_Return; 
+    Py_Return;
 }
 
-PyObject*  MeshFeaturePy::fixSelfIntersections(PyObject *args)
+PyObject* MeshFeaturePy::fixSelfIntersections(PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
     try {
         Mesh::Feature* obj = getFeaturePtr();
         MeshObject* kernel = obj->Mesh.startEditing();
@@ -168,16 +199,17 @@ PyObject*  MeshFeaturePy::fixSelfIntersections(PyObject *args)
         obj->Mesh.finishEditing();
     }
     catch (const Base::Exception& e) {
-        PyErr_SetString(Base::BaseExceptionFreeCADError, e.what());
-        return NULL;
+        e.setPyException();
+        return nullptr;
     }
     Py_Return;
 }
 
-PyObject*  MeshFeaturePy::removeFoldsOnSurface(PyObject *args)
+PyObject* MeshFeaturePy::removeFoldsOnSurface(PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
     try {
         Mesh::Feature* obj = getFeaturePtr();
         MeshObject* kernel = obj->Mesh.startEditing();
@@ -185,16 +217,17 @@ PyObject*  MeshFeaturePy::removeFoldsOnSurface(PyObject *args)
         obj->Mesh.finishEditing();
     }
     catch (const Base::Exception& e) {
-        PyErr_SetString(Base::BaseExceptionFreeCADError, e.what());
-        return NULL;
+        e.setPyException();
+        return nullptr;
     }
     Py_Return;
 }
 
-PyObject*  MeshFeaturePy::removeInvalidPoints(PyObject *args)
+PyObject* MeshFeaturePy::removeInvalidPoints(PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-        return NULL;
+    if (!PyArg_ParseTuple(args, "")) {
+        return nullptr;
+    }
     try {
         Mesh::Feature* obj = getFeaturePtr();
         MeshObject* kernel = obj->Mesh.startEditing();
@@ -202,18 +235,18 @@ PyObject*  MeshFeaturePy::removeInvalidPoints(PyObject *args)
         obj->Mesh.finishEditing();
     }
     catch (const Base::Exception& e) {
-        PyErr_SetString(Base::BaseExceptionFreeCADError, e.what());
-        return NULL;
+        e.setPyException();
+        return nullptr;
     }
     Py_Return;
 }
 
-PyObject *MeshFeaturePy::getCustomAttributes(const char* /*attr*/) const
+PyObject* MeshFeaturePy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int MeshFeaturePy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }

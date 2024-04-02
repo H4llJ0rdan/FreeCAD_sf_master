@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de)          *
+ *   Copyright (c) 2011 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,14 +23,14 @@
 #ifndef BASE_IINPUTSOURCE_H
 #define BASE_IINPUTSOURCE_H
 
+#include <iosfwd>
+#include <memory>
 
-#include <iostream>
-
-#include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/util/BinInputStream.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/util/XercesVersion.hpp>
 #include <xercesc/sax/InputSource.hpp>
+#ifndef FC_GLOBAL_H
+#include <FCGlobal.h>
+#endif
 
 
 XERCES_CPP_NAMESPACE_BEGIN
@@ -45,27 +45,22 @@ class BaseExport StdInputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInput
 {
 public :
   StdInputStream ( std::istream& Stream, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager );
-  virtual ~StdInputStream();
+  ~StdInputStream() override;
 
   // -----------------------------------------------------------------------
   //  Implementation of the input stream interface
   // -----------------------------------------------------------------------
-#if (XERCES_VERSION_MAJOR == 2)
-  virtual unsigned int curPos() const;
-  virtual unsigned int readBytes( XMLByte* const toFill, const unsigned int maxToRead );
-#else
-  virtual XMLFilePos curPos() const;
-  virtual XMLSize_t readBytes( XMLByte* const toFill, const XMLSize_t maxToRead );
-  virtual const XMLCh* getContentType() const {return 0;}
-#endif
+  XMLFilePos curPos() const override;
+  XMLSize_t readBytes( XMLByte* const toFill, const XMLSize_t maxToRead ) override;
+  const XMLCh* getContentType() const override {return nullptr;}
 
-private :
   // -----------------------------------------------------------------------
   //  Unimplemented constructors and operators
   // -----------------------------------------------------------------------
-  StdInputStream(const StdInputStream&);
-  StdInputStream& operator=(const StdInputStream&);   
+  StdInputStream(const StdInputStream&) = delete;
+  StdInputStream& operator=(const StdInputStream&) = delete;
 
+private :
   // -----------------------------------------------------------------------
   //  Private data members
   //
@@ -74,7 +69,8 @@ private :
   //      per platform.
   // -----------------------------------------------------------------------
   std::istream            &stream;
-  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const    fMemoryManager;
+  struct TextCodec;
+  std::unique_ptr<TextCodec> codec;
 };
 
 
@@ -82,14 +78,14 @@ class BaseExport StdInputSource : public XERCES_CPP_NAMESPACE_QUALIFIER InputSou
 {
 public :
   StdInputSource ( std::istream& Stream, const char* filePath, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* const manager = XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager );
-   ~StdInputSource();
+   ~StdInputSource() override;
 
-  virtual XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream* makeStream() const;
+  XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream* makeStream() const override;
+
+  StdInputSource(const StdInputSource&) = delete;
+  StdInputSource& operator=(const StdInputSource&) = delete;
 
 private:
-  StdInputSource(const StdInputSource&);
-  StdInputSource& operator=(const StdInputSource&);
-
   std::istream   &stream;
 };
 

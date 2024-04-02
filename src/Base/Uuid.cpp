@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2008                        *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -27,12 +27,9 @@
 # include <QUuid>
 #endif
 
-/// Here the FreeCAD includes sorted by Base,App,Gui......
-#include "Uuid.h"
-#include "Exception.h"
-#include "Interpreter.h"
 #include <stdexcept>
-#include <CXX/Objects.hxx>
+
+#include "Uuid.h"
 
 
 using namespace Base;
@@ -54,44 +51,42 @@ Uuid::Uuid()
  * A destructor.
  * A more elaborate description of the destructor.
  */
-Uuid::~Uuid()
-{
-}
+Uuid::~Uuid() = default;
 
 //**************************************************************************
 //**************************************************************************
 // Get the UUID
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-std::string Uuid::createUuid(void)
+std::string Uuid::createUuid()
 {
     std::string Uuid;
     QString uuid = QUuid::createUuid().toString();
     uuid = uuid.mid(1);
     uuid.chop(1);
-    Uuid = (const char*)uuid.toAscii();
+    Uuid = uuid.toLatin1().constData();
     return Uuid;
 }
 
-void Uuid::setValue(const char* sString) 
-{ 
-    if (sString) { 
-        QUuid uuid(QString::fromAscii(sString)); 
-        if (uuid.isNull()) 
-            throw std::runtime_error("invalid uuid"); 
-        // remove curly braces 
-        QString id = uuid.toString(); 
-        id = id.mid(1); 
-        id.chop(1); 
-        _uuid = (const char*)id.toAscii(); 
-    } 
-} 
+void Uuid::setValue(const char* sString)
+{
+    if (sString) {
+        QUuid uuid(QString::fromLatin1(sString));
+        if (uuid.isNull())
+            throw std::runtime_error("invalid uuid");
+        // remove curly braces
+        QString id = uuid.toString();
+        id = id.mid(1);
+        id.chop(1);
+        _uuid = id.toLatin1().constData();
+    }
+}
 
 void Uuid::setValue(const std::string &sString)
 {
     setValue(sString.c_str());
 }
 
-const std::string& Uuid::getValue(void) const
+const std::string& Uuid::getValue() const
 {
     return _uuid;
 }

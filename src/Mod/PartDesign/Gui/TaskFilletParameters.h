@@ -24,85 +24,54 @@
 #ifndef GUI_TASKVIEW_TaskFilletParameters_H
 #define GUI_TASKVIEW_TaskFilletParameters_H
 
-#include <Gui/TaskView/TaskView.h>
-#include <Gui/Selection.h>
-#include <Gui/TaskView/TaskDialog.h>
-
+#include "TaskDressUpParameters.h"
 #include "ViewProviderFillet.h"
 
 class Ui_TaskFilletParameters;
 
-namespace App {
-class Property;
-}
-
-namespace Gui {
-class ViewProvider;
-}
-
-
 namespace PartDesignGui {
 
-class TaskFilletParameters : public Gui::TaskView::TaskBox
+class TaskFilletParameters : public TaskDressUpParameters
 {
     Q_OBJECT
 
 public:
-    TaskFilletParameters(ViewProviderFillet *FilletView, QWidget *parent=0);
-    ~TaskFilletParameters();
+    explicit TaskFilletParameters(ViewProviderDressUp *DressUpView, QWidget *parent=nullptr);
+    ~TaskFilletParameters() override;
 
-    double getLength(void) const;
+    void apply() override;
 
 private Q_SLOTS:
     void onLengthChanged(double);
+    void onRefDeleted() override;
+    void onAddAllEdges();
+    void onCheckBoxUseAllEdgesToggled(bool checked);
 
 protected:
-    void changeEvent(QEvent *e);
+    double getLength() const;
+    void setButtons(const selectionModes mode) override;
+    bool event(QEvent *e) override;
+    void changeEvent(QEvent *e) override;
+    void onSelectionChanged(const Gui::SelectionChanges& msg) override;
 
 private:
-
-private:
-    QWidget* proxy;
-    Ui_TaskFilletParameters* ui;
-    ViewProviderFillet *FilletView;
+    std::unique_ptr<Ui_TaskFilletParameters> ui;
 };
 
 /// simulation dialog for the TaskView
-class TaskDlgFilletParameters : public Gui::TaskView::TaskDialog
+class TaskDlgFilletParameters : public TaskDlgDressUpParameters
 {
     Q_OBJECT
 
 public:
-    TaskDlgFilletParameters(ViewProviderFillet *FilletView);
-    ~TaskDlgFilletParameters();
-
-    ViewProviderFillet* getFilletView() const
-    { return FilletView; }
-
+    explicit TaskDlgFilletParameters(ViewProviderFillet *DressUpView);
+    ~TaskDlgFilletParameters() override;
 
 public:
-    /// is called the TaskView when the dialog is opened
-    virtual void open();
-    /// is called by the framework if an button is clicked which has no accept or reject role
-    virtual void clicked(int);
     /// is called by the framework if the dialog is accepted (Ok)
-    virtual bool accept();
-    /// is called by the framework if the dialog is rejected (Cancel)
-    virtual bool reject();
-    /// is called by the framework if the user presses the help button
-    virtual bool isAllowedAlterDocument(void) const
-    { return false; }
-
-    /// returns for Close and Help button
-    virtual QDialogButtonBox::StandardButtons getStandardButtons(void) const
-    { return QDialogButtonBox::Ok|QDialogButtonBox::Cancel; }
-
-protected:
-    ViewProviderFillet   *FilletView;
-
-    TaskFilletParameters  *parameter;
+    bool accept() override;
 };
 
 } //namespace PartDesignGui
 
-#endif // GUI_TASKVIEW_TASKAPPERANCE_H
+#endif // GUI_TASKVIEW_TaskFilletParameters_H

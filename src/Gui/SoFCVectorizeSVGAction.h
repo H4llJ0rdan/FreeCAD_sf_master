@@ -20,15 +20,14 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_SOFCVECTORIZESVGACTION_H
 #define GUI_SOFCVECTORIZESVGACTION_H
 
-#ifndef __InventorAll__
-# include "InventorAll.h"
-#endif
+#include <Inventor/annex/HardCopy/SoVectorizeAction.h>
+#include <Inventor/annex/HardCopy/SoVectorOutput.h>
 
 #include <fstream>
+#include <FCGlobal.h>
 
 
 namespace Gui {
@@ -36,10 +35,10 @@ namespace Gui {
 class GuiExport SoSVGVectorOutput : public SoVectorOutput {
 public:
     SoSVGVectorOutput();
-    virtual ~SoSVGVectorOutput();
+    ~SoSVGVectorOutput() override;
 
-    virtual SbBool openFile (const char *filename);
-    virtual void closeFile (void);
+    SbBool openFile (const char *filename) override;
+    void closeFile () override;
     std::fstream& getFileStream();
 
 private:
@@ -51,27 +50,37 @@ private:
  */
 class SoFCVectorizeSVGActionP;
 class GuiExport SoFCVectorizeSVGAction : public SoVectorizeAction {
-    typedef SoReplacedElement inherited;
+    using inherited = SoReplacedElement;
 
     SO_ACTION_HEADER(SoFCVectorizeSVGAction);
 
 public:
-    SoFCVectorizeSVGAction(void);
-    virtual ~SoFCVectorizeSVGAction();
+    SoFCVectorizeSVGAction();
+    ~SoFCVectorizeSVGAction() override;
 
-    static void initClass(void);
-    SoSVGVectorOutput * getSVGOutput(void) const;
+    static void initClass();
+    SoSVGVectorOutput * getSVGOutput() const;
+
+    virtual void setBackgroundState(bool b)  { m_backgroundState = b; }
+    virtual bool getBackgroundState() const { return m_backgroundState; }
+    virtual void setLineWidth(double w) { m_lineWidth = w; }
+    virtual double getLineWidth() const { return m_lineWidth; }
+    virtual void setUseMM(bool b) { m_usemm = b; }
+    virtual bool getUseMM() const { return m_usemm; }
 
 protected:
-    virtual void printHeader(void) const;
-    virtual void printFooter(void) const;
-    virtual void printBackground(void) const;
-    virtual void printItem(const SoVectorizeItem * item) const;
-    virtual void printViewport(void) const;
+    void printHeader() const override;
+    void printFooter() const override;
+    void printBackground() const override;
+    void printItem(const SoVectorizeItem * item) const override;
+    void printViewport() const override;
 
 private:
     SoFCVectorizeSVGActionP* p;
     friend class SoFCVectorizeSVGActionP;
+    bool m_backgroundState{true};
+    double m_lineWidth{1.0};
+    bool m_usemm{false};
 };
 
 } // namespace Gui

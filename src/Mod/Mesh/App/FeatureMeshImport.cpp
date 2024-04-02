@@ -20,17 +20,9 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-#endif
 
-#include <Base/Console.h>
-#include <Base/Exception.h>
-#include <Base/Sequencer.h>
 #include "FeatureMeshImport.h"
-
-#include "Core/MeshIO.h"
 
 
 using namespace Mesh;
@@ -39,24 +31,24 @@ using namespace MeshCore;
 PROPERTY_SOURCE(Mesh::Import, Mesh::Feature)
 
 
-Mesh::Import::Import(void)
+Mesh::Import::Import()
 {
-    ADD_PROPERTY(FileName,(""));
+    ADD_PROPERTY(FileName, (""));
 }
 
-short Mesh::Import::mustExecute(void) const
+short Mesh::Import::mustExecute() const
 {
-    if (FileName.isTouched())
+    if (FileName.isTouched()) {
         return 1;
+    }
     return 0;
 }
 
-App::DocumentObjectExecReturn *Mesh::Import::execute(void)
+App::DocumentObjectExecReturn* Mesh::Import::execute()
 {
-    std::auto_ptr<MeshObject> apcKernel(new MeshObject());
+    std::unique_ptr<MeshObject> apcKernel(new MeshObject());
     apcKernel->load(FileName.getValue());
     Mesh.setValuePtr(apcKernel.release());
 
     return App::DocumentObject::StdReturn;
 }
-

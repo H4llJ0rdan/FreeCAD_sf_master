@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,21 +20,14 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PART_PRECOMPILED_H
 #define PART_PRECOMPILED_H
 
 #include <FCConfig.h>
 
+#include <Mod/Part/PartGlobal.h>
 
-// Exporting of App classes
-#ifdef FC_OS_WIN32
-# define PartExport __declspec(dllexport)
-#else // for Linux
-# define PartExport
-#endif
-
-// here get the warnings of too long specifiers disabled (needed for VC6)
+// point at which warnings of overly long specifiers disabled (needed for VC6)
 #ifdef _MSC_VER
 #	pragma warning( disable : 4251 )
 #	pragma warning( disable : 4275 )
@@ -42,47 +35,53 @@
 #	pragma warning( disable : 4786 )  // specifier longer then 255 chars
 #endif
 
-
 #ifdef _PreComp_
 
 // standard
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+
+// STL
+#include <array>
+#include <fcntl.h>
+#include <fstream>
 #include <list>
 #include <iostream>
-#include <sstream>
-#include <stdio.h>
-#include <io.h>
-#include <fcntl.h>
-#include <assert.h>
-
-#include <vector>
-#include <list>
-#include <set>
 #include <map>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+// Qt
+#include <QtGlobal>
 
 // Boost
-#include <boost/signals.hpp>
-#include <boost/bind.hpp>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/core/ignore_unused.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
-#include <boost/tuple/tuple.hpp>
-#include <boost/utility.hpp>
-#include <boost/graph/adjacency_list.hpp>
-
-#include <boost/program_options.hpp>
-//namespace po = boost::program_options;
-
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/exception.hpp>
-
+// OpenCasCade
 #include "OpenCascadeAll.h"
 
 #elif defined(FC_OS_WIN32)
-#include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+# define NOMINMAX
+#endif
+#include <Windows.h>
+#include <io.h>
 #endif //_PreComp_
 
 #ifndef _Standard_Version_HeaderFile
-#include <Standard_Version.hxx>
+# include <Standard_Version.hxx>
 #endif
-
 
 #endif

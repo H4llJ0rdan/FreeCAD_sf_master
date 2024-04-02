@@ -31,30 +31,11 @@
 
 namespace Gui {
 
-/// opens an URL in the system Browser
+/// opens a URL in the system Browser
 bool GuiExport OpenURLInBrowser(const char * URL);
 
 /**
- * Returns the content of an HTML page which gets sent to 
- * the client to be displayed.
- * @author Werner Mayer
- */
-class OnlineDocumentation : public QObject
-{
-    Q_OBJECT
-
-public:
-    OnlineDocumentation();
-    ~OnlineDocumentation();
-
-    QByteArray loadResource(const QString& filename) const;
-
-private:
-    QStringList files;
-};
-
-/**
- * Returns the content of an HTML page which gets sent to 
+ * Returns the content of an HTML page which gets sent to
  * the client to be displayed.
  * @author Werner Mayer
  */
@@ -64,13 +45,14 @@ class PythonOnlineHelp : public QObject
 
 public:
     PythonOnlineHelp();
-    ~PythonOnlineHelp();
+    ~PythonOnlineHelp() override;
 
     QByteArray loadResource(const QString& filename) const;
     QByteArray fileNotFound() const;
+    QByteArray loadFailed(const QString& error) const;
 };
 
-/** 
+/**
  * The HttpServer class implements a simple HTTP server.
  */
 class HttpServer : public QTcpServer
@@ -78,13 +60,13 @@ class HttpServer : public QTcpServer
     Q_OBJECT
 
 public:
-    HttpServer(QObject* parent = 0);
+    explicit HttpServer(QObject* parent = nullptr);
 
-    void incomingConnection(int socket);
+    void incomingConnection(qintptr socket) override;
     void pause();
     void resume();
 
-private slots:
+private Q_SLOTS:
     void readClient();
     void discardClient();
 
@@ -99,20 +81,16 @@ class StdCmdPythonHelp : public Command
 {
 public:
     StdCmdPythonHelp();
-    ~StdCmdPythonHelp();
-    const char* className() const
+    ~StdCmdPythonHelp() override;
+    const char* className() const override
     { return "Gui::StdCmdPythonHelp"; }
 
 protected:
-    void activated(int iMsg);
+    void activated(int iMsg) override;
 
 private:
     HttpServer* server;
 };
-
-// --------------------------------------------------------------------
-
-
 
 }
 

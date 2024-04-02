@@ -1,36 +1,37 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2015  CEA/DEN, EDF R&D, OPEN CASCADE
 //
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+// Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+// CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
 //
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
 //
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SMESH SMESH : implementaion of SMESH idl descriptions
+
+//  SMESH SMESH : implementation of SMESH idl descriptions
 //  File   : StdMeshers_NumberOfSegments.cxx
 //           Moved here from SMESH_NumberOfSegments.cxx
 //  Author : Paul RASCLE, EDF
 //  Module : SMESH
-//  $Header: /home/server/cvs/SMESH/SMESH_SRC/src/StdMeshers/StdMeshers_NumberOfSegments.cxx,v 1.13.2.1 2008/11/27 13:03:49 abd Exp $
 //
 #include "StdMeshers_NumberOfSegments.hxx"
 
 #include "StdMeshers_Distribution.hxx"
 #include "SMESHDS_SubMesh.hxx"
 #include "SMESH_Mesh.hxx"
+#include "SMESH_Comment.hxx"
 
 #include <ExprIntrp_GenExp.hxx>
 #include <Expr_Array1OfNamedUnknown.hxx>
@@ -50,6 +51,9 @@
 #include <Standard_ErrorHandler.hxx>
 #endif
 
+#include <Basics_Utils.hxx>
+
+using namespace StdMeshers;
 using namespace std;
 
 const double PRECISION = 1e-7;
@@ -90,7 +94,6 @@ StdMeshers_NumberOfSegments::~StdMeshers_NumberOfSegments()
 //=============================================================================
 const vector<double>&
 StdMeshers_NumberOfSegments::BuildDistributionExpr( const char* expr,int nbSeg,int conv )
-  throw ( SMESH_Exception )
 {
   if( !buildDistribution( TCollection_AsciiString( ( Standard_CString )expr ), conv, 0.0, 1.0, nbSeg, _distr, 1E-4 ) )
     _distr.resize( 0 );
@@ -101,7 +104,6 @@ const vector<double>&
 StdMeshers_NumberOfSegments::BuildDistributionTab( const vector<double>& tab,
                                                    int nbSeg,
                                                    int conv )
-  throw ( SMESH_Exception )
 {
   if( !buildDistribution( tab, conv, 0.0, 1.0, nbSeg, _distr, 1E-4 ) )
     _distr.resize( 0 );
@@ -115,11 +117,10 @@ StdMeshers_NumberOfSegments::BuildDistributionTab( const vector<double>& tab,
 //=============================================================================
 
 void StdMeshers_NumberOfSegments::SetNumberOfSegments(int segmentsNumber)
-throw(SMESH_Exception)
 {
   int oldNumberOfSegments = _numberOfSegments;
   if (segmentsNumber <= 0)
-    throw SMESH_Exception(LOCALIZED("number of segments must be positive"));
+    throw SALOME_Exception(LOCALIZED("number of segments must be positive"));
   _numberOfSegments = segmentsNumber;
 
   if (oldNumberOfSegments != _numberOfSegments)
@@ -144,10 +145,9 @@ int StdMeshers_NumberOfSegments::GetNumberOfSegments() const
 //================================================================================
 
 void StdMeshers_NumberOfSegments::SetDistrType(DistrType typ)
-  throw(SMESH_Exception)
 {
   if (typ < DT_Regular || typ > DT_ExprFunc)
-    throw SMESH_Exception(LOCALIZED("distribution type is out of range"));
+    throw SALOME_Exception(LOCALIZED("distribution type is out of range"));
 
   if (typ != _distrType)
   {
@@ -174,15 +174,14 @@ StdMeshers_NumberOfSegments::DistrType StdMeshers_NumberOfSegments::GetDistrType
 //================================================================================
 
 void StdMeshers_NumberOfSegments::SetScaleFactor(double scaleFactor)
-  throw(SMESH_Exception)
 {
   if (_distrType != DT_Scale)
     _distrType = DT_Scale;
-    //throw SMESH_Exception(LOCALIZED("not a scale distribution"));
+    //throw SALOME_Exception(LOCALIZED("not a scale distribution"));
   if (scaleFactor < PRECISION)
-    throw SMESH_Exception(LOCALIZED("scale factor must be positive"));
-  //if (fabs(scaleFactor - 1.0) < PRECISION)
-  //  throw SMESH_Exception(LOCALIZED("scale factor must not be equal to 1"));
+    throw SALOME_Exception(LOCALIZED("scale factor must be positive"));
+  if (fabs(scaleFactor - 1.0) < PRECISION)
+    _distrType = DT_Regular;
 
   if (fabs(_scaleFactor - scaleFactor) > PRECISION)
   {
@@ -198,10 +197,9 @@ void StdMeshers_NumberOfSegments::SetScaleFactor(double scaleFactor)
 //================================================================================
 
 double StdMeshers_NumberOfSegments::GetScaleFactor() const
-  throw(SMESH_Exception)
 {
   if (_distrType != DT_Scale)
-    throw SMESH_Exception(LOCALIZED("not a scale distribution"));
+    throw SALOME_Exception(LOCALIZED("not a scale distribution"));
   return _scaleFactor;
 }
 
@@ -212,13 +210,12 @@ double StdMeshers_NumberOfSegments::GetScaleFactor() const
 //================================================================================
 
 void StdMeshers_NumberOfSegments::SetTableFunction(const vector<double>& table)
-  throw(SMESH_Exception)
 {
   if (_distrType != DT_TabFunc)
     _distrType = DT_TabFunc;
-  //throw SMESH_Exception(LOCALIZED("not a table function distribution"));
+  //throw SALOME_Exception(LOCALIZED("not a table function distribution"));
   if ( (table.size() % 2) != 0 )
-    throw SMESH_Exception(LOCALIZED("odd size of vector of table function"));
+    throw SALOME_Exception(LOCALIZED("odd size of vector of table function"));
 
   int i;
   double prev = -PRECISION;
@@ -234,22 +231,21 @@ void StdMeshers_NumberOfSegments::SetTableFunction(const vector<double>& table)
 #ifdef NO_CAS_CATCH
         OCC_CATCH_SIGNALS;
 #endif
-	val = pow( 10.0, val );
-      } catch(Standard_Failure) {
-	Handle(Standard_Failure) aFail = Standard_Failure::Caught();
-	throw SMESH_Exception( LOCALIZED( "invalid value"));
-	return;
+        val = pow( 10.0, val );
+      } catch(Standard_Failure&) {
+        throw SALOME_Exception( LOCALIZED( "invalid value"));
+        return;
       }
     }
     else if( _convMode==1 && val<0.0 )
       val = 0.0;
 
     if ( par<0 || par > 1)
-      throw SMESH_Exception(LOCALIZED("parameter of table function is out of range [0,1]"));
+      throw SALOME_Exception(LOCALIZED("parameter of table function is out of range [0,1]"));
     if ( fabs(par-prev)<PRECISION )
-      throw SMESH_Exception(LOCALIZED("two parameters are the same"));
+      throw SALOME_Exception(LOCALIZED("two parameters are the same"));
     if ( val < 0 )
-      throw SMESH_Exception(LOCALIZED("value of table function is not positive"));
+      throw SALOME_Exception(LOCALIZED("value of table function is not positive"));
     if( val>PRECISION )
       pos = true;
     if (isSame)
@@ -263,7 +259,7 @@ void StdMeshers_NumberOfSegments::SetTableFunction(const vector<double>& table)
   }
 
   if( !pos )
-    throw SMESH_Exception(LOCALIZED("value of table function is not positive"));
+    throw SALOME_Exception(LOCALIZED("value of table function is not positive"));
 
   if( pos && !isSame )
   {
@@ -279,10 +275,9 @@ void StdMeshers_NumberOfSegments::SetTableFunction(const vector<double>& table)
 //================================================================================
 
 const vector<double>& StdMeshers_NumberOfSegments::GetTableFunction() const
-  throw(SMESH_Exception)
 {
   if (_distrType != DT_TabFunc)
-    throw SMESH_Exception(LOCALIZED("not a table function distribution"));
+    throw SALOME_Exception(LOCALIZED("not a table function distribution"));
   return _table;
 }
 
@@ -304,7 +299,7 @@ bool isCorrectArg( const Handle( Expr_GeneralExpression )& expr )
     if( !name.IsNull() )
     {
       if( name->GetName()!="t" )
-	res = false;
+        res = false;
     }
     else
       res = isCorrectArg( sub );
@@ -318,10 +313,12 @@ bool isCorrectArg( const Handle( Expr_GeneralExpression )& expr )
  */
 //================================================================================
 bool process( const TCollection_AsciiString& str, int convMode,
-	      bool& syntax, bool& args,
-	      bool& non_neg, bool& non_zero,
- 	      bool& singulars, double& sing_point )
+              bool& syntax, bool& args,
+              bool& non_neg, bool& non_zero,
+              bool& singulars, double& sing_point )
 {
+  Kernel_Utils::Localizer loc;
+
   bool parsed_ok = true;
   Handle( ExprIntrp_GenExp ) myExpr;
   try {
@@ -330,8 +327,7 @@ bool process( const TCollection_AsciiString& str, int convMode,
 #endif
     myExpr = ExprIntrp_GenExp::Create();
     myExpr->Process( str.ToCString() );
-  } catch(Standard_Failure) {
-    Handle(Standard_Failure) aFail = Standard_Failure::Caught();
+  } catch(Standard_Failure&) {
     parsed_ok = false;
   }
 
@@ -360,19 +356,20 @@ bool process( const TCollection_AsciiString& str, int convMode,
       double t = double(i)/double(max), val;
       if( !f.value( t, val ) )
       {
-	sing_point = t;
-	singulars = true;
-	break;
+        sing_point = t;
+        singulars = true;
+        break;
       }
       if( val<0 )
       {
-	non_neg = false;
-	break;
+        non_neg = false;
+        break;
       }
       if( val>PRECISION )
-	non_zero = true;
+        non_zero = true;
     }
   }
+
   return res && non_neg && non_zero && ( !singulars );
 }
 
@@ -383,14 +380,31 @@ bool process( const TCollection_AsciiString& str, int convMode,
 //================================================================================
 
 void StdMeshers_NumberOfSegments::SetExpressionFunction(const char* expr)
-  throw(SMESH_Exception)
 {
   if (_distrType != DT_ExprFunc)
     _distrType = DT_ExprFunc;
-    //throw SMESH_Exception(LOCALIZED("not an expression function distribution"));
+    //throw SALOME_Exception(LOCALIZED("not an expression function distribution"));
 
+  string func = CheckExpressionFunction( expr, _convMode );
+  if( _func != func )
+  {
+    _func = func;
+    NotifySubMeshesHypothesisModification();
+  }
+}
+
+//=======================================================================
+//function : CheckExpressionFunction
+//purpose  : Checks validity of  the expression of the function f(t), e.g. "sin(t)".
+//           In case of validity returns a cleaned expression
+//=======================================================================
+
+std::string
+StdMeshers_NumberOfSegments::CheckExpressionFunction( const std::string& expr,
+                                                      const int          convMode)
+{
   // remove white spaces
-  TCollection_AsciiString str((Standard_CString)expr);
+  TCollection_AsciiString str((Standard_CString)expr.c_str());
   str.RemoveAll(' ');
   str.RemoveAll('\t');
   str.RemoveAll('\r');
@@ -398,33 +412,26 @@ void StdMeshers_NumberOfSegments::SetExpressionFunction(const char* expr)
 
   bool syntax, args, non_neg, singulars, non_zero;
   double sing_point;
-  bool res = process( str, _convMode, syntax, args, non_neg, non_zero, singulars, sing_point );
+  bool res = process( str, convMode, syntax, args, non_neg, non_zero, singulars, sing_point );
   if( !res )
   {
     if( !syntax )
-      throw SMESH_Exception(LOCALIZED("invalid expression syntax"));
+      throw SALOME_Exception(SMESH_Comment("invalid expression syntax: ") << str );
     if( !args )
-      throw SMESH_Exception(LOCALIZED("only 't' may be used as function argument"));
+      throw SALOME_Exception(LOCALIZED("only 't' may be used as function argument"));
     if( !non_neg )
-      throw SMESH_Exception(LOCALIZED("only non-negative function can be used as density"));
+      throw SALOME_Exception(LOCALIZED("only non-negative function can be used"));
     if( singulars )
     {
       char buf[1024];
       sprintf( buf, "Function has singular point in %.3f", sing_point );
-      throw SMESH_Exception( buf );
+      throw SALOME_Exception( buf );
     }
     if( !non_zero )
-      throw SMESH_Exception(LOCALIZED("f(t)=0 cannot be used as density"));
-
-    return;
+      throw SALOME_Exception(LOCALIZED("f(t)=0 cannot be used"));
   }
-  
-  string func = expr;
-  if( _func != func )
-  {
-    _func = func;
-    NotifySubMeshesHypothesisModification();
-  }
+ 
+  return str.ToCString();
 }
 
 //================================================================================
@@ -434,10 +441,9 @@ void StdMeshers_NumberOfSegments::SetExpressionFunction(const char* expr)
 //================================================================================
 
 const char* StdMeshers_NumberOfSegments::GetExpressionFunction() const
-  throw(SMESH_Exception)
 {
   if (_distrType != DT_ExprFunc)
-    throw SMESH_Exception(LOCALIZED("not an expression function distribution"));
+    throw SALOME_Exception(LOCALIZED("not an expression function distribution"));
   return _func.c_str();
 }
 
@@ -448,10 +454,9 @@ const char* StdMeshers_NumberOfSegments::GetExpressionFunction() const
 //================================================================================
 
 void StdMeshers_NumberOfSegments::SetConversionMode( int conv )
-  throw(SMESH_Exception)
 {
 //   if (_distrType != DT_TabFunc && _distrType != DT_ExprFunc)
-//     throw SMESH_Exception(LOCALIZED("not a functional distribution"));
+//     throw SALOME_Exception(LOCALIZED("not a functional distribution"));
 
   if( conv != _convMode )
   {
@@ -467,10 +472,9 @@ void StdMeshers_NumberOfSegments::SetConversionMode( int conv )
 //================================================================================
 
 int StdMeshers_NumberOfSegments::ConversionMode() const
-  throw(SMESH_Exception)
 {
 //   if (_distrType != DT_TabFunc && _distrType != DT_ExprFunc)
-//     throw SMESH_Exception(LOCALIZED("not a functional distribution"));
+//     throw SALOME_Exception(LOCALIZED("not a functional distribution"));
   return _convMode;
 }
 
@@ -482,6 +486,7 @@ int StdMeshers_NumberOfSegments::ConversionMode() const
 
 ostream & StdMeshers_NumberOfSegments::SaveTo(ostream & save)
 {
+  int listSize = _edgeIDs.size();
   save << _numberOfSegments << " " << (int)_distrType;
   switch (_distrType)
   {
@@ -504,6 +509,13 @@ ostream & StdMeshers_NumberOfSegments::SaveTo(ostream & save)
 
   if (_distrType == DT_TabFunc || _distrType == DT_ExprFunc)
     save << " " << _convMode;
+
+  if ( _distrType != DT_Regular && listSize > 0 ) {
+    save << " " << listSize;
+    for ( int i = 0; i < listSize; i++ )
+      save << " " << _edgeIDs[i];
+    save << " " << _objEntry;
+  }
   
   return save;
 }
@@ -520,7 +532,7 @@ istream & StdMeshers_NumberOfSegments::LoadFrom(istream & load)
   int a;
 
   // read number of segments
-  isOK = (load >> a);
+  isOK = (bool)(load >> a);
   if (isOK)
     _numberOfSegments = a;
   else
@@ -533,7 +545,7 @@ istream & StdMeshers_NumberOfSegments::LoadFrom(istream & load)
   //    (nb.segments, distr.type, some other params.),
   //    we wait here the ditribution type, which is integer
   double scale_factor;
-  isOK = (load >> scale_factor);
+  isOK = (bool)(load >> scale_factor);
   a = (int)scale_factor;
 
   // try to interprete ditribution type,
@@ -554,7 +566,7 @@ istream & StdMeshers_NumberOfSegments::LoadFrom(istream & load)
   {
   case DT_Scale:
     {
-      isOK = (load >> b);
+      isOK = (bool)(load >> b);
       if (isOK)
         _scaleFactor = b;
       else
@@ -568,14 +580,14 @@ istream & StdMeshers_NumberOfSegments::LoadFrom(istream & load)
     break;
   case DT_TabFunc:
     {
-      isOK = (load >> a);
+      isOK = (bool)(load >> a);
       if (isOK)
       {
         _table.resize(a, 0.);
         int i;
         for (i=0; i < _table.size(); i++)
         {
-          isOK = (load >> b);
+          isOK = (bool)(load >> b);
           if (isOK)
             _table[i] = b;
           else
@@ -594,7 +606,7 @@ istream & StdMeshers_NumberOfSegments::LoadFrom(istream & load)
   case DT_ExprFunc:
     {
       string str;
-      isOK = (load >> str);
+      isOK = (bool)(load >> str);
       if (isOK)
         _func = str;
       else
@@ -613,11 +625,23 @@ istream & StdMeshers_NumberOfSegments::LoadFrom(istream & load)
 
   if (_distrType == DT_TabFunc || _distrType == DT_ExprFunc)
   {
-    isOK = (load >> a);
+    isOK = (bool)(load >> a);
     if (isOK)
       _convMode = a;
     else
       load.clear(ios::badbit | load.rdstate());
+  }
+
+  // load reversed edges IDs
+  int intVal;
+  isOK = (bool)(load >> intVal);
+  if ( isOK && _distrType != DT_Regular && intVal > 0 ) {
+    _edgeIDs.reserve( intVal );
+    for (int i = 0; i < _edgeIDs.capacity() && isOK; i++) {
+      isOK = (bool)(load >> intVal);
+      if ( isOK ) _edgeIDs.push_back( intVal );
+    }
+    isOK = (bool)(load >> _objEntry);
   }
 
   return load;
@@ -683,7 +707,6 @@ bool StdMeshers_NumberOfSegments::SetParametersByMesh(const SMESH_Mesh*   theMes
 
   return nbEdges;
 }
-
 //================================================================================
 /*!
  * \brief Initialize my parameter values by default parameters.
@@ -696,3 +719,19 @@ bool StdMeshers_NumberOfSegments::SetParametersByDefaults(const TDefaults&  dflt
 {
   return (_numberOfSegments = dflts._nbSegments );
 }
+
+//=============================================================================
+/*!
+ *  
+ */
+//=============================================================================
+
+void StdMeshers_NumberOfSegments::SetReversedEdges( std::vector<int>& ids )
+{
+  if ( ids != _edgeIDs ) {
+    _edgeIDs = ids;
+
+    NotifySubMeshesHypothesisModification();
+  }
+}
+

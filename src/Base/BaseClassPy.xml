@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenerateModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="generateMetaModel_Module.xsd">
-  <PythonExport 
-      Father="PyObjectBase" 
-      Name="BaseClassPy" 
-      Twin="BaseClass" 
-      TwinPointer="BaseClass" 
-      Include="Base/BaseClass.h" 
-      FatherInclude="Base/PyObjectBase.h" 
-      Namespace="Base" 
+  <PythonExport
+      Father="PyObjectBase"
+      Name="BaseClassPy"
+      Twin="BaseClass"
+      TwinPointer="BaseClass"
+      Include="Base/BaseClass.h"
+      FatherInclude="Base/PyObjectBase.h"
+      Namespace="Base"
       FatherNamespace="Base">
     <Documentation>
       <Author Licence="LGPL" Name="Juergen Riegel" EMail="FreeCAD@juergen-riegel.net" />
@@ -21,7 +21,7 @@
     </Methode>
     <Methode Name="getAllDerivedFrom" Const="true">
       <Documentation>
-        <UserDocu>Returns all descentences</UserDocu>
+        <UserDocu>Returns all descendants</UserDocu>
       </Documentation>
     </Methode>
     <Attribute Name="TypeId" ReadOnly="true">
@@ -34,7 +34,7 @@
       <Documentation>
         <UserDocu>Module in which this class is defined</UserDocu>
       </Documentation>
-      <Parameter Name="Module" Type="Int"/>
+      <Parameter Name="Module" Type="String"/>
     </Attribute>
   </PythonExport>
 </GenerateModel>

@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -30,14 +30,19 @@ namespace PartDesignGui {
 
 class PartDesignGuiExport ViewProviderLinearPattern : public ViewProviderTransformed
 {
-    PROPERTY_HEADER(PartGui::ViewProviderLinearPattern);
+    Q_DECLARE_TR_FUNCTIONS(PartDesignGui::ViewProviderLinearPattern)
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderLinearPattern);
 public:
     ViewProviderLinearPattern()
-        { featureName = std::string("LinearPattern");
+        { menuName = tr("LinearPattern parameters");
           sPixmap = "PartDesign_LinearPattern.svg"; }
 
+    const std::string & featureName() const override;
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
+
 protected:
-    virtual bool setEdit(int ModNum);
+    /// Returns a newly create dialog for the part to be placed in the task view
+    TaskDlgFeatureParameters *getEditDialog() override;
 
 };
 

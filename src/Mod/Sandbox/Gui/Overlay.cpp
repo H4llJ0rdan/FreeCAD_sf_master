@@ -23,30 +23,31 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <QGLFramebufferObject>
-# include <QGLWidget>
 # include <QImage>
 # include <QMouseEvent>
 # include <QPainter>
 # include <Inventor/nodes/SoOrthographicCamera.h>
 # include <Inventor/nodes/SoImage.h>
 #endif
+#include <Gui/View3DInventor.h>
+#include <Gui/View3DInventorViewer.h>
+
+#include <QtOpenGL.h>
 
 #include <Gui/Application.h>
 #include <Gui/Document.h>
 #include <Gui/Selection.h>
 #include <Gui/GLPainter.h>
-#include <Gui/View3DInventor.h>
-#include <Gui/View3DInventorViewer.h>
-
+#include <Gui/NavigationStyle.h>
 
 #include "Overlay.h"
 
 using namespace SandboxGui;
 
+
 class MyPaintable : public Gui::GLGraphicsItem
 {
-    QGLFramebufferObject* fbo;
+    QtGLFramebufferObject* fbo;
     Gui::View3DInventorViewer* view;
     QImage img;
 public:
@@ -59,21 +60,16 @@ public:
         {
             QPainter p(&img);
             p.setPen(Qt::white);
-            p.drawText(200,200,QString::fromAscii("Render to QImage"));
+            p.drawText(200,200,QString::fromLatin1("Render to QImage"));
         }
 
-        img = QGLWidget::convertToGLFormat(img);
-        fbo = new QGLFramebufferObject(v->getGLWidget()->size());
+        fbo = new QtGLFramebufferObject(v->getGLWidget()->size());
         fbo->bind();
         //glClear(GL_COLOR_BUFFER_BIT);
         fbo->release();
         {
-            QPainter p(fbo);
-            p.setPen(Qt::white);
-            p.drawText(200,200,QString::fromAscii("Render to QGLFramebufferObject"));
-            p.end();
             //img = fbo->toImage();
-            //img = QGLWidget::convertToGLFormat(img);
+            //img = QtGLWidget::convertToGLFormat(img);
         }
         //fbo->bind();
         //glEnable(GL_DEPTH_TEST);
@@ -84,7 +80,7 @@ public:
         //a.apply(v->getSceneManager()->getSceneGraph());
         //fbo->release();
         //img = fbo->toImage();
-        //img = QGLWidget::convertToGLFormat(img);
+        //img = QtGLWidget::convertToGLFormat(img);
 
         view->getSoRenderManager()->scheduleRedraw();
     }
@@ -107,7 +103,7 @@ public:
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColor4d(0.0,0.0,1.0,0.0f);
     glRasterPos2d(0,0);
-    
+
     //http://wiki.delphigl.com/index.php/Multisampling
     //glDrawPixels(img.width(),img.height(),GL_RGBA,GL_UNSIGNED_BYTE,img.bits());
 /*
@@ -142,7 +138,7 @@ public:
 
 class Teapots : public Gui::GLGraphicsItem
 {
-    QGLFramebufferObject *fbObject;
+    QtGLFramebufferObject *fbObject;
     GLuint glTeapotObject;
     QPoint rubberBandCorner1;
     QPoint rubberBandCorner2;
@@ -158,8 +154,8 @@ Teapots(Gui::View3DInventorViewer* v) :view(v)
     rubberBandIsShown = false;
 
 //    makeCurrent();
-    fbObject = new QGLFramebufferObject(size[0],size[1],
-                                        QGLFramebufferObject::Depth);
+    fbObject = new QtGLFramebufferObject(size[0],size[1],
+                                         QtGLFramebufferObject::Depth);
     //initializeGL();
     resizeGL(size[0],size[1]);
 
@@ -225,6 +221,8 @@ void resizeGL(int width, int height)
 
     fbObject->release();
 #else
+    (void)width;
+    (void)height;
     fbObject->bind();
     glDisable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
@@ -437,11 +435,8 @@ void paintSelection()
 }
 
 // ---------------------------------------
-#include <Gui/NavigationStyle.h>
-#include <Gui/View3DInventor.h>
-#include <Gui/View3DInventorViewer.h>
 #if 0
-void MeshSelection::prepareBrushSelection(bool add)
+void MeshSelection::prepareFreehandSelection(bool add)
 {
     // a rubberband to select a rectangle area of the meshes
     Gui::View3DInventorViewer* viewer = this->getViewer();
@@ -485,7 +480,7 @@ DrawingPlane::~DrawingPlane()
 
 void DrawingPlane::initialize()
 {
-    fbo = new QGLFramebufferObject(128, 128,QGLFramebufferObject::Depth);
+    fbo = new QtGLFramebufferObject(128, 128,QtGLFramebufferObject::Depth);
 }
 
 void DrawingPlane::terminate()
@@ -498,7 +493,7 @@ void DrawingPlane::terminate()
     SoGLRenderAction a(SbViewportRegion(128,128));
     a.apply(_pcView3D->getSoRenderManager()->getSceneGraph());
     fbo->release();
-    fbo->toImage().save(QString::fromAscii("C:/Temp/DrawingPlane.png"));
+    fbo->toImage().save(QString::fromLatin1("C:/Temp/DrawingPlane.png"));
     delete fbo;
 }
 
@@ -506,7 +501,7 @@ void DrawingPlane::draw ()
 {return;
     if (1/*mustRedraw*/) {
         SbVec2s view = _pcView3D->getSoRenderManager()->getSize();
-        static_cast<QGLWidget*>(_pcView3D->getGLWidget())->makeCurrent();
+        static_cast<QtGLWidget*>(_pcView3D->getGLWidget())->makeCurrent();
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -549,8 +544,6 @@ void DrawingPlane::draw ()
 
     glPopAttrib();
     glPopMatrix();
-
-        mustRedraw = false;
     }
 }
 
@@ -558,7 +551,7 @@ void DrawingPlane::draw ()
 int DrawingPlane::mouseButtonEvent(const SoMouseButtonEvent * const e, const QPoint& pos)
 {
     const int button = e->getButton();
-    const SbBool press = e->getState() == SoButtonEvent::DOWN ? TRUE : FALSE;
+    const SbBool press = e->getState() == SoButtonEvent::DOWN ? true : false;
 
     if (press) {
         switch (button)
@@ -590,7 +583,7 @@ int DrawingPlane::mouseButtonEvent(const SoMouseButtonEvent * const e, const QPo
     return Continue;
 }
 
-int DrawingPlane::locationEvent(const SoLocation2Event * const e, const QPoint& pos)
+int DrawingPlane::locationEvent(const SoLocation2Event * const, const QPoint& pos)
 {
     if (scribbling) {
         drawLineTo(pos);
@@ -612,24 +605,15 @@ int DrawingPlane::locationEvent(const SoLocation2Event * const e, const QPoint& 
     return Continue;
 }
 
-int DrawingPlane::keyboardEvent( const SoKeyboardEvent * const e )
+int DrawingPlane::keyboardEvent(const SoKeyboardEvent * const)
 {
     return Continue;
 }
 
 void DrawingPlane::drawLineTo(const QPoint &endPoint)
 {
+    Q_UNUSED(endPoint);
     return;
-    QPainter painter(fbo);
-  //QPainter painter(_pcView3D->getGLWidget());
-    painter.setPen(QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
-                        Qt::RoundJoin));
-    //painter.setOpacity(0.5);
-    //painter.drawLine(lastPoint.x(), fbo->height()-lastPoint.y(), endPoint.x(), fbo->height()-endPoint.y());
-    painter.drawLine(lastPoint.x(), lastPoint.y(), endPoint.x(), endPoint.y());
-
-    //_pcView3D->scheduleRedraw();
-    lastPoint = endPoint;
 }
     //Gui::Document* doc = Gui::Application::Instance->activeDocument();
     //Gui::View3DInventorViewer* view = static_cast<Gui::View3DInventor*>(doc->getActiveView())->getViewer();

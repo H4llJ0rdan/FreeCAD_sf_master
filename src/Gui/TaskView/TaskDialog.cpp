@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -28,6 +28,7 @@
 #endif
 
 #include "TaskDialog.h"
+#include "TaskView.h"
 
 using namespace Gui::TaskView;
 
@@ -38,22 +39,32 @@ using namespace Gui::TaskView;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 TaskDialog::TaskDialog()
-    : QObject(0), pos(North)
+    : QObject(nullptr), pos(North)
+    , escapeButton(true)
+    , autoCloseTransaction(false)
 {
 
 }
 
 TaskDialog::~TaskDialog()
 {
-    for (std::vector<QWidget*>::iterator it=Content.begin();it!=Content.end();++it) {
-        delete *it;
-        *it = 0;
+    for (auto it : Content) {
+        delete it;
+        it = nullptr;
     }
 }
 
 //==== Slots ===============================================================
 
-const std::vector<QWidget*> &TaskDialog::getDialogContent(void) const
+void TaskDialog::addTaskBox(QWidget* widget)
+{
+    Gui::TaskView::TaskBox* taskbox = new Gui::TaskView::TaskBox(
+        QPixmap(), widget->windowTitle(), true, nullptr);
+    taskbox->groupLayout()->addWidget(widget);
+    Content.push_back(taskbox);
+}
+
+const std::vector<QWidget*> &TaskDialog::getDialogContent() const
 {
     return Content;
 }
@@ -79,6 +90,16 @@ void TaskDialog::open()
 
 }
 
+void TaskDialog::closed()
+{
+
+}
+
+void TaskDialog::autoClosedOnTransactionChange()
+{
+
+}
+
 void TaskDialog::clicked(int)
 {
 
@@ -98,6 +119,8 @@ void TaskDialog::helpRequested()
 {
 
 }
+
+
 
 
 #include "moc_TaskDialog.cpp"

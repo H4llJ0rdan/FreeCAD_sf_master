@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,25 +20,20 @@
  *                                                                         *
  ***************************************************************************/
 
- 
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <BRepAlgoAPI_Cut.hxx>
 #endif
 
-
 #include "FeaturePartCut.h"
 
-#include <Base/Exception.h>
 
 using namespace Part;
 
 PROPERTY_SOURCE(Part::Cut, Part::Boolean)
 
 
-Cut::Cut(void)
-{
-}
+Cut::Cut() = default;
 
 BRepAlgoAPI_BooleanOperation* Cut::makeOperation(const TopoDS_Shape& base, const TopoDS_Shape& tool) const
 {

@@ -20,47 +20,71 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_GRAPHVIZVIEW_H
 #define GUI_GRAPHVIZVIEW_H
 
 #include "MDIView.h"
 
+
 class QGraphicsScene;
 class QGraphicsView;
+class QSvgRenderer;
+class QGraphicsSvgItem;
+class GraphicsViewZoom;
 
-namespace Gui 
+namespace Gui
 {
+
+class GraphvizWorker;
+
 class GuiExport GraphvizView : public MDIView
 {
     Q_OBJECT
 
 public:
-    GraphvizView(const QPixmap&, QWidget* parent=0);
-    ~GraphvizView();
+    explicit GraphvizView(App::Document &_doc, QWidget* parent=nullptr);
+    ~GraphvizView() override;
 
-    void setDependencyGraph(const std::string&);
     QByteArray exportGraph(const QString& filter);
 
     /// Message handler
-    virtual bool onMsg(const char* pMsg,const char** ppReturn);
+    bool onMsg(const char* pMsg,const char** ppReturn) override;
     /// Message handler test
-    virtual bool onHasMsg(const char* pMsg) const;
+    bool onHasMsg(const char* pMsg) const override;
     /** @name Printing */
     //@{
-    virtual void print(QPrinter* printer);
+    void print(QPrinter* printer) override;
     /** Print content of view */
-    virtual void print();
+    void print() override;
     /** Print to PDF file */
-    virtual void printPdf();
+    void printPdf() override;
     /** Show a preview dialog */
-    virtual void printPreview();
+    void printPreview() override;
     //@}
 
+private Q_SLOTS:
+    void svgFileRead(const QByteArray & data);
+    void error();
+    void done();
+
 private:
+    void updateSvgItem(const App::Document &doc);
+    void disconnectSignals();
+
+    const App::Document& doc;
     std::string graphCode;
     QGraphicsScene* scene;
     QGraphicsView* view;
+    GraphicsViewZoom* zoomer;
+    QGraphicsSvgItem* svgItem;
+    QSvgRenderer* renderer;
+    GraphvizWorker* thread;
+    int nPending;
+
+    using Connection = boost::signals2::scoped_connection;
+    Connection recomputeConnection;
+    Connection undoConnection;
+    Connection redoConnection;
 };
 
 } // namespace Gui

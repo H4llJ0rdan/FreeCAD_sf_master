@@ -26,8 +26,7 @@
 
 
 #include <cmath>
-
-#define FLOAT_EPS   1.0e-4f 
+#include <cfloat>
 
 #ifndef  F_PI
 # define F_PI  3.1415926f
@@ -36,9 +35,13 @@
 #ifndef  D_PI
 # define D_PI  3.141592653589793
 #endif
-  
+
 #ifndef  FLOAT_MAX
-# define FLOAT_MAX 1e30f
+# define FLOAT_MAX 3.402823466E+38F
+#endif
+
+#ifndef  FLOAT_MIN
+# define FLOAT_MIN 1.175494351E-38F
 #endif
 
 #ifndef  DOUBLE_MAX
@@ -56,18 +59,18 @@ struct float_traits { };
 
 template <>
 struct float_traits<float> {
-    typedef float float_type;
+    using float_type = float;
     static inline float_type pi() { return F_PI; }
-    static inline float_type epsilon() { return FLOAT_EPS; }
-    static inline float_type maximum() { return FLOAT_MAX; }
+    static inline float_type epsilon() { return FLT_EPSILON; }
+    static inline float_type maximum() { return FLT_MAX; }
 };
 
 template <>
 struct float_traits<double> {
-    typedef double float_type;
+    using float_type = double;
     static inline float_type pi() { return D_PI; }
-    static inline float_type epsilon() { return FLOAT_EPS; }
-    static inline float_type maximum() { return FLOAT_MAX; }
+    static inline float_type epsilon() { return DBL_EPSILON; }
+    static inline float_type maximum() { return DBL_MAX; }
 };
 
 /** The Vector Base class. */
@@ -75,8 +78,8 @@ template <class _Precision>
 class Vector3
 {
 public:
-    typedef _Precision num_type;
-    typedef float_traits<num_type> traits_type;
+    using num_type = _Precision;
+    using traits_type = float_traits<num_type>;
     static inline num_type epsilon() { return traits_type::epsilon(); }
 
     /** @name Public data members */
@@ -87,9 +90,10 @@ public:
     //@}
 
     /// Construction
-    explicit Vector3 (_Precision fx = 0.0f, _Precision fy = 0.0f, _Precision fz = 0.0f);
-    /// Construction
-    Vector3 (const Vector3<_Precision>& rcVct);
+    explicit Vector3 (_Precision fx = 0.0, _Precision fy = 0.0, _Precision fz = 0.0);
+    Vector3 (const Vector3<_Precision>& v) = default;
+    Vector3 (Vector3<_Precision>&& v) = default;
+    ~Vector3 () = default;
 
     /** @name Operator */
     //@{
@@ -103,7 +107,7 @@ public:
     /// Vector subtraction
     Vector3 operator -  (const Vector3<_Precision>& rcVct) const;
     /// Negative vector
-    Vector3 operator - (void) const;
+    Vector3 operator - () const;
     /// Vector summation
     Vector3 & operator += (const Vector3<_Precision>& rcVct);
     /// Vector subtraction
@@ -114,16 +118,25 @@ public:
     Vector3 & operator *= (_Precision fScale);
     Vector3 & operator /= (_Precision fDiv);
     /// Assignment
-    Vector3 & operator =  (const Vector3<_Precision>& rcVct);
+    Vector3 & operator =  (const Vector3<_Precision>& v)  = default;
+    Vector3 & operator =  (Vector3<_Precision>&& v) = default;
     /// Scalar product
     _Precision operator *  (const Vector3<_Precision>& rcVct) const;
+    /// Scalar product
+    _Precision Dot (const Vector3<_Precision>& rcVct) const;
     /// Cross product
     Vector3 operator %  (const Vector3<_Precision>& rcVct) const;
+    /// Cross product
+    Vector3 Cross (const Vector3<_Precision>& rcVct) const;
+
     /// Comparing for inequality
     bool operator != (const Vector3<_Precision>& rcVct) const;
     /// Comparing for equality
     bool operator == (const Vector3<_Precision>& rcVct) const;
     //@}
+
+    /// Check if Vector is on a line segment
+    bool IsOnLineSegment (const Vector3<_Precision>& startVct, const Vector3<_Precision>& endVct) const;
 
     /** @name Modification */
     //@{
@@ -145,32 +158,47 @@ public:
     /** @name Mathematics */
     //@{
     /// Length of the vector.
-    _Precision Length (void) const;
+    _Precision Length () const;
     /// Squared length of the vector.
-    _Precision Sqr (void) const;
+    _Precision Sqr () const;
     /// Set length to 1.
-    Vector3 & Normalize (void);
+    Vector3 & Normalize ();
+    /// Checks whether this is the null vector
+    bool IsNull() const;
     /// Get angle between both vectors. The returned value lies in the interval [0,pi].
     _Precision GetAngle (const Vector3 &rcVect) const;
-    /** Transforms this point to the coordinate system defined by origin \a rclBase, 
-    * vector \a vector rclDirX and vector \a vector rclDirY. 
+    /** Transforms this point to the coordinate system defined by origin \a rclBase,
+    * vector \a vector rclDirX and vector \a vector rclDirY.
     * \note \a rclDirX must be perpendicular to \a rclDirY, i.e. \a rclDirX * \a rclDirY = 0..
     */
     void TransformToCoordinateSystem (const Vector3 &rclBase, const Vector3 &rclDirX, const Vector3 &rclDirY);
-    //bool Equal(const Vector3 &rclVect) const;
+    /**
+     * @brief IsEqual
+     * @param rclPnt
+     * @param tol
+     * @return true or false
+     * If the distance to point \a rclPnt is within the tolerance \a tol both points are considered
+     * equal.
+     */
+    bool IsEqual(const Vector3 &rclPnt, _Precision tol) const;
     /// Projects this point onto the plane given by the base \a rclBase and the normal \a rclNorm.
-    Vector3 & ProjToPlane (const Vector3 &rclBase, const Vector3 &rclNorm);
+    Vector3 & ProjectToPlane (const Vector3 &rclBase, const Vector3 &rclNorm);
+    /**
+     * Projects this point onto the plane given by the base \a rclBase and the normal \a rclNorm
+     * and stores the result in rclProj.
+     */
+    void ProjectToPlane (const Vector3 &rclBase, const Vector3 &rclNorm, Vector3 &rclProj) const;
     /// Projects this point onto the line given by the base \a rclPoint and the direction \a rclLine.
     /**
      * Projects a point \a rclPoint onto the line defined by the origin and the direction \a rclLine.
-     * The result is a vector from \a rclPoint to the point on the line. The length of this vector 
+     * The result is a vector from \a rclPoint to the point on the line. The length of this vector
      * is the distance from \a rclPoint to the line.
      * Note: The resulting vector does not depend on the current vector.
      */
-    Vector3 & ProjToLine (const Vector3 &rclPoint, const Vector3 &rclLine);
+    Vector3 & ProjectToLine (const Vector3 &rclPoint, const Vector3 &rclLine);
     /**
      * Get the perpendicular of this point to the line defined by rclBase and rclDir.
-     * Note: Do not mix up this method with ProjToLine.
+     * Note: Do not mix up this method with ProjectToLine.
      */
     Vector3 Perpendicular(const Vector3 &rclBase, const Vector3 &rclDir) const;
     /** Computes the distance to the given plane. Depending on the side this point is located
@@ -196,7 +224,7 @@ template <class _Precision>
 inline _Precision Distance (const Vector3<_Precision> &v1, const Vector3<_Precision> &v2)
 {
     _Precision x=v1.x-v2.x, y=v1.y-v2.y, z=v1.z-v2.z;
-    return (_Precision)sqrt((x * x) + (y * y) + (z * z));
+    return static_cast<_Precision>(sqrt((x * x) + (y * y) + (z * z)));
 }
 
 /// Returns the squared distance between two points
@@ -217,53 +245,12 @@ inline Vector3<_Precision> operator * (_Precision fFac, const Vector3<_Precision
 template <class _Pr1, class _Pr2>
 inline Vector3<_Pr1> toVector(const Vector3<_Pr2>& v)
 {
-    return Vector3<_Pr1>((_Pr1)v.x,(_Pr1)v.y,(_Pr1)v.z);
+    return Vector3<_Pr1>(static_cast<_Pr1>(v.x),static_cast<_Pr1>(v.y),static_cast<_Pr1>(v.z));
 }
 
-typedef Vector3<float>  Vector3f;
-typedef Vector3<double> Vector3d;
-
-template <class vecT>
-struct vec_traits { };
-
-template <>
-struct vec_traits<Vector3f> {
-    typedef Vector3f vec_type;
-    typedef float float_type;
-    vec_traits(const vec_type& v) : v(v){}
-    inline float_type x() { return v.x; }
-    inline float_type y() { return v.y; }
-    inline float_type z() { return v.z; }
-private:
-    const vec_type& v;
-};
-
-template <>
-struct vec_traits<Vector3d> {
-    typedef Vector3d vec_type;
-    typedef double float_type;
-    vec_traits(const vec_type& v) : v(v){}
-    inline float_type x() { return v.x; }
-    inline float_type y() { return v.y; }
-    inline float_type z() { return v.z; }
-private:
-    const vec_type& v;
-};
-
-template <class _Vec1, class _Vec2>
-inline _Vec1 convertTo(const _Vec2& v)
-{
-    typedef _Vec1 out_type;
-    typedef _Vec2 inp_type;
-    typedef vec_traits<inp_type> traits_type;
-    typedef vec_traits<out_type> traits_out;
-    typedef typename traits_out::float_type float_type;
-    traits_type t(v);
-    return _Vec1((float_type)t.x(),(float_type)t.y(),(float_type)t.z());
-}
-
+using Vector3f = Vector3<float>;
+using Vector3d = Vector3<double>;
 
 } // namespace Base
 
 #endif // BASE_VECTOR3D_H
-

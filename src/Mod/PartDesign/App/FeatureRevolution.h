@@ -25,14 +25,14 @@
 #define PARTDESIGN_Revolution_H
 
 #include <App/PropertyUnits.h>
-#include "FeatureAdditive.h"
+#include "FeatureSketchBased.h"
 
 namespace PartDesign
 {
 
-class PartDesignExport Revolution : public Additive
+class PartDesignExport Revolution : public ProfileBased
 {
-    PROPERTY_HEADER(PartDesign::Revolution);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesign::Revolution);
 
 public:
     Revolution();
@@ -55,19 +55,21 @@ public:
       * If Reversed is true then the direction of revolution will be reversed.
       * The created material will be fused with the sketch support (if there is one)
       */
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the view provider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartDesignGui::ViewProviderRevolution";
     }
     //@}
 
     /// suggests a value for Reversed flag so that material is always added to the support
-    bool suggestReversed(void);
+    bool suggestReversed();
 protected:
     /// updates Axis from ReferenceAxis
-    void updateAxis(void);
+    void updateAxis();
+
+    static const App::PropertyAngle::Constraints floatAngle;
 };
 
 } //namespace PartDesign

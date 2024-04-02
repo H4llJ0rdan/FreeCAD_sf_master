@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Juergen Riegel  (FreeCAD@juergen-riegel.net>              *
+ *   Copyright (c) 2009 Jürgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,16 +24,15 @@
 #ifndef BASE_UNITSSCHEMAIMPERIAL1_H
 #define BASE_UNITSSCHEMAIMPERIAL1_H
 
-
-#include <string>
 #include <QString>
 #include "UnitsSchema.h"
 
+
 namespace Base {
-    
+
 
 /** The schema class for the imperial unit system
- *  Here are the definiton for the imperial unit system.
+ *  Here are the definitions for the imperial unit system.
  *  It also defines how the value/units get printed.
  */
 class UnitsSchemaImperial1: public UnitsSchema
@@ -41,12 +40,12 @@ class UnitsSchemaImperial1: public UnitsSchema
 public:
     //virtual void setSchemaUnits(void);
     //virtual void resetSchemaUnits(void);
-	virtual QString schemaTranslate(Base::Quantity quant,double &factor,QString &unitString);
-
+    QString schemaTranslate(const Base::Quantity& quant, double &factor, QString &unitString) override;
+    std::string getBasicLengthUnit() const override { return {"in"}; }
 };
 
 /** The schema class for the imperial unit system
- *  Here are the definiton for the imperial unit system.
+ *  Here are the definitions for the imperial unit system.
  *  It also defines how the value/units get printed.
  */
 class UnitsSchemaImperialDecimal: public UnitsSchema
@@ -54,8 +53,41 @@ class UnitsSchemaImperialDecimal: public UnitsSchema
 public:
     //virtual void setSchemaUnits(void);
     //virtual void resetSchemaUnits(void);
-	virtual QString schemaTranslate(Base::Quantity quant,double &factor,QString &unitString);
+    QString schemaTranslate(const Base::Quantity& quant, double &factor, QString &unitString) override;
+    std::string getBasicLengthUnit() const override { return {"in"}; }
+};
 
+/** The schema class for the imperial unit system
+ *  Here are the definitions for the imperial unit system.
+ *  It also defines how the value/units get printed.
+ */
+class UnitsSchemaImperialBuilding: public UnitsSchema
+{
+public:
+    //virtual void setSchemaUnits(void);
+    //virtual void resetSchemaUnits(void);
+    QString schemaTranslate(const Base::Quantity& quant, double &factor, QString &unitString) override;
+    std::string getBasicLengthUnit() const override { return {"ft"}; }
+
+    //return true if this schema uses multiple units for length (ex. Ft/In)
+    bool isMultiUnitLength() const override {return true;}
+
+};
+
+/** The schema class for Civil Engineering in the imperial unit system
+ *  All measurements in ft, ft^2, ft^3, ft/sec.
+ *  Pressure is in psi.
+ */
+class UnitsSchemaImperialCivil: public UnitsSchema
+{
+public:
+    //virtual void setSchemaUnits(void);
+    //virtual void resetSchemaUnits(void);
+    QString schemaTranslate(const Base::Quantity& quant, double &factor, QString &unitString) override;
+    std::string getBasicLengthUnit() const override { return {"ft"}; }
+
+    //return true if this schema uses multiple units for angles (ex. DMS)
+    bool isMultiUnitAngle() const override {return true;}
 };
 
 

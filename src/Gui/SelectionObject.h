@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Juergen Riegel  (FreeCAD@juergen-riegel.net>              *
+ *   Copyright (c) 2009 Jürgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -26,6 +26,7 @@
 
 #include <Base/BaseClass.h>
 #include <Base/Vector3D.h>
+#include <FCGlobal.h>
 #include <string>
 
 namespace App {
@@ -34,43 +35,51 @@ namespace App {
 
 namespace Gui {
 
+class SelectionChanges;
+
 /**
  * The Selection object class
  */
 class GuiExport SelectionObject : public Base::BaseClass
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     /** Constructs a SelectionObject object. */
     SelectionObject();
-    virtual ~SelectionObject();
+    /*! Constructs a SelectionObject from the SelectionChanges structure.
+     */
+    explicit SelectionObject(const SelectionChanges& msg);
+    explicit SelectionObject(App::DocumentObject*);
+    ~SelectionObject() override;
     /**
      * The default implementation returns an instance of @ref SelectionObjectPy.
      */
-    PyObject* getPyObject();
+    PyObject* getPyObject() override;
 
     /// get the SubElement name of this SelectionObject
-    inline const std::vector<std::string> &getSubNames(void) const { return SubNames; }
+    inline const std::vector<std::string> &getSubNames() const { return SubNames; }
     /// are there any SubNames selected
-    bool hasSubNames(void)const { return SubNames.size() != 0; }
+    bool hasSubNames()const { return !SubNames.empty(); }
     /// get the name of the Document of this SelctionObject
-    inline const char* getDocName(void) const { return DocName.c_str(); }
+    inline const char* getDocName() const { return DocName.c_str(); }
     /// get the name of the Document Object of this SelectionObject
-    inline const char* getFeatName(void) const { return FeatName.c_str(); }
-    /// get the Type of the selcted Object
-    inline const char* getTypeName(void) const { return TypeName.c_str(); }
+    inline const char* getFeatName() const { return FeatName.c_str(); }
+    /// get the Type of the selected Object
+    inline const char* getTypeName() const { return TypeName.c_str(); }
+    /// get the selection points
+    inline const std::vector<Base::Vector3d> getPickedPoints() const { return SelPoses; }
 
     /// returns the selected DocumentObject or NULL if the object is already deleted
-    const App::DocumentObject *getObject(void) const;
+    const App::DocumentObject *getObject() const;
     /// returns the selected DocumentObject or NULL if the object is already deleted
-    App::DocumentObject *getObject(void);
+    App::DocumentObject *getObject();
 
     /// check the selected object is a special type or derived of
     bool isObjectTypeOf(const Base::Type& typeId) const;
 
     /// returns python expreasion sutably for assigning to a LinkSub property
-    std::string getAsPropertyLinkSubString(void) const;
+    std::string getAsPropertyLinkSubString() const;
 
     friend class SelectionSingleton;
 
@@ -81,10 +90,13 @@ protected:
     std::string                 TypeName;
     std::vector<Base::Vector3d> SelPoses;
 
+private:
+    /// to make sure no duplicates of subnames
+    std::set<std::string>       _SubNameSet;
 };
 
 
 } // namespace Gui
 
 
-#endif // GUI_SelectionObject_H 
+#endif // GUI_SelectionObject_H

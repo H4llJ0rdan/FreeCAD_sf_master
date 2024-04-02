@@ -24,23 +24,20 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
+# include <QAction>
+# include <QListWidget>
+# include <QMessageBox>
 #endif
+
+#include <Base/Interpreter.h>
+#include <App/Document.h>
+#include <App/DocumentObject.h>
+#include <Gui/Selection.h>
+#include <Gui/ViewProvider.h>
+#include <Mod/PartDesign/App/FeatureFillet.h>
 
 #include "ui_TaskFilletParameters.h"
 #include "TaskFilletParameters.h"
-#include <Base/UnitsApi.h>
-#include <App/Application.h>
-#include <App/Document.h>
-#include <Gui/Application.h>
-#include <Gui/Document.h>
-#include <Gui/BitmapFactory.h>
-#include <Gui/ViewProvider.h>
-#include <Gui/WaitCursor.h>
-#include <Base/Console.h>
-#include <Gui/Selection.h>
-#include <Gui/Command.h>
-#include <Mod/PartDesign/App/FeatureFillet.h>
-#include <Mod/Sketcher/App/SketchObject.h>
 
 
 using namespace PartDesignGui;
@@ -48,45 +45,132 @@ using namespace Gui;
 
 /* TRANSLATOR PartDesignGui::TaskFilletParameters */
 
-TaskFilletParameters::TaskFilletParameters(ViewProviderFillet *FilletView,QWidget *parent)
-    : TaskBox(Gui::BitmapFactory().pixmap("Part_Fillet"),tr("Fillet parameters"),true, parent),FilletView(FilletView)
+TaskFilletParameters::TaskFilletParameters(ViewProviderDressUp *DressUpView, QWidget *parent)
+    : TaskDressUpParameters(DressUpView, true, true, parent)
+    , ui(new Ui_TaskFilletParameters)
 {
     // we need a separate container widget to add all controls to
     proxy = new QWidget(this);
-    ui = new Ui_TaskFilletParameters();
     ui->setupUi(proxy);
-    QMetaObject::connectSlotsByName(this);
-
-    connect(ui->filletRadius, SIGNAL(valueChanged(double)),
-            this, SLOT(onLengthChanged(double)));
-
     this->groupLayout()->addWidget(proxy);
 
-    PartDesign::Fillet* pcFillet = static_cast<PartDesign::Fillet*>(FilletView->getObject());
+    PartDesign::Fillet* pcFillet = static_cast<PartDesign::Fillet*>(DressUpView->getObject());
+    bool useAllEdges = pcFillet->UseAllEdges.getValue();
+    ui->checkBoxUseAllEdges->setChecked(useAllEdges);
+    ui->buttonRefSel->setEnabled(!useAllEdges);
+    ui->listWidgetReferences->setEnabled(!useAllEdges);
     double r = pcFillet->Radius.getValue();
 
     ui->filletRadius->setUnit(Base::Unit::Length);
     ui->filletRadius->setValue(r);
     ui->filletRadius->setMinimum(0);
     ui->filletRadius->selectNumber();
+    ui->filletRadius->bind(pcFillet->Radius);
     QMetaObject::invokeMethod(ui->filletRadius, "setFocus", Qt::QueuedConnection);
+    std::vector<std::string> strings = pcFillet->Base.getSubValues();
+    for (const auto & string : strings) {
+        ui->listWidgetReferences->addItem(QString::fromStdString(string));
+    }
+
+    QMetaObject::connectSlotsByName(this);
+
+    connect(ui->filletRadius, qOverload<double>(&Gui::QuantitySpinBox::valueChanged),
+        this, &TaskFilletParameters::onLengthChanged);
+    connect(ui->buttonRefSel, &QToolButton::toggled,
+        this, &TaskFilletParameters::onButtonRefSel);
+    connect(ui->checkBoxUseAllEdges, &QToolButton::toggled,
+        this, &TaskFilletParameters::onCheckBoxUseAllEdgesToggled);
+
+    // Create context menu
+    createDeleteAction(ui->listWidgetReferences);
+    connect(deleteAction, &QAction::triggered, this, &TaskFilletParameters::onRefDeleted);
+
+    createAddAllEdgesAction(ui->listWidgetReferences);
+    connect(addAllEdgesAction, &QAction::triggered, this, &TaskFilletParameters::onAddAllEdges);
+
+    connect(ui->listWidgetReferences, &QListWidget::currentItemChanged,
+        this, &TaskFilletParameters::setSelection);
+    connect(ui->listWidgetReferences, &QListWidget::itemClicked,
+        this, &TaskFilletParameters::setSelection);
+    connect(ui->listWidgetReferences, &QListWidget::itemDoubleClicked,
+        this, &TaskFilletParameters::doubleClicked);
+
+    if (strings.size() == 0)
+        setSelectionMode(refSel);
+    else
+        hideOnError();
+}
+
+void TaskFilletParameters::onSelectionChanged(const Gui::SelectionChanges& msg)
+{
+    // executed when the user selected something in the CAD object
+    // adds/deletes the selection accordingly
+
+    if (msg.Type == Gui::SelectionChanges::AddSelection) {
+        if (selectionMode == refSel) {
+            referenceSelected(msg, ui->listWidgetReferences);
+        }
+    }
+}
+
+void TaskFilletParameters::onCheckBoxUseAllEdgesToggled(bool checked)
+{
+    if (checked)
+        setSelectionMode(none);
+    PartDesign::Fillet* pcFillet = static_cast<PartDesign::Fillet*>(DressUpView->getObject());
+    ui->buttonRefSel->setEnabled(!checked);
+    ui->listWidgetReferences->setEnabled(!checked);
+    pcFillet->UseAllEdges.setValue(checked);
+    pcFillet->getDocument()->recomputeFeature(pcFillet);
+}
+
+void TaskFilletParameters::setButtons(const selectionModes mode)
+{
+    ui->buttonRefSel->setChecked(mode == refSel);
+    ui->buttonRefSel->setText(mode == refSel ? btnPreviewStr() : btnSelectStr());
+}
+
+void TaskFilletParameters::onRefDeleted()
+{
+    TaskDressUpParameters::deleteRef(ui->listWidgetReferences);
+}
+
+void TaskFilletParameters::onAddAllEdges()
+{
+    TaskDressUpParameters::addAllEdges(ui->listWidgetReferences);
 }
 
 void TaskFilletParameters::onLengthChanged(double len)
 {
-    PartDesign::Fillet* pcFillet = static_cast<PartDesign::Fillet*>(FilletView->getObject());
+    setSelectionMode(none);
+    PartDesign::Fillet* pcFillet = static_cast<PartDesign::Fillet*>(DressUpView->getObject());
+    setupTransaction();
     pcFillet->Radius.setValue(len);
     pcFillet->getDocument()->recomputeFeature(pcFillet);
+    // hide the fillet if there was a computation error
+    hideOnError();
 }
 
-double TaskFilletParameters::getLength(void) const
+double TaskFilletParameters::getLength() const
 {
-    return ui->filletRadius->getQuantity().getValue();
+    return ui->filletRadius->value().getValue();
 }
 
 TaskFilletParameters::~TaskFilletParameters()
 {
-    delete ui;
+    try {
+        Gui::Selection().clearSelection();
+        Gui::Selection().rmvSelectionGate();
+    }
+    catch (const Py::Exception&) {
+        Base::PyException e; // extract the Python error text
+        e.ReportException();
+    }
+}
+
+bool TaskFilletParameters::event(QEvent *e)
+{
+    return TaskDressUpParameters::KeyEvent(e);
 }
 
 void TaskFilletParameters::changeEvent(QEvent *e)
@@ -97,75 +181,53 @@ void TaskFilletParameters::changeEvent(QEvent *e)
     }
 }
 
+void TaskFilletParameters::apply()
+{
+    std::string name = getDressUpView()->getObject()->getNameInDocument();
+
+    //Gui::Command::openCommand(QT_TRANSLATE_NOOP("Command", "Fillet changed"));
+    ui->filletRadius->apply();
+
+    //Alert user if he created an empty feature
+    if(ui->listWidgetReferences->count() == 0)
+        Base::Console().Warning(tr("Empty fillet created !\n").toStdString().c_str());
+}
+
 //**************************************************************************
 //**************************************************************************
 // TaskDialog
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TaskDlgFilletParameters::TaskDlgFilletParameters(ViewProviderFillet *FilletView)
-    : TaskDialog(),FilletView(FilletView)
+TaskDlgFilletParameters::TaskDlgFilletParameters(ViewProviderFillet *DressUpView)
+    : TaskDlgDressUpParameters(DressUpView)
 {
-    assert(FilletView);
-    parameter  = new TaskFilletParameters(FilletView);
+    parameter  = new TaskFilletParameters(DressUpView);
 
     Content.push_back(parameter);
 }
 
-TaskDlgFilletParameters::~TaskDlgFilletParameters()
-{
-
-}
+TaskDlgFilletParameters::~TaskDlgFilletParameters() = default;
 
 //==== calls from the TaskView ===============================================================
 
 
-void TaskDlgFilletParameters::open()
-{
-    // a transaction is already open at creation time of the fillet
-    if (!Gui::Command::hasPendingCommand()) {
-        QString msg = tr("Edit fillet");
-        Gui::Command::openCommand((const char*)msg.toUtf8());
-    }
-}
-
-void TaskDlgFilletParameters::clicked(int)
-{
-
-}
-
+//void TaskDlgFilletParameters::open()
+//{
+//    // a transaction is already open at creation time of the fillet
+//    if (!Gui::Command::hasPendingCommand()) {
+//        QString msg = tr("Edit fillet");
+//        Gui::Command::openCommand((const char*)msg.toUtf8());
+//    }
+//}
 bool TaskDlgFilletParameters::accept()
 {
-    std::string name = FilletView->getObject()->getNameInDocument();
+    auto obj = vp->getObject();
+    if (!obj->isError())
+        parameter->showObject();
 
-    //Gui::Command::openCommand("Fillet changed");
-    Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Radius = %f",name.c_str(),parameter->getLength());
-    Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.recompute()");
-    Gui::Command::doCommand(Gui::Command::Gui,"Gui.activeDocument().resetEdit()");
-    Gui::Command::commitCommand();
+    parameter->apply();
 
-    return true;
+    return TaskDlgDressUpParameters::accept();
 }
-
-bool TaskDlgFilletParameters::reject()
-{
-    // get the support and Sketch
-    PartDesign::Fillet* pcFillet = static_cast<PartDesign::Fillet*>(FilletView->getObject()); 
-    App::DocumentObject    *pcSupport;
-    pcSupport = pcFillet->Base.getValue();
-
-    // role back the done things
-    Gui::Command::abortCommand();
-    Gui::Command::doCommand(Gui::Command::Gui,"Gui.activeDocument().resetEdit()");
-    
-    // if abort command deleted the object the support is visible again
-    if (!Gui::Application::Instance->getViewProvider(pcFillet)) {
-        if (pcSupport && Gui::Application::Instance->getViewProvider(pcSupport))
-            Gui::Application::Instance->getViewProvider(pcSupport)->show();
-    }
-
-    return true;
-}
-
-
 
 #include "moc_TaskFilletParameters.cpp"

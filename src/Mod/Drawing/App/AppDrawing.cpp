@@ -5,54 +5,52 @@
  *   published by the Free Software Foundation; either version 2 of the    *
  *   License, or (at your option) any later version.                       *
  *   for detail see the LICENCE text file.                                 *
- *   Jürgen Riegel 2007                                                    *
+ *   JÃ¼rgen Riegel 2007                                                    *
  *                                                                         *
  ***************************************************************************/
 
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
- 
-#include "FeaturePage.h"
-#include "FeatureView.h"
-#include "FeatureViewPart.h"
-#include "FeatureViewAnnotation.h"
-#include "FeatureViewSymbol.h"
-#include "FeatureProjection.h"
+#include <Base/PyObjectBase.h>
+
 #include "FeatureClip.h"
+#include "FeaturePage.h"
+#include "FeatureProjection.h"
+#include "FeatureView.h"
+#include "FeatureViewAnnotation.h"
+#include "FeatureViewPart.h"
+#include "FeatureViewSpreadsheet.h"
+#include "FeatureViewSymbol.h"
 #include "PageGroup.h"
 
-extern struct PyMethodDef Drawing_methods[];
 
-PyDoc_STRVAR(module_drawing_doc,
-"This module is the drawing module.");
-
+namespace Drawing
+{
+extern PyObject* initModule();
+}
 
 /* Python entry */
-extern "C" {
-void DrawingExport initDrawing()
+PyMOD_INIT_FUNC(Drawing)
 {
     // load dependent module
     try {
         Base::Interpreter().loadModule("Part");
-        //Base::Interpreter().loadModule("Mesh");
+        // Base::Interpreter().loadModule("Mesh");
     }
-    catch(const Base::Exception& e) {
+    catch (const Base::Exception& e) {
         PyErr_SetString(PyExc_ImportError, e.what());
-        return;
+        PyMOD_Return(nullptr);
     }
-    Py_InitModule3("Drawing", Drawing_methods, module_drawing_doc);   /* mod name, table ptr */
+    PyObject* mod = Drawing::initModule();
     Base::Console().Log("Loading Drawing module... done\n");
 
 
     // NOTE: To finish the initialization of our own type objects we must
     // call PyType_Ready, otherwise we run into a segmentation fault, later on.
     // This function is responsible for adding inherited slots from a type's base class.
- 
+    // clang-format off
     Drawing::FeaturePage            ::init();
     Drawing::FeatureView            ::init();
     Drawing::FeatureViewPart        ::init();
@@ -63,6 +61,7 @@ void DrawingExport initDrawing()
     Drawing::FeatureViewAnnotation  ::init();
     Drawing::FeatureViewSymbol      ::init();
     Drawing::FeatureClip            ::init();
+    Drawing::FeatureViewSpreadsheet ::init();
+    // clang-format on
+    PyMOD_Return(mod);
 }
-
-} // extern "C"

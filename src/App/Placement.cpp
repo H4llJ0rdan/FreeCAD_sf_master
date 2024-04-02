@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,9 +23,6 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
 #include <Base/Placement.h>
 
 #include "Placement.h"
@@ -33,24 +30,27 @@
 using namespace App;
 
 
-PROPERTY_SOURCE(App::Placement, App::DocumentObject)
+PROPERTY_SOURCE(App::Placement, App::GeoFeature)
 
 
 //===========================================================================
 // Feature
 //===========================================================================
 
-Placement::Placement(void)
-{
+Placement::Placement() = default;
 
+Placement::~Placement() = default;
+
+
+
+// Python feature ---------------------------------------------------------
+namespace App {
+PROPERTY_SOURCE_TEMPLATE(App::PlacementPython, App::Placement)
+template<> const char* App::PlacementPython::getViewProviderName() const {
+   return "Gui::ViewProviderPlacementPython";
 }
-
-Placement::~Placement(void)
-{
+template class AppExport FeaturePythonT<App::Placement>;
 }
-
-
-
 
 
 

@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -25,14 +25,14 @@
 #define PARTDESIGN_Groove_H
 
 #include <App/PropertyUnits.h>
-#include "FeatureSubtractive.h"
+#include "FeatureSketchBased.h"
 
 namespace PartDesign
 {
 
-class PartDesignExport Groove : public Subtractive
+class PartDesignExport Groove : public ProfileBased
 {
-    PROPERTY_HEADER(PartDesign::Groove);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesign::Groove);
 
 public:
     Groove();
@@ -55,19 +55,21 @@ public:
       * If Reversed is true then the direction of revolution will be reversed.
       * The created material will be cut out of the sketch support
       */
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the view provider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartDesignGui::ViewProviderGroove";
     }
     //@}
 
     /// suggests a value for Reversed flag so that material is always removed from the support
-    bool suggestReversed(void);
+    bool suggestReversed();
 protected:
     /// updates Axis from ReferenceAxis
-    void updateAxis(void);
+    void updateAxis();
+
+    static const App::PropertyAngle::Constraints floatAngle;
 };
 
 } //namespace PartDesign

@@ -20,22 +20,18 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef COIN_SOFCBOUNDINGBOX_H
 #define COIN_SOFCBOUNDINGBOX_H
 
-#include <Inventor/SbLinear.h>
 #include <Inventor/actions/SoAction.h>
-#include <Inventor/fields/SoSFFloat.h>
-#include <Inventor/fields/SoSFVec4f.h>
-#include <Inventor/fields/SoSFString.h>
+#include <Inventor/fields/SoSFBool.h>
+#include <Inventor/fields/SoSFVec3f.h>
 #include <Inventor/nodes/SoCoordinate3.h>
 #include <Inventor/nodes/SoIndexedLineSet.h>
 #include <Inventor/nodes/SoSeparator.h>
-#include <Inventor/nodes/SoText2.h>
-#include <Inventor/nodes/SoTransform.h>
 #include <Inventor/nodes/SoShape.h>
-#include <Inventor/fields/SoSFBool.h>
+#include <FCGlobal.h>
+
 
 namespace Gui {
 
@@ -43,14 +39,14 @@ namespace Gui {
  * A subclass of SoShape used to create an axis aligned wire frame box based
  * on the minBounds and maxBounds fields.  The class also has a field which
  * can be toggled on or off for displaying text coordinate labels at the
- * vertices of the box. 
+ * vertices of the box.
  * @note Original source are taken from http://www.wheatchex.com/projects/openinventor/bbox/BoundingBox.h and
  * http://www.wheatchex.com/projects/openinventor/bbox/BoundingBox.cpp
  * @date November 12th, 2001
  * @author Josh Grant
  */
 class GuiExport SoFCBoundingBox : public SoShape {
-    typedef SoShape inherited;
+    using inherited = SoShape;
 
     SO_NODE_HEADER(Gui::SoFCBoundingBox);
 
@@ -67,10 +63,10 @@ public:
 
 
 protected:
-    virtual ~SoFCBoundingBox();
-    virtual void GLRender(SoGLRenderAction *action);
-    virtual void generatePrimitives (SoAction *action);
-    virtual void computeBBox(SoAction *action, SbBox3f &box, SbVec3f &center);
+    ~SoFCBoundingBox() override;
+    void GLRender(SoGLRenderAction *action) override;
+    void generatePrimitives (SoAction *action) override;
+    void computeBBox(SoAction *action, SbBox3f &box, SbVec3f &center) override;
 
 private:
     SoSeparator        *root, *textSep, *dimSep;
@@ -79,29 +75,29 @@ private:
 };
 
 /**
- * This is a special group node which be be defined to ignore bounding box actions.
+ * This is a special group node which must be defined to ignore bounding box actions.
  * @author Werner Mayer
  */
 class GuiExport SoSkipBoundingGroup : public SoGroup {
-    typedef SoGroup inherited;
+    using inherited = SoGroup;
 
     SO_NODE_HEADER(Gui::SoSkipBoundingGroup);
 
 public:
-    static void initClass(void);
-    static void finish(void);
-    SoSkipBoundingGroup(void);
+    static void initClass();
+    static void finish();
+    SoSkipBoundingGroup();
 
     enum Modes {
         INCLUDE_BBOX, EXCLUDE_BBOX
     };
-    
+
     SoSFEnum mode;
 
-    virtual void getBoundingBox(SoGetBoundingBoxAction *action);
+    void getBoundingBox(SoGetBoundingBoxAction *action) override;
 
 protected:
-    virtual ~SoSkipBoundingGroup();
+    ~SoSkipBoundingGroup() override;
 };
 
 } // namespace Gui

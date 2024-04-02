@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,53 +20,16 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef STARTGUI_PRECOMPILED_H
 #define STARTGUI_PRECOMPILED_H
 
 #include <FCConfig.h>
 
-// Importing of App classes
-#ifdef FC_OS_WIN32
-# define StartAppExport __declspec(dllimport)
-# define StartGuiExport __declspec(dllexport)
-#else // for Linux
-# define StartAppExport
-# define StartGuiExport
-#endif
-
-
 #ifdef _PreComp_
 
-// Python
-#include <Python.h>
-
-// standard
-#include <iostream>
-#include <assert.h>
-#include <cmath>
-
-// STL
-#include <vector>
-#include <map>
-#include <string>
-#include <list>
-#include <set>
-#include <algorithm>
-#include <stack>
-#include <queue>
-#include <bitset>
-
-#ifdef FC_OS_WIN32
-# include <windows.h>
-#endif
-
-
 // Qt Toolkit
-#ifndef __Qt4All__
-# include <Gui/Qt4All.h>
-#endif
+#include <QCoreApplication>
 
-#endif //_PreComp_
+#endif  //_PreComp_
 
-#endif // STARTGUI_PRECOMPILED_H
+#endif  // STARTGUI_PRECOMPILED_H

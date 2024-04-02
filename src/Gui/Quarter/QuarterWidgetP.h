@@ -34,10 +34,10 @@
 \**************************************************************************/
 
 #include <Inventor/SbBasic.h>
-#include <Inventor/SbName.h>
-#include <QtGui/QCursor>
-#include <QtCore/QList>
-#include <QtCore/QUrl>
+#include <QList>
+#include <QUrl>
+#include <QtOpenGL.h>
+
 
 class SoNode;
 class SoCamera;
@@ -45,7 +45,6 @@ class SoRenderManager;
 class SoEventManager;
 class SoDirectionalLight;
 class QuarterWidgetP_cachecontext;
-class QGLWidget;
 class QAction;
 class QActionGroup;
 class QMenu;
@@ -62,16 +61,16 @@ class ContextMenu;
 class QuarterWidgetP {
 public:
 
-  QuarterWidgetP(class QuarterWidget * master, const QGLWidget * sharewidget);
+  QuarterWidgetP(class QuarterWidget * master, const QtGLWidget * sharewidget);
   ~QuarterWidgetP();
 
   SoCamera * searchForCamera(SoNode * root);
-  uint32_t getCacheContextId(void) const;
-  QMenu * contextMenu(void);
+  uint32_t getCacheContextId() const;
+  QMenu * contextMenu();
 
-  QList<QAction *> transparencyTypeActions(void) const;
-  QList<QAction *> renderModeActions(void) const;
-  QList<QAction *> stereoModeActions(void) const;
+  QList<QAction *> transparencyTypeActions() const;
+  QList<QAction *> renderModeActions() const;
+  QList<QAction *> stereoModeActions() const;
 
   QuarterWidget * const master;
   SoNode * scene;
@@ -92,6 +91,7 @@ public:
   bool processdelayqueue;
   QUrl navigationModeFile;
   SoScXMLStateMachine * currentStateMachine;
+  qreal device_pixel_ratio;
 
   static void rendercb(void * userdata, SoRenderManager *);
   static void prerendercb(void * userdata, SoRenderManager * manager);
@@ -109,10 +109,11 @@ public:
   mutable ContextMenu * contextmenu;
 
   static bool nativeEventFilter(void * message, long * result);
+  void replaceGLWidget(const QtGLWidget * newviewport);
 
  private:
-  QuarterWidgetP_cachecontext * findCacheContext(QuarterWidget * widget, const QGLWidget * sharewidget);
-  static void removeFromCacheContext(QuarterWidgetP_cachecontext * context, const QGLWidget * widget);
+  QuarterWidgetP_cachecontext * findCacheContext(QuarterWidget * widget, const QtGLWidget * sharewidget);
+  static void removeFromCacheContext(QuarterWidgetP_cachecontext * context, const QtGLWidget * widget);
 };
 
 #endif // QUARTER_QUARTERWIDGETP_H

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,19 +20,19 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PART_FEATURE_H
 #define PART_FEATURE_H
 
-#include "TopoShape.h"
-#include "PropertyTopoShape.h"
-#include <App/GeoFeature.h>
 #include <App/FeaturePython.h>
-#include <App/PropertyGeo.h>
-// includes for findAllFacesCutBy()
-#include <TopoDS_Face.hxx>
-class gp_Dir;
+#include <App/GeoFeature.h>
+#include <Mod/Part/PartGlobal.h>
 
+#include <TopoDS_Face.hxx>
+
+#include "PropertyTopoShape.h"
+
+
+class gp_Dir;
 class BRepBuilderAPI_MakeShape;
 
 namespace Part
@@ -44,39 +44,75 @@ class PartFeaturePy;
  */
 class PartExport Feature : public App::GeoFeature
 {
-    PROPERTY_HEADER(Part::Feature);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Feature);
 
 public:
     /// Constructor
-    Feature(void);
-    virtual ~Feature();
+    Feature();
+    ~Feature() override;
 
     PropertyPartShape Shape;
 
     /** @name methods override feature */
     //@{
-    /// recalculate the feature
-    /// recompute only this object
-    virtual App::DocumentObjectExecReturn *recompute(void);
-    virtual App::DocumentObjectExecReturn *execute(void);
-    virtual short mustExecute(void) const;
+    short mustExecute() const override;
     //@}
 
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const;
+    const char* getViewProviderName() const override;
+    const App::PropertyComplexGeoData* getPropertyOfGeometry() const override;
 
-    virtual PyObject* getPyObject(void);
-    virtual std::vector<PyObject *> getPySubObjects(const std::vector<std::string>&) const;
+    PyObject* getPyObject() override;
 
-    /**
-     * Find the origin of a reference, e.g. the vertex or edge in a sketch that
-     * produced a face
+    TopLoc_Location getLocation() const;
+
+    DocumentObject *getSubObject(const char *subname, PyObject **pyObj,
+            Base::Matrix4D *mat, bool transform, int depth) const override;
+
+    /** Convenience function to extract shape from fully qualified subname
+     *
+     * @param obj: the parent object
+     *
+     * @param subname: dot separated full qualified subname
+     *
+     * @param needSubElement: whether to ignore the non-object subelement
+     * reference inside \c subname
+     *
+     * @param pmat: used as current transformation on input, and return the
+     * accumulated transformation on output
+     *
+     * @param owner: return the owner of the shape returned
+     *
+     * @param resolveLink: if true, resolve link(s) of the returned 'owner'
+     * by calling its getLinkedObject(true) function
+     *
+     * @param transform: if true, apply obj's transformation. Set to false
+     * if pmat already include obj's transformation matrix.
      */
-    const TopoDS_Shape findOriginOf(const TopoDS_Shape& reference);
+    static TopoDS_Shape getShape(const App::DocumentObject *obj,
+            const char *subname=nullptr, bool needSubElement=false, Base::Matrix4D *pmat=nullptr,
+            App::DocumentObject **owner=nullptr, bool resolveLink=true, bool transform=true);
+
+    static TopoShape getTopoShape(const App::DocumentObject *obj,
+            const char *subname=nullptr, bool needSubElement=false, Base::Matrix4D *pmat=nullptr,
+            App::DocumentObject **owner=nullptr, bool resolveLink=true, bool transform=true,
+            bool noElementMap=false);
+
+    static void clearShapeCache();
+
+    static App::DocumentObject *getShapeOwner(const App::DocumentObject *obj, const char *subname=nullptr);
+
+    static bool hasShapeOwner(const App::DocumentObject *obj, const char *subname=nullptr) {
+        auto owner = getShapeOwner(obj,subname);
+        return owner && owner->isDerivedFrom(getClassTypeId());
+    }
 
 protected:
-    void onChanged(const App::Property* prop);
-    TopLoc_Location getLocation() const;
+    /// recompute only this object
+    App::DocumentObjectExecReturn *recompute() override;
+    /// recalculate the feature
+    App::DocumentObjectExecReturn *execute() override;
+    void onChanged(const App::Property* prop) override;
     /**
      * Build a history of changes
      * MakeShape: The operation that created the changes, e.g. BRepAlgoAPI_Common
@@ -91,7 +127,7 @@ protected:
 
 class FilletBase : public Part::Feature
 {
-    PROPERTY_HEADER(Part::FilletBase);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::FilletBase);
 
 public:
     FilletBase();
@@ -99,20 +135,20 @@ public:
     App::PropertyLink   Base;
     PropertyFilletEdges Edges;
 
-    short mustExecute() const;
+    short mustExecute() const override;
 };
 
-typedef App::FeaturePythonT<Feature> FeaturePython;
+using FeaturePython = App::FeaturePythonT<Feature>;
 
 
 /** Base class of all shape feature classes in FreeCAD
  */
 class PartExport FeatureExt : public Feature
 {
-    PROPERTY_HEADER(Part::FeatureExt);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::FeatureExt);
 
 public:
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderPartExt";
     }
 };
@@ -146,8 +182,8 @@ std::vector<cutFaces> findAllFacesCutBy(const TopoDS_Shape& shape,
   * If there is any error in the boolean operations, the check always returns false
   */
 PartExport
-const bool checkIntersection(const TopoDS_Shape& first, const TopoDS_Shape& second,
-                             const bool quick, const bool touch_is_intersection);
+bool checkIntersection(const TopoDS_Shape& first, const TopoDS_Shape& second,
+                       const bool quick, const bool touch_is_intersection);
 
 } //namespace Part
 

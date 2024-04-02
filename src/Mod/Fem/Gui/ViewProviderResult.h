@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,42 +24,34 @@
 #ifndef FEM_ViewProviderResult_H
 #define FEM_ViewProviderResult_H
 
-#include <Gui/ViewProviderGeometryObject.h>
-#include <Gui/ViewProviderBuilder.h>
+#include <Gui/ViewProviderDocumentObject.h>
 #include <Gui/ViewProviderPythonFeature.h>
-
-class SoCoordinate3;
-class SoDrawStyle;  
-class SoIndexedFaceSet; 
-class SoIndexedLineSet; 
-class SoShapeHints;
-class SoMaterialBinding;
+#include <Mod/Fem/FemGlobal.h>
 
 namespace FemGui
 {
 
-
-
-class FemGuiExport ViewProviderResult : public Gui::ViewProviderDocumentObject
+class FemGuiExport ViewProviderResult: public Gui::ViewProviderDocumentObject
 {
-    PROPERTY_HEADER(FemGui::ViewProviderResult);
+    PROPERTY_HEADER_WITH_OVERRIDE(FemGui::ViewProviderResult);
 
 public:
     /// constructor
     ViewProviderResult();
 
     /// destructor
-    ~ViewProviderResult();
+    ~ViewProviderResult() override;
 
     // shows solid in the tree
-    virtual bool isShow(void) const{return true;}
-protected:
-
+    bool isShow() const override
+    {
+        return true;
+    }
 };
 
-typedef Gui::ViewProviderPythonFeatureT<ViewProviderResult> ViewProviderResultPython;
+using ViewProviderResultPython = Gui::ViewProviderPythonFeatureT<ViewProviderResult>;
 
-} //namespace FemGui
+}  // namespace FemGui
 
 
-#endif // FEM_ViewProviderResult_H
+#endif  // FEM_ViewProviderResult_H

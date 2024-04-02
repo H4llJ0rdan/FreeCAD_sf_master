@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,21 +20,18 @@
  *                                                                         *
  ***************************************************************************/
 
- 
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <BRepPrimAPI_MakeBox.hxx>
 # include <Precision.hxx>
 #endif
 
-
-#include <Base/Console.h>
 #include <Base/Reader.h>
+
 #include "FeaturePartBox.h"
 
 
 using namespace Part;
-
 
 PROPERTY_SOURCE(Part::Box, Part::Primitive)
 
@@ -55,7 +52,7 @@ short Box::mustExecute() const
     return Primitive::mustExecute();
 }
 
-App::DocumentObjectExecReturn *Box::execute(void)
+App::DocumentObjectExecReturn *Box::execute()
 {
     double L = Length.getValue();
     double W = Width.getValue();
@@ -75,13 +72,11 @@ App::DocumentObjectExecReturn *Box::execute(void)
         BRepPrimAPI_MakeBox mkBox(L, W, H);
         TopoDS_Shape ResultShape = mkBox.Shape();
         this->Shape.setValue(ResultShape);
+        return Primitive::execute();
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
-
-    return App::DocumentObject::StdReturn;
 }
 
 /**
@@ -93,6 +88,16 @@ void Box::Restore(Base::XMLReader &reader)
 {
     reader.readElement("Properties");
     int Cnt = reader.getAttributeAsInteger("Count");
+    int transientCount = 0;
+    if(reader.hasAttribute("TransientCount"))
+        transientCount = reader.getAttributeAsUnsigned("TransientCount");
+
+    for (int i=0;i<transientCount; ++i) {
+        reader.readElement("_Property");
+        App::Property* prop = getPropertyByName(reader.getAttribute("name"));
+        if(prop && reader.hasAttribute("status"))
+            prop->setStatusValue(reader.getAttributeAsUnsigned("status"));
+    }
 
     bool location_xyz = false;
     bool location_axis = false;
@@ -106,7 +111,27 @@ void Box::Restore(Base::XMLReader &reader)
         reader.readElement("Property");
         const char* PropName = reader.getAttribute("name");
         const char* TypeName = reader.getAttribute("type");
-        App::Property* prop = getPropertyByName(PropName);
+        auto prop = dynamicProps.restore(*this,PropName,TypeName,reader);
+        if(!prop)
+            prop = getPropertyByName(PropName);
+
+        std::bitset<32> status;
+        if(reader.hasAttribute("status")) {
+            status = reader.getAttributeAsUnsigned("status");
+            if(prop)
+                prop->setStatusValue(status.to_ulong());
+        }
+        if (prop && strcmp(prop->getTypeId().getName(), TypeName) == 0) {
+            if (!prop->testStatus(App::Property::Transient)
+                    && !status.test(App::Property::Transient)
+                    && !status.test(App::Property::PropTransient)
+                    && !(getPropertyType(prop) & App::Prop_Transient))
+            {
+                prop->Restore(reader);
+            }
+            reader.readEndElement("Property");
+            continue;
+        }
         if (!prop) {
             // in case this comes from an old document we must use the new properties
             if (strcmp(PropName, "l") == 0) {
@@ -178,7 +203,7 @@ void Box::Restore(Base::XMLReader &reader)
     if (location_xyz) {
         plm.setPosition(Base::Vector3d(x.getValue(),y.getValue(),z.getValue()));
         this->Placement.setValue(this->Placement.getValue() * plm);
-        this->Shape.StatusBits.set(10); // override the shape's location later on
+        this->Shape.setStatus(App::Property::User1, true); // override the shape's location later on
     }
     // for 0.8 releases
     else if (location_axis) {
@@ -189,7 +214,7 @@ void Box::Restore(Base::XMLReader &reader)
         plm.setRotation(rot);
         plm.setPosition(Base::Vector3d(p.x,p.y,p.z));
         this->Placement.setValue(this->Placement.getValue() * plm);
-        this->Shape.StatusBits.set(10); // override the shape's location later on
+        this->Shape.setStatus(App::Property::User1, true); // override the shape's location later on
     }
 
     reader.readEndElement("Properties");
@@ -205,8 +230,8 @@ void Box::onChanged(const App::Property* prop)
     }
     else if (prop == &this->Shape) {
         // see Box::Restore
-        if (this->Shape.StatusBits.test(10)) {
-            this->Shape.StatusBits.reset(10);
+        if (this->Shape.testStatus(App::Property::User1)) {
+            this->Shape.setStatus(App::Property::User1, false);
             App::DocumentObjectExecReturn *ret = recompute();
             delete ret;
             return;

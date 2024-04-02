@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,34 +20,31 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 #ifndef PART_FEATUREPARTIMPORTBREP_H
 #define PART_FEATUREPARTIMPORTBREP_H
 
-
 #include "PartFeature.h"
+
 
 namespace Part
 {
 
-
 class ImportBrep :public Part::Feature
 {
-    PROPERTY_HEADER(Part::ImportBrep);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::ImportBrep);
 
 public:
     ImportBrep();
 
     App::PropertyString FileName;
 
-    /** @name methods overide Feature */
+    /** @name methods override Feature */
     //@{
     /// recalculate the Feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderImport";
     }
     //@}

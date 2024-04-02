@@ -21,21 +21,25 @@
  ***************************************************************************/
 
 #include "PreCompiled.h"
+
 #include "SpaceballEvent.h"
-#include "Application.h"
+
 
 using namespace Spaceball;
 
 int MotionEvent::MotionEventType = -1;
 int ButtonEvent::ButtonEventType = -1;
 
-EventBase::EventBase(QEvent::Type event) : QInputEvent(static_cast<QEvent::Type>(event)), handled(false)
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
+EventBase::EventBase(QEvent::Type event) : QInputEvent(static_cast<QEvent::Type>(event))
+#else
+EventBase::EventBase(QEvent::Type event) : QInputEvent(static_cast<QEvent::Type>(event), QPointingDevice::primaryPointingDevice())
+#endif
 {
 
 }
 
-MotionEvent::MotionEvent() : EventBase(static_cast<QEvent::Type>(MotionEventType)),
-    xTrans(0), yTrans(0), zTrans(0), xRot(0), yRot(0), zRot(0)
+MotionEvent::MotionEvent() : EventBase(static_cast<QEvent::Type>(MotionEventType))
 {
 }
 
@@ -48,6 +52,21 @@ MotionEvent::MotionEvent(const MotionEvent& in) : EventBase(static_cast<QEvent::
     yRot    = in.yRot;
     zRot    = in.zRot;
     handled = in.handled;
+}
+
+MotionEvent& MotionEvent::operator= (const MotionEvent& in)
+{
+    if (this == &in)
+        return *this;
+
+    xTrans  = in.xTrans;
+    yTrans  = in.yTrans;
+    zTrans  = in.zTrans;
+    xRot    = in.xRot;
+    yRot    = in.yRot;
+    zRot    = in.zRot;
+    handled = in.handled;
+    return *this;
 }
 
 void MotionEvent::translations(int &xTransOut, int &yTransOut, int &zTransOut)
@@ -89,6 +108,17 @@ ButtonEvent::ButtonEvent(const ButtonEvent& in) : EventBase(static_cast<QEvent::
     buttonState = in.buttonState;
     button = in.button;
     handled = in.handled;
+}
+
+ButtonEvent& ButtonEvent::operator= (const ButtonEvent& in)
+{
+    if (this == &in)
+        return *this;
+
+    buttonState = in.buttonState;
+    button = in.button;
+    handled = in.handled;
+    return *this;
 }
 
 ButtonStateType ButtonEvent::buttonStatus()

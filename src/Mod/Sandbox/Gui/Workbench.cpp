@@ -24,7 +24,8 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-# include <QGLWidget>
+# include <QGridLayout>
+# include <QPainter>
 # include <Inventor/actions/SoAction.h>
 # include <Inventor/elements/SoModelMatrixElement.h>
 # include <Inventor/elements/SoViewVolumeElement.h>
@@ -33,7 +34,10 @@
 # include <Inventor/SbLinear.h>
 #endif
 
+#include <QtOpenGL.h>
+
 #include "Workbench.h"
+#include <App/Application.h>
 #include <Gui/MenuManager.h>
 #include <Gui/ToolBarManager.h>
 #include <Gui/MainWindow.h>
@@ -50,7 +54,7 @@ Workbench::Workbench()
 {
     // Tree view
     Gui::DockWindow* tree = new Gui::DockWindow(0, Gui::getMainWindow());
-    tree->setWindowTitle(QString::fromAscii("Tree view"));
+    tree->setWindowTitle(QString::fromLatin1("Tree view"));
     Gui::TreeView* treeWidget = new Gui::TreeView(tree);
     treeWidget->setRootIsDecorated(false);
     ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/TreeView");
@@ -58,11 +62,11 @@ Workbench::Workbench()
 
     QGridLayout* pLayout = new QGridLayout(tree); 
     pLayout->setSpacing(0);
-    pLayout->setMargin (0);
+    pLayout->setContentsMargins(0, 0, 0, 0);
     pLayout->addWidget(treeWidget, 0, 0);
 
     tree->setObjectName
-        (QString::fromAscii(QT_TRANSLATE_NOOP("QDockWidget","Tree view (MVC)")));
+        (QString::fromLatin1(QT_TRANSLATE_NOOP("QDockWidget","Tree view (MVC)")));
     tree->setMinimumWidth(210);
     Gui::DockWindowManager* pDockMgr = Gui::DockWindowManager::instance();
     pDockMgr->registerDockWindow("Std_TreeViewMVC", tree);
@@ -81,9 +85,10 @@ Gui::MenuItem* Workbench::setupMenuBar() const
     Gui::MenuItem* threads = new Gui::MenuItem;
     threads->setCommand("Python Threads");
     *threads << "Sandbox_PythonLockThread" << "Sandbox_NolockPython"
-             << "Sandbox_PyQtThread" << "Sandbox_PythonThread" << "Sandbox_PythonMainThread";
+             << "Sandbox_PySideThread" << "Sandbox_PythonThread" << "Sandbox_PythonMainThread";
     test->setCommand("Threads");
-    *test << "Sandbox_Thread" << "Sandbox_TestThread" << "Sandbox_WorkerThread" << "Sandbox_SeqThread"
+    *test << "Sandbox_Thread" << "Sandbox_TestThread" << "Sandbox_SaveThread"
+          << "Sandbox_WorkerThread" << "Sandbox_SeqThread"
           << "Sandbox_BlockThread" << "Sandbox_NoThread" << threads << "Separator"
           << "Sandbox_Dialog" << "Sandbox_FileDialog";
     Gui::MenuItem* misc = new Gui::MenuItem;
@@ -105,7 +110,9 @@ Gui::MenuItem* Workbench::setupMenuBar() const
           << "Sandbox_WidgetShape"
           << "Sandbox_GDIWidget"
           << "Sandbox_RedirectPaint"
-          << "Std_TestGraphicsView";
+          << "Std_TestGraphicsView"
+          << "Std_TestTaskBox";
+
     return root;
 }
 
@@ -136,7 +143,7 @@ Gui::DockWindowItems* Workbench::setupDockWindows() const
 // ----------------------------------------------------
 
 
-SO_NODE_SOURCE(SoWidgetShape);
+SO_NODE_SOURCE(SoWidgetShape)
 
 void SoWidgetShape::initClass()
 {
@@ -148,11 +155,12 @@ SoWidgetShape::SoWidgetShape()
     SO_NODE_CONSTRUCTOR(SoWidgetShape);
 }
 
-void SoWidgetShape::GLRender(SoGLRenderAction *action)
+void SoWidgetShape::GLRender(SoGLRenderAction * /*action*/)
 {
-#if 1
+#if defined(HAVE_QT5_OPENGL)
     this->image = QPixmap::grabWidget(w, w->rect()).toImage();
-    this->image = QGLWidget::convertToGLFormat(this->image);
+#else
+    this->image = w->grab(w->rect()).toImage();
 #endif
     glRasterPos2d(10,10);
     glDrawPixels(this->image.width(),this->image.height(),GL_RGBA,GL_UNSIGNED_BYTE,this->image.bits());
@@ -161,7 +169,8 @@ void SoWidgetShape::GLRender(SoGLRenderAction *action)
 void SoWidgetShape::computeBBox(SoAction *action, SbBox3f &box, SbVec3f &center)
 {
     // ignore if node is empty
-    if (this->image.isNull()) return;
+    if (this->image.isNull())
+        return;
 
     SbVec3f v0, v1, v2, v3;
     // this will cause a cache dependency on the view volume,
@@ -229,7 +238,8 @@ SoWidgetShape::getQuad(SoState * state, SbVec3f & v0, SbVec3f & v1,
 
 void SoWidgetShape::generatePrimitives(SoAction *action)
 {
-    if (this->image.isNull()) return;
+    if (this->image.isNull())
+        return;
 
     SoState *state = action->getState();
     state->push();
@@ -270,7 +280,11 @@ void SoWidgetShape::setWidget(QWidget* w)
 {
     this->w = w;
     this->w->show();
-    QPainter::setRedirected(this->w, &this->image);
-    this->image = QPixmap::grabWidget(w, w->rect()).toImage();
-    this->image = QGLWidget::convertToGLFormat(this->image);
+    QPixmap img(this->w->size());
+    this->w->render(&img);
+    this->image = img.toImage();
+
+#if !defined(HAVE_QT5_OPENGL)
+    this->image = w->grab(w->rect()).toImage();
+#endif
 }

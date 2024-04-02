@@ -35,7 +35,7 @@ public:
   }
 
   void setDefaultExtract() ;
-  inline ZipLocalEntry &operator=( const class ZipLocalEntry &src ) ;
+  //inline ZipLocalEntry &operator=( const class ZipLocalEntry &src ) ;
   virtual string getComment() const ;
   virtual uint32 getCompressedSize() const ;
   virtual uint32 getCrc() const ;
@@ -123,7 +123,7 @@ public:
 
   void setDefaultWriter() ;
 
-  ZipCDirEntry &operator=( const class ZipCDirEntry &src ) ;
+  //ZipCDirEntry &operator=( const class ZipCDirEntry &src ) ;
   virtual string toString() const ;
 
   virtual string getComment() const ;
@@ -179,7 +179,7 @@ public:
   void setOffset( uint32 offset )   { cdir_offset = offset ;        }
 
   void setTotalCount( uint16 c )    { cdir_entries = c ; cdir_tot_entries = c ; }
-  int  eocdOffSetFromEnd() const { return eocd_offset_from_end ; }
+  int  eocdOffSetFromEnd() const { return static_cast<int>(eocd_offset_from_end) ; }
   bool read( vector<unsigned char> &buf, int pos ) ;
 private:
   static const uint32 signature;
@@ -212,6 +212,39 @@ inline bool operator!= ( const ZipCDirEntry &ze, const ZipLocalEntry &zlh ) {
 // Inline member functions
 
 
+// Commented because same as default...
+#if 0
+ZipCDirEntry &ZipCDirEntry::operator=( const class ZipCDirEntry &src ) {
+  writer_version      = src.writer_version      ;
+  extract_version     = src.extract_version     ;
+  gp_bitfield         = src.gp_bitfield         ;
+  compress_method     = src.compress_method     ;
+  last_mod_ftime      = src.last_mod_ftime      ;
+  last_mod_fdate      = src.last_mod_fdate      ;
+  crc_32              = src.crc_32              ;
+  compress_size       = src.compress_size       ;
+  uncompress_size     = src.uncompress_size     ;
+  filename_len        = src.filename_len        ;
+  extra_field_len     = src.extra_field_len     ;
+  file_comment_len    = src.file_comment_len    ;
+  disk_num_start      = src.disk_num_start      ;
+  intern_file_attr    = src.intern_file_attr    ;
+  extern_file_attr    = src.extern_file_attr    ;
+  rel_offset_loc_head = src.rel_offset_loc_head ;
+
+  filename     = src.filename     ;
+  extra_field  = src.extra_field  ;
+  file_comment = src.file_comment ;
+
+  return *this ;
+}
+#endif
+
+bool EndOfCentralDirectory::checkSignature ( uint32 sig ) const {
+  return signature == sig ;
+}
+
+
 } // namespace
 
 #endif
@@ -224,7 +257,7 @@ inline bool operator!= ( const ZipCDirEntry &ze, const ZipLocalEntry &zlh ) {
 
 /*
   Zipios++ - a small C++ library that provides easy access to .zip files.
-  Copyright (C) 2000  Thomas Søndergaard
+  Copyright (C) 2000  Thomas SÃ¸ndergaard
   
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public

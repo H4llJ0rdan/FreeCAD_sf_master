@@ -9,14 +9,15 @@ FilterInputStreambuf::FilterInputStreambuf( streambuf *inbuf, bool del_inbuf )
   : _inbuf( inbuf),
     _del_inbuf( del_inbuf )
 {
-  if ( _inbuf == NULL ) {
+  _s_pos = 0;
+  if (!_inbuf) {
     // throw an exception
   }
 }
 
 
 FilterInputStreambuf::~FilterInputStreambuf() {
-  if ( _del_inbuf )
+  if (_del_inbuf)
     delete _inbuf ;
 }
 
@@ -29,7 +30,7 @@ FilterInputStreambuf::~FilterInputStreambuf() {
 
 /*
   Zipios++ - a small C++ library that provides easy access to .zip files.
-  Copyright (C) 2000  Thomas Søndergaard
+  Copyright (C) 2000  Thomas SÃ¸ndergaard
   
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public

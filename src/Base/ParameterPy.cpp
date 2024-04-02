@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2002                        *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -19,544 +19,814 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
  *   USA                                                                   *
  *                                                                         *
- *   Juergen Riegel 2002                                                   *
  ***************************************************************************/
 
 
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-#   include <assert.h>
-#   include <fcntl.h>
-#   include <sys/types.h>
-#   include <sys/stat.h>
-#   ifdef FC_OS_WIN32
-#   include <io.h>
-#   include <xercesc/sax/SAXParseException.hpp>
-#   endif
-#   include <stdio.h>
+# ifdef FC_OS_WIN32
+# include <xercesc/sax/SAXParseException.hpp>
+# endif
+# include <list>
+# include <sstream>
+# include <string>
+# include <utility>
 #endif
 
-
-#include <fcntl.h>
 #ifdef FC_OS_LINUX
 # include <unistd.h>
 #endif
 
 #include "Parameter.h"
 #include "Exception.h"
-#include "Console.h"
-#include "PyObjectBase.h"
-
-using namespace Base;
-
-//**************************************************************************
-//**************************************************************************
-// FCPyParametrGrp
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#include "Interpreter.h"
 
 
+namespace Base {
 
-/** The ParameterGrp wrapper class
- */
-class ParameterGrpPy :public Base::PyObjectBase
+class ParameterGrpObserver : public ParameterGrp::ObserverType
 {
-    /** always start with Py_Header */
-    Py_Header;
-
-protected:
-    /// Destruction 
-    ~ParameterGrpPy();
+public:
+    explicit ParameterGrpObserver(const Py::Object& obj)
+    {
+        inst = obj;
+    }
+    ParameterGrpObserver(const Py::Object& obj, const Py::Object &callable, ParameterGrp *target)
+        : callable(callable), _target(target), inst(obj)
+    {
+    }
+    ~ParameterGrpObserver() override
+    {
+        Base::PyGILStateLocker lock;
+        inst = Py::None();
+        callable = Py::None();
+    }
+    void OnChange(ParameterGrp::SubjectType &rCaller,ParameterGrp::MessageType Reason) override
+    {
+        Base::PyGILStateLocker lock;
+        try {
+            ParameterGrp& rGrp = static_cast<ParameterGrp&>(rCaller);
+            ParameterGrp::handle hGrp(&rGrp);
+            Py::Callable method(this->inst.getAttr(std::string("onChange")));
+            Py::Tuple args(2);
+            args.setItem(0, Py::asObject(GetPyObject(hGrp)));
+            // A Reason of null indicates to clear the parameter group
+            if (Reason && Reason[0] != '\0')
+                args.setItem(1, Py::String(Reason));
+            method.apply(args);
+        }
+        catch (Py::Exception&) {
+            Base::PyException e; // extract the Python error text
+            e.ReportException();
+        }
+    }
+    bool isEqual(const Py::Object& obj) const
+    {
+        return this->inst.is(obj);
+    }
 
 public:
+    Py::Object callable;
+    boost::signals2::scoped_connection conn;
+    ParameterGrp *_target = nullptr; // no reference counted, do not access
 
-
-    //---------------------------------------------------------------------
-    // construction / destruction +++++++++++++++++++++++++++++++++++++++++	
-    //---------------------------------------------------------------------
-
-    /// Constructor 
-    ParameterGrpPy(const Base::Reference<ParameterGrp> &rcParamGrp, PyTypeObject *T = &Type);
-    /// for Construction in python 
-    static PyObject *PyMake(PyObject *, PyObject *);
-
-    //---------------------------------------------------------------------
-    // python exports  ++++++++++++++++++++++++++++++++++++++++++++++++++++	
-    //---------------------------------------------------------------------
-
-    PyObject *_getattr(char *attr);				// __getattr__ function
-    // getter setter
-    int _setattr(char *attr, PyObject *value);	// __setattr__ function
-    // methods
-    PYFUNCDEF_D (ParameterGrpPy,PyGetGrp);
-    PYFUNCDEF_D (ParameterGrpPy,PyRemGrp);
-    PYFUNCDEF_D (ParameterGrpPy,PyHasGroup);
-    PYFUNCDEF_D (ParameterGrpPy,PyIsEmpty);
-    PYFUNCDEF_D (ParameterGrpPy,PyClear);
-    PYFUNCDEF_D (ParameterGrpPy,PyNotify);
-    PYFUNCDEF_D (ParameterGrpPy,PyNotifyAll);
-
-    PYFUNCDEF_D (ParameterGrpPy,PySetBool);
-    PYFUNCDEF_D (ParameterGrpPy,PyGetBool);
-    PYFUNCDEF_D (ParameterGrpPy,PyRemBool);
-
-    PYFUNCDEF_D (ParameterGrpPy,PySetInt);
-    PYFUNCDEF_D (ParameterGrpPy,PyGetInt);
-    PYFUNCDEF_D (ParameterGrpPy,PyRemInt);
-
-    PYFUNCDEF_D (ParameterGrpPy,PySetUnsigned);
-    PYFUNCDEF_D (ParameterGrpPy,PyGetUnsigned);
-    PYFUNCDEF_D (ParameterGrpPy,PyRemUnsigned);
-
-    PYFUNCDEF_D (ParameterGrpPy,PySetFloat);
-    PYFUNCDEF_D (ParameterGrpPy,PyGetFloat);
-    PYFUNCDEF_D (ParameterGrpPy,PyRemFloat);
-
-    PYFUNCDEF_D (ParameterGrpPy,PySetString);
-    PYFUNCDEF_D (ParameterGrpPy,PyGetString);
-    PYFUNCDEF_D (ParameterGrpPy,PyRemString);
-
-    PYFUNCDEF_D (ParameterGrpPy,importFrom);
-    PYFUNCDEF_D (ParameterGrpPy,insert);
-    PYFUNCDEF_D (ParameterGrpPy,exportTo);
-
-protected:
-    Base::Reference<ParameterGrp> _cParamGrp;
+private:
+    Py::Object inst;
 };
 
+using ParameterGrpObserverList = std::list<ParameterGrpObserver*>;
 
-//--------------------------------------------------------------------------
-// Type structure
-//--------------------------------------------------------------------------
-
-PyTypeObject ParameterGrpPy::Type = {
-    PyObject_HEAD_INIT(&PyType_Type)
-    0,                                                      /*ob_size*/
-    "ParameterGrp",                                         /*tp_name*/
-    sizeof(ParameterGrpPy),                                 /*tp_basicsize*/
-    0,                                                      /*tp_itemsize*/
-    /* methods */
-    PyDestructor,                                           /*tp_dealloc*/
-    0,                                                      /*tp_print*/
-    __getattr,                                              /*tp_getattr*/
-    __setattr,                                              /*tp_setattr*/
-    0,                                                      /*tp_compare*/
-    __repr,                                                 /*tp_repr*/
-    0,                                                      /*tp_as_number*/
-    0,                                                      /*tp_as_sequence*/
-    0,                                                      /*tp_as_mapping*/
-    0,                                                      /*tp_hash*/
-    0,                                                      /*tp_call */
-    0,                                                      /*tp_str  */
-    0,                                                      /*tp_getattro*/
-    0,                                                      /*tp_setattro*/
-    /* --- Functions to access object as input/output buffer ---------*/
-    0,                                                      /* tp_as_buffer */
-    /* --- Flags to define presence of optional/expanded features */
-    0,                                                      /*tp_flags */
-    "Python interface class to set parameters",             /*tp_doc */
-    0,                                                      /*tp_traverse */
-    0,                                                      /*tp_clear */
-    0,                                                      /*tp_richcompare */
-    0,                                                      /*tp_weaklistoffset */
-    0,                                                      /*tp_iter */
-    0,                                                      /*tp_iternext */
-    0,                                                      /*tp_methods */
-    0,                                                      /*tp_members */
-    0,                                                      /*tp_getset */
-    0,                                                      /*tp_base */
-    0,                                                      /*tp_dict */
-    0,                                                      /*tp_descr_get */
-    0,                                                      /*tp_descr_set */
-    0,                                                      /*tp_dictoffset */
-    0,                                                      /*tp_init */
-    0,                                                      /*tp_alloc */
-    0,                                                      /*tp_new */
-    0,                                                      /*tp_free   Low-level free-memory routine */
-    0,                                                      /*tp_is_gc  For PyObject_IS_GC */
-    0,                                                      /*tp_bases */
-    0,                                                      /*tp_mro    method resolution order */
-    0,                                                      /*tp_cache */
-    0,                                                      /*tp_subclasses */
-    0,                                                      /*tp_weaklist */
-    0                                                       /*tp_del */
-};
-
-//--------------------------------------------------------------------------
-// Methods structure
-//--------------------------------------------------------------------------
-PyMethodDef ParameterGrpPy::Methods[] = {
-    {"GetGroup",         (PyCFunction) sPyGetGrp,          Py_NEWARGS, 0},
-    {"RemGroup",         (PyCFunction) sPyRemGrp,          Py_NEWARGS, 0},
-    {"HasGroup",         (PyCFunction) sPyHasGroup,        Py_NEWARGS, 0},
-    {"IsEmpty",          (PyCFunction) sPyIsEmpty,         Py_NEWARGS, 0},
-    {"Clear",            (PyCFunction) sPyClear,           Py_NEWARGS, 0},
-    {"Notify",           (PyCFunction) sPyNotify,          Py_NEWARGS, 0},
-    {"NotifyAll",        (PyCFunction) sPyNotifyAll,       Py_NEWARGS, 0},
-
-    {"SetBool",          (PyCFunction) sPySetBool,         Py_NEWARGS, 0},
-    {"GetBool",          (PyCFunction) sPyGetBool,         Py_NEWARGS, 0},
-    {"RemBool",          (PyCFunction) sPyRemBool,         Py_NEWARGS, 0},
-
-    {"SetInt",           (PyCFunction) sPySetInt,          Py_NEWARGS, 0},
-    {"GetInt",           (PyCFunction) sPyGetInt,          Py_NEWARGS, 0},
-    {"RemInt",           (PyCFunction) sPyRemInt,          Py_NEWARGS, 0},
-
-    {"SetUnsigned",      (PyCFunction) sPySetUnsigned,     Py_NEWARGS, 0},
-    {"GetUnsigned",      (PyCFunction) sPyGetUnsigned,     Py_NEWARGS, 0},
-    {"RemUnsigned",      (PyCFunction) sPyRemUnsigned,     Py_NEWARGS, 0},
-
-    {"SetFloat",         (PyCFunction) sPySetFloat,        Py_NEWARGS, 0},
-    {"GetFloat",         (PyCFunction) sPyGetFloat,        Py_NEWARGS, 0},
-    {"RemFloat",         (PyCFunction) sPyRemFloat,        Py_NEWARGS, 0},
-
-    {"SetString",        (PyCFunction) sPySetString,       Py_NEWARGS, 0},
-    {"GetString",        (PyCFunction) sPyGetString,       Py_NEWARGS, 0},
-    {"RemString",        (PyCFunction) sPyRemString,       Py_NEWARGS, 0},
-
-    {"Import",           (PyCFunction) simportFrom,        Py_NEWARGS, 0},
-    {"Insert",           (PyCFunction) sinsert,            Py_NEWARGS, 0},
-    {"Export",           (PyCFunction) sexportTo,          Py_NEWARGS, 0},
-
-    {NULL, NULL, 0, NULL}		/* Sentinel */
-};
-
-//--------------------------------------------------------------------------
-// Parents structure
-//--------------------------------------------------------------------------
-PyParentObject ParameterGrpPy::Parents[] = {&PyObjectBase::Type,&ParameterGrpPy::Type, NULL};     
-
-//--------------------------------------------------------------------------
-// constructor
-//--------------------------------------------------------------------------
-ParameterGrpPy::ParameterGrpPy(const Base::Reference<ParameterGrp> &rcParamGrp, PyTypeObject *T ) 
- : PyObjectBase(0, T),_cParamGrp(rcParamGrp)
+class ParameterGrpPy : public Py::PythonExtension<ParameterGrpPy>
 {
-    //Console().Log("Create Param Group %p\n",this);
+public:
+    static void init_type();    // announce properties and methods
+
+    explicit ParameterGrpPy(const Base::Reference<ParameterGrp> &rcParamGrp);
+    ~ParameterGrpPy() override;
+
+    Py::Object repr() override;
+
+    Py::Object getGroup(const Py::Tuple&);
+    Py::Object getGroupName(const Py::Tuple&);
+    Py::Object getGroups(const Py::Tuple&);
+    Py::Object remGroup(const Py::Tuple&);
+    Py::Object hasGroup(const Py::Tuple&);
+
+    Py::Object getManager(const Py::Tuple&);
+    Py::Object getParent(const Py::Tuple&);
+
+    Py::Object isEmpty(const Py::Tuple&);
+    Py::Object clear(const Py::Tuple&);
+
+    Py::Object attach(const Py::Tuple&);
+    Py::Object attachManager(const Py::Tuple& args);
+    Py::Object detach(const Py::Tuple&);
+    Py::Object notify(const Py::Tuple&);
+    Py::Object notifyAll(const Py::Tuple&);
+
+    Py::Object setBool(const Py::Tuple&);
+    Py::Object getBool(const Py::Tuple&);
+    Py::Object getBools(const Py::Tuple&);
+    Py::Object remBool(const Py::Tuple&);
+
+    Py::Object setInt(const Py::Tuple&);
+    Py::Object getInt(const Py::Tuple&);
+    Py::Object getInts(const Py::Tuple&);
+    Py::Object remInt(const Py::Tuple&);
+
+    Py::Object setUnsigned(const Py::Tuple&);
+    Py::Object getUnsigned(const Py::Tuple&);
+    Py::Object getUnsigneds(const Py::Tuple&);
+    Py::Object remUnsigned(const Py::Tuple&);
+
+    Py::Object setFloat(const Py::Tuple&);
+    Py::Object getFloat(const Py::Tuple&);
+    Py::Object getFloats(const Py::Tuple&);
+    Py::Object remFloat(const Py::Tuple&);
+
+    Py::Object setString(const Py::Tuple&);
+    Py::Object getString(const Py::Tuple&);
+    Py::Object getStrings(const Py::Tuple&);
+    Py::Object remString(const Py::Tuple&);
+
+    Py::Object importFrom(const Py::Tuple&);
+    Py::Object insert(const Py::Tuple&);
+    Py::Object exportTo(const Py::Tuple&);
+
+    Py::Object getContents(const Py::Tuple&);
+
+private:
+    ParameterGrp::handle _cParamGrp;
+    ParameterGrpObserverList _observers;
+};
+
+// ---------------------------------------------------------
+
+void ParameterGrpPy::init_type()
+{
+    behaviors().name("ParameterGrp");
+    behaviors().doc("Python interface class to set parameters");
+    // you must have overwritten the virtual functions
+    behaviors().supportRepr();
+    behaviors().supportGetattr();
+    behaviors().supportSetattr();
+    behaviors().readyType();
+
+    add_varargs_method("GetGroup",&ParameterGrpPy::getGroup,"GetGroup(str)");
+    add_varargs_method("GetGroupName",&ParameterGrpPy::getGroupName,"GetGroupName()");
+    add_varargs_method("GetGroups",&ParameterGrpPy::getGroups,"GetGroups()");
+    add_varargs_method("RemGroup",&ParameterGrpPy::remGroup,"RemGroup(str)");
+    add_varargs_method("HasGroup",&ParameterGrpPy::hasGroup,"HasGroup(str)");
+
+    add_varargs_method("Manager",&ParameterGrpPy::getManager,"Manager()");
+    add_varargs_method("Parent",&ParameterGrpPy::getParent,"Parent()");
+
+    add_varargs_method("IsEmpty",&ParameterGrpPy::isEmpty,"IsEmpty()");
+    add_varargs_method("Clear",&ParameterGrpPy::clear,"Clear()");
+
+    add_varargs_method("Attach",&ParameterGrpPy::attach,"Attach()");
+    add_varargs_method("AttachManager",&ParameterGrpPy::attachManager,
+        "AttachManager(observer) -- attach parameter manager for notification\n\n"
+        "This method attaches a user defined observer to the manager (i.e. the root)\n"
+        "of the current parameter group to receive notification of all its parameters\n"
+        "and those from its sub-groups\n\n"
+        "The method expects the observer to have a callable attribute as shown below\n"
+        "       slotParamChanged(param, tp, name, value)\n"
+        "where 'param' is the parameter group causing the change, 'tp' is the type of\n"
+        "the parameter, 'name' is the name of the parameter, and 'value' is the current\n"
+        "value.\n\n"
+        "The possible value of type are, 'FCBool', 'FCInt', 'FCUint', 'FCFloat', 'FCText',\n"
+        "and 'FCParamGroup'. The notification is triggered when value is changed, in which\n"
+        "case 'value' contains the new value in text form, or, when the parameter is removed,\n"
+        "in which case 'value' is empty.\n\n"
+        "For 'FCParamGroup' type, the observer will be notified in the following events.\n"
+        "* Group creation: both 'name' and 'value' contain the name of the new group\n"
+        "* Group removal: both 'name' and 'value' are empty\n"
+        "* Group rename: 'name' is the new name, and 'value' is the old name");
+    add_varargs_method("Detach",&ParameterGrpPy::detach,"Detach()");
+    add_varargs_method("Notify",&ParameterGrpPy::notify,"Notify()");
+    add_varargs_method("NotifyAll",&ParameterGrpPy::notifyAll,"NotifyAll()");
+
+    add_varargs_method("SetBool",&ParameterGrpPy::setBool,"SetBool()");
+    add_varargs_method("GetBool",&ParameterGrpPy::getBool,"GetBool()");
+    add_varargs_method("GetBools",&ParameterGrpPy::getBools,"GetBools()");
+    add_varargs_method("RemBool",&ParameterGrpPy::remBool,"RemBool()");
+
+    add_varargs_method("SetInt",&ParameterGrpPy::setInt,"SetInt()");
+    add_varargs_method("GetInt",&ParameterGrpPy::getInt,"GetInt()");
+    add_varargs_method("GetInts",&ParameterGrpPy::getInts,"GetInts()");
+    add_varargs_method("RemInt",&ParameterGrpPy::remInt,"RemInt()");
+
+    add_varargs_method("SetUnsigned",&ParameterGrpPy::setUnsigned,"SetUnsigned()");
+    add_varargs_method("GetUnsigned",&ParameterGrpPy::getUnsigned,"GetUnsigned()");
+    add_varargs_method("GetUnsigneds",&ParameterGrpPy::getUnsigneds,"GetUnsigneds()");
+    add_varargs_method("RemUnsigned",&ParameterGrpPy::remUnsigned,"RemUnsigned()");
+
+    add_varargs_method("SetFloat",&ParameterGrpPy::setFloat,"SetFloat()");
+    add_varargs_method("GetFloat",&ParameterGrpPy::getFloat,"GetFloat()");
+    add_varargs_method("GetFloats",&ParameterGrpPy::getFloats,"GetFloats()");
+    add_varargs_method("RemFloat",&ParameterGrpPy::remFloat,"RemFloat()");
+
+    add_varargs_method("SetString",&ParameterGrpPy::setString,"SetString()");
+    add_varargs_method("GetString",&ParameterGrpPy::getString,"GetString()");
+    add_varargs_method("GetStrings",&ParameterGrpPy::getStrings,"GetStrings()");
+    add_varargs_method("RemString",&ParameterGrpPy::remString,"RemString()");
+
+    add_varargs_method("Import",&ParameterGrpPy::importFrom,"Import()");
+    add_varargs_method("Insert",&ParameterGrpPy::insert,"Insert()");
+    add_varargs_method("Export",&ParameterGrpPy::exportTo,"Export()");
+
+    add_varargs_method("GetContents",&ParameterGrpPy::getContents,"GetContents()");
 }
 
-PyObject *ParameterGrpPy::PyMake(PyObject* /*ignored*/, PyObject* /*args*/)	// Python wrapper
+ParameterGrpPy::ParameterGrpPy(const Base::Reference<ParameterGrp> &rcParamGrp)
+  : _cParamGrp(rcParamGrp)
 {
-    //return new ParameterGrpPy();			// Make new Python-able object
-    return 0;
 }
 
-//--------------------------------------------------------------------------
-//  FCPyParametrGrp destructor 
-//--------------------------------------------------------------------------
-ParameterGrpPy::~ParameterGrpPy()						// Everything handled in parent
+ParameterGrpPy::~ParameterGrpPy()
 {
-    //Console().Log("Destroy ParameterGrp %p\n",this);
-} 
+    for (ParameterGrpObserver* obs : _observers) {
+        if (!obs->_target)
+            _cParamGrp->Detach(obs);
+        delete obs;
+    }
+}
 
-//--------------------------------------------------------------------------
-// FCPyParametrGrp Attributes
-//--------------------------------------------------------------------------
-PyObject *ParameterGrpPy::_getattr(char *attr)              // __getattr__ function: note only need to handle new state
+Py::Object ParameterGrpPy::repr()
 {
-    _getattr_up(PyObjectBase);                              // send to parent
-} 
+    std::stringstream s;
+    s << "<ParameterGrp at " << this << ">";
+    return Py::String(s.str());
+}
 
-int ParameterGrpPy::_setattr(char *attr, PyObject *value)   // __setattr__ function: note only need to handle new state
+Py::Object ParameterGrpPy::importFrom(const Py::Tuple& args)
 {
-    return PyObjectBase::_setattr(attr, value);	// send up to parent
-} 
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
 
+    _cParamGrp->importFrom(pstr);
+    return Py::None();
+}
 
-//--------------------------------------------------------------------------
-// Python wrappers
-//--------------------------------------------------------------------------
-
-PyObject *ParameterGrpPy::importFrom(PyObject *args)
+Py::Object ParameterGrpPy::insert(const Py::Tuple& args)
 {
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->importFrom(pstr);
-    }PY_CATCH;
-    Py_Return;
-} 
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
 
-PyObject *ParameterGrpPy::insert(PyObject *args)
-{
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->insert(pstr);
-    }PY_CATCH;
-    Py_Return;
-} 
+    _cParamGrp->insert(pstr);
+    return Py::None();
+}
 
-PyObject *ParameterGrpPy::exportTo(PyObject *args)
+Py::Object ParameterGrpPy::exportTo(const Py::Tuple& args)
 {
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->exportTo(pstr);
-    }PY_CATCH;
-    Py_Return;
-} 
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
 
-PyObject *ParameterGrpPy::PyGetGrp(PyObject *args)
+    _cParamGrp->exportTo(pstr);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::getGroup(const Py::Tuple& args)
 {
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
+
+    try {
         // get the Handle of the wanted group
         Base::Reference<ParameterGrp> handle = _cParamGrp->GetGroup(pstr);
-        if(handle.isValid()){
-            // crate a python wrapper class
+        if (handle.isValid()) {
+            // create a python wrapper class
             ParameterGrpPy *pcParamGrp = new ParameterGrpPy(handle);
-            // increment the reff count
-            //pcParamGrp->_INCREF();
-            return pcParamGrp;
-        }else{
-            PyErr_SetString(PyExc_IOError, "GetGroup failed");
-            return 0L;
+            // increment the ref count
+            return Py::asObject(pcParamGrp);
         }
-    }PY_CATCH;
-} 
-
-PyObject *ParameterGrpPy::PySetBool(PyObject *args)
-{
-    char *pstr;
-    int  Bool;
-    if (!PyArg_ParseTuple(args, "si", &pstr,&Bool))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->SetBool(pstr,Bool!=0);
-        Py_Return; 
-    }PY_CATCH;
-} 
-
-PyObject *ParameterGrpPy::PyGetBool(PyObject *args)
-{
-    char *pstr;
-    int  Bool=0;
-    if (!PyArg_ParseTuple(args, "s|i", &pstr,&Bool))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        return Py_BuildValue("i",_cParamGrp->GetBool(pstr,Bool!=0));
-    }PY_CATCH;
-} 
-
-PyObject *ParameterGrpPy::PySetInt(PyObject *args)
-{
-    char *pstr;
-    long  Int;
-    if (!PyArg_ParseTuple(args, "si", &pstr,&Int))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->SetInt(pstr,Int);
-        Py_Return; 
-    }PY_CATCH;
-} 
-
-PyObject *ParameterGrpPy::PyGetInt(PyObject *args)
-{
-    char *pstr;
-    long  Int=0;
-    if (!PyArg_ParseTuple(args, "s|i", &pstr,&Int))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        return Py_BuildValue("i",_cParamGrp->GetInt(pstr,Int));
-    }PY_CATCH;
-} 
-
-PyObject *ParameterGrpPy::PySetUnsigned(PyObject *args)
-{
-    char *pstr;
-    unsigned long  UInt;
-    if (!PyArg_ParseTuple(args, "sI", &pstr,&UInt))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->SetUnsigned(pstr,UInt);
-        Py_Return; 
-    }PY_CATCH;
-} 
-
-PyObject *ParameterGrpPy::PyGetUnsigned(PyObject *args)
-{
-    char *pstr;
-    unsigned long  UInt=0;
-    if (!PyArg_ParseTuple(args, "s|I", &pstr,&UInt))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        return Py_BuildValue("I",_cParamGrp->GetUnsigned(pstr,UInt));
-    }PY_CATCH;
-} 
-
-PyObject *ParameterGrpPy::PySetFloat(PyObject *args)
-{
-    char *pstr;
-    double  Float;
-    if (!PyArg_ParseTuple(args, "sd", &pstr,&Float))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->SetFloat(pstr,Float);
-        Py_Return; 
-    }PY_CATCH;
+        else {
+            throw Py::RuntimeError("GetGroup failed");
+        }
+    }
+    catch (const Base::Exception& e) {
+        e.setPyException();
+        throw Py::Exception();
+    }
 }
 
-PyObject *ParameterGrpPy::PyGetFloat(PyObject *args)
+Py::Object ParameterGrpPy::getManager(const Py::Tuple& args)
 {
-    char *pstr;
+    if (!PyArg_ParseTuple(args.ptr(), ""))
+        throw Py::Exception();
+
+    // get the Handle of the wanted group
+    Base::Reference<ParameterGrp> handle = _cParamGrp->Manager();
+    if (handle.isValid()) {
+        // create a python wrapper class
+        ParameterGrpPy *pcParamGrp = new ParameterGrpPy(handle);
+        // increment the ref count
+        return Py::asObject(pcParamGrp);
+    }
+
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::getParent(const Py::Tuple& args)
+{
+    if (!PyArg_ParseTuple(args.ptr(), ""))
+        throw Py::Exception();
+
+    // get the Handle of the wanted group
+    Base::Reference<ParameterGrp> handle = _cParamGrp->Parent();
+    if (handle.isValid()) {
+        // create a python wrapper class
+        ParameterGrpPy *pcParamGrp = new ParameterGrpPy(handle);
+        // increment the ref count
+        return Py::asObject(pcParamGrp);
+    }
+
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::getGroupName(const Py::Tuple& args)
+{
+    if (!PyArg_ParseTuple(args.ptr(), ""))
+        throw Py::Exception();
+
+    // get the Handle of the wanted group
+    std::string name = _cParamGrp->GetGroupName();
+    return Py::String(name);
+}
+
+Py::Object ParameterGrpPy::getGroups(const Py::Tuple& args)
+{
+    if (!PyArg_ParseTuple(args.ptr(), ""))
+        throw Py::Exception();
+
+    // get the Handle of the wanted group
+    std::vector<Base::Reference<ParameterGrp> > handle = _cParamGrp->GetGroups();
+    Py::List list;
+    for (const auto& it : handle) {
+        list.append(Py::String(it->GetGroupName()));
+    }
+
+    return list;
+}
+
+Py::Object ParameterGrpPy::setBool(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    int  Bool = 0;
+    if (!PyArg_ParseTuple(args.ptr(), "si", &pstr,&Bool))
+        throw Py::Exception();
+
+    _cParamGrp->SetBool(pstr,Bool!=0);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::getBool(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    int  Bool=0;
+    if (!PyArg_ParseTuple(args.ptr(), "s|i", &pstr,&Bool))
+        throw Py::Exception();
+
+    return Py::Boolean(_cParamGrp->GetBool(pstr,Bool!=0));
+}
+
+Py::Object ParameterGrpPy::getBools(const Py::Tuple& args)
+{
+    char *filter=nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "|s", &filter))
+        throw Py::Exception();
+
+    std::vector<std::pair<std::string,bool> > map = _cParamGrp->GetBoolMap(filter);
+    Py::List list;
+    for (const auto& it : map) {
+        list.append(Py::String(it.first));
+    }
+
+    return list;
+}
+
+Py::Object ParameterGrpPy::setInt(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    int  Int = 0;
+    if (!PyArg_ParseTuple(args.ptr(), "si", &pstr,&Int))
+        throw Py::Exception();
+
+    _cParamGrp->SetInt(pstr,Int);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::getInt(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    int  Int=0;
+    if (!PyArg_ParseTuple(args.ptr(), "s|i", &pstr,&Int))
+        throw Py::Exception();
+    return Py::Long(_cParamGrp->GetInt(pstr,Int));
+}
+
+Py::Object ParameterGrpPy::getInts(const Py::Tuple& args)
+{
+    char *filter=nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "|s", &filter))
+        throw Py::Exception();
+
+    std::vector<std::pair<std::string,long> > map = _cParamGrp->GetIntMap(filter);
+    Py::List list;
+    for (const auto& it : map) {
+        list.append(Py::String(it.first));
+    }
+
+    return list;
+}
+
+Py::Object ParameterGrpPy::setUnsigned(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    unsigned int  UInt = 0;
+    if (!PyArg_ParseTuple(args.ptr(), "sI", &pstr,&UInt))
+        throw Py::Exception();
+
+    _cParamGrp->SetUnsigned(pstr,UInt);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::getUnsigned(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    unsigned int  UInt=0;
+    if (!PyArg_ParseTuple(args.ptr(), "s|I", &pstr,&UInt))
+        throw Py::Exception();
+    return Py::Long(_cParamGrp->GetUnsigned(pstr,UInt));
+}
+
+Py::Object ParameterGrpPy::getUnsigneds(const Py::Tuple& args)
+{
+    char *filter=nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "|s", &filter))
+        throw Py::Exception();
+
+    std::vector<std::pair<std::string,unsigned long> > map = _cParamGrp->GetUnsignedMap(filter);
+    Py::List list;
+    for (const auto& it : map) {
+        list.append(Py::String(it.first));
+    }
+
+    return list;
+}
+
+Py::Object ParameterGrpPy::setFloat(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    double  Float{};
+    if (!PyArg_ParseTuple(args.ptr(), "sd", &pstr,&Float))
+        throw Py::Exception();
+
+    _cParamGrp->SetFloat(pstr,Float);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::getFloat(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
     double  Float=0.0;
-    if (!PyArg_ParseTuple(args, "s|d", &pstr,&Float))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        return Py_BuildValue("d",_cParamGrp->GetFloat(pstr,Float));
-    }PY_CATCH;
-} 
+    if (!PyArg_ParseTuple(args.ptr(), "s|d", &pstr,&Float))
+        throw Py::Exception();
 
-PyObject *ParameterGrpPy::PySetString(PyObject *args)
-{
-    char *pstr;
-    char *  str;
-    if (!PyArg_ParseTuple(args, "ss", &pstr,&str))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->SetASCII(pstr,str);
-        Py_Return; 
-    }PY_CATCH;
-} 
+    return Py::Float(_cParamGrp->GetFloat(pstr,Float));
+}
 
-PyObject *ParameterGrpPy::PyGetString(PyObject *args)
+Py::Object ParameterGrpPy::getFloats(const Py::Tuple& args)
 {
-    char *pstr;
+    char *filter=nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "|s", &filter))
+        throw Py::Exception();
+
+    std::vector<std::pair<std::string,double> > map = _cParamGrp->GetFloatMap(filter);
+    Py::List list;
+    for (const auto& it : map) {
+        list.append(Py::String(it.first));
+    }
+
+    return list;
+}
+
+Py::Object ParameterGrpPy::setString(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    char *  str = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "ss", &pstr,&str))
+        throw Py::Exception();
+
+    _cParamGrp->SetASCII(pstr,str);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::getString(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
     char *  str="";
-    if (!PyArg_ParseTuple(args, "s|s", &pstr,&str))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        return Py_BuildValue("s",_cParamGrp->GetASCII(pstr,str).c_str());
-    }PY_CATCH;
-} 
+    if (!PyArg_ParseTuple(args.ptr(), "s|s", &pstr,&str))
+        throw Py::Exception();
 
-//----
+    return Py::String(_cParamGrp->GetASCII(pstr,str));
+}
 
-PyObject *ParameterGrpPy::PyRemInt(PyObject *args)
+Py::Object ParameterGrpPy::getStrings(const Py::Tuple& args)
 {
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->RemoveInt(pstr);
-        Py_Return; 
-    }PY_CATCH;
-} 
+    char *filter=nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "|s", &filter))
+        throw Py::Exception();
 
-PyObject *ParameterGrpPy::PyRemUnsigned(PyObject *args)
-{
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->RemoveUnsigned(pstr);
-        Py_Return; 
-    }PY_CATCH;
-} 
+    std::vector<std::pair<std::string,std::string> > map = _cParamGrp->GetASCIIMap(filter);
+    Py::List list;
+    for (const auto& it : map) {
+        list.append(Py::String(it.first));
+    }
 
-PyObject *ParameterGrpPy::PyRemBool(PyObject *args)
-{
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->RemoveBool(pstr);
-        Py_Return; 
-    }PY_CATCH;
-} 
+    return list;
+}
 
-PyObject *ParameterGrpPy::PyRemGrp(PyObject *args)
+Py::Object ParameterGrpPy::remInt(const Py::Tuple& args)
 {
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->RemoveGrp(pstr);
-        Py_Return; 
-    }PY_CATCH;
-} 
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
 
-PyObject *ParameterGrpPy::PyRemFloat(PyObject *args)
-{
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->RemoveFloat(pstr);
-        Py_Return; 
-    }PY_CATCH;
-} 
+    _cParamGrp->RemoveInt(pstr);
+    return Py::None();
+}
 
-PyObject *ParameterGrpPy::PyRemString(PyObject *args)
+Py::Object ParameterGrpPy::remUnsigned(const Py::Tuple& args)
 {
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->RemoveASCII(pstr);
-        Py_Return; 
-    }PY_CATCH;
-} 
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
 
-PyObject *ParameterGrpPy::PyClear(PyObject *args)
-{
-    if (!PyArg_ParseTuple(args, ""))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->Clear();
-        Py_Return; 
-    }PY_CATCH;
-} 
+    _cParamGrp->RemoveUnsigned(pstr);
+    return Py::None();
+}
 
-PyObject *ParameterGrpPy::PyIsEmpty(PyObject *args)
+Py::Object ParameterGrpPy::remBool(const Py::Tuple& args)
 {
-    if (!PyArg_ParseTuple(args, ""))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        return Py_BuildValue("i",_cParamGrp->IsEmpty());
-    }PY_CATCH;
-} 
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
 
-PyObject *ParameterGrpPy::PyHasGroup(PyObject *args)
-{
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        return Py_BuildValue("i",_cParamGrp->HasGroup(pstr));
-    }PY_CATCH;
-} 
+    _cParamGrp->RemoveBool(pstr);
+    return Py::None();
+}
 
-PyObject *ParameterGrpPy::PyNotify(PyObject *args)
+Py::Object ParameterGrpPy::remGroup(const Py::Tuple& args)
 {
-    char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
-    PY_TRY {
-        _cParamGrp->Notify(pstr);
-        Py_Return;
-    }PY_CATCH;
-} 
-PyObject *ParameterGrpPy::PyNotifyAll(PyObject *args)
-{
-    if (!PyArg_ParseTuple(args, ""))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
 
-    PY_TRY {
-        _cParamGrp->NotifyAll();
-        Py_Return;
-    }PY_CATCH;
-} 
+    _cParamGrp->RemoveGrp(pstr);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::remFloat(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
+
+    _cParamGrp->RemoveFloat(pstr);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::remString(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
+
+    _cParamGrp->RemoveASCII(pstr);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::clear(const Py::Tuple& args)
+{
+    if (!PyArg_ParseTuple(args.ptr(), ""))
+        throw Py::Exception();
+
+    _cParamGrp->Clear();
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::isEmpty(const Py::Tuple& args)
+{
+    if (!PyArg_ParseTuple(args.ptr(), ""))
+        throw Py::Exception();
+
+    return Py::Boolean(_cParamGrp->IsEmpty());
+}
+
+Py::Object ParameterGrpPy::hasGroup(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
+
+    return Py::Boolean(_cParamGrp->HasGroup(pstr));
+}
+
+Py::Object ParameterGrpPy::attach(const Py::Tuple& args)
+{
+    PyObject* obj = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "O", &obj))
+        throw Py::Exception();
+
+    Py::Object o(obj);
+    if (!o.hasAttr(std::string("onChange")))
+        throw Py::TypeError("Object has no onChange attribute");
+
+    for (ParameterGrpObserver* it : _observers) {
+        if (it->isEqual(o)) {
+            throw Py::RuntimeError("Object is already attached.");
+        }
+    }
+
+    ParameterGrpObserver* obs = new ParameterGrpObserver(o);
+    _cParamGrp->Attach(obs);
+    _observers.push_back(obs);
+
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::attachManager(const Py::Tuple& args)
+{
+    PyObject* obj = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "O", &obj))
+        throw Py::Exception();
+
+    if (!_cParamGrp->Manager())
+        throw Py::RuntimeError("Parameter has no manager");
+
+    Py::Object o(obj);
+    if (!o.hasAttr(std::string("slotParamChanged")))
+        throw Py::TypeError("Object has no slotParamChanged attribute");
+
+    Py::Object attr(o.getAttr("slotParamChanged"));
+    if (!attr.isCallable())
+        throw Py::TypeError("Object has no slotParamChanged callable attribute");
+
+    for (ParameterGrpObserver* it : _observers) {
+        if (it->isEqual(o)) {
+            throw Py::RuntimeError("Object is already attached.");
+        }
+    }
+
+    ParameterGrpObserver* obs = new ParameterGrpObserver(o, attr, _cParamGrp);
+    obs->conn = _cParamGrp->Manager()->signalParamChanged.connect(
+        [obs](ParameterGrp *Param, ParameterGrp::ParamType Type, const char *Name, const char *Value) {
+            if (!Param) return;
+            for (auto p = Param; p; p = p->Parent()) {
+                if (p == obs->_target) {
+                    Base::PyGILStateLocker lock;
+                    Py::TupleN args(
+                        Py::asObject(new ParameterGrpPy(Param)),
+                        Py::String(ParameterGrp::TypeName(Type)),
+                        Py::String(Name ? Name : ""),
+                        Py::String(Value ? Value : ""));
+                    try {
+                        Py::Callable(obs->callable).apply(args);
+                    } catch (Py::Exception &) {
+                        Base::PyException e;
+                        e.ReportException();
+                    }
+                    break;
+                }
+            }
+        });
+
+    _observers.push_back(obs);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::detach(const Py::Tuple& args)
+{
+    PyObject* obj = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "O", &obj))
+        throw Py::Exception();
+
+    Py::Object o(obj);
+    if (!o.hasAttr(std::string("onChange")))
+        throw Py::TypeError("Object has no onChange attribute");
+
+    for (ParameterGrpObserverList::iterator it = _observers.begin(); it != _observers.end(); ++it) {
+        if ((*it)->isEqual(o)) {
+            ParameterGrpObserver* obs = *it;
+            _observers.erase(it);
+            _cParamGrp->Detach(obs);
+            delete obs;
+            break;
+        }
+    }
+
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::notify(const Py::Tuple& args)
+{
+    char *pstr = nullptr;
+    if (!PyArg_ParseTuple(args.ptr(), "s", &pstr))
+        throw Py::Exception();
+
+    _cParamGrp->Notify(pstr);
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::notifyAll(const Py::Tuple& args)
+{
+    if (!PyArg_ParseTuple(args.ptr(), ""))
+        throw Py::Exception();
+
+    _cParamGrp->NotifyAll();
+    return Py::None();
+}
+
+Py::Object ParameterGrpPy::getContents(const Py::Tuple& args)
+{
+    if (!PyArg_ParseTuple(args.ptr(), ""))
+        throw Py::Exception();
+
+    if (_cParamGrp->IsEmpty())
+        return Py::None();
+
+    Py::List list;
+    // filling up Text nodes
+    std::vector<std::pair<std::string,std::string> > mcTextMap = _cParamGrp->GetASCIIMap();
+    for (const auto & it : mcTextMap) {
+        Py::Tuple t2(3);
+        t2.setItem(0,Py::String("String"));
+        t2.setItem(1,Py::String(it.first.c_str()));
+        t2.setItem(2,Py::String(it.second.c_str()));
+        list.append(t2);
+    }
+
+    // filling up Int nodes
+    std::vector<std::pair<std::string,long> > mcIntMap = _cParamGrp->GetIntMap();
+    for (const auto & it : mcIntMap) {
+        Py::Tuple t3(3);
+        t3.setItem(0,Py::String("Integer"));
+        t3.setItem(1,Py::String(it.first.c_str()));
+        t3.setItem(2,Py::Long(it.second));
+        list.append(t3);
+    }
+
+    // filling up Float nodes
+    std::vector<std::pair<std::string,double> > mcFloatMap = _cParamGrp->GetFloatMap();
+    for (const auto & it : mcFloatMap) {
+        Py::Tuple t4(3);
+        t4.setItem(0,Py::String("Float"));
+        t4.setItem(1,Py::String(it.first.c_str()));
+        t4.setItem(2,Py::Float(it.second));
+        list.append(t4);
+    }
+
+    // filling up bool nodes
+    std::vector<std::pair<std::string,bool> > mcBoolMap = _cParamGrp->GetBoolMap();
+    for (const auto & it : mcBoolMap) {
+        Py::Tuple t5(3);
+        t5.setItem(0,Py::String("Boolean"));
+        t5.setItem(1,Py::String(it.first.c_str()));
+        t5.setItem(2,Py::Boolean(it.second));
+        list.append(t5);
+    }
+
+    // filling up UInt nodes
+    std::vector<std::pair<std::string,unsigned long> > mcUIntMap = _cParamGrp->GetUnsignedMap();
+    for (const auto & it : mcUIntMap) {
+        Py::Tuple t6(3);
+        t6.setItem(0,Py::String("Unsigned Long"));
+        t6.setItem(1,Py::String(it.first.c_str()));
+        t6.setItem(2,Py::Long(it.second));
+        list.append(t6);
+    }
+
+    return list;
+}
+
+} // namespace Base
 
 /** python wrapper function
 */
-PyObject* GetPyObject( const Base::Reference<ParameterGrp> &hcParamGrp)
+PyObject* GetPyObject(const Base::Reference<ParameterGrp> &hcParamGrp)
 {
-    return new ParameterGrpPy(hcParamGrp); 
+    static bool init = false;
+    if (!init) {
+        init = true;
+        Base::ParameterGrpPy::init_type();
+    }
+
+    return new Base::ParameterGrpPy(hcParamGrp);
 }

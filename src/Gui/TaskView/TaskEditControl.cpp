@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,16 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-
-#ifndef _PreComp_
-#endif
-
-#include "TaskEditControl.h"
 
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
+
+#include "TaskEditControl.h"
+
 
 using namespace Gui::TaskView;
 
@@ -44,9 +41,7 @@ TaskEditControl::TaskEditControl(QWidget *parent)
     hboxLayout->addWidget(buttonBox);
 }
 
-TaskEditControl::~TaskEditControl()
-{
-}
+TaskEditControl::~TaskEditControl() = default;
 
 QDialogButtonBox* TaskEditControl::standardButtons() const
 {

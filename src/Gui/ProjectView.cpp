@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2012 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2012 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,56 +20,24 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-# include <boost/signals.hpp>
-# include <boost/bind.hpp>
-# include <QAction>
-# include <QActionGroup>
-# include <QApplication>
-# include <qcursor.h>
-# include <qlayout.h>
-# include <qstatusbar.h>
-# include <QContextMenuEvent>
-# include <QMenu>
-# include <QPixmap>
-# include <QTimer>
-#endif
-
-#include <QDirModel>
-#include <Base/Console.h>
-#include <App/Document.h>
+#include <QFileSystemModel>
 
 #include "ProjectView.h"
-#include "Document.h"
-#include "BitmapFactory.h"
-#include "ViewProviderDocumentObject.h"
-#include "MenuManager.h"
-#include "Application.h"
-#include "MainWindow.h"
+
 
 using namespace Gui;
-
 
 
 /* TRANSLATOR Gui::ProjectWidget */
 ProjectWidget::ProjectWidget(QWidget* parent)
     : QTreeView(parent)
 {
-    fileModel = new QDirModel(this);
-    fileModel->setSorting(QDir::DirsFirst | QDir::Type);
+    fileModel = new QFileSystemModel(this);
     setModel(fileModel);
 }
 
-ProjectWidget::~ProjectWidget()
-{
-}
-
-
-
-
+ProjectWidget::~ProjectWidget() = default;
 
 #include "moc_ProjectView.cpp"
-

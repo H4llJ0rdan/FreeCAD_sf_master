@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2002 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -32,26 +32,26 @@ class Ui_DlgSettings3DViewPart;
 /**
  * The DlgSettings3DViewPartImp class implements a preference page to change settings
  * for the Inventor viewer.
- * \author Jürgen Riegel
+ * \author JÃ¼rgen Riegel
  */
 class DlgSettings3DViewPart : public Gui::Dialog::PreferencePage
-{ 
+{
     Q_OBJECT
 
 public:
-    DlgSettings3DViewPart(QWidget* parent = 0);
-    ~DlgSettings3DViewPart();
+    explicit DlgSettings3DViewPart(QWidget* parent = nullptr);
+    ~DlgSettings3DViewPart() override;
 
 protected:
-    void saveSettings();
-    void loadSettings();
-    void changeEvent(QEvent *e);
-
-private Q_SLOTS:
-    void on_maxDeviation_valueChanged(double);
+    void saveSettings() override;
+    void loadSettings() override;
+    void changeEvent(QEvent *e) override;
 
 private:
-    std::auto_ptr<Ui_DlgSettings3DViewPart> ui;
+    void onMaxDeviationValueChanged(double);
+
+private:
+    std::unique_ptr<Ui_DlgSettings3DViewPart> ui;
     bool checkValue;
 };
 

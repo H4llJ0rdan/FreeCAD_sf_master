@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2010 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2010 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,29 +20,38 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
-
-#include "StartConfiguration.h"
-
-extern struct PyMethodDef Start_methods[];
-
-PyDoc_STRVAR(module_Start_doc,
-"This module is the Start module.");
+#include <Base/PyObjectBase.h>
 
 
-/* Python entry */
-extern "C" {
-void AppStartExport initStart()
+namespace Start
 {
-    Py_InitModule3("Start", Start_methods, module_Start_doc);   /* mod name, table ptr */
-    Base::Console().Log("Loading Start module... done\n");
+class Module: public Py::ExtensionModule<Module>
+{
+public:
+    Module()
+        : Py::ExtensionModule<Module>("Start")
+    {
+        initialize("This module is the Start module.");  // register with Python
+    }
+
+private:
+};
+
+PyObject* initModule()
+{
+    return Base::Interpreter().addModule(new Module);
 }
 
-} // extern "C"
+}  // namespace Start
+
+/* Python entry */
+PyMOD_INIT_FUNC(Start)
+{
+    PyObject* mod = Start::initModule();
+    Base::Console().Log("Loading Start module... done\n");
+    PyMOD_Return(mod);
+}

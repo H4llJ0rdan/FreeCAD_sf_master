@@ -23,21 +23,23 @@
 #ifndef TASKDIMENSION_H
 #define TASKDIMENSION_H
 
-#include <gp_Vec.hxx>
 #include <gp_Lin.hxx>
+#include <gp_Vec.hxx>
 
-#include <Inventor/fields/SoSFVec3f.h>
-#include <Inventor/fields/SoSFMatrix.h>
-#include <Inventor/fields/SoSFString.h>
-#include <Inventor/nodekits/SoSeparatorKit.h>
-#include <Inventor/fields/SoSFColor.h>
-#include <Inventor/fields/SoSFRotation.h>
-#include <Inventor/fields/SoSFFloat.h>
 #include <Inventor/engines/SoSubEngine.h>
 #include <Inventor/engines/SoEngine.h>
+#include <Inventor/fields/SoSFColor.h>
+#include <Inventor/fields/SoSFFloat.h>
+#include <Inventor/fields/SoSFMatrix.h>
+#include <Inventor/fields/SoSFRotation.h>
+#include <Inventor/fields/SoSFString.h>
+#include <Inventor/fields/SoSFVec3f.h>
+#include <Inventor/nodekits/SoSeparatorKit.h>
 
+#include <Base/Matrix.h>
 #include <Gui/TaskView/TaskDialog.h>
 #include <Gui/TaskView/TaskView.h>
+
 
 class TopoDS_Shape;
 class TopoDS_Face;
@@ -61,9 +63,9 @@ namespace PartGui
    * @param sub sub-object name to search.
    * @return signal if the search was successful.
    */
-  bool getShapeFromStrings(TopoDS_Shape &shapeOut, const std::string &doc, const std::string &object, const std::string &sub);
+  bool getShapeFromStrings(TopoDS_Shape &shapeOut, const std::string &doc, const std::string &object, const std::string &sub, Base::Matrix4D *mat=nullptr);
   /*!examine pre selection
-   * @param shape1 firt shape in current selection
+   * @param shape1 first shape in current selection
    * @param shape2 second shape in current selection
    * @return signal if preselection is valid. false means shape1 and shape2 are invalid.
    */
@@ -95,17 +97,22 @@ namespace PartGui
   SoNode* createLinearDimension(const gp_Pnt &point1, const gp_Pnt &point2, const SbColor &color);
   /*!erases all the dimensions in the viewer.*/
   void eraseAllDimensions();
+  /*!refresh all the dimensions in the viewer.*/
+  void refreshDimensions();
   /*!toggles the display status of the 3d dimensions*/
   void toggle3d();
   /*!toggles the display status of the delta dimensions*/
   void toggleDelta();
-  /*!make sure measure command isn't working with everthing invisible. Confusing the user*/
+  /*!make sure measure command isn't working with everything invisible. Confusing the user*/
   void ensureSomeDimensionVisible();
   /*!make sure angle measure command isn't working with 3d off. Confusing the user*/
   void ensure3dDimensionVisible();
   /*convert a vertex to vector*/
   gp_Vec convert(const TopoDS_Vertex &vertex);
-  
+
+  auto getDimensionsFontName();
+  auto getDimensionsFontSize();
+
 class DimensionLinear : public SoSeparatorKit
 {
   SO_KIT_HEADER(DimensionLinear);
@@ -119,7 +126,8 @@ class DimensionLinear : public SoSeparatorKit
 public:
   DimensionLinear();
   static void initClass();
-  virtual SbBool affectsState() const;
+  SbBool affectsState() const override;
+  void setupDimension();
 
   SoSFVec3f point1;
   SoSFVec3f point2;
@@ -131,8 +139,7 @@ protected:
   SoSFVec3f origin;
 
 private:
-  virtual ~DimensionLinear();
-  void setupDimension();
+  ~DimensionLinear() override;
 };
 
 /*kit for anglular dimensions*/
@@ -149,16 +156,16 @@ class DimensionAngular : public SoSeparatorKit
 public:
   DimensionAngular();
   static void initClass();
-  virtual SbBool affectsState() const;
+  SbBool affectsState() const override;
 
   SoSFFloat radius;//radians.
   SoSFFloat angle;//radians.
   SoSFString text;
   SoSFColor dColor;
   SoSFMatrix matrix;
-private:
-  virtual ~DimensionAngular();
   void setupDimension();
+private:
+  ~DimensionAngular() override;
 };
 
 /*used for generating points for arc display*/
@@ -176,9 +183,9 @@ public:
     SoEngineOutput points;
     SoEngineOutput pointCount;
 protected:
-    virtual void evaluate();
+    void evaluate() override;
 private:
-    virtual ~ArcEngine(){}
+    ~ArcEngine() override = default;
     void defaultValues(); //some non error values if something goes wrong.
 };
 
@@ -187,21 +194,21 @@ class SteppedSelection : public QWidget
 {
   Q_OBJECT
 public:
-  SteppedSelection(const uint &buttonCountIn, QWidget *parent = 0);
-  ~SteppedSelection();
+  explicit SteppedSelection(const uint &buttonCountIn, QWidget *parent = nullptr);
+  ~SteppedSelection() override;
   QPushButton* getButton(const uint &index);
   void setIconDone(const uint &index);
-  
+
 protected:
-  typedef std::pair<QPushButton *, QLabel *> ButtonIconPairType;
+  using ButtonIconPairType = std::pair<QPushButton *, QLabel *>;
   std::vector<ButtonIconPairType> buttons;
   QPixmap *stepActive;
   QPixmap *stepDone;
-  
-private slots:
+
+private Q_SLOTS:
   void selectionSlot(bool checked);
   void buildPixmaps();
-  
+
 };
 
 /*! just convenience container*/
@@ -229,7 +236,7 @@ class DimensionControl : public QWidget
 public:
     explicit DimensionControl(QWidget* parent);
     QPushButton *resetButton;
-public slots:
+public Q_SLOTS:
   void toggle3dSlot(bool);
   void toggleDeltaSlot(bool);
   void clearAllSlot(bool);
@@ -241,16 +248,16 @@ class TaskMeasureLinear : public Gui::TaskView::TaskDialog, public Gui::Selectio
     Q_OBJECT
 public:
   TaskMeasureLinear();
-  ~TaskMeasureLinear();
+  ~TaskMeasureLinear() override;
 
-  virtual QDialogButtonBox::StandardButtons getStandardButtons() const
+  QDialogButtonBox::StandardButtons getStandardButtons() const override
       {return QDialogButtonBox::Close;}
-  virtual bool isAllowedAlterDocument(void) const {return false;}
-  virtual bool needsFullSpace() const {return false;}
+  bool isAllowedAlterDocument() const override {return false;}
+  bool needsFullSpace() const override {return false;}
 protected:
-  virtual void onSelectionChanged(const Gui::SelectionChanges& msg);
-    
-protected slots:
+  void onSelectionChanged(const Gui::SelectionChanges& msg) override;
+
+protected Q_SLOTS:
   void selection1Slot(bool checked);
   void selection2Slot(bool checked);
   void resetDialogSlot(bool);
@@ -258,6 +265,9 @@ protected slots:
   void toggleDeltaSlot(bool);
   void clearAllSlot(bool);
   void selectionClearDelayedSlot();
+
+public:
+  static void buildDimension(const DimSelections &sel1, const DimSelections &sel2);
 
 private:
   void setUpGui();
@@ -271,7 +281,7 @@ private:
 };
 
 /*! @brief Convert to vector
- * 
+ *
  * Used to construct a vector from various input types
  */
 class VectorAdapter
@@ -293,17 +303,17 @@ public:
   /*!Build a vector From 2 vectors.
    *vector will be equal to @param vector2 - @param vector1.*/
   VectorAdapter(const gp_Vec &vector1, const gp_Vec &vector2);
-  
+
   /*!make sure no errors in vector construction.
    * @return true = vector is good. false = vector is NOT good.*/
   bool isValid() const {return status;}
   /*!get the calculated vector.
    * @return the vector. use isValid to ensure correct results.*/
-  operator gp_Vec() const {return vector;}
+  operator gp_Vec() const {return vector;}//explicit bombs
   /*!build occ line used for extrema calculation*/
-  operator gp_Lin() const;
+  operator gp_Lin() const;//explicit bombs
   gp_Vec getPickPoint() const {return origin;}
-  
+
 private:
   void projectOriginOntoVector(const gp_Vec &pickedPointIn);
   bool status;
@@ -317,16 +327,16 @@ class TaskMeasureAngular : public Gui::TaskView::TaskDialog, public Gui::Selecti
     Q_OBJECT
 public:
   TaskMeasureAngular();
-  ~TaskMeasureAngular();
+  ~TaskMeasureAngular() override;
 
-  virtual QDialogButtonBox::StandardButtons getStandardButtons() const
+  QDialogButtonBox::StandardButtons getStandardButtons() const override
       {return QDialogButtonBox::Close;}
-  virtual bool isAllowedAlterDocument(void) const {return false;}
-  virtual bool needsFullSpace() const {return false;}
+  bool isAllowedAlterDocument() const override {return false;}
+  bool needsFullSpace() const override {return false;}
 protected:
-  virtual void onSelectionChanged(const Gui::SelectionChanges& msg);
-    
-protected slots:
+  void onSelectionChanged(const Gui::SelectionChanges& msg) override;
+
+protected Q_SLOTS:
   void selection1Slot(bool checked);
   void selection2Slot(bool checked);
   void resetDialogSlot(bool);
@@ -335,21 +345,24 @@ protected slots:
   void clearAllSlot(bool);
   void selectionClearDelayedSlot();
 
+public:
+  static void buildDimension(const DimSelections &sel1, const DimSelections &sel2);
+
 private:
-  void setUpGui();
   void buildDimension();
+  void setUpGui();
   void clearSelection();
   DimSelections selections1;
   DimSelections selections2;
   uint buttonSelectedIndex;
   SteppedSelection *stepped;
-  VectorAdapter buildAdapter(const DimSelections &selection) const;
+  static VectorAdapter buildAdapter(const DimSelections &selection);
 };
 
 /*!start of the measure angular command*/
 void goDimensionAngularRoot();
 /*!examine angular pre selection
-  * @param vector1Out firt shape in current selection
+  * @param vector1Out first shape in current selection
   * @param vector2Out second shape in current selection
   * @return signal if preselection is valid. false means vector1Out and vector2Out are invalid.
   */

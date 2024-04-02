@@ -1,36 +1,39 @@
 if(WIN32)
-    add_definitions(-DFCAppMesh -DWM4_FOUNDATION_DLL_EXPORT -DEIGEN2_SUPPORT)
-else (Win32)
-    add_definitions(-DEIGEN2_SUPPORT)
+    add_definitions(-DFCAppMesh -DWM4_FOUNDATION_DLL_EXPORT)
 endif(WIN32)
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/src/3rdParty
+    ${CMAKE_SOURCE_DIR}/src/3rdParty/libkdtree
     ${Boost_INCLUDE_DIRS}
-    ${PYTHON_INCLUDE_PATH}
-    ${XERCESC_INCLUDE_DIR}
-    ${QT_QTCORE_INCLUDE_DIR}
+    ${PYTHON_INCLUDE_DIRS}
+    ${XercesC_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIR}
     ${EIGEN3_INCLUDE_DIR}
 )
 
-
 set(Mesh_LIBS
     ${Boost_LIBRARIES}
-    ${QT_QTCORE_LIBRARY}
-    ${QT_QTCORE_LIBRARY_DEBUG}
     FreeCADBase
     FreeCADApp
 )
 
+include_directories(
+    ${QtConcurrent_INCLUDE_DIRS}
+)
+list(APPEND Mesh_LIBS
+    ${QtConcurrent_LIBRARIES}
+)
+
+generate_from_xml(EdgePy)
 generate_from_xml(FacetPy)
 generate_from_xml(MeshFeaturePy)
 generate_from_xml(MeshPointPy)
 generate_from_xml(MeshPy)
 
 SET(Mesh_XML_SRCS
+    EdgePy.xml
     FacetPy.xml
     MeshFeaturePy.xml
     MeshPointPy.xml
@@ -47,6 +50,8 @@ SET(Core_SRCS
     Core/Builder.h
     Core/Curvature.cpp
     Core/Curvature.h
+    Core/Decimation.cpp
+    Core/Decimation.h
     Core/Definitions.cpp
     Core/Definitions.h
     Core/Degeneration.cpp
@@ -61,6 +66,8 @@ SET(Core_SRCS
     Core/Info.cpp
     Core/Info.h
     Core/Iterator.h
+    Core/KDTree.cpp
+    Core/KDTree.h
     Core/MeshIO.cpp
     Core/MeshIO.h
     Core/MeshKernel.cpp
@@ -81,15 +88,36 @@ SET(Core_SRCS
     Core/Triangulation.h
     Core/Trim.cpp
     Core/Trim.h
+    Core/TrimByPlane.cpp
+    Core/TrimByPlane.h
     Core/tritritest.h
+    Core/Utilities.h
     Core/Visitor.cpp
     Core/Visitor.h
+    Core/CylinderFit.cpp
+    Core/CylinderFit.h
+    Core/SphereFit.cpp
+    Core/SphereFit.h
+    Core/IO/Reader3MF.cpp
+    Core/IO/Reader3MF.h
+    Core/IO/ReaderOBJ.cpp
+    Core/IO/ReaderOBJ.h
+    Core/IO/Writer3MF.cpp
+    Core/IO/Writer3MF.h
+    Core/IO/WriterInventor.cpp
+    Core/IO/WriterInventor.h
+    Core/IO/WriterOBJ.cpp
+    Core/IO/WriterOBJ.h
 )
 SOURCE_GROUP("Core" FILES ${Core_SRCS})
 
 SET(WildMagic4_SRCS
     WildMagic4/Wm4ApprCylinderFit3.cpp
     WildMagic4/Wm4ApprCylinderFit3.h
+    WildMagic4/Wm4ApprGaussPointsFit2.cpp
+    WildMagic4/Wm4ApprGaussPointsFit2.h
+    WildMagic4/Wm4ApprGaussPointsFit3.cpp
+    WildMagic4/Wm4ApprGaussPointsFit3.h
     WildMagic4/Wm4ApprLineFit3.cpp
     WildMagic4/Wm4ApprLineFit3.h
     WildMagic4/Wm4ApprPlaneFit3.cpp
@@ -102,8 +130,22 @@ SET(WildMagic4_SRCS
     WildMagic4/Wm4ApprSphereFit3.h
     WildMagic4/Wm4BandedMatrix.h
     WildMagic4/Wm4BandedMatrix.inl
+    WildMagic4/Wm4Box2.h
+    WildMagic4/Wm4Box2.inl
     WildMagic4/Wm4Box3.h
     WildMagic4/Wm4Box3.inl
+    WildMagic4/Wm4ContBox2.cpp
+    WildMagic4/Wm4ContBox2.h
+    WildMagic4/Wm4ContBox3.cpp
+    WildMagic4/Wm4ContBox3.h
+    WildMagic4/Wm4ConvexHull.cpp
+    WildMagic4/Wm4ConvexHull.h
+    WildMagic4/Wm4ConvexHull1.cpp
+    WildMagic4/Wm4ConvexHull1.h
+    WildMagic4/Wm4ConvexHull2.cpp
+    WildMagic4/Wm4ConvexHull2.h
+    WildMagic4/Wm4ConvexHull3.cpp
+    WildMagic4/Wm4ConvexHull3.h
     WildMagic4/Wm4DelPolygonEdge.cpp
     WildMagic4/Wm4DelPolygonEdge.h
     WildMagic4/Wm4DelPolyhedronFace.cpp
@@ -210,6 +252,9 @@ SET(WildMagic4_SRCS
     WildMagic4/Wm4Polynomial1.inl
     WildMagic4/Wm4QuadricSurface.cpp
     WildMagic4/Wm4QuadricSurface.h
+    WildMagic4/Wm4Quaternion.cpp
+    WildMagic4/Wm4Quaternion.h
+    WildMagic4/Wm4Quaternion.inl
     WildMagic4/Wm4Query.h
     WildMagic4/Wm4Query.inl
     WildMagic4/Wm4Query2.h
@@ -292,6 +337,13 @@ SET(Mesh_SRCS
     ${Mesh_XML_SRCS}
     AppMesh.cpp
     AppMeshPy.cpp
+    Exporter.cpp
+    Exporter.h
+    Importer.cpp
+    Importer.h
+    Edge.cpp
+    Edge.h
+    EdgePyImp.cpp
     Facet.cpp
     Facet.h
     FacetPyImp.cpp
@@ -313,8 +365,6 @@ SET(Mesh_SRCS
     FeatureMeshTransform.h
     FeatureMeshTransformDemolding.cpp
     FeatureMeshTransformDemolding.h
-#   GTSAlgos.cpp
-#   GTSAlgos.h
     Mesh.cpp
     Mesh.h
     MeshFeature.cpp
@@ -325,31 +375,44 @@ SET(Mesh_SRCS
     MeshProperties.cpp
     MeshProperties.h
     MeshPyImp.cpp
+    MeshTexture.cpp
+    MeshTexture.h
     PreCompiled.cpp
     PreCompiled.h
     Segment.cpp
     Segment.h
 )
 
-if(MSVC)
+# Suppress -Wundefined-var-template
+if (MINGW AND CMAKE_COMPILER_IS_CLANGXX)
+    unset(_flag_found CACHE)
+    check_cxx_compiler_flag("-Wno-undefined-var-template" _flag_found)
+    if (_flag_found)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-undefined-var-template")
+    endif()
+endif()
+
+if(FREECAD_USE_PCH)
     add_definitions(-D_PreComp_)
     GET_MSVC_PRECOMPILED_SOURCE("PreCompiled.cpp" PCH_SRCS ${Core_SRCS} ${Mesh_SRCS})
     ADD_MSVC_PRECOMPILED_HEADER(Mesh PreCompiled.h PreCompiled.cpp PCH_SRCS)
-endif(MSVC)
+endif(FREECAD_USE_PCH)
+
+# Suppress some very long Eigen3 warnings of older versions
+if (EIGEN3_NO_DEPRECATED_COPY)
+    set_source_files_properties(
+        Core/Approximation.cpp
+        Core/CylinderFit.cpp
+        Core/SphereFit.cpp
+        Core/KDTree.cpp
+        PROPERTIES COMPILE_FLAGS ${EIGEN3_NO_DEPRECATED_COPY})
+endif ()
 
 add_library(Mesh SHARED ${Core_SRCS} ${WildMagic4_SRCS} ${Mesh_SRCS})
 target_link_libraries(Mesh ${Mesh_LIBS})
+set_target_properties(Mesh PROPERTIES CXX_STANDARD_REQUIRED ON)
+set_target_properties(Mesh PROPERTIES CXX_STANDARD 17)
 
-
-fc_target_copy_resource(Mesh 
-    ${CMAKE_SOURCE_DIR}/src/Mod/Mesh
-    ${CMAKE_BINARY_DIR}/Mod/Mesh
-    Init.py BuildRegularGeoms.py)
-
-fc_target_copy_resource(Mesh 
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_BINARY_DIR}/Mod/Mesh
-    MeshTestsApp.py)
 
 SET_BIN_DIR(Mesh Mesh /Mod/Mesh)
 SET_PYTHON_PREFIX_SUFFIX(Mesh)

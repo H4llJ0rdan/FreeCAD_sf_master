@@ -2,10 +2,9 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR}
     ${Boost_INCLUDE_DIRS}
-    ${COIN3D_INCLUDE_DIR}
-    ${QT_INCLUDE_DIR}
-    ${PYTHON_INCLUDE_PATH}
-    ${XERCESC_INCLUDE_DIR}
+    ${COIN3D_INCLUDE_DIRS}
+    ${PYTHON_INCLUDE_DIRS}
+    ${XercesC_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIR}
 )
 
@@ -16,18 +15,12 @@ set(InspectionGui_LIBS
     FreeCADGui
 )
 
-qt4_add_resources(Inspection_QRC_SRCS Resources/Inspection.qrc)
-
-set(InspectionGui_MOC_HDRS
-    VisualInspection.h
-)
-fc_wrap_cpp(InspectionGui_MOC_SRCS ${InspectionGui_MOC_HDRS})
-SOURCE_GROUP("Moc" FILES ${InspectionGui_MOC_SRCS})
-
 set(Dialogs_UIC_SRCS
     VisualInspection.ui
 )
-qt4_wrap_ui(Dialogs_UIC_HDRS ${Dialogs_UIC_SRCS})
+
+qt_add_resources(Inspection_QRC_SRCS Resources/Inspection.qrc)
+
 SET(Dialogs_SRCS
     ${Dialogs_UIC_HDRS}
     VisualInspection.cpp
@@ -39,7 +32,6 @@ SET(InspectionGui_SRCS
     ${Inspection_QRC_SRCS}
     ${Dialogs_SRCS}
     AppInspectionGui.cpp
-    AppInspectionGuiPy.cpp
     Command.cpp
     PreCompiled.cpp
     PreCompiled.h
@@ -49,16 +41,34 @@ SET(InspectionGui_SRCS
     Workbench.h
 )
 
-add_library(InspectionGui SHARED ${InspectionGui_SRCS})
+set(InspectionGui_Scripts
+    ../InitGui.py
+)
+
+if(FREECAD_USE_PCH)
+    add_definitions(-D_PreComp_)
+    GET_MSVC_PRECOMPILED_SOURCE("PreCompiled.cpp" PCH_SRCS ${InspectionGui_SRCS})
+    ADD_MSVC_PRECOMPILED_HEADER(InspectionGui PreCompiled.h PreCompiled.cpp PCH_SRCS)
+endif(FREECAD_USE_PCH)
+
+SET(InspectionGuiIcon_SVG
+    Resources/icons/InspectionWorkbench.svg
+)
+
+add_library(InspectionGui SHARED ${InspectionGui_SRCS} ${InspectionGui_Scripts} ${InspectionGuiIcon_SVG})
 target_link_libraries(InspectionGui ${InspectionGui_LIBS})
 
 
-fc_target_copy_resource(InspectionGui 
-    ${CMAKE_SOURCE_DIR}/src/Mod/Inspection
+fc_target_copy_resource_flat(InspectionGui
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_BINARY_DIR}/Mod/Inspection
-    InitGui.py)
+    ${InspectionGui_Scripts}
+)
 
 SET_BIN_DIR(InspectionGui InspectionGui /Mod/Inspection)
 SET_PYTHON_PREFIX_SUFFIX(InspectionGui)
 
+fc_copy_sources(InspectionGui "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}/Mod/Inspection" ${InspectionGuiIcon_SVG})
+
 INSTALL(TARGETS InspectionGui DESTINATION ${CMAKE_INSTALL_LIBDIR})
+INSTALL(FILES ${InspectionGuiIcon_SVG} DESTINATION "${CMAKE_INSTALL_DATADIR}/Mod/Inspection/Resources/icons")

@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -24,25 +24,20 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-# include <QMessageBox>
+# include <QAction>
 #endif
+
+#include <App/DocumentObject.h>
+#include <Base/Console.h>
+#include <Gui/Command.h>
+#include <Gui/Selection.h>
+#include <Gui/SelectionObject.h>
+#include <Gui/ViewProvider.h>
+#include <Mod/PartDesign/App/FeatureScaled.h>
 
 #include "ui_TaskScaledParameters.h"
 #include "TaskScaledParameters.h"
 #include "TaskMultiTransformParameters.h"
-#include <Base/UnitsApi.h>
-#include <App/Application.h>
-#include <App/Document.h>
-#include <Gui/Application.h>
-#include <Gui/Document.h>
-#include <Gui/BitmapFactory.h>
-#include <Gui/ViewProvider.h>
-#include <Gui/WaitCursor.h>
-#include <Base/Console.h>
-#include <Gui/Selection.h>
-#include <Gui/Command.h>
-#include <Mod/PartDesign/App/FeatureScaled.h>
-#include <Mod/Sketcher/App/SketchObject.h>
 
 using namespace PartDesignGui;
 using namespace Gui;
@@ -50,11 +45,11 @@ using namespace Gui;
 /* TRANSLATOR PartDesignGui::TaskScaledParameters */
 
 TaskScaledParameters::TaskScaledParameters(ViewProviderTransformed *TransformedView,QWidget *parent)
-        : TaskTransformedParameters(TransformedView, parent)
+    : TaskTransformedParameters(TransformedView, parent)
+    , ui(new Ui_TaskScaledParameters)
 {
     // we need a separate container widget to add all controls to
     proxy = new QWidget(this);
-    ui = new Ui_TaskScaledParameters();
     ui->setupUi(proxy);
     QMetaObject::connectSlotsByName(this);
 
@@ -68,20 +63,20 @@ TaskScaledParameters::TaskScaledParameters(ViewProviderTransformed *TransformedV
 }
 
 TaskScaledParameters::TaskScaledParameters(TaskMultiTransformParameters *parentTask, QLayout *layout)
-        : TaskTransformedParameters(parentTask)
+        : TaskTransformedParameters(parentTask), ui(new Ui_TaskScaledParameters)
 {
     proxy = new QWidget(parentTask);
-    ui = new Ui_TaskScaledParameters();
     ui->setupUi(proxy);
-    connect(ui->buttonOK, SIGNAL(pressed()),
-            parentTask, SLOT(onSubTaskButtonOK()));
+    connect(ui->buttonOK, &QPushButton::pressed,
+            parentTask, &TaskScaledParameters::onSubTaskButtonOK);
     QMetaObject::connectSlotsByName(this);
 
     layout->addWidget(proxy);
 
     ui->buttonOK->setEnabled(true);
-    ui->labelOriginal->hide();
-    ui->lineOriginal->hide();
+    ui->buttonAddFeature->hide();
+    ui->buttonRemoveFeature->hide();
+    ui->listWidgetFeatures->hide();
     ui->checkBoxUpdateView->hide();
 
     blockUpdate = false; // Hack, sometimes it is NOT false although set to false in Transformed::Transformed()!!
@@ -90,31 +85,48 @@ TaskScaledParameters::TaskScaledParameters(TaskMultiTransformParameters *parentT
 
 void TaskScaledParameters::setupUI()
 {
-    connect(ui->spinFactor, SIGNAL(valueChanged(double)),
-            this, SLOT(onFactor(double)));
-    connect(ui->spinOccurrences, SIGNAL(valueChanged(int)),
-            this, SLOT(onOccurrences(int)));
-    connect(ui->checkBoxUpdateView, SIGNAL(toggled(bool)),
-            this, SLOT(onUpdateView(bool)));
+    connect(ui->buttonAddFeature, &QPushButton::toggled, this, &TaskScaledParameters::onButtonAddFeature);
+    connect(ui->buttonRemoveFeature, &QPushButton::toggled, this, &TaskScaledParameters::onButtonRemoveFeature);
+
+    // Create context menu
+    QAction* action = new QAction(tr("Remove"), this);
+    action->setShortcut(QKeySequence::Delete);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+    // display shortcut behind the context menu entry
+    action->setShortcutVisibleInContextMenu(true);
+#endif
+    ui->listWidgetFeatures->addAction(action);
+    connect(action, &QAction::triggered, this, &TaskScaledParameters::onFeatureDeleted);
+    ui->listWidgetFeatures->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    connect(ui->spinFactor, qOverload<double>(&Gui::QuantitySpinBox::valueChanged),
+            this, &TaskScaledParameters::onFactor);
+    connect(ui->spinOccurrences, &Gui::UIntSpinBox::unsignedChanged,
+            this, &TaskScaledParameters::onOccurrences);
+    connect(ui->checkBoxUpdateView, &QCheckBox::toggled,
+            this, &TaskScaledParameters::onUpdateView);
 
     // Get the feature data
     PartDesign::Scaled* pcScaled = static_cast<PartDesign::Scaled*>(getObject());
     std::vector<App::DocumentObject*> originals = pcScaled->Originals.getValues();
 
     // Fill data into dialog elements
-    ui->lineOriginal->setEnabled(false);
-    for (std::vector<App::DocumentObject*>::const_iterator i = originals.begin(); i != originals.end(); i++)
-    {
-        if ((*i) != NULL) { // find the first valid original
-            ui->lineOriginal->setText(QString::fromAscii((*i)->getNameInDocument()));
-            break;
+    for (auto obj : originals) {
+        if (obj) {
+            QListWidgetItem* item = new QListWidgetItem();
+            item->setText(QString::fromUtf8(obj->Label.getValue()));
+            item->setData(Qt::UserRole, QString::fromLatin1(obj->getNameInDocument()));
+            ui->listWidgetFeatures->addItem(item);
         }
     }
     // ---------------------
 
+    ui->spinFactor->bind(pcScaled->Factor);
+    ui->spinOccurrences->setMaximum(INT_MAX);
+    ui->spinOccurrences->bind(pcScaled->Occurrences);
     ui->spinFactor->setEnabled(true);
     ui->spinOccurrences->setEnabled(true);
-    ui->spinFactor->setDecimals(Base::UnitsApi::getDecimals());
+    //ui->spinFactor->setDecimals(Base::UnitsApi::getDecimals());
 
     updateUI();
 }
@@ -139,12 +151,34 @@ void TaskScaledParameters::updateUI()
 void TaskScaledParameters::onSelectionChanged(const Gui::SelectionChanges& msg)
 {
     if (originalSelected(msg)) {
-        App::DocumentObject* selectedObject = TransformedView->getObject()->getDocument()->getActiveObject();
-        ui->lineOriginal->setText(QString::fromAscii(selectedObject->getNameInDocument()));
+        Gui::SelectionObject selObj(msg);
+        App::DocumentObject* obj = selObj.getObject();
+        Q_ASSERT(obj);
+
+        QString label = QString::fromUtf8(obj->Label.getValue());
+        QString objectName = QString::fromLatin1(msg.pObjectName);
+
+        if (selectionMode == addFeature) {
+            QListWidgetItem* item = new QListWidgetItem();
+            item->setText(label);
+            item->setData(Qt::UserRole, objectName);
+            ui->listWidgetFeatures->addItem(item);
+        }
+        else {
+            removeItemFromListWidget(ui->listWidgetFeatures, label);
+        }
+        exitSelectionMode();
     }
 }
 
-void TaskScaledParameters::onFactor(const double f) {
+void TaskScaledParameters::clearButtons()
+{
+    ui->buttonAddFeature->setChecked(false);
+    ui->buttonRemoveFeature->setChecked(false);
+}
+
+void TaskScaledParameters::onFactor(const double f)
+{
     if (blockUpdate)
         return;
     PartDesign::Scaled* pcScaled = static_cast<PartDesign::Scaled*>(getObject());
@@ -152,7 +186,8 @@ void TaskScaledParameters::onFactor(const double f) {
     recomputeFeature();
 }
 
-void TaskScaledParameters::onOccurrences(const int n) {
+void TaskScaledParameters::onOccurrences(const uint n)
+{
     if (blockUpdate)
         return;
     PartDesign::Scaled* pcScaled = static_cast<PartDesign::Scaled*>(getObject());
@@ -172,20 +207,33 @@ void TaskScaledParameters::onUpdateView(bool on)
     }
 }
 
-const double TaskScaledParameters::getFactor(void) const
+void TaskScaledParameters::onFeatureDeleted()
 {
-    return ui->spinFactor->value();
+    PartDesign::Transformed* pcTransformed = getObject();
+    std::vector<App::DocumentObject*> originals = pcTransformed->Originals.getValues();
+    int currentRow = ui->listWidgetFeatures->currentRow();
+    if (currentRow < 0) {
+        Base::Console().Error("PartDesign ScaledPattern: No feature selected for removing.\n");
+        return; //no current row selected
+    }
+    originals.erase(originals.begin() + currentRow);
+    pcTransformed->Originals.setValues(originals);
+    ui->listWidgetFeatures->model()->removeRow(currentRow);
+    recomputeFeature();
 }
 
-const unsigned TaskScaledParameters::getOccurrences(void) const
+double TaskScaledParameters::getFactor() const
+{
+    return ui->spinFactor->value().getValue();
+}
+
+unsigned TaskScaledParameters::getOccurrences() const
 {
     return ui->spinOccurrences->value();
 }
 
-
 TaskScaledParameters::~TaskScaledParameters()
 {
-    delete ui;
     if (proxy)
         delete proxy;
 }
@@ -196,6 +244,14 @@ void TaskScaledParameters::changeEvent(QEvent *e)
     if (e->type() == QEvent::LanguageChange) {
         ui->retranslateUi(proxy);
     }
+}
+
+void TaskScaledParameters::apply()
+{
+    std::string name = TransformedView->getObject()->getNameInDocument();
+
+    Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Factor = %f",name.c_str(), getFactor());
+    ui->spinOccurrences->apply();
 }
 
 //**************************************************************************
@@ -214,29 +270,10 @@ TaskDlgScaledParameters::TaskDlgScaledParameters(ViewProviderScaled *ScaledView)
 
 bool TaskDlgScaledParameters::accept()
 {
-    std::string name = TransformedView->getObject()->getNameInDocument();
 
-    try {
-        //Gui::Command::openCommand("Scaled changed");
-        // Handle Originals
-        if (!TaskDlgTransformedParameters::accept())
-            return false;
+        parameter->apply();
 
-        TaskScaledParameters* scaledParameter = static_cast<TaskScaledParameters*>(parameter);
-        Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Factor = %f",name.c_str(),scaledParameter->getFactor());
-        Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Occurrences = %u",name.c_str(),scaledParameter->getOccurrences());
-        Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.recompute()");
-        if (!TransformedView->getObject()->isValid())
-            throw Base::Exception(TransformedView->getObject()->getStatusString());
-        Gui::Command::doCommand(Gui::Command::Gui,"Gui.activeDocument().resetEdit()");
-        Gui::Command::commitCommand();
-    }
-    catch (const Base::Exception& e) {
-        QMessageBox::warning(parameter, tr("Input error"), QString::fromAscii(e.what()));
-        return false;
-    }
-
-    return true;
+    return TaskDlgTransformedParameters::accept();
 }
 
 #include "moc_TaskScaledParameters.cpp"

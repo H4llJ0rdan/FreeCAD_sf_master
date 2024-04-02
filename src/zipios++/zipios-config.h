@@ -3,6 +3,11 @@
 
 #include <FCConfig.h>
 
+// undef IGNORE that is pulled in by Windows.h
+#ifdef IGNORE
+#undef IGNORE
+#endif
+
 #ifdef _MSC_VER
 
 // This is fine for VC++ 5.0 sp 3
@@ -61,7 +66,7 @@
 
 /*
   Zipios++ - a small C++ library that provides easy access to .zip files.
-  Copyright (C) 2000  1. Thomas Søndergaard 2. Kevin Shea
+  Copyright (C) 2000  1. Thomas SÃ¸ndergaard 2. Kevin Shea
   Written by Kevin Shea
   
   This library is free software; you can redistribute it and/or

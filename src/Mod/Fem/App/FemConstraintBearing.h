@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jan Rheinländer <jrheinlaender[at]users.sourceforge.net>     *
+ *   Copyright (c) 2013 Jan Rheinländer                                    *
+ *                                   <jrheinlaender@users.sourceforge.net> *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,26 +21,25 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef FEM_CONSTRAINTBEARING_H
 #define FEM_CONSTRAINTBEARING_H
 
 #include <App/DocumentObject.h>
 #include <App/PropertyLinks.h>
-#include <App/PropertyGeo.h>
 
 #include "FemConstraint.h"
+
 
 namespace Fem
 {
 
-class AppFemExport ConstraintBearing : public Fem::Constraint
+class FemExport ConstraintBearing: public Fem::Constraint
 {
-    PROPERTY_HEADER(Fem::ConstraintBearing);
+    PROPERTY_HEADER_WITH_OVERRIDE(Fem::ConstraintBearing);
 
 public:
     /// Constructor
-    ConstraintBearing(void);
+    ConstraintBearing();
 
     /// Location reference
     App::PropertyLinkSub Location;
@@ -54,18 +54,19 @@ public:
     App::PropertyVector Axis;
 
     /// recalculate the object
-    virtual App::DocumentObjectExecReturn *execute(void);
+    App::DocumentObjectExecReturn* execute() override;
 
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override
+    {
         return "FemGui::ViewProviderFemConstraintBearing";
     }
 
 protected:
-    virtual void onChanged(const App::Property* prop);
+    void onChanged(const App::Property* prop) override;
 };
 
-} //namespace Fem
+}  // namespace Fem
 
 
-#endif // FEM_CONSTRAINTBEARING_H
+#endif  // FEM_CONSTRAINTBEARING_H

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -46,8 +46,8 @@ class TaskEditControl : public TaskWidget
     Q_OBJECT
 
 public:
-    TaskEditControl(QWidget *parent = 0);
-    ~TaskEditControl();
+    explicit TaskEditControl(QWidget *parent = nullptr);
+    ~TaskEditControl() override;
     QDialogButtonBox* standardButtons() const;
     friend class TaskView;
 

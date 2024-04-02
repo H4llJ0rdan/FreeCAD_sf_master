@@ -32,76 +32,40 @@ namespace TestGui
 {
 
 class UnitTestDialog;
-class UnitTestDialogPy : public Py::PythonExtension<UnitTestDialogPy>
+class UnitTestDialogPy: public Py::PythonExtension<UnitTestDialogPy>
 {
 public:
-    static void init_type(void);    // announce properties and methods
+    static void init_type();  // announce properties and methods
 
     UnitTestDialogPy();
-    ~UnitTestDialogPy();
+    ~UnitTestDialogPy() override;
 
-    Py::Object repr();
-    Py::Object getattr(const char *);
-    int setattr(const char *, const Py::Object &);
+    Py::Object repr() override;
+    Py::Object getattr(const char*) override;
+    int setattr(const char*, const Py::Object&) override;
 
-    Py::Object clearErrorList   (const Py::Tuple&);
-    Py::Object insertError      (const Py::Tuple&);
-    Py::Object setUnitTest      (const Py::Tuple&);
-    Py::Object getUnitTest      (const Py::Tuple&);
-    Py::Object setStatusText    (const Py::Tuple&);
-    Py::Object setProgressFrac  (const Py::Tuple&);
-    Py::Object errorDialog      (const Py::Tuple&);
-    Py::Object setRunCount      (const Py::Tuple&);
-    Py::Object setFailCount     (const Py::Tuple&);
-    Py::Object setErrorCount    (const Py::Tuple&);
-    Py::Object setRemainCount   (const Py::Tuple&);
-    Py::Object updateGUI        (const Py::Tuple&);
+    Py::Object clearErrorList(const Py::Tuple&);
+    Py::Object insertError(const Py::Tuple&);
+    Py::Object setUnitTest(const Py::Tuple&);
+    Py::Object getUnitTest(const Py::Tuple&);
+    Py::Object setStatusText(const Py::Tuple&);
+    Py::Object setProgressFrac(const Py::Tuple&);
+    Py::Object errorDialog(const Py::Tuple&);
+    Py::Object setRunCount(const Py::Tuple&);
+    Py::Object setFailCount(const Py::Tuple&);
+    Py::Object setErrorCount(const Py::Tuple&);
+    Py::Object setRemainCount(const Py::Tuple&);
+    Py::Object updateGUI(const Py::Tuple&);
+    Py::Object addUnitTest(const Py::Tuple&);
+    Py::Object clearUnitTests(const Py::Tuple&);
 
 private:
-    typedef PyObject* (*method_varargs_handler)(PyObject *_self, PyObject *_args);
+    using method_varargs_handler = PyObject* (*)(PyObject* _self, PyObject* _args);
     static method_varargs_handler pycxx_handler;
-    static PyObject *method_varargs_ext_handler(PyObject *_self, PyObject *_args);
+    static PyObject* method_varargs_ext_handler(PyObject* _self, PyObject* _args);
 };
 
-//===========================================================================
-// UnitTestPy - Python wrapper
-//===========================================================================
-
-class UnitTestPy :public Base::PyObjectBase
-{
-	Py_Header;
-
-protected:
-	~UnitTestPy();
-
-public:
-  UnitTestPy(PyTypeObject *T = &Type);
-	static PyObject *PyMake(PyTypeObject *, PyObject *, PyObject *);
-
-	//---------------------------------------------------------------------
-	// python exports goes here +++++++++++++++++++++++++++++++++++++++++++
-	//---------------------------------------------------------------------
-
-	virtual PyObject *_repr(void);  				// the representation
-	PyObject *_getattr(char *attr);					// __getattr__ function
-	int _setattr(char *attr, PyObject *value);		// __setattr__ function
-
-  PYFUNCDEF_D(UnitTestPy,clearErrorList)
-  PYFUNCDEF_D(UnitTestPy,insertError)
-  PYFUNCDEF_D(UnitTestPy,setUnitTest)
-  PYFUNCDEF_D(UnitTestPy,getUnitTest)
-  PYFUNCDEF_D(UnitTestPy,setStatusText)
-  PYFUNCDEF_D(UnitTestPy,setProgressFraction)
-  PYFUNCDEF_D(UnitTestPy,errorDialog)
-  PYFUNCDEF_D(UnitTestPy,setRunCount)
-  PYFUNCDEF_D(UnitTestPy,setFailCount)
-  PYFUNCDEF_D(UnitTestPy,setErrorCount)
-  PYFUNCDEF_D(UnitTestPy,setRemainCount)
-  PYFUNCDEF_D(UnitTestPy,updateGUI)
-};
-
-} //namespace TESTGUI_UNITTESTPY_H
+}  // namespace TestGui
 
 
 #endif
-

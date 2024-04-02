@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2011 Juergen Riegel                                     *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,26 +24,33 @@
 #ifndef BASE_Unit_H
 #define BASE_Unit_H
 
-#ifdef _MSC_VER
-#  include <boost/cstdint.hpp>
-#else
-#  include <stdint.h>
-#endif
-#include <string>
+#include <cstdint>
 #include <QString>
+#include <FCGlobal.h>
 
 namespace Base {
 
+#define UnitSignatureLengthBits 4
+#define UnitSignatureMassBits 4
+#define UnitSignatureTimeBits 4
+#define UnitSignatureElectricCurrentBits 4
+#define UnitSignatureThermodynamicTemperatureBits 4
+#define UnitSignatureAmountOfSubstanceBits 4
+#define UnitSignatureLuminousIntensityBits 4
+#define UnitSignatureAngleBits 4
 
+// Hint:
+// https://en.cppreference.com/w/cpp/language/bit_field
+// https://stackoverflow.com/questions/33723631/signed-bit-field-in-c14
 struct UnitSignature{
-    int32_t Length:4;
-    int32_t Mass:4;
-    int32_t Time:4;
-    int32_t ElectricCurrent:4;
-    int32_t ThermodynamicTemperature:4;
-    int32_t AmountOfSubstance:4;
-    int32_t LuminoseIntensity:4;
-    int32_t Angle:4;
+    int32_t Length:UnitSignatureLengthBits;
+    int32_t Mass:UnitSignatureMassBits;
+    int32_t Time:UnitSignatureTimeBits;
+    int32_t ElectricCurrent:UnitSignatureElectricCurrentBits;
+    int32_t ThermodynamicTemperature:UnitSignatureThermodynamicTemperatureBits;
+    int32_t AmountOfSubstance:UnitSignatureAmountOfSubstanceBits;
+    int32_t LuminousIntensity:UnitSignatureLuminousIntensityBits;
+    int32_t Angle:UnitSignatureAngleBits;
 };
 /**
  * The Unit class.
@@ -52,12 +59,14 @@ class BaseExport Unit
 {
 public:
     /// default constructor
-    Unit(int8_t Length,int8_t Mass=0,int8_t Time=0,int8_t ElectricCurrent=0,int8_t ThermodynamicTemperature=0,int8_t AmountOfSubstance=0,int8_t LuminoseIntensity=0,int8_t Angle=0);
-    Unit(void);
+    explicit Unit(int8_t Length,int8_t Mass=0,int8_t Time=0,int8_t ElectricCurrent=0,
+                  int8_t ThermodynamicTemperature=0, int8_t AmountOfSubstance=0,
+                  int8_t LuminousIntensity=0, int8_t Angle=0);
+    Unit();
     Unit(const Unit&);
-    Unit(const std::string& Pars);
+    explicit Unit(const QString& expr);
     /// Destruction
-    ~Unit () {}
+    ~Unit () = default;
 
 
     /** Operators. */
@@ -69,42 +78,84 @@ public:
     bool operator ==(const Unit&) const;
     bool operator !=(const Unit&that) const {return !(*this == that);}
     Unit& operator =(const Unit&);
-    Unit pow(char exp)const;
+    Unit pow(double exp)const;
     //@}
     /// get the unit signature
-    const UnitSignature & getSignature(void)const {return Sig;} 
-    bool isEmpty(void)const;
-    
-	QString getString(void) const;
-    /// get the type as an string such as "Area", "Length" or "Pressure". 
-	QString getTypeString(void) const;
+    const UnitSignature & getSignature()const {return Sig;}
+    bool isEmpty()const;
+
+    QString getString() const;
+    /// get the type as an string such as "Area", "Length" or "Pressure".
+    QString getTypeString() const;
 
     /** Predefined Unit types. */
     //@{
-	/// Length unit 
-	static Unit Length;
-	/// Mass unit 
-	static Unit Mass;
-	/// Angle
-	static Unit Angle;
+    /// Length unit
+    static Unit Length;
+    /// Mass unit
+    static Unit Mass;
 
-	static Unit Area;
-	static Unit Volume;
-	static Unit TimeSpan;
-	static Unit Velocity;
-	static Unit Acceleration;
-	static Unit Temperature;
-	
-	static Unit ElectricCurrent;
-	static Unit AmountOfSubstance;
-	static Unit LuminoseIntensity;
+    /// Angle
+    static Unit Angle;
+    static Unit AngleOfFriction;
 
-	static Unit Stress;
-	static Unit Pressure;
-	static Unit Force;  
-	static Unit Work;   
-	static Unit Power;  
+    static Unit Density;
 
+    static Unit Area;
+    static Unit Volume;
+    static Unit TimeSpan;
+    static Unit Frequency;
+    static Unit Velocity;
+    static Unit Acceleration;
+    static Unit Temperature;
+
+    static Unit CurrentDensity;
+    static Unit ElectricCurrent;
+    static Unit ElectricPotential;
+    static Unit ElectricCharge;
+    static Unit MagneticFieldStrength;
+    static Unit MagneticFlux;
+    static Unit MagneticFluxDensity;
+    static Unit Magnetization;
+    static Unit ElectricalCapacitance;
+    static Unit ElectricalInductance;
+    static Unit ElectricalConductance;
+    static Unit ElectricalResistance;
+    static Unit ElectricalConductivity;
+    static Unit AmountOfSubstance;
+    static Unit LuminousIntensity;
+
+    // Pressure
+    static Unit CompressiveStrength;
+    static Unit Pressure;
+    static Unit ShearModulus;
+    static Unit Stress;
+    static Unit UltimateTensileStrength;
+    static Unit YieldStrength;
+    static Unit YoungsModulus;
+
+    static Unit Stiffness;
+
+    static Unit Force;
+    static Unit Work;
+    static Unit Power;
+
+    static Unit SpecificEnergy;
+    static Unit ThermalConductivity;
+    static Unit ThermalExpansionCoefficient;
+    static Unit VolumetricThermalExpansionCoefficient;
+    static Unit SpecificHeat;
+    static Unit ThermalTransferCoefficient;
+    static Unit HeatFlux;
+    static Unit DynamicViscosity;
+    static Unit KinematicViscosity;
+    static Unit VacuumPermittivity;
+    static Unit VolumeFlowRate;
+    static Unit DissipationRate;
+
+    static Unit InverseLength;
+    static Unit InverseArea;
+    static Unit InverseVolume;
 
     //@}
 protected:

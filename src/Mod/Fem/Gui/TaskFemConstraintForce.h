@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jan Rheinländer <jrheinlaender@users.sourceforge.net>        *
+ *   Copyright (c) 2013 Jan Rheinländer                                    *
+ *                                   <jrheinlaender@users.sourceforge.net> *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,73 +21,81 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_TASKVIEW_TaskFemConstraintForce_H
 #define GUI_TASKVIEW_TaskFemConstraintForce_H
 
-#include <Gui/TaskView/TaskView.h>
-#include <Gui/Selection.h>
-#include <Gui/TaskView/TaskDialog.h>
+#include <QObject>
+#include <memory>
 
-#include "TaskFemConstraint.h"
+#include "TaskFemConstraintOnBoundary.h"
 #include "ViewProviderFemConstraintForce.h"
+
 
 class Ui_TaskFemConstraintForce;
 
-namespace App {
+namespace App
+{
 class Property;
 }
 
-namespace Gui {
+namespace Gui
+{
+class SelectionObject;
 class ViewProvider;
-}
+}  // namespace Gui
 
-namespace FemGui {
+namespace FemGui
+{
 
-class TaskFemConstraintForce : public TaskFemConstraint
+class TaskFemConstraintForce: public TaskFemConstraintOnBoundary
 {
     Q_OBJECT
 
 public:
-    TaskFemConstraintForce(ViewProviderFemConstraintForce *ConstraintView,QWidget *parent = 0);
-    virtual ~TaskFemConstraintForce();
-
-    double getForce(void) const;
-    virtual const std::string getReferences() const;
-    const std::string getDirectionName(void) const;
-    const std::string getDirectionObject(void) const;
-    bool getReverse(void) const;
+    explicit TaskFemConstraintForce(ViewProviderFemConstraintForce* ConstraintView,
+                                    QWidget* parent = nullptr);
+    ~TaskFemConstraintForce() override;
+    const std::string getForce() const;
+    const std::string getReferences() const override;
+    const std::string getDirectionName() const;
+    const std::string getDirectionObject() const;
+    bool getReverse() const;
 
 private Q_SLOTS:
-    void onReferenceDeleted(void);
-    void onForceChanged(double);
-    void onButtonDirection(const bool pressed = true);
+    void onReferenceDeleted();
+    void onButtonDirection(const bool pressed = false);
     void onCheckReverse(bool);
+    void addToSelection() override;
+    void removeFromSelection() override;
 
 protected:
-    virtual void changeEvent(QEvent *e);
+    bool event(QEvent* e) override;
+    void changeEvent(QEvent* e) override;
+    void clearButtons(const SelectionChangeModes notThis) override;
 
 private:
-    virtual void onSelectionChanged(const Gui::SelectionChanges& msg);
+    std::pair<App::DocumentObject*, std::string>
+    getDirection(const std::vector<Gui::SelectionObject>&) const;
     void updateUI();
 
 private:
-    Ui_TaskFemConstraintForce* ui;
+    std::unique_ptr<Ui_TaskFemConstraintForce> ui;
 };
 
 /// simulation dialog for the TaskView
-class TaskDlgFemConstraintForce : public TaskDlgFemConstraint
+class TaskDlgFemConstraintForce: public TaskDlgFemConstraint
 {
     Q_OBJECT
 
 public:
-    TaskDlgFemConstraintForce(ViewProviderFemConstraintForce *ConstraintView);
+    explicit TaskDlgFemConstraintForce(ViewProviderFemConstraintForce* ConstraintView);
 
     /// is called by the framework if the dialog is accepted (Ok)
-    virtual bool accept();
-
+    void open() override;
+    bool accept() override;
+    bool reject() override;
 };
 
-} //namespace FemGui
+}  // namespace FemGui
 
-#endif // GUI_TASKVIEW_TaskFemConstraintForce_H
+#endif  // GUI_TASKVIEW_TaskFemConstraintForce_H

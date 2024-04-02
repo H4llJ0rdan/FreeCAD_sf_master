@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2010 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2010 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,46 +20,39 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-# include <algorithm>
-# include <boost/bind.hpp>
-#endif
+#include <App/Document.h>
+#include <App/DocumentObject.h>
+#include <Base/Console.h>
+#include <Gui/BitmapFactory.h>
+#include <Gui/SelectionFilter.h>
+#include <Gui/SelectionObject.h>
 
 #include "ui_TaskSelectLinkProperty.h"
 #include "TaskSelectLinkProperty.h"
-#include <Base/Console.h>
-#include <App/DocumentObject.h>
-#include <Gui/Application.h>
-#include <Gui/Document.h>
-#include <Gui/BitmapFactory.h>
-#include <Gui/ViewProvider.h>
-#include <Gui/WaitCursor.h>
-#include <Gui/SelectionFilter.h>
+
 
 using namespace Gui::TaskView;
 
 /* TRANSLATOR Gui::TaskView::TaskSelectLinkProperty */
 
 TaskSelectLinkProperty::TaskSelectLinkProperty(const char *sFilter,App::Property *prop,QWidget *parent)
-    : TaskBox(Gui::BitmapFactory().pixmap("mouse_pointer"),tr("edit selection"),true, parent),Filter(0),LinkSub(0),LinkList(0)
+    : TaskBox(Gui::BitmapFactory().pixmap("mouse_pointer"),tr("edit selection"),true, parent),Filter(nullptr),LinkSub(nullptr),LinkList(nullptr)
 {
     // we need a separate container widget to add all controls to
     proxy = new QWidget(this);
     ui = new Ui_TaskSelectLinkProperty();
     ui->setupUi(proxy);
-
-    QMetaObject::connectSlotsByName(this);
+    setupConnections();
 
     this->groupLayout()->addWidget(proxy);
     Gui::Selection().Attach(this);
 
-    ui->Remove->setIcon(Gui::BitmapFactory().pixmap("delete"));
-    ui->Add->setIcon(Gui::BitmapFactory().pixmap("add"));
-    ui->Invert->setIcon(Gui::BitmapFactory().pixmap("edit_remove"));
-    ui->Help->setIcon(Gui::BitmapFactory().pixmap("help-browser"));
+    ui->Remove->setIcon(Gui::BitmapFactory().iconFromTheme("delete"));
+    ui->Add->setIcon(Gui::BitmapFactory().iconFromTheme("list-add"));
+    ui->Invert->setIcon(Gui::BitmapFactory().iconFromTheme("list-remove"));
+    ui->Help->setIcon(Gui::BitmapFactory().iconFromTheme("help-browser"));
 
     // deactivate not implemented stuff
     ui->Remove->setDisabled(true);
@@ -69,6 +62,7 @@ TaskSelectLinkProperty::TaskSelectLinkProperty(const char *sFilter,App::Property
 
     // property have to be set! 
     assert(prop);
+    StartObject = nullptr;
     if (prop->getTypeId().isDerivedFrom(App::PropertyLinkSub::getClassTypeId())) {
         LinkSub = dynamic_cast<App::PropertyLinkSub *>(prop);
     }
@@ -89,6 +83,18 @@ TaskSelectLinkProperty::~TaskSelectLinkProperty()
     Gui::Selection().Detach(this);
 }
 
+void TaskSelectLinkProperty::setupConnections()
+{
+    connect(ui->Remove, &QToolButton::clicked,
+            this, &TaskSelectLinkProperty::onRemoveClicked);
+    connect(ui->Add, &QToolButton::clicked,
+            this, &TaskSelectLinkProperty::onAddClicked);
+    connect(ui->Invert, &QToolButton::clicked,
+            this, &TaskSelectLinkProperty::onInvertClicked);
+    connect(ui->Help, &QToolButton::clicked,
+            this, &TaskSelectLinkProperty::onHelpClicked);
+}
+
 void TaskSelectLinkProperty::changeEvent(QEvent *e)
 {
     TaskBox::changeEvent(e);
@@ -107,7 +113,7 @@ bool TaskSelectLinkProperty::setFilter(const char * sFilter)
 }
 
 
-void TaskSelectLinkProperty::activate(void)
+void TaskSelectLinkProperty::activate()
 {
     // first clear the selection
     Gui::Selection().clearSelection();
@@ -123,9 +129,9 @@ void TaskSelectLinkProperty::activate(void)
             std::string ObjName = StartObject->getNameInDocument();
             std::string DocName = StartObject->getDocument()->getName();
 
-            for (std::vector<std::string>::const_iterator it = StartValueBuffer.begin();it!=StartValueBuffer.end();++it)
+            for (const auto & it : StartValueBuffer)
             {
-                Gui::Selection().addSelection(DocName.c_str(),ObjName.c_str(),it->c_str());
+                Gui::Selection().addSelection(DocName.c_str(),ObjName.c_str(),it.c_str());
             }
         }
         
@@ -134,10 +140,10 @@ void TaskSelectLinkProperty::activate(void)
     else if (LinkList) {
         // save the start values for a cnacel operation (reject())
         const std::vector<App::DocumentObject*> &Values = LinkList->getValues();
-        for(std::vector<App::DocumentObject*>::const_iterator it = Values.begin();it!=Values.end();++it)
+        for(const auto & Value : Values)
         {
-            std::string ObjName = (*it)->getNameInDocument();
-            std::string DocName = (*it)->getDocument()->getName();
+            std::string ObjName = Value->getNameInDocument();
+            std::string DocName = Value->getDocument()->getName();
             Gui::Selection().addSelection(DocName.c_str(),ObjName.c_str());
         }
     }
@@ -145,9 +151,9 @@ void TaskSelectLinkProperty::activate(void)
     checkSelectionStatus();
 }
 
-bool TaskSelectLinkProperty::accept(void)
+bool TaskSelectLinkProperty::accept()
 {
-    // set the proptery with the selection
+    // set the property with the selection
     sendSelection2Property();
 
     // clear selection and remove gate (return to normal operation)
@@ -156,7 +162,7 @@ bool TaskSelectLinkProperty::accept(void)
     return true;
 }
 
-bool TaskSelectLinkProperty::reject(void)
+bool TaskSelectLinkProperty::reject()
 {
     if(LinkSub){
         // restore the old values
@@ -169,7 +175,7 @@ bool TaskSelectLinkProperty::reject(void)
     return true;
 }
 
-void TaskSelectLinkProperty::sendSelection2Property(void)
+void TaskSelectLinkProperty::sendSelection2Property()
 {
     if (LinkSub) {
         std::vector<Gui::SelectionObject> temp = Gui::Selection().getSelectionEx();
@@ -179,25 +185,25 @@ void TaskSelectLinkProperty::sendSelection2Property(void)
     else if (LinkList) {
         std::vector<Gui::SelectionObject> sel = Gui::Selection().getSelectionEx();
         std::vector<App::DocumentObject*> temp;
-        for (std::vector<Gui::SelectionObject>::iterator it=sel.begin();it!=sel.end();++it)
-            temp.push_back(it->getObject());
+        for (auto & it : sel)
+            temp.push_back(it.getObject());
         
         LinkList->setValues(temp);
     }
 
 }
 
-void TaskSelectLinkProperty::checkSelectionStatus(void)
+void TaskSelectLinkProperty::checkSelectionStatus()
 {
     QPalette palette(QApplication::palette());
 
     if (Filter->match()) {
         palette.setBrush(QPalette::Base,QColor(200,250,200));
-        emitSelectionFit();
+        Q_EMIT emitSelectionFit();
     }
     else {
         palette.setBrush(QPalette::Base,QColor(250,200,200));
-        emitSelectionMisfit();
+        Q_EMIT emitSelectionMisfit();
     }
     //ui->listWidget->setAutoFillBackground(true);
     ui->listWidget->setPalette(palette);
@@ -206,39 +212,40 @@ void TaskSelectLinkProperty::checkSelectionStatus(void)
 void TaskSelectLinkProperty::OnChange(Gui::SelectionSingleton::SubjectType &rCaller,
                                       Gui::SelectionSingleton::MessageType Reason)
 {
+    Q_UNUSED(rCaller); 
     if (Reason.Type == SelectionChanges::AddSelection ||
         Reason.Type == SelectionChanges::RmvSelection ||
         Reason.Type == SelectionChanges::SetSelection ||
         Reason.Type == SelectionChanges::ClrSelection) {
             ui->listWidget->clear();
             std::vector<Gui::SelectionSingleton::SelObj> sel = Gui::Selection().getSelection();
-            for (std::vector<Gui::SelectionSingleton::SelObj>::const_iterator it=sel.begin();it!=sel.end();++it){
+            for (const auto & it : sel){
                 std::string temp;
-                temp += it->FeatName;
-                if (strcmp(it->SubName, "") != 0){
+                temp += it.FeatName;
+                if (strcmp(it.SubName, "") != 0){
                     temp += "::";
-                    temp += it->SubName;
+                    temp += it.SubName;
                 }
-                new QListWidgetItem(QString::fromAscii(temp.c_str()), ui->listWidget);
+                new QListWidgetItem(QString::fromLatin1(temp.c_str()), ui->listWidget);
             }
             checkSelectionStatus();
     }
 }
 /// @endcond
 
-void TaskSelectLinkProperty::on_Remove_clicked(bool)
+void TaskSelectLinkProperty::onRemoveClicked(bool)
 {
 }
 
-void TaskSelectLinkProperty::on_Add_clicked(bool)
+void TaskSelectLinkProperty::onAddClicked(bool)
 {
 }
 
-void TaskSelectLinkProperty::on_Invert_clicked(bool)
+void TaskSelectLinkProperty::onInvertClicked(bool)
 {
 }
 
-void TaskSelectLinkProperty::on_Help_clicked(bool)
+void TaskSelectLinkProperty::onHelpClicked(bool)
 {
 }
 

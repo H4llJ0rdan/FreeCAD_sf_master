@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2002                        *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -19,20 +19,20 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
  *   USA                                                                   *
  *                                                                         *
- *   Juergen Riegel 2002                                                   *
  ***************************************************************************/
 
 
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-# include <assert.h>
+# include <cassert>
+# include <iostream>
 #endif
 
 #include <QAtomicInt>
 
 #include "Handle.h"
-#include "Exception.h"
+
 
 using namespace Base;
 
@@ -46,8 +46,8 @@ Handled::Handled()
 
 Handled::~Handled()
 {
-    if ((int)(*_lRefCount) != 0)
-        throw Exception("Reference counter of deleted object is not zero!!!!!\n");
+    if (static_cast<int>(*_lRefCount) != 0)
+        std::cerr << "Reference counter of deleted object is not zero!!!!!" << std::endl;
     delete _lRefCount;
 }
 
@@ -58,18 +58,25 @@ void Handled::ref() const
 
 void Handled::unref() const
 {
-    assert(_lRefCount > 0);
+    assert(*_lRefCount > 0);
     if (!_lRefCount->deref()) {
         delete this;
     }
 }
 
-int Handled::getRefCount(void) const
+int Handled::unrefNoDelete() const
 {
-    return (int)(*_lRefCount);
+    int res = _lRefCount->deref();
+    assert(res>=0);
+    return res;
 }
 
-const Handled& Handled::operator = (const Handled&)
+int Handled::getRefCount() const
+{
+    return static_cast<int>(*_lRefCount);
+}
+
+Handled& Handled::operator = (const Handled&)
 {
     // we must not assign _lRefCount
     return *this;

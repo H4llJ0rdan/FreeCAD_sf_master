@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -23,18 +23,14 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <Precision.hxx>
-# include <GProp_GProps.hxx>
 # include <BRepGProp.hxx>
+# include <GProp_GProps.hxx>
+# include <Precision.hxx>
 #endif
 
 #include "FeatureScaled.h"
-#include "FeatureAdditive.h"
-#include "FeatureSubtractive.h"
-#include <Mod/Part/App/TopoShape.h>
+#include "FeatureAddSub.h"
 
-#include <Base/Console.h>
-#include <Base/Exception.h>
 
 using namespace PartDesign;
 
@@ -61,10 +57,10 @@ const std::list<gp_Trsf> Scaled::getTransformations(const std::vector<App::Docum
 {
     double factor = Factor.getValue();
     if (factor < Precision::Confusion())
-        throw Base::Exception("Scaling factor too small");
+        throw Base::ValueError("Scaling factor too small");
     int occurrences = Occurrences.getValue();
     if (occurrences < 2)
-        throw Base::Exception("At least two occurrences required");
+        throw Base::ValueError("At least two occurrences required");
 
     double f = (factor - 1.0) / double(occurrences - 1);
 
@@ -73,12 +69,12 @@ const std::list<gp_Trsf> Scaled::getTransformations(const std::vector<App::Docum
     Part::Feature* originalFeature = static_cast<Part::Feature*>(originals.front());
     TopoDS_Shape original;
 
-    if (originalFeature->getTypeId().isDerivedFrom(PartDesign::Additive::getClassTypeId())) {
-        PartDesign::Additive* addFeature = static_cast<PartDesign::Additive*>(originalFeature);
-        original = addFeature->AddShape.getShape()._Shape;
-    } else if (originalFeature->getTypeId().isDerivedFrom(PartDesign::Subtractive::getClassTypeId())) {
-        PartDesign::Subtractive* subFeature = static_cast<PartDesign::Subtractive*>(originalFeature);
-        original = subFeature->SubShape.getShape()._Shape;
+    if (originalFeature->getTypeId().isDerivedFrom(PartDesign::FeatureAddSub::getClassTypeId())) {
+        PartDesign::FeatureAddSub* Feature = static_cast<PartDesign::FeatureAddSub*>(originalFeature);
+        //if(Feature->getAddSubType() == FeatureAddSub::Additive)
+        //    original = Feature->AddSubShape.getShape().getShape();
+        //else
+            original = Feature->AddSubShape.getShape().getShape();
     }
 
     GProp_GProps props;

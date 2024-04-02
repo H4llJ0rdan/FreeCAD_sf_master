@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,47 +20,55 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef Fem_FemMeshObject_H
 #define Fem_FemMeshObject_H
 
+#include <App/FeaturePython.h>
 #include <App/GeoFeature.h>
-#include <App/PropertyFile.h>
-#include <App/PropertyGeo.h>
 
 #include "FemMesh.h"
 #include "FemMeshProperty.h"
 
+
 namespace Fem
 {
 
-class AppFemExport FemMeshObject : public App::GeoFeature
+class FemExport FemMeshObject: public App::GeoFeature
 {
-    PROPERTY_HEADER(Fem::FemMeshObject);
+    PROPERTY_HEADER_WITH_OVERRIDE(Fem::FemMeshObject);
 
 public:
     /// Constructor
-    FemMeshObject(void);
-    virtual ~FemMeshObject();
+    FemMeshObject();
+    ~FemMeshObject() override;
 
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override
+    {
         return "FemGui::ViewProviderFemMesh";
     }
-    virtual App::DocumentObjectExecReturn *execute(void) {
+    App::DocumentObjectExecReturn* execute() override
+    {
         return App::DocumentObject::StdReturn;
     }
-    virtual short mustExecute(void) const;
-    virtual PyObject *getPyObject(void);
+    short mustExecute() const override;
+    PyObject* getPyObject() override;
+    const App::PropertyComplexGeoData* getPropertyOfGeometry() const override
+    {
+        return &FemMesh;
+    }
 
     PropertyFemMesh FemMesh;
 
 protected:
     /// get called by the container when a property has changed
-    virtual void onChanged (const App::Property* prop);
+    void onChanged(const App::Property* prop) override;
 };
 
-} //namespace Fem
+using FemMeshObjectPython = App::FeaturePythonT<FemMeshObject>;
 
 
-#endif // Fem_FemMeshObject_H
+}  // namespace Fem
+
+
+#endif  // Fem_FemMeshObject_H

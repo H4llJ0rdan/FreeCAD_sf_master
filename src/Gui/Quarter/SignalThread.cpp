@@ -30,11 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \**************************************************************************/
 
+#include <QMutexLocker>
+
 #include "SignalThread.h"
 
 using namespace SIM::Coin3D::Quarter;
 
-SignalThread::SignalThread(void)
+SignalThread::SignalThread()
   : isstopped(false)
 {
 }
@@ -44,34 +46,31 @@ SignalThread::~SignalThread()
 }
 
 void
-SignalThread::trigger(void)
+SignalThread::trigger()
 {
   // lock first to make sure the QThread is actually waiting for a signal
-  this->mutex.lock();
+  QMutexLocker ml(&this->mutex);
   this->waitcond.wakeOne();
-  this->mutex.unlock();
 }
 
 void
-SignalThread::stopThread(void)
+SignalThread::stopThread()
 {
-  this->mutex.lock();
+  QMutexLocker ml(&this->mutex);
   this->isstopped = true;
   this->waitcond.wakeOne();
-  this->mutex.unlock();
 }
 
 
 void
-SignalThread::run(void)
+SignalThread::run()
 {
-  this->mutex.lock();
+  QMutexLocker ml(&this->mutex);
   while (!this->isstopped) {
     // just wait, and trigger every time we receive a signal
     this->waitcond.wait(&this->mutex);
     if (!this->isstopped) {
-      emit triggerSignal();
+      Q_EMIT triggerSignal();
     }
   }
-  this->mutex.unlock();
 }

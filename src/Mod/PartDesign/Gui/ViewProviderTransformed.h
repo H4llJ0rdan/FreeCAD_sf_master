@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -26,53 +26,50 @@
 
 #include "ViewProvider.h"
 
-class SoCoordinate3;
-class SoIndexedFaceSet;
-class SoMultipleCopy;
-class SoNormal;
-class SoSeparator;
-
 namespace PartDesignGui {
 
 class TaskDlgTransformedParameters;
 
 class PartDesignGuiExport ViewProviderTransformed : public ViewProvider
 {
-    PROPERTY_HEADER(PartGui::ViewProviderTransformed);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderTransformed);
 
 public:
-    /// constructor
-    ViewProviderTransformed()
-        : featureName("undefined") {}
-    /// destructor
-    virtual ~ViewProviderTransformed()
-        {}
-
-    void setupContextMenu(QMenu*, QObject*, const char*);
-
-    virtual bool onDelete(const std::vector<std::string> &);
-
-    /// signals if the transformation contains errors
-    boost::signal<void (QString msg)> signalDiagnosis;
+    ViewProviderTransformed() = default;
+    ~ViewProviderTransformed() override  = default;
 
     // The feature name of the subclass
-    std::string featureName;
+    virtual const std::string & featureName() const;
+    std::string featureIcon() const;
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
+
+    bool onDelete(const std::vector<std::string> &) override;
+
+    /// signals if the transformation contains errors
+    boost::signals2::signal<void (QString msg)> signalDiagnosis;
+
+    // Name of menu dialog
+    QString menuName;
+
+    Gui::ViewProvider *startEditing(int ModNum=0) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-    virtual void unsetEdit(int ModNum);
+    bool setEdit(int ModNum) override;
+    void unsetEdit(int ModNum) override;
 
-    const bool checkDlgOpen(TaskDlgTransformedParameters* transformedDlg);
+    bool checkDlgOpen(TaskDlgTransformedParameters* transformedDlg);
 
-    // nodes for the representation of rejected repetitions
-    SoGroup           * pcRejectedRoot;
-    SoMultipleCopy    * rejectedTrfms;
-    SoCoordinate3     * rejectedCoords;
-    SoNormal          * rejectedNorms;
-    SoIndexedFaceSet  * rejectedFaceSet;
+    // node for the representation of rejected repetitions
+    SoGroup           * pcRejectedRoot{nullptr};
+
+    QString diagMessage;
 
 public:
-    void recomputeFeature();
+    void recomputeFeature(bool recompute=true);
+    QString getMessage() const {return diagMessage;}
+
+private:
+    void showRejectedShape(TopoDS_Shape shape);
 };
 
 

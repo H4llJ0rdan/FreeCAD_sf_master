@@ -28,14 +28,14 @@
 namespace KDL {
     /**
 	  * \brief This class encapsulates a <strong>serial</strong> kinematic
-	  * interconnection structure. It is build out of segments.
+	  * interconnection structure. It is built out of segments.
      *
      * @ingroup KinematicFamily
      */
     class Chain {
     private:
-        int nrOfJoints;
-        int nrOfSegments;
+        unsigned int nrOfJoints;
+        unsigned int nrOfSegments;
     public:
         std::vector<Segment> segments;
         /**

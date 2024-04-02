@@ -32,21 +32,13 @@
  *   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * **********************************************************************/
-// #pragma once is supported starting with _MCS_VER 1000, 
-// so we need not to check the version (because we only support _MSC_VER >= 1100)!
+
 #pragma once
 
-#include <windows.h>
-
-// special defines for VC5/6 (if no actual PSDK is installed):
-#if _MSC_VER < 1300
-typedef unsigned __int64 DWORD64, *PDWORD64;
-#if defined(_WIN64)
-typedef unsigned __int64 SIZE_T, *PSIZE_T;
-#else
-typedef unsigned long SIZE_T, *PSIZE_T;
+#ifndef FC_GLOBAL_H
+#include <FCGlobal.h>
 #endif
-#endif  // _MSC_VER < 1300
+
 
 class StackWalkerInternal;  // forward
 class BaseExport StackWalker
@@ -54,7 +46,7 @@ class BaseExport StackWalker
 public:
   typedef enum StackWalkOptions
   {
-    // No addition info will be retrived 
+    // No addition info will be retrieved 
     // (only the address is available)
     RetrieveNone = 0,
     
@@ -70,7 +62,7 @@ public:
     // Also retrieve the version for the DLL/EXE
     RetrieveFileVersion = 8,
     
-    // Contains all the abouve
+    // Contains all the above
     RetrieveVerbose = 0xF,
     
     // Generate a "good" symbol-search-path
@@ -79,7 +71,7 @@ public:
     // Also use the public Microsoft-Symbol-Server
     SymUseSymSrv = 0x20,
     
-    // Contains all the abouve "Sym"-options
+    // Contains all the above "Sym"-options
     SymAll = 0x30,
     
     // Contains all options (default)
@@ -113,11 +105,6 @@ public:
     LPVOID pUserData = NULL  // optional to identify some data in the 'readMemoryFunction'-callback
     );
 
-#if _MSC_VER >= 1300
-// due to some reasons, the "STACKWALK_MAX_NAMELEN" must be declared as "public" 
-// in older compilers in order to use it... starting with VC7 we can declare it as "protected"
-protected:
-#endif
 	enum { STACKWALK_MAX_NAMELEN = 1024 }; // max name length for found symbols
 
 protected:
@@ -139,7 +126,7 @@ protected:
     CHAR loadedImageName[STACKWALK_MAX_NAMELEN];
   } CallstackEntry;
 
-  typedef enum CallstackEntryType {firstEntry, nextEntry, lastEntry};
+  /*typedef*/ enum CallstackEntryType {firstEntry, nextEntry, lastEntry};
 
   virtual void OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName);
   virtual void OnLoadModule(LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD size, DWORD result, LPCSTR symType, LPCSTR pdbName, ULONGLONG fileVersion);
@@ -169,9 +156,6 @@ protected:
 // So we just use the compiler-version (and assumes that the PSDK is 
 // the one which was installed by the VS-IDE)
 
-// INFO: If you want, you can use the RtlCaptureContext if you only target XP and later...
-//       But I currently use it in x64/IA64 environments...
-//#if defined(_M_IX86) && (_WIN32_WINNT <= 0x0500) && (_MSC_VER < 1400)
 
 #if defined(_M_IX86)
 #ifdef CURRENT_THREAD_VIA_EXCEPTION

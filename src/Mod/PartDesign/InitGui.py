@@ -1,12 +1,5 @@
-# PartDesign gui init module
-# (c) 2003 Juergen Riegel
-#
-# Gathering all the information to start FreeCAD
-# This is the second one of three init scripts, the third one
-# runs when the gui is up
-
 #***************************************************************************
-#*   (c) Juergen Riegel (juergen.riegel@web.de) 2002                       *
+#*   Copyright (c) 2002,2003 Juergen Riegel <juergen.riegel@web.de>        *
 #*                                                                         *
 #*   This file is part of the FreeCAD CAx development system.              *
 #*                                                                         *
@@ -26,57 +19,50 @@
 #*   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
 #*   USA                                                                   *
 #*                                                                         *
-#*   Juergen Riegel 2002                                                   *
 #***************************************************************************/
 
-class PartDesignWorkbench ( Workbench ):
-        "PartDesign workbench object"
-        Icon = """
-                /* XPM */
-                static char * partdesign_xpm[] = {
-                "16 16 9 1",
-                " 	c None",
-                ".	c #040006",
-                "+	c #070F38",
-                "@	c #002196",
-                "#	c #0030F3",
-                "$	c #5A4D20",
-                "%	c #858EB2",
-                "&	c #DEB715",
-                "*	c #BFB99D",
-                " &    ........  ",
-                "&&&$..@@@@@@+...",
-                "&&&&$@#####@..@.",
-                "&&&&&$......@#@.",
-                "&&&&&&@@@+.###@.",
-                "$&&&&&&@#@.###@.",
-                ".$&&&&&%#@.###@.",
-                ".@*&&&*%#@.###@.",
-                ".@#*&**%#@.###@.",
-                ".@#@%%%.@@.###@.",
-                ".@@@@@@@#@.###@.",
-                ".@#######@.###@.",
-                ".@#######@.##+. ",
-                ".+@@@####@.@..  ",
-                " ......+++..    ",
-                "        ...     "};
-                        """
-        MenuText = "Part Design"
-        ToolTip = "Part Design workbench"
+# PartDesign gui init module
+#
+# Gathering all the information to start FreeCAD
+# This is the second one of three init scripts, the third one
+# runs when the gui is up
 
-        def Initialize(self):
-                # load the module
-                try:
-                    from WizardShaft import WizardShaft
-                except ImportError:
-                    print "Wizard shaft module cannot be loaded"
-                import PartDesignGui
-                import PartDesign
-                try:
-                    import InvoluteGearFeature
-                except ImportError:
-                    print "Involute gear module cannot be loaded"
-        def GetClassName(self):
-                return "PartDesignGui::Workbench"
+class PartDesignWorkbench ( Workbench ):
+    "PartDesign workbench object"
+    def __init__(self):
+        self.__class__.Icon = FreeCAD.getResourceDir() + "Mod/PartDesign/Resources/icons/PartDesignWorkbench.svg"
+        self.__class__.MenuText = "Part Design"
+        self.__class__.ToolTip = "Part Design workbench"
+
+    def Initialize(self):
+        # load the module
+        try:
+            import traceback
+            from PartDesign.WizardShaft import WizardShaft
+        except RuntimeError:
+            print ("{}".format(traceback.format_exc()))
+        except ImportError:
+            print("Wizard shaft module cannot be loaded")
+            try:
+                from FeatureHole import HoleGui
+            except Exception:
+                pass
+
+        import PartDesignGui
+        import PartDesign
+        try:
+            from PartDesign import InvoluteGearFeature
+            from PartDesign import SprocketFeature
+        except ImportError:
+            print("Involute gear module cannot be loaded")
+            #try:
+            #    from FeatureHole import HoleGui
+            #except:
+            #    pass
+
+    def GetClassName(self):
+        return "PartDesignGui::Workbench"
 
 Gui.addWorkbench(PartDesignWorkbench())
+
+FreeCAD.__unit_test__ += [ "TestPartDesignGui" ]

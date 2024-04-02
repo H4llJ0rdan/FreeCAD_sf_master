@@ -20,55 +20,59 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PART_PRIMITIVEFEATURE_H
 #define PART_PRIMITIVEFEATURE_H
 
-#include <App/PropertyUnits.h>
-#include "PartFeature.h"
+#include "AttachExtension.h"
+#include "PrismExtension.h"
+
 
 namespace Part
 {
 
-class PartExport Primitive : public Part::Feature
+class PartExport Primitive : public Part::Feature, public Part::AttachExtension
 {
-    PROPERTY_HEADER(Part::Primitive);
+    PROPERTY_HEADER_WITH_EXTENSIONS(Part::Primitive);
 
 public:
     Primitive();
-    virtual ~Primitive();
+    ~Primitive() override;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void) = 0;
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
+    PyObject* getPyObject() override;
     //@}
 
 protected:
-    void onChanged (const App::Property* prop);
+    void Restore(Base::XMLReader &reader) override;
+    void onChanged (const App::Property* prop) override;
+    void handleChangedPropertyName(Base::XMLReader &reader, const char * TypeName, const char *PropName) override;
+    void handleChangedPropertyType(Base::XMLReader &reader, const char * TypeName, App::Property * prop) override;
 };
 
 class PartExport Vertex : public Part::Primitive
 {
-    PROPERTY_HEADER(Part::Vertex);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Vertex);
 
 public:
     Vertex();
-    virtual ~Vertex();
+    ~Vertex() override;
 
-    App::PropertyFloat X;
-    App::PropertyFloat Y;
-    App::PropertyFloat Z;
+    App::PropertyDistance X;
+    App::PropertyDistance Y;
+    App::PropertyDistance Z;
 
     /** @name methods override feature */
     //@{
     /// recalculate the Feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
-    void onChanged(const App::Property*);
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
+    void onChanged(const App::Property*) override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderPointParametric";
     }
     //@}
@@ -76,27 +80,27 @@ public:
 
 class PartExport Line : public Part::Primitive
 {
-    PROPERTY_HEADER(Part::Line);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Line);
 
 public:
     Line();
-    virtual ~Line();
+    ~Line() override;
 
-    App::PropertyFloat X1;
-    App::PropertyFloat Y1;
-    App::PropertyFloat Z1;
-    App::PropertyFloat X2;
-    App::PropertyFloat Y2;
-    App::PropertyFloat Z2;
+    App::PropertyDistance X1;
+    App::PropertyDistance Y1;
+    App::PropertyDistance Z1;
+    App::PropertyDistance X2;
+    App::PropertyDistance Y2;
+    App::PropertyDistance Z2;
 
     /** @name methods override feature */
     //@{
     /// recalculate the Feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
-    void onChanged(const App::Property*);
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
+    void onChanged(const App::Property*) override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderLineParametric";
     }
     //@}
@@ -104,7 +108,7 @@ public:
 
 class PartExport Plane : public Primitive
 {
-    PROPERTY_HEADER(Part::Plane);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Plane);
 
 public:
     Plane();
@@ -115,10 +119,10 @@ public:
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderPlaneParametric";
     }
     //@}
@@ -126,23 +130,23 @@ public:
 
 class PartExport Sphere : public Primitive
 {
-    PROPERTY_HEADER(Part::Sphere);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Sphere);
 
 public:
     Sphere();
 
-    App::PropertyFloatConstraint Radius;
-    App::PropertyFloatConstraint Angle1;
-    App::PropertyFloatConstraint Angle2;
-    App::PropertyFloatConstraint Angle3;
+    App::PropertyLength Radius;
+    App::PropertyAngle Angle1;
+    App::PropertyAngle Angle2;
+    App::PropertyAngle Angle3;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderSphereParametric";
     }
     //@}
@@ -150,55 +154,57 @@ public:
 
 class PartExport Ellipsoid : public Primitive
 {
-    PROPERTY_HEADER(Part::Ellipsoid);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Ellipsoid);
 
 public:
     Ellipsoid();
 
-    App::PropertyFloatConstraint Radius1;
-    App::PropertyFloatConstraint Radius2;
-    App::PropertyFloatConstraint Radius3;
-    App::PropertyFloatConstraint Angle1;
-    App::PropertyFloatConstraint Angle2;
-    App::PropertyFloatConstraint Angle3;
+    App::PropertyLength Radius1;
+    App::PropertyLength Radius2;
+    App::PropertyLength Radius3;
+    App::PropertyAngle Angle1;
+    App::PropertyAngle Angle2;
+    App::PropertyAngle Angle3;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     //@}
-    virtual const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderEllipsoid";
     }
 };
 
-class PartExport Cylinder : public Primitive
+class PartExport Cylinder : public Primitive,
+                            public PrismExtension
 {
-    PROPERTY_HEADER(Part::Cylinder);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Cylinder);
 
 public:
     Cylinder();
 
     App::PropertyLength Radius;
     App::PropertyLength Height;
-    App::PropertyFloatConstraint Angle;
+    App::PropertyAngle Angle;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderCylinderParametric";
     }
     //@}
 };
 
-class PartExport Prism : public Primitive
+class PartExport Prism : public Primitive,
+                         public PrismExtension
 {
-    PROPERTY_HEADER(Part::Prism);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Prism);
 
 public:
     Prism();
@@ -210,10 +216,10 @@ public:
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderPrism";
     }
     //@}
@@ -223,7 +229,7 @@ private:
 
 class PartExport RegularPolygon : public Primitive
 {
-    PROPERTY_HEADER(Part::RegularPolygon);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::RegularPolygon);
 
 public:
     RegularPolygon();
@@ -234,10 +240,10 @@ public:
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderRegularPolygon";
     }
     //@}
@@ -247,7 +253,7 @@ private:
 
 class PartExport Cone : public Primitive
 {
-    PROPERTY_HEADER(Part::Cone);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Cone);
 
 public:
     Cone();
@@ -255,15 +261,15 @@ public:
     App::PropertyLength Radius1;
     App::PropertyLength Radius2;
     App::PropertyLength Height;
-    App::PropertyFloatConstraint Angle;
+    App::PropertyAngle Angle;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderConeParametric";
     }
     //@}
@@ -271,24 +277,24 @@ public:
 
 class PartExport Torus : public Primitive
 {
-    PROPERTY_HEADER(Part::Torus);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Torus);
 
 public:
     Torus();
 
-    App::PropertyFloatConstraint Radius1;
-    App::PropertyFloatConstraint Radius2;
-    App::PropertyFloatConstraint Angle1;
-    App::PropertyFloatConstraint Angle2;
-    App::PropertyFloatConstraint Angle3;
+    App::PropertyLength Radius1;
+    App::PropertyLength Radius2;
+    App::PropertyAngle Angle1;
+    App::PropertyAngle Angle2;
+    App::PropertyAngle Angle3;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderTorusParametric";
     }
     //@}
@@ -296,31 +302,32 @@ public:
 
 class PartExport Helix : public Primitive
 {
-    PROPERTY_HEADER(Part::Helix);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Helix);
 
 public:
     Helix();
 
-    App::PropertyFloatConstraint Pitch;
-    App::PropertyFloatConstraint Height;
-    App::PropertyFloatConstraint Radius;
-    App::PropertyFloatConstraint Angle;
+    App::PropertyLength Pitch;
+    App::PropertyLength Height;
+    App::PropertyLength Radius;
+    App::PropertyAngle Angle;
+    App::PropertyQuantityConstraint SegmentLength;
     App::PropertyEnumeration     LocalCoord;
     App::PropertyEnumeration     Style;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderHelixParametric";
     }
     //@}
 
 protected:
-    void onChanged (const App::Property* prop);
+    void onChanged (const App::Property* prop) override;
 
 private:
     static const char* LocalCSEnums[];
@@ -329,87 +336,92 @@ private:
 
 class PartExport Spiral : public Primitive
 {
-    PROPERTY_HEADER(Part::Spiral);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Spiral);
 
 public:
     Spiral();
 
-    App::PropertyFloatConstraint Growth;
-    App::PropertyFloatConstraint Rotations;
-    App::PropertyFloatConstraint Radius;
+    App::PropertyLength Growth;
+    App::PropertyQuantityConstraint Rotations;
+    App::PropertyLength Radius;
+    App::PropertyQuantityConstraint SegmentLength;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderSpiralParametric";
     }
     //@}
 
 protected:
-    void onChanged (const App::Property* prop);
+    void onChanged (const App::Property* prop) override;
 };
 
 class PartExport Wedge : public Primitive
 {
-    PROPERTY_HEADER(Part::Wedge);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Wedge);
 
 public:
     Wedge();
 
-    App::PropertyFloat Xmin;
-    App::PropertyFloat Ymin;
-    App::PropertyFloat Zmin;
-    App::PropertyFloat Z2min;
-    App::PropertyFloat X2min;
-    App::PropertyFloat Xmax;
-    App::PropertyFloat Ymax;
-    App::PropertyFloat Zmax;
-    App::PropertyFloat Z2max;
-    App::PropertyFloat X2max;
+    App::PropertyDistance Xmin;
+    App::PropertyDistance Ymin;
+    App::PropertyDistance Zmin;
+    App::PropertyDistance Z2min;
+    App::PropertyDistance X2min;
+    App::PropertyDistance Xmax;
+    App::PropertyDistance Ymax;
+    App::PropertyDistance Zmax;
+    App::PropertyDistance Z2max;
+    App::PropertyDistance X2max;
 
     /** @name methods override feature */
     //@{
     /// recalculate the feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderWedge";
     }
     //@}
 
 protected:
-    void onChanged(const App::Property* prop);
+    void onChanged(const App::Property* prop) override;
 };
 
-class Ellipse : public Part::Primitive
+class PartExport Ellipse : public Part::Primitive
 {
-    PROPERTY_HEADER(Part::Ellipse);
+    PROPERTY_HEADER_WITH_OVERRIDE(Part::Ellipse);
 
 public:
     Ellipse();
-    virtual ~Ellipse();
+    ~Ellipse() override;
 
-    App::PropertyFloat MajorRadius;
-    App::PropertyFloat MinorRadius;
-    App::PropertyAngle Angle0;
+    App::PropertyLength MajorRadius;
+    App::PropertyLength MinorRadius;
     App::PropertyAngle Angle1;
+    App::PropertyAngle Angle2;
 
     /** @name methods override feature */
     //@{
     /// recalculate the Feature
-    App::DocumentObjectExecReturn *execute(void);
-    short mustExecute() const;
-    void onChanged(const App::Property*);
+    App::DocumentObjectExecReturn *execute() override;
+    short mustExecute() const override;
+    void onChanged(const App::Property*) override;
     /// returns the type name of the ViewProvider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartGui::ViewProviderEllipseParametric";
     }
     //@}
+
+protected:
+    void Restore(Base::XMLReader &reader) override;
+    void handleChangedPropertyName(Base::XMLReader &reader, const char * TypeName, const char *PropName) override;
 
 private:
     static App::PropertyQuantityConstraint::Constraints angleRange;

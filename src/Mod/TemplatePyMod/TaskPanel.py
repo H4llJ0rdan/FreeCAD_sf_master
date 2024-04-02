@@ -77,10 +77,10 @@ class TaskPanel:
 
     def getMainWindow(self):
         "returns the main window"
-        # using QtGui.qApp.activeWindow() isn't very reliable because if another
+        # using QtGui.QApplication.activeWindow() isn't very reliable because if another
         # widget than the mainwindow is active (e.g. a dialog) the wrong widget is
         # returned
-        toplevel = QtGui.qApp.topLevelWidgets()
+        toplevel = QtGui.QApplication.topLevelWidgets()
         for i in toplevel:
             if i.metaObject().className() == "Gui::MainWindow":
                 return i
@@ -102,6 +102,7 @@ class TaskManyTaskBoxes:
         widget2 = QtGui.QWidget()
         widget2.setWindowTitle("My Test Box")
         text = QtGui.QLabel("testBox",widget2)
+        text.setObjectName("label")
         self.form = [widget1,widget2]
 
 def createTask():

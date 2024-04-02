@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -24,7 +24,6 @@
 #ifndef PARTDESIGN_FeatureMirrored_H
 #define PARTDESIGN_FeatureMirrored_H
 
-#include <App/PropertyStandard.h>
 #include "FeatureTransformed.h"
 
 
@@ -33,7 +32,7 @@ namespace PartDesign
 
 class PartDesignExport Mirrored : public PartDesign::Transformed
 {
-    PROPERTY_HEADER(PartDesign::Mirrored);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesign::Mirrored);
 
 public:
     Mirrored();
@@ -42,10 +41,10 @@ public:
 
    /** @name methods override feature */
     //@{
-    short mustExecute() const;
+    short mustExecute() const override;
 
     /// returns the type name of the view provider
-    const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "PartDesignGui::ViewProviderMirrored";
     }
     //@}
@@ -53,10 +52,10 @@ public:
     /** Create transformations
       * Returns a list containing one transformation since the first, untransformed instance
       * is not counted. The transformation will mirror the shape it is applied to on a plane
-      * If MirrorPlane contains a feature and an face name, then the mirror plane will be
-      *   the the given face, which must be planar
+      * If MirrorPlane contains a feature and a face name, then the mirror plane will be
+      * the given face, which must be planar
       */
-    const std::list<gp_Trsf> getTransformations(const std::vector<App::DocumentObject*>);
+    const std::list<gp_Trsf> getTransformations(const std::vector<App::DocumentObject*>) override;
 };
 
 } //namespace PartDesign

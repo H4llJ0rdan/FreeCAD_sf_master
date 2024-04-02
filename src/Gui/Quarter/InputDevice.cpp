@@ -30,9 +30,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \**************************************************************************/
 
-#include <Quarter/devices/InputDevice.h>
-#include <QtGui/QInputEvent>
+#ifdef _MSC_VER
+#pragma warning(disable : 4267)
+#endif
+
+#include <QInputEvent>
 #include <Inventor/events/SoEvents.h>
+
+#include "devices/InputDevice.h"
+
 
 using namespace SIM::Coin3D::Quarter;
 
@@ -44,9 +50,14 @@ using namespace SIM::Coin3D::Quarter;
   devices.
 */
 
-InputDevice::InputDevice(void)
+InputDevice::InputDevice() : quarter(nullptr)
 {
   this->mousepos = SbVec2s(0, 0);
+}
+
+InputDevice::InputDevice(QuarterWidget *quarter) : quarter(quarter)
+{
+    this->mousepos = SbVec2s(0, 0);
 }
 
 /*!
@@ -54,6 +65,7 @@ InputDevice::InputDevice(void)
 
   \param[in] pos position of mouse in pixelcoordinates
 */
+
 void
 InputDevice::setMousePosition(const SbVec2s & pos)
 {

@@ -119,15 +119,19 @@ namespace Py
         {
             std::string name( _name );
 
+#if !defined( Py_LIMITED_API )
             if( name == "__name__" && type_object()->tp_name != NULL )
             {
                 return Py::String( type_object()->tp_name );
             }
+#endif
 
+#if !defined( Py_LIMITED_API )
             if( name == "__doc__" && type_object()->tp_doc != NULL )
             {
                 return Py::String( type_object()->tp_doc );
             }
+#endif
 
 // trying to fake out being a class for help()
 //            else if( name == "__bases__"  )
@@ -157,6 +161,18 @@ namespace Py
             EXPLICIT_TYPENAME method_map_t::const_iterator i = mm.find( name );
             if( i == mm.end() )
             {
+                if( name == "__dict__" ) // __methods__ is not supported in Py3 any more, use __dict__ instead
+                {
+                    Dict methods;
+
+                    i = mm.begin();
+                    EXPLICIT_TYPENAME method_map_t::const_iterator i_end = mm.end();
+
+                    for( ; i != i_end; ++i )
+                        methods.setItem( String( (*i).first ), String( "" ) );
+
+                    return methods;
+                }
                 if( name == "__methods__" )
                 {
                     List methods;
@@ -180,7 +196,7 @@ namespace Py
             self[0] = Object( this );
             self[1] = Object( PyCapsule_New( method_def, NULL, NULL ), true );
 
-            PyObject *func = PyCFunction_New( &method_def->ext_meth_def, self.ptr() );
+            PyObject *func = PyCFunction_NewEx( &method_def->ext_meth_def, self.ptr(), NULL );
 
             return Object(func, true);
         }
@@ -258,7 +274,7 @@ namespace Py
 
                 return new_reference_to( result.ptr() );
             }
-            catch( Exception & )
+            catch( BaseException & )
             {
                 return 0;
             }
@@ -295,7 +311,7 @@ namespace Py
 
                 return new_reference_to( result.ptr() );
             }
-            catch( Exception & )
+            catch( BaseException & )
             {
                 return 0;
             }
@@ -323,7 +339,7 @@ namespace Py
 
                 return new_reference_to( result.ptr() );
             }
-            catch( Exception & )
+            catch( BaseException & )
             {
                 return 0;
             }

@@ -20,43 +20,39 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <gp_Ax1.hxx>
 # include <gp_Dir.hxx>
-# include <gp_Pnt.hxx>
-# include <gp_Lin.hxx>
 # include <gp_Pln.hxx>
-# include <Geom_Line.hxx>
-# include <Geom_Plane.hxx>
-# include <Geom_TrimmedCurve.hxx>
+# include <gp_Pnt.hxx>
 # include <GC_MakePlane.hxx>
+# include <Geom_Plane.hxx>
 # include <Standard_Failure.hxx>
 #endif
 
-#include <Base/VectorPy.h>
 #include <Base/GeometryPyCXX.h>
+#include <Base/PyWrapParseTupleAndKeywords.h>
+#include <Base/VectorPy.h>
 
-#include "OCCError.h"
-#include "Geometry.h"
-#include "LinePy.h"
 #include "PlanePy.h"
 #include "PlanePy.cpp"
+#include "OCCError.h"
+
 
 using namespace Part;
 
 extern const char* gce_ErrorStatusText(gce_ErrorType et);
 
 // returns a string which represents the object e.g. when printed in python
-std::string PlanePy::representation(void) const
+std::string PlanePy::representation() const
 {
     return "<Plane object>";
 }
 
 PyObject *PlanePy::PyMake(struct _typeobject *, PyObject *, PyObject *)  // Python wrapper
 {
-    // create a new instance of PlanePy and the Twin object 
+    // create a new instance of PlanePy and the Twin object
     return new PlanePy(new GeomPlane);
 }
 
@@ -66,10 +62,10 @@ int PlanePy::PyInit(PyObject* args, PyObject* kwds)
     // plane and distance for offset
     PyObject *pPlane;
     double dist;
-    static char* keywords_pd[] = {"Plane","Distance",NULL};
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!d", keywords_pd, &(PlanePy::Type), &pPlane, &dist)) {
+    static const std::array<const char *, 3> keywords_pd {"Plane", "Distance", nullptr};
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!d", keywords_pd, &(PlanePy::Type), &pPlane, &dist)) {
         PlanePy* pcPlane = static_cast<PlanePy*>(pPlane);
-        Handle_Geom_Plane plane = Handle_Geom_Plane::DownCast
+        Handle(Geom_Plane) plane = Handle(Geom_Plane)::DownCast
             (pcPlane->getGeometryPtr()->handle());
         GC_MakePlane mc(plane->Pln(), dist);
         if (!mc.IsDone()) {
@@ -77,35 +73,35 @@ int PlanePy::PyInit(PyObject* args, PyObject* kwds)
             return -1;
         }
 
-        Handle_Geom_Plane plan = Handle_Geom_Plane::DownCast(getGeometryPtr()->handle());
+        Handle(Geom_Plane) plan = Handle(Geom_Plane)::DownCast(getGeometryPtr()->handle());
         plan->SetPln(mc.Value()->Pln());
         return 0;
     }
 
     // plane from equation
     double a,b,c,d;
-    static char* keywords_abcd[] = {"A","B","C","D",NULL};
+    static const std::array<const char *, 5> keywords_abcd{"A", "B", "C", "D", nullptr};
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "dddd", keywords_abcd,
-                                        &a,&b,&c,&d)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "dddd", keywords_abcd,
+                                            &a,&b,&c,&d)) {
         GC_MakePlane mc(a,b,c,d);
         if (!mc.IsDone()) {
             PyErr_SetString(PartExceptionOCCError, gce_ErrorStatusText(mc.Status()));
             return -1;
         }
 
-        Handle_Geom_Plane plane = Handle_Geom_Plane::DownCast(getGeometryPtr()->handle());
+        Handle(Geom_Plane) plane = Handle(Geom_Plane)::DownCast(getGeometryPtr()->handle());
         plane->SetPln(mc.Value()->Pln());
         return 0;
     }
 
     PyObject *pV1, *pV2, *pV3;
-    static char* keywords_ppp[] = {"Point1","Point2","Point3",NULL};
+    static const std::array<const char *, 4> keywords_ppp{"Point1", "Point2", "Point3", nullptr};
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O!", keywords_ppp,
-                                         &(Base::VectorPy::Type), &pV1,
-                                         &(Base::VectorPy::Type), &pV2,
-                                         &(Base::VectorPy::Type), &pV3)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!O!O!", keywords_ppp,
+                                            &(Base::VectorPy::Type), &pV1,
+                                            &(Base::VectorPy::Type), &pV2,
+                                            &(Base::VectorPy::Type), &pV3)) {
         Base::Vector3d v1 = static_cast<Base::VectorPy*>(pV1)->value();
         Base::Vector3d v2 = static_cast<Base::VectorPy*>(pV2)->value();
         Base::Vector3d v3 = static_cast<Base::VectorPy*>(pV3)->value();
@@ -117,17 +113,17 @@ int PlanePy::PyInit(PyObject* args, PyObject* kwds)
             return -1;
         }
 
-        Handle_Geom_Plane plane = Handle_Geom_Plane::DownCast(getGeometryPtr()->handle());
+        Handle(Geom_Plane) plane = Handle(Geom_Plane)::DownCast(getGeometryPtr()->handle());
         plane->SetPln(mc.Value()->Pln());
         return 0;
     }
 
     // location and normal
-    static char* keywords_cnr[] = {"Location","Normal",NULL};
+    static const std::array<const char *, 3> keywords_cnr {"Location", "Normal", nullptr};
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!O!", keywords_cnr,
-                                        &(Base::VectorPy::Type), &pV1,
-                                        &(Base::VectorPy::Type), &pV2)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!O!", keywords_cnr,
+                                            &(Base::VectorPy::Type), &pV1,
+                                            &(Base::VectorPy::Type), &pV2)) {
         Base::Vector3d v1 = static_cast<Base::VectorPy*>(pV1)->value();
         Base::Vector3d v2 = static_cast<Base::VectorPy*>(pV2)->value();
         GC_MakePlane mc(gp_Pnt(v1.x,v1.y,v1.z),
@@ -137,26 +133,26 @@ int PlanePy::PyInit(PyObject* args, PyObject* kwds)
             return -1;
         }
 
-        Handle_Geom_Plane plane = Handle_Geom_Plane::DownCast(getGeometryPtr()->handle());
+        Handle(Geom_Plane) plane = Handle(Geom_Plane)::DownCast(getGeometryPtr()->handle());
         plane->SetPln(mc.Value()->Pln());
         return 0;
     }
 
-    static char* keywords_p[] = {"Plane",NULL};
+    static const std::array<const char *, 2> keywords_p {"Plane", nullptr};
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!", keywords_p, &(PlanePy::Type), &pPlane)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!", keywords_p, &(PlanePy::Type), &pPlane)) {
         PlanePy* pcPlane = static_cast<PlanePy*>(pPlane);
-        Handle_Geom_Plane plane1 = Handle_Geom_Plane::DownCast
+        Handle(Geom_Plane) plane1 = Handle(Geom_Plane)::DownCast
             (pcPlane->getGeometryPtr()->handle());
-        Handle_Geom_Plane plane2 = Handle_Geom_Plane::DownCast
+        Handle(Geom_Plane) plane2 = Handle(Geom_Plane)::DownCast
             (this->getGeometryPtr()->handle());
         plane2->SetPln(plane1->Pln());
         return 0;
     }
 
-    static char* keywords_n[] = {NULL};
+    static const std::array<const char *, 1> keywords_n {nullptr};
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "", keywords_n)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "", keywords_n)) {
         // do nothing
         return 0;
     }
@@ -172,9 +168,9 @@ int PlanePy::PyInit(PyObject* args, PyObject* kwds)
     return -1;
 }
 
-Py::Object PlanePy::getPosition(void) const
+Py::Object PlanePy::getPosition() const
 {
-    Handle_Geom_Plane this_surf = Handle_Geom_Plane::DownCast
+    Handle(Geom_Plane) this_surf = Handle(Geom_Plane)::DownCast
         (this->getGeomPlanePtr()->handle());
     gp_Pnt pnt = this_surf->Location();
     return Py::Vector(Base::Vector3d(pnt.X(), pnt.Y(), pnt.Z()));
@@ -203,19 +199,18 @@ void PlanePy::setPosition(Py::Object arg)
     }
 
     try {
-        Handle_Geom_Plane this_surf = Handle_Geom_Plane::DownCast
+        Handle(Geom_Plane) this_surf = Handle(Geom_Plane)::DownCast
             (this->getGeomPlanePtr()->handle());
         this_surf->SetLocation(loc);
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        throw Py::Exception(e->GetMessageString());
+    catch (Standard_Failure& e) {
+        throw Py::RuntimeError(e.GetMessageString());
     }
 }
 
-Py::Object PlanePy::getAxis(void) const
+Py::Object PlanePy::getAxis() const
 {
-    Handle_Geom_ElementarySurface s = Handle_Geom_ElementarySurface::DownCast
+    Handle(Geom_ElementarySurface) s = Handle(Geom_ElementarySurface)::DownCast
         (getGeometryPtr()->handle());
     gp_Dir dir = s->Axis().Direction();
     return Py::Vector(Base::Vector3d(dir.X(), dir.Y(), dir.Z()));
@@ -244,74 +239,24 @@ void PlanePy::setAxis(Py::Object arg)
     }
 
     try {
-        Handle_Geom_ElementarySurface this_surf = Handle_Geom_ElementarySurface::DownCast
+        Handle(Geom_ElementarySurface) this_surf = Handle(Geom_ElementarySurface)::DownCast
             (this->getGeometryPtr()->handle());
         gp_Ax1 axis;
         axis.SetLocation(this_surf->Location());
         axis.SetDirection(gp_Dir(dir_x, dir_y, dir_z));
         this_surf->SetAxis(axis);
     }
-    catch (Standard_Failure) {
-        throw Py::Exception("cannot set axis");
-    }
-}
-
-PyObject* PlanePy::uIso(PyObject * args)
-{
-    double u;
-    if (!PyArg_ParseTuple(args, "d", &u))
-        return 0;
-
-    try {
-        Handle_Geom_Plane plane = Handle_Geom_Plane::DownCast
-            (getGeomPlanePtr()->handle());
-        Handle_Geom_Line c = Handle_Geom_Line::DownCast(plane->UIso(u));
-        GeomLineSegment* line = new GeomLineSegment();
-        Handle_Geom_TrimmedCurve this_curv = Handle_Geom_TrimmedCurve::DownCast
-            (line->handle());
-        Handle_Geom_Line this_line = Handle_Geom_Line::DownCast
-            (this_curv->BasisCurve());
-        this_line->SetLin(c->Lin());
-        return new LinePy(line);
-    }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
-        return 0;
-    }
-}
-
-PyObject* PlanePy::vIso(PyObject * args)
-{
-    double v;
-    if (!PyArg_ParseTuple(args, "d", &v))
-        return 0;
-
-    try {
-        Handle_Geom_Plane plane = Handle_Geom_Plane::DownCast
-            (getGeomPlanePtr()->handle());
-        Handle_Geom_Line c = Handle_Geom_Line::DownCast(plane->VIso(v));
-        GeomLineSegment* line = new GeomLineSegment();
-        Handle_Geom_TrimmedCurve this_curv = Handle_Geom_TrimmedCurve::DownCast
-            (line->handle());
-        Handle_Geom_Line this_line = Handle_Geom_Line::DownCast
-            (this_curv->BasisCurve());
-        this_line->SetLin(c->Lin());
-        return new LinePy(line);
-    }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
-        return 0;
+    catch (Standard_Failure&) {
+        throw Py::RuntimeError("cannot set axis");
     }
 }
 
 PyObject *PlanePy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int PlanePy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }

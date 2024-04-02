@@ -2,11 +2,10 @@
 # (c) 2012 Werner Mayer LGPL
 
 # The script is based on the work of daxmick at
-# http://forum.freecadweb.org/viewtopic.php?f=3&t=2307
+# http://forum.freecad.org/viewtopic.php?f=3&t=2307
 
 import threading
-import Mesh, MeshGui
-from FreeCAD import Base
+import Mesh
 
 # Create a global mesh and make copies of them
 # This makes the algorithm faster by ~60%.
@@ -20,7 +19,7 @@ def PlaceBox(x,y,z):
    return mbox
 
 def Sierpinski(level,x0,y0,z0):
-   #print threading.current_thread().name
+   #print(threading.current_thread().name)
    boxnums = pow(3,level)
    thirds = boxnums / 3
    twothirds = thirds * 2
@@ -69,7 +68,7 @@ def makeMengerSponge_mt(level=3,x0=0,y0=0,z0=0):
     boxnums = pow(3,level)
     thirds = boxnums / 3
     twothirds = thirds * 2
-    
+
     rangerx = [ x0, x0 + thirds, x0 + twothirds ]
     rangery = [ y0, y0 + thirds, y0 + twothirds ]
     rangerz = [ z0, z0 + thirds, z0 + twothirds ]
@@ -95,7 +94,7 @@ def makeMengerSponge_mt(level=3,x0=0,y0=0,z0=0):
         threads.append(thr)
         args=args[count:]
 
-    print "Number of threads: %i" % (len(threads))
+    print("Number of threads: %i" % (len(threads)))
     for thr in threads:
         thr.start()
     for thr in threads:
@@ -105,12 +104,12 @@ def makeMengerSponge_mt(level=3,x0=0,y0=0,z0=0):
     for thr in threads:
         mesh.addMesh(thr.mesh)
         del thr.mesh
-        
-    print mesh
+
+    print(mesh)
     mesh.removeDuplicatedPoints()
     mesh.removeFacets(mesh.getInternalFacets())
     mesh.rebuildNeighbourHood()
-    print "Mesh is solid: %s" % (mesh.isSolid())
+    print("Mesh is solid: %s" % (mesh.isSolid()))
     Mesh.show(mesh)
 
 
@@ -121,5 +120,5 @@ def makeMengerSponge(level=3,x0=0,y0=0,z0=0):
     mesh.removeDuplicatedPoints()
     mesh.removeFacets(mesh.getInternalFacets())
     mesh.rebuildNeighbourHood()
-    print "Mesh is solid: %s" % (mesh.isSolid())
+    print("Mesh is solid: %s" % (mesh.isSolid()))
     Mesh.show(mesh)

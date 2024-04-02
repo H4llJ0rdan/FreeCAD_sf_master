@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,55 +20,54 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <qlineedit.h>
-#endif
 
 #include <Gui/FileDialog.h>
 #include <Gui/MainWindow.h>
+
 #include "DlgPartImportStepImp.h"
+#include "ui_DlgPartImportStep.h"
+
 
 using namespace PartGui;
 
 /* TRANSLATOR PartGui::DlgPartImportStepImp */
 
-/* 
- *  Constructs a DlgPartImportStep which is a child of 'parent', with the 
- *  name 'name' and widget flags set to 'f' 
+/*
+ *  Constructs a DlgPartImportStep which is a child of 'parent', with the
+ *  name 'name' and widget flags set to 'f'
  *
  *  The dialog will by default be modeless, unless you set 'modal' to
- *  TRUE to construct a modal dialog.
+ *  true to construct a modal dialog.
  */
-DlgPartImportStepImp::DlgPartImportStepImp( QWidget* parent, Qt::WFlags fl )
+DlgPartImportStepImp::DlgPartImportStepImp( QWidget* parent, Qt::WindowFlags fl )
     : QDialog( parent, fl )
+    , ui(new Ui_DlgPartImportStep)
 {
-    this->setupUi(this);
+    ui->setupUi(this);
 }
 
-/*  
+/*
  *  Destroys the object and frees any allocated resources
  */
-DlgPartImportStepImp::~DlgPartImportStepImp()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
+DlgPartImportStepImp::~DlgPartImportStepImp() = default;
 
-/* 
+/*
  * public slot
  */
 void DlgPartImportStepImp::OnApply()
 {
-    qWarning( "DlgPartImportStepImp::OnApply() not yet implemented!" ); 
+    qWarning( "DlgPartImportStepImp::OnApply() not yet implemented!" );
 }
 
 void DlgPartImportStepImp::onChooseFileName()
 {
-    QString fn = Gui::FileDialog::getOpenFileName(Gui::getMainWindow(), QString::null, QString::null, tr("STEP (*.stp *.step);;All Files (*.*)"));
-    if (! fn.isEmpty() )
-    {
-        FileName->setText(fn);
+    QString fn = Gui::FileDialog::getOpenFileName(Gui::getMainWindow(), QString(), QString(),
+        QString::fromLatin1("%1 (*.stp *.step);;%2 (*.*)"))
+        .arg(tr("STEP"),
+             tr("All Files"));
+    if (!fn.isEmpty()) {
+        ui->FileName->setText(fn);
     }
 }
 

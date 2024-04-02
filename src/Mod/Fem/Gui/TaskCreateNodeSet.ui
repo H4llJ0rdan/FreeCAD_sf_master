@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true">Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -99,7 +99,7 @@
       <item>
        <widget class="QCheckBox" name="checkBox_AngleSearch">
         <property name="text">
-         <string>Collect adjancent nodes</string>
+         <string>Collect adjacent nodes</string>
         </property>
        </widget>
       </item>

@@ -54,13 +54,19 @@
       <Documentation>
         <UserDocu>0: exactly constraint, -1 under-constraint, 1 over-constraint</UserDocu>
       </Documentation>
-      <Parameter Name="Constraint" Type="Int"/>
+      <Parameter Name="Constraint" Type="Long"/>
     </Attribute>
-    <Attribute Name="Constraints" ReadOnly="true">
+    <Attribute Name="Conflicts" ReadOnly="true">
       <Documentation>
-        <UserDocu>Tuple of all constrains in this sketch</UserDocu>
+        <UserDocu>Tuple of conflicting constraints</UserDocu>
       </Documentation>
-      <Parameter Name="Constraints" Type="Tuple"/>
+      <Parameter Name="Conflicts" Type="Tuple"/>
+    </Attribute>
+    <Attribute Name="Redundancies" ReadOnly="true">
+      <Documentation>
+        <UserDocu>Tuple of redundant constraints</UserDocu>
+      </Documentation>
+      <Parameter Name="Redundancies" Type="Tuple"/>
     </Attribute>
     <Attribute Name="Geometries" ReadOnly="true">
       <Documentation>

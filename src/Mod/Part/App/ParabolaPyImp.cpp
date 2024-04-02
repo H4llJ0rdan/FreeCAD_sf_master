@@ -20,43 +20,95 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <Geom_Parabola.hxx>
+# include <gce_MakeParab.hxx>
 #endif
 
-#include <Base/VectorPy.h>
 #include <Base/GeometryPyCXX.h>
+#include <Base/PyWrapParseTupleAndKeywords.h>
+#include <Base/VectorPy.h>
 
-#include "OCCError.h"
-#include "Geometry.h"
 #include "ParabolaPy.h"
 #include "ParabolaPy.cpp"
+#include "OCCError.h"
+
 
 using namespace Part;
 
+extern const char* gce_ErrorStatusText(gce_ErrorType et);
+
 // returns a string which represents the object e.g. when printed in python
-std::string ParabolaPy::representation(void) const
+std::string ParabolaPy::representation() const
 {
     return "<Parabola object>";
 }
 
 PyObject *ParabolaPy::PyMake(struct _typeobject *, PyObject *, PyObject *)  // Python wrapper
 {
-    // create a new instance of ParabolaPy and the Twin object 
+    // create a new instance of ParabolaPy and the Twin object
     return new ParabolaPy(new GeomParabola);
 }
 
 // constructor method
-int ParabolaPy::PyInit(PyObject* args, PyObject* /*kwd*/)
+int ParabolaPy::PyInit(PyObject* args, PyObject* kwds)
 {
-    if (PyArg_ParseTuple(args, "")) {
-        Handle_Geom_Parabola c = Handle_Geom_Parabola::DownCast
-            (getGeometryPtr()->handle());
-        c->SetFocal(1.0);
+    static const std::array<const char *, 1> keywords_n {nullptr};
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "", keywords_n)) {
+        Handle(Geom_Parabola) parabola = Handle(Geom_Parabola)::DownCast(getGeomParabolaPtr()->handle());
+        parabola->SetFocal(1.0);
         return 0;
     }
+
+    static const std::array<const char *, 2> keywords_e {"Parabola", nullptr};
+    PyErr_Clear();
+    PyObject *pParab;
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!",keywords_e, &(ParabolaPy::Type), &pParab)) {
+        ParabolaPy* pParabola = static_cast<ParabolaPy*>(pParab);
+        Handle(Geom_Parabola) Parab1 = Handle(Geom_Parabola)::DownCast
+            (pParabola->getGeomParabolaPtr()->handle());
+        Handle(Geom_Parabola) Parab2 = Handle(Geom_Parabola)::DownCast
+            (this->getGeomParabolaPtr()->handle());
+        Parab2->SetParab(Parab1->Parab());
+        return 0;
+    }
+
+    static const std::array<const char *, 4> keywords_ssc {"Focus","Center","Normal",nullptr};
+    PyErr_Clear();
+    PyObject *pV1, *pV2, *pV3;
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!O!O!", keywords_ssc,
+                                            &(Base::VectorPy::Type), &pV1,
+                                            &(Base::VectorPy::Type), &pV2,
+                                            &(Base::VectorPy::Type), &pV3)) {
+        Base::Vector3d focus = static_cast<Base::VectorPy*>(pV1)->value();
+        Base::Vector3d center = static_cast<Base::VectorPy*>(pV2)->value();
+        Base::Vector3d normal = static_cast<Base::VectorPy*>(pV3)->value();
+
+        Base::Vector3d xvect = focus-center;
+
+        // set the geometry
+        gp_Pnt p1(center.x,center.y,center.z);
+        gp_Dir norm(normal.x,normal.y,normal.z);
+        gp_Dir xdiroce(xvect.x,xvect.y,xvect.z);
+
+        gp_Ax2 xdir(p1, norm, xdiroce);
+
+        gce_MakeParab mc(xdir, (Standard_Real) xvect.Length());
+        if (!mc.IsDone()) {
+            PyErr_SetString(PartExceptionOCCError, gce_ErrorStatusText(mc.Status()));
+            return -1;
+        }
+
+        Handle(Geom_Parabola) parabola = Handle(Geom_Parabola)::DownCast(getGeomParabolaPtr()->handle());
+        parabola->SetParab(mc.Value());
+        return 0;
+    }
+
+    PyErr_SetString(PyExc_TypeError, "Parabola constructor accepts:\n"
+    "-- empty parameter list\n"
+    "-- Parabola\n"
+    "-- Point, Point, Point");
 
     return -1;
 }
@@ -68,7 +120,7 @@ PyObject* ParabolaPy::compute(PyObject *args)
         &Base::VectorPy::Type,&p1,
         &Base::VectorPy::Type,&p2,
         &Base::VectorPy::Type,&p3))
-        return 0;
+        return nullptr;
     Base::Vector3d v1 = Py::Vector(p1,false).toVector();
     Base::Vector3d v2 = Py::Vector(p2,false).toVector();
     Base::Vector3d v3 = Py::Vector(p3,false).toVector();
@@ -76,7 +128,7 @@ PyObject* ParabolaPy::compute(PyObject *args)
     double zValue = v1.z;
     if (fabs(c.Length()) < 0.0001) {
         PyErr_SetString(PartExceptionOCCError, "Points are collinear");
-        return 0;
+        return nullptr;
     }
 
     Base::Matrix4D m;
@@ -99,130 +151,47 @@ PyObject* ParabolaPy::compute(PyObject *args)
     double a10 = -0.5;
     double a20 = v.y/2.0;
     double a00 = v.z;
-    Handle_Geom_Parabola curve = Handle_Geom_Parabola::DownCast(getGeometryPtr()->handle());
+    Handle(Geom_Parabola) curve = Handle(Geom_Parabola)::DownCast(getGeometryPtr()->handle());
     curve->SetFocal(0.5*fabs(a10/a22));
     curve->SetLocation(gp_Pnt((a20*a20-a22*a00)/(2*a22*a10), -a20/a22, zValue));
 
     Py_Return;
 }
 
-Py::Float ParabolaPy::getEccentricity(void) const
+Py::Float ParabolaPy::getFocal() const
 {
-    Handle_Geom_Parabola curve = Handle_Geom_Parabola::DownCast(getGeometryPtr()->handle());
-    return Py::Float(curve->Eccentricity()); 
-}
-
-Py::Float ParabolaPy::getFocal(void) const
-{
-    Handle_Geom_Parabola curve = Handle_Geom_Parabola::DownCast(getGeometryPtr()->handle());
-    return Py::Float(curve->Focal()); 
+    Handle(Geom_Parabola) curve = Handle(Geom_Parabola)::DownCast(getGeometryPtr()->handle());
+    return Py::Float(curve->Focal());
 }
 
 void ParabolaPy::setFocal(Py::Float arg)
 {
-    Handle_Geom_Parabola curve = Handle_Geom_Parabola::DownCast(getGeometryPtr()->handle());
-    curve->SetFocal((double)arg); 
+    Handle(Geom_Parabola) curve = Handle(Geom_Parabola)::DownCast(getGeometryPtr()->handle());
+    curve->SetFocal((double)arg);
 }
 
-Py::Object ParabolaPy::getFocus(void) const
+Py::Object ParabolaPy::getFocus() const
 {
-    Handle_Geom_Parabola c = Handle_Geom_Parabola::DownCast
+    Handle(Geom_Parabola) c = Handle(Geom_Parabola)::DownCast
         (getGeometryPtr()->handle());
     gp_Pnt loc = c->Focus();
     return Py::Vector(Base::Vector3d(loc.X(), loc.Y(), loc.Z()));
 }
 
-Py::Float ParabolaPy::getParameter(void) const
+Py::Float ParabolaPy::getParameter() const
 {
-    Handle_Geom_Parabola curve = Handle_Geom_Parabola::DownCast(getGeometryPtr()->handle());
-    return Py::Float(curve->Parameter()); 
-}
-
-Py::Object ParabolaPy::getLocation(void) const
-{
-    Handle_Geom_Parabola c = Handle_Geom_Parabola::DownCast
-        (getGeometryPtr()->handle());
-    gp_Pnt loc = c->Location();
-    return Py::Vector(Base::Vector3d(loc.X(), loc.Y(), loc.Z()));
-}
-
-void ParabolaPy::setLocation(Py::Object arg)
-{
-    PyObject* p = arg.ptr();
-    if (PyObject_TypeCheck(p, &(Base::VectorPy::Type))) {
-        Base::Vector3d loc = static_cast<Base::VectorPy*>(p)->value();
-        Handle_Geom_Parabola c = Handle_Geom_Parabola::DownCast
-            (getGeometryPtr()->handle());
-        c->SetLocation(gp_Pnt(loc.x, loc.y, loc.z));
-    }
-    else if (PyTuple_Check(p)) {
-        Py::Tuple tuple(arg);
-        gp_Pnt loc;
-        loc.SetX((double)Py::Float(tuple.getItem(0)));
-        loc.SetY((double)Py::Float(tuple.getItem(1)));
-        loc.SetZ((double)Py::Float(tuple.getItem(2)));
-        Handle_Geom_Parabola c = Handle_Geom_Parabola::DownCast
-            (getGeometryPtr()->handle());
-        c->SetLocation(loc);
-    }
-    else {
-        std::string error = std::string("type must be 'Vector', not ");
-        error += p->ob_type->tp_name;
-        throw Py::TypeError(error);
-    }
-}
-
-Py::Object ParabolaPy::getAxis(void) const
-{
-    Handle_Geom_Parabola c = Handle_Geom_Parabola::DownCast
-        (getGeometryPtr()->handle());
-    gp_Dir dir = c->Axis().Direction();
-    return Py::Vector(Base::Vector3d(dir.X(), dir.Y(), dir.Z()));
-}
-
-void ParabolaPy::setAxis(Py::Object arg)
-{
-    Standard_Real dir_x, dir_y, dir_z;
-    PyObject *p = arg.ptr();
-    if (PyObject_TypeCheck(p, &(Base::VectorPy::Type))) {
-        Base::Vector3d v = static_cast<Base::VectorPy*>(p)->value();
-        dir_x = v.x;
-        dir_y = v.y;
-        dir_z = v.z;
-    }
-    else if (PyTuple_Check(p)) {
-        Py::Tuple tuple(arg);
-        dir_x = (double)Py::Float(tuple.getItem(0));
-        dir_y = (double)Py::Float(tuple.getItem(1));
-        dir_z = (double)Py::Float(tuple.getItem(2));
-    }
-    else {
-        std::string error = std::string("type must be 'Vector' or tuple, not ");
-        error += p->ob_type->tp_name;
-        throw Py::TypeError(error);
-    }
-
-    try {
-        Handle_Geom_Parabola this_curv = Handle_Geom_Parabola::DownCast
-            (this->getGeometryPtr()->handle());
-        gp_Ax1 axis;
-        axis.SetLocation(this_curv->Location());
-        axis.SetDirection(gp_Dir(dir_x, dir_y, dir_z));
-        this_curv->SetAxis(axis);
-    }
-    catch (Standard_Failure) {
-        throw Py::Exception("cannot set axis");
-    }
+    Handle(Geom_Parabola) curve = Handle(Geom_Parabola)::DownCast(getGeometryPtr()->handle());
+    return Py::Float(curve->Parameter());
 }
 
 PyObject *ParabolaPy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int ParabolaPy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }
 
 

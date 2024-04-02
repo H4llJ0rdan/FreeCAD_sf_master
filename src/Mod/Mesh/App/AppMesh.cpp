@@ -20,69 +20,70 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
+#include <App/Application.h>
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
 
-#include "Mesh.h"
-#include "MeshPy.h"
-#include "MeshPointPy.h"
+#include "EdgePy.h"
+#include "Exporter.h"
 #include "FacetPy.h"
-#include "MeshFeaturePy.h"
-#include "FeatureMeshImport.h"
-#include "FeatureMeshExport.h"
-#include "FeatureMeshTransform.h"
-#include "FeatureMeshTransformDemolding.h"
 #include "FeatureMeshCurvature.h"
+#include "FeatureMeshDefects.h"
+#include "FeatureMeshExport.h"
+#include "FeatureMeshImport.h"
 #include "FeatureMeshSegmentByMesh.h"
 #include "FeatureMeshSetOperations.h"
-#include "FeatureMeshDefects.h"
 #include "FeatureMeshSolid.h"
+#include "FeatureMeshTransform.h"
+#include "FeatureMeshTransformDemolding.h"
+#include "Mesh.h"
+#include "MeshFeaturePy.h"
+#include "MeshPointPy.h"
+#include "MeshPy.h"
 
-/* registration table  */
-extern struct PyMethodDef Mesh_Import_methods[];
 
-
-PyDoc_STRVAR(module_doc,
-"The functions in this module allow working with mesh objects.\n"
-"A set of functions are provided that allow to read in registered mesh file formats\n"
-"to either an newly created or already exising document.\n"
-"\n"
-"open(string) -- Create a new document and a Mesh::Import feature to load the file into the document.\n"
-"insert(string, string) -- Create a Mesh::Import feature to load the file into the given document.\n"
-"mesh() -- Create an empty mesh object.\n"
-"\n");
+namespace Mesh
+{
+extern PyObject* initModule();
+}
 
 /* Python entry */
-extern "C" {
-void MeshExport initMesh() 
+PyMOD_INIT_FUNC(Mesh)
 {
-    PyObject* meshModule = Py_InitModule3("Mesh", Mesh_Import_methods, module_doc);   /* mod name, table ptr */
+    PyObject* meshModule = Mesh::initModule();
     Base::Console().Log("Loading Mesh module... done\n");
 
     // NOTE: To finish the initialization of our own type objects we must
     // call PyType_Ready, otherwise we run into a segmentation fault, later on.
     // This function is responsible for adding inherited slots from a type's base class.
+    ParameterGrp::handle handle = App::GetApplication().GetParameterGroupByPath(
+        "User parameter:BaseApp/Preferences/Mod/Mesh");
+    ParameterGrp::handle asy = handle->GetGroup("Asymptote");
+    MeshCore::MeshOutput::SetAsymptoteSize(asy->GetASCII("Width", "500"), asy->GetASCII("Height"));
 
+    // clang-format off
     // add mesh elements
     Base::Interpreter().addType(&Mesh::MeshPointPy  ::Type,meshModule,"MeshPoint");
+    Base::Interpreter().addType(&Mesh::EdgePy       ::Type,meshModule,"Edge");
     Base::Interpreter().addType(&Mesh::FacetPy      ::Type,meshModule,"Facet");
     Base::Interpreter().addType(&Mesh::MeshPy       ::Type,meshModule,"Mesh");
     Base::Interpreter().addType(&Mesh::MeshFeaturePy::Type,meshModule,"Feature");
 
+    Mesh::Extension3MFFactory::addProducer(new Mesh::GuiExtension3MFProducer);
+
     // init Type system
     Mesh::PropertyNormalList    ::init();
     Mesh::PropertyCurvatureList ::init();
+    Mesh::PropertyMaterial      ::init();
     Mesh::PropertyMeshKernel    ::init();
 
     Mesh::MeshObject            ::init();
+    Mesh::MeshSegment           ::init();
 
     Mesh::Feature               ::init();
+    Mesh::FeatureCustom         ::init();
     Mesh::FeaturePython         ::init();
     Mesh::Import                ::init();
     Mesh::Export                ::init();
@@ -109,7 +110,7 @@ void MeshExport initMesh()
     Mesh::Cone                  ::init();
     Mesh::Torus                 ::init();
     Mesh::Cube                  ::init();
+    // clang-format on
+
+    PyMOD_Return(meshModule);
 }
-
-
-} // extern "C" 

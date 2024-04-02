@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)            *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel (FreeCAD@juergen-riegel.net)            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
  *   This library is free software; you can redistribute it and/or            *
@@ -25,29 +25,31 @@
 
 #include <Gui/SelectionFilter.h>
 
-namespace FemGui {
-
-class FemSelectionGate : public Gui::SelectionFilterGate
+namespace FemGui
 {
- public:
-     enum ElemType { 
-        Nothing ,
-        Node    ,
-        Element ,
-        NodeElement 
+
+class FemSelectionGate: public Gui::SelectionFilterGate
+{
+public:
+    enum ElemType
+    {
+        Nothing,
+        Node,
+        Element,
+        NodeElement
     };
 
-    FemSelectionGate(ElemType type)
-        : Gui::SelectionFilterGate((Gui::SelectionFilter*)0),Type(type)         
-    {
-    };
+    explicit FemSelectionGate(ElemType type)
+        : Gui::SelectionFilterGate(nullPointer())
+        , Type(type)
+    {}
 
     ElemType Type;
 
     /// get called by the frame-work
-    bool allow(App::Document* pDoc, App::DocumentObject* pObj, const char* sSubName);
+    bool allow(App::Document* pDoc, App::DocumentObject* pObj, const char* sSubName) override;
 };
 
-} //namespace FemGui
+}  // namespace FemGui
 
-#endif // GUI_FemSelectionGate_H
+#endif  // GUI_FemSelectionGate_H

@@ -20,44 +20,43 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
+
 #ifndef _PreComp_
-# include <Standard_math.hxx>
-# include <BRep_Builder.hxx>
-# include <BRepAlgoAPI_Section.hxx>
-# include <BRepBuilderAPI_MakeWire.hxx>
-# include <TopoDS.hxx>
-# include <TopoDS_Compound.hxx>
-# include <TopExp_Explorer.hxx>
-# include <gp_Pln.hxx>
 # include <cfloat>
 # include <QFuture>
-# include <QFutureWatcher>
-# include <QtConcurrentMap>
-# include <boost/bind.hpp>
+# include <QKeyEvent>
+
+# include <BRep_Builder.hxx>
+# include <Standard_math.hxx>
+# include <TopoDS.hxx>
+# include <TopoDS_Compound.hxx>
+
 # include <Inventor/nodes/SoBaseColor.h>
 # include <Inventor/nodes/SoCoordinate3.h>
 # include <Inventor/nodes/SoDrawStyle.h>
-# include <Inventor/nodes/SoFaceSet.h>
 # include <Inventor/nodes/SoLineSet.h>
 # include <Inventor/nodes/SoSeparator.h>
 #endif
-
-#include "ui_CrossSections.h"
-#include "CrossSections.h"
-#include <Mod/Part/App/PartFeature.h>
-#include <Mod/Part/App/CrossSection.h>
-#include <Gui/BitmapFactory.h>
-#include <Gui/ViewProvider.h>
-#include <Gui/Application.h>
-#include <Gui/Document.h>
 #include <Gui/View3DInventor.h>
 #include <Gui/View3DInventorViewer.h>
+#include <App/Document.h>
 #include <Base/Sequencer.h>
 #include <Base/UnitsApi.h>
+#include <Gui/Application.h>
+#include <Gui/BitmapFactory.h>
+#include <Gui/Command.h>
+#include <Gui/Document.h>
+#include <Gui/ViewProvider.h>
+#include <Mod/Part/App/CrossSection.h>
+#include <Mod/Part/App/PartFeature.h>
+
+#include "CrossSections.h"
+#include "ui_CrossSections.h"
+
 
 using namespace PartGui;
+namespace sp = std::placeholders;
 #undef CS_FUTURE // multi-threading causes some problems
 
 namespace PartGui {
@@ -79,21 +78,21 @@ public:
         this->pcRoot->addChild(coords);
         this->pcRoot->addChild(planes);
     }
-    ~ViewProviderCrossSections()
+    ~ViewProviderCrossSections() override
     {
         coords->unref();
         planes->unref();
     }
-    void updateData(const App::Property*)
+    void updateData(const App::Property*) override
     {
     }
-    const char* getDefaultDisplayMode() const
+    const char* getDefaultDisplayMode() const override
     {
         return "";
     }
-    std::vector<std::string> getDisplayModes(void) const
+    std::vector<std::string> getDisplayModes() const override
     {
-        return std::vector<std::string>();
+        return {};
     }
     void setCoords(const std::vector<Base::Vector3f>& v)
     {
@@ -119,17 +118,21 @@ private:
 };
 }
 
-CrossSections::CrossSections(const Base::BoundBox3d& bb, QWidget* parent, Qt::WFlags fl)
-  : QDialog(parent, fl), bbox(bb)
+CrossSections::CrossSections(const Base::BoundBox3d& bb, QWidget* parent, Qt::WindowFlags fl)
+  : QDialog(parent, fl)
+  , ui(new Ui_CrossSections)
+  , bbox(bb)
 {
-    ui = new Ui_CrossSections();
     ui->setupUi(this);
+    setupConnections();
+
     ui->position->setRange(-DBL_MAX, DBL_MAX);
-    ui->position->setDecimals(Base::UnitsApi::getDecimals());
-    ui->distance->setDecimals(Base::UnitsApi::getDecimals());
+    ui->position->setUnit(Base::Unit::Length);
+    ui->distance->setRange(0, DBL_MAX);
+    ui->distance->setUnit(Base::Unit::Length);
     vp = new ViewProviderCrossSections();
 
-    Base::Vector3d c = bbox.CalcCenter();
+    Base::Vector3d c = bbox.GetCenter();
     calcPlane(CrossSections::XY, c.z);
     ui->position->setValue(c.z);
 
@@ -140,17 +143,36 @@ CrossSections::CrossSections(const Base::BoundBox3d& bb, QWidget* parent, Qt::WF
     }
 }
 
-/*  
+/*
  *  Destroys the object and frees any allocated resources
  */
 CrossSections::~CrossSections()
 {
     // no need to delete child widgets, Qt does it all for us
-    delete ui;
     if (view) {
         view->getViewer()->removeViewProvider(vp);
     }
     delete vp;
+}
+
+void CrossSections::setupConnections()
+{
+    connect(ui->xyPlane, &QRadioButton::clicked,
+            this, &CrossSections::xyPlaneClicked);
+    connect(ui->xzPlane, &QRadioButton::clicked,
+            this, &CrossSections::xzPlaneClicked);
+    connect(ui->yzPlane, &QRadioButton::clicked,
+            this, &CrossSections::yzPlaneClicked);
+    connect(ui->position, qOverload<double>(&Gui::QuantitySpinBox::valueChanged),
+            this, &CrossSections::positionValueChanged);
+    connect(ui->distance, qOverload<double>(&Gui::QuantitySpinBox::valueChanged),
+            this, &CrossSections::distanceValueChanged);
+    connect(ui->countSections, qOverload<int>(&QSpinBox::valueChanged),
+            this, &CrossSections::countSectionsValueChanged);
+    connect(ui->checkBothSides, &QCheckBox::toggled,
+            this, &CrossSections::checkBothSidesToggled);
+    connect(ui->sectionsBox, &QGroupBox::toggled,
+            this, &CrossSections::sectionsBoxToggled);
 }
 
 CrossSections::Plane CrossSections::plane() const
@@ -173,6 +195,13 @@ void CrossSections::changeEvent(QEvent *e)
     }
 }
 
+void CrossSections::keyPressEvent(QKeyEvent* ke)
+{
+    // The cross-sections dialog is embedded into a task panel
+    // which is a parent widget and will handle the event
+    ke->ignore();
+}
+
 void CrossSections::accept()
 {
     apply();
@@ -181,14 +210,20 @@ void CrossSections::accept()
 
 void CrossSections::apply()
 {
-    std::vector<App::DocumentObject*> obj = Gui::Selection().
-        getObjectsOfType(Part::Feature::getClassTypeId());
+    std::vector<App::DocumentObject*> docobjs = Gui::Selection().
+            getObjectsOfType(App::DocumentObject::getClassTypeId());
+    std::vector<App::DocumentObject*> obj;
+    for (auto it : docobjs) {
+        if (!Part::Feature::getTopoShape(it).isNull()) {
+            obj.push_back(it);
+        }
+    }
 
     std::vector<double> d;
     if (ui->sectionsBox->isChecked())
         d = getPlanes();
     else
-        d.push_back(ui->position->value());
+        d.push_back(ui->position->value().getValue());
     double a=0,b=0,c=0;
     switch (plane()) {
         case CrossSections::XY:
@@ -207,7 +242,7 @@ void CrossSections::apply()
     for (std::vector<App::DocumentObject*>::iterator it = obj.begin(); it != obj.end(); ++it) {
         Part::CrossSection cs(a,b,c,static_cast<Part::Feature*>(*it)->Shape.getValue());
         QFuture< std::list<TopoDS_Wire> > future = QtConcurrent::mapped
-            (d, boost::bind(&Part::CrossSection::section, &cs, _1));
+            (d, std::bind(&Part::CrossSection::section, &cs, sp::_1));
         future.waitForFinished();
         QFuture< std::list<TopoDS_Wire> >::const_iterator ft;
         TopoDS_Compound comp;
@@ -231,45 +266,44 @@ void CrossSections::apply()
         section->purgeTouched();
     }
 #else
-    Gui::Application* app = Gui::Application::Instance;
     Base::SequencerLauncher seq("Cross-sections...", obj.size() * (d.size() +1));
-    app->runPythonCode("import Part\n");
-    app->runPythonCode("from FreeCAD import Base\n");
-    for (std::vector<App::DocumentObject*>::iterator it = obj.begin(); it != obj.end(); ++it) {
-        App::Document* doc = (*it)->getDocument();
-        std::string s = (*it)->getNameInDocument();
+    Gui::Command::runCommand(Gui::Command::App, "import Part\n");
+    Gui::Command::runCommand(Gui::Command::App, "from FreeCAD import Base\n");
+    for (auto it : obj) {
+        App::Document* doc = it->getDocument();
+        std::string s = it->getNameInDocument();
         s += "_cs";
-        app->runPythonCode(QString::fromAscii(
+        Gui::Command::runCommand(Gui::Command::App, QString::fromLatin1(
             "wires=list()\n"
             "shape=FreeCAD.getDocument(\"%1\").%2.Shape\n")
-            .arg(QLatin1String(doc->getName()))
-            .arg(QLatin1String((*it)->getNameInDocument())).toAscii());
+            .arg(QLatin1String(doc->getName()),
+                 QLatin1String(it->getNameInDocument())).toLatin1());
 
-        for (std::vector<double>::iterator jt = d.begin(); jt != d.end(); ++jt) {
-            app->runPythonCode(QString::fromAscii(
+        for (double jt : d) {
+            Gui::Command::runCommand(Gui::Command::App, QString::fromLatin1(
                 "for i in shape.slice(Base.Vector(%1,%2,%3),%4):\n"
                 "    wires.append(i)\n"
-                ).arg(a).arg(b).arg(c).arg(*jt).toAscii());
+                ).arg(a).arg(b).arg(c).arg(jt).toLatin1());
             seq.next();
         }
 
-        app->runPythonCode(QString::fromAscii(
+        Gui::Command::runCommand(Gui::Command::App, QString::fromLatin1(
             "comp=Part.Compound(wires)\n"
             "slice=FreeCAD.getDocument(\"%1\").addObject(\"Part::Feature\",\"%2\")\n"
             "slice.Shape=comp\n"
             "slice.purgeTouched()\n"
             "del slice,comp,wires,shape")
-            .arg(QLatin1String(doc->getName()))
-            .arg(QLatin1String(s.c_str())).toAscii());
+            .arg(QLatin1String(doc->getName()),
+                 QLatin1String(s.c_str())).toLatin1());
 
         seq.next();
     }
 #endif
 }
 
-void CrossSections::on_xyPlane_clicked()
+void CrossSections::xyPlaneClicked()
 {
-    Base::Vector3d c = bbox.CalcCenter();
+    Base::Vector3d c = bbox.GetCenter();
     ui->position->setValue(c.z);
     if (!ui->sectionsBox->isChecked()) {
         calcPlane(CrossSections::XY, c.z);
@@ -283,9 +317,9 @@ void CrossSections::on_xyPlane_clicked()
     }
 }
 
-void CrossSections::on_xzPlane_clicked()
+void CrossSections::xzPlaneClicked()
 {
-    Base::Vector3d c = bbox.CalcCenter();
+    Base::Vector3d c = bbox.GetCenter();
     ui->position->setValue(c.y);
     if (!ui->sectionsBox->isChecked()) {
         calcPlane(CrossSections::XZ, c.y);
@@ -299,9 +333,9 @@ void CrossSections::on_xzPlane_clicked()
     }
 }
 
-void CrossSections::on_yzPlane_clicked()
+void CrossSections::yzPlaneClicked()
 {
-    Base::Vector3d c = bbox.CalcCenter();
+    Base::Vector3d c = bbox.GetCenter();
     ui->position->setValue(c.x);
     if (!ui->sectionsBox->isChecked()) {
         calcPlane(CrossSections::YZ, c.x);
@@ -315,7 +349,7 @@ void CrossSections::on_yzPlane_clicked()
     }
 }
 
-void CrossSections::on_position_valueChanged(double v)
+void CrossSections::positionValueChanged(double v)
 {
     if (!ui->sectionsBox->isChecked()) {
         calcPlane(plane(), v);
@@ -325,15 +359,15 @@ void CrossSections::on_position_valueChanged(double v)
     }
 }
 
-void CrossSections::on_sectionsBox_toggled(bool b)
+void CrossSections::sectionsBoxToggled(bool b)
 {
     if (b) {
-        on_countSections_valueChanged(ui->countSections->value());
+        countSectionsValueChanged(ui->countSections->value());
     }
     else {
         CrossSections::Plane type = plane();
-        Base::Vector3d c = bbox.CalcCenter();
-        double value;
+        Base::Vector3d c = bbox.GetCenter();
+        double value = 0;
         switch (type) {
             case CrossSections::XY:
                 value = c.z;
@@ -351,18 +385,18 @@ void CrossSections::on_sectionsBox_toggled(bool b)
     }
 }
 
-void CrossSections::on_checkBothSides_toggled(bool b)
+void CrossSections::checkBothSidesToggled(bool b)
 {
-    double d = ui->distance->value();
+    double d = ui->distance->value().getValue();
     d = b ? 2.0 * d : 0.5 * d;
     ui->distance->setValue(d);
     calcPlanes(plane());
 }
 
-void CrossSections::on_countSections_valueChanged(int v)
+void CrossSections::countSectionsValueChanged(int v)
 {
     CrossSections::Plane type = plane();
-    double dist;
+    double dist = 0;
     switch (type) {
         case CrossSections::XY:
             dist = bbox.LengthZ() / v;
@@ -380,7 +414,7 @@ void CrossSections::on_countSections_valueChanged(int v)
     calcPlanes(type);
 }
 
-void CrossSections::on_distance_valueChanged(double)
+void CrossSections::distanceValueChanged(double)
 {
     calcPlanes(plane());
 }
@@ -445,8 +479,8 @@ void CrossSections::calcPlanes(Plane type)
 std::vector<double> CrossSections::getPlanes() const
 {
     int count = ui->countSections->value();
-    double pos = ui->position->value();
-    double stp = ui->distance->value();
+    double pos = ui->position->value().getValue();
+    double stp = ui->distance->value().getValue();
     bool both = ui->checkBothSides->isChecked();
 
     std::vector<double> d;
@@ -467,26 +501,26 @@ std::vector<double> CrossSections::getPlanes() const
 void CrossSections::makePlanes(Plane type, const std::vector<double>& d, double bound[4])
 {
     std::vector<Base::Vector3f> points;
-    for (std::vector<double>::const_iterator it = d.begin(); it != d.end(); ++it) {
+    for (double it : d) {
         Base::Vector3f v[4];
         switch (type) {
             case XY:
-                v[0].Set(bound[0],bound[2],*it);
-                v[1].Set(bound[1],bound[2],*it);
-                v[2].Set(bound[1],bound[3],*it);
-                v[3].Set(bound[0],bound[3],*it);
+                v[0].Set(bound[0],bound[2],it);
+                v[1].Set(bound[1],bound[2],it);
+                v[2].Set(bound[1],bound[3],it);
+                v[3].Set(bound[0],bound[3],it);
                 break;
             case XZ:
-                v[0].Set(bound[0],*it,bound[2]);
-                v[1].Set(bound[1],*it,bound[2]);
-                v[2].Set(bound[1],*it,bound[3]);
-                v[3].Set(bound[0],*it,bound[3]);
+                v[0].Set(bound[0],it,bound[2]);
+                v[1].Set(bound[1],it,bound[2]);
+                v[2].Set(bound[1],it,bound[3]);
+                v[3].Set(bound[0],it,bound[3]);
                 break;
             case YZ:
-                v[0].Set(*it,bound[0],bound[2]);
-                v[1].Set(*it,bound[1],bound[2]);
-                v[2].Set(*it,bound[1],bound[3]);
-                v[3].Set(*it,bound[0],bound[3]);
+                v[0].Set(it,bound[0],bound[2]);
+                v[1].Set(it,bound[1],bound[2]);
+                v[2].Set(it,bound[1],bound[3]);
+                v[3].Set(it,bound[0],bound[3]);
                 break;
         }
 
@@ -506,14 +540,9 @@ TaskCrossSections::TaskCrossSections(const Base::BoundBox3d& bb)
     widget = new CrossSections(bb);
     taskbox = new Gui::TaskView::TaskBox(
         Gui::BitmapFactory().pixmap("Part_CrossSections"),
-        widget->windowTitle(), true, 0);
+        widget->windowTitle(), true, nullptr);
     taskbox->groupLayout()->addWidget(widget);
     Content.push_back(taskbox);
-}
-
-TaskCrossSections::~TaskCrossSections()
-{
-    // automatically deleted in the sub-class
 }
 
 bool TaskCrossSections::accept()

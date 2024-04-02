@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2002                        *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -19,47 +19,38 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
  *   USA                                                                   *
  *                                                                         *
- *   Juergen Riegel 2002                                                   *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-#endif
 
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
-#include "StepShapePy.h"
+
 #include "StepShape.h"
+#include "StepShapePy.h"
 
 
-/* registration table  */
-extern struct PyMethodDef Import_Import_methods[];
-
-PyDoc_STRVAR(module_doc,
-"This module is about import/export files formates.\n"
-"\n");
-extern "C" {
-void ImportExport initImport()
+namespace Import
 {
-    PyObject* importModule = Py_InitModule3("Import", Import_Import_methods, module_doc); /* mod name, table ptr */
+extern PyObject* initModule();
+}
+
+PyMOD_INIT_FUNC(Import)
+{
+    PyObject* importModule = Import::initModule();
 
     try {
         Base::Interpreter().loadModule("Part");
     }
-    catch(const Base::Exception& e) {
+    catch (const Base::Exception& e) {
         PyErr_SetString(PyExc_ImportError, e.what());
-        return;
+        PyMOD_Return(nullptr);
     }
 
     // add mesh elements
-    Base::Interpreter().addType(&Import::StepShapePy  ::Type,importModule,"StepShape");
+    Base::Interpreter().addType(&Import::StepShapePy ::Type, importModule, "StepShape");
 
-        // init Type system
-    //Import::StepShape       ::init();
 
     Base::Console().Log("Loading Import module... done\n");
+    PyMOD_Return(importModule);
 }
-
-
-} // extern "C" {

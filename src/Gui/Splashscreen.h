@@ -20,18 +20,19 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_SPLASHSCREEN_H
 #define GUI_SPLASHSCREEN_H
 
-#include <QSplashScreen>
 #include <QDialog>
+#include <QSplashScreen>
+#include <QTextBrowser>
+#include <Gui/MDIView.h>
 
 namespace Gui {
 
 class SplashObserver;
 
-/** This widget provides a splash screen that can be shown  during application startup.
+/** This widget provides a splash screen that can be shown during application startup.
  *
  * \author Werner Mayer
  */
@@ -40,11 +41,11 @@ class SplashScreen : public QSplashScreen
     Q_OBJECT
 
 public:
-    SplashScreen(  const QPixmap & pixmap = QPixmap ( ), Qt::WFlags f = 0 );
-    ~SplashScreen();
+    explicit SplashScreen(  const QPixmap & pixmap = QPixmap ( ), Qt::WindowFlags f = Qt::WindowFlags() );
+    ~SplashScreen() override;
 
 protected:
-    void drawContents ( QPainter * painter );
+    void drawContents ( QPainter * painter ) override;
 
 private:
     SplashObserver* messages;
@@ -56,7 +57,7 @@ class Ui_AboutApplication;
 class GuiExport AboutDialogFactory
 {
 public:
-    AboutDialogFactory() {}
+    AboutDialogFactory() = default;
     virtual ~AboutDialogFactory();
 
     virtual QDialog *create(QWidget *parent) const;
@@ -68,8 +69,25 @@ private:
     static AboutDialogFactory* factory;
 };
 
-/** This widget provides the "About dialog" of an application. 
- * This shows the current version, the build number and date. 
+class GuiExport LicenseView : public Gui::MDIView
+{
+    Q_OBJECT
+
+public:
+    explicit LicenseView(QWidget* parent=nullptr);
+    ~LicenseView() override;
+
+    void setSource(const QUrl & url);
+    const char *getName() const override {
+        return "LicenseView";
+    }
+
+private:
+    QTextBrowser* browser;
+};
+
+/** This widget provides the "About dialog" of an application.
+ * This shows the current version, the build number and date.
  * \author Werner Mayer
  */
 class GuiExport AboutDialog : public QDialog
@@ -77,18 +95,25 @@ class GuiExport AboutDialog : public QDialog
     Q_OBJECT
 
 public:
-    AboutDialog(bool showLic, QWidget* parent = 0);
-    ~AboutDialog();
+    explicit AboutDialog(bool showLic, QWidget* parent = nullptr);
+    ~AboutDialog() override;
 
 protected:
     void setupLabels();
+    void showCredits();
+    void showLicenseInformation();
+    QString getAdditionalLicenseInformation() const;
+    void showLibraryInformation();
+    void showCollectionInformation();
+    void showOrHideImage(const QRect& rect);
 
-protected Q_SLOTS:
-    virtual void on_licenseButton_clicked();
-    virtual void on_copyButton_clicked();
+protected:
+    virtual void copyToClipboard();
+    void linkActivated(const QUrl& link);
 
 private:
     Ui_AboutApplication* ui;
+    class LibraryInfo;
 };
 
 } // namespace Dialog

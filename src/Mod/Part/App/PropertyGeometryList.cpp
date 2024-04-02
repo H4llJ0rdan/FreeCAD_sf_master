@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2010     *
+ *   Copyright (c) 2010 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,23 +20,16 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#   include <assert.h>
-#endif
-
-/// Here the FreeCAD includes sorted by Base,App,Gui......
-
-#include <Base/Exception.h>
+#include <Base/Console.h>
 #include <Base/Reader.h>
 #include <Base/Writer.h>
 
-#include "Geometry.h"
-#include "GeometryPy.h"
-
 #include "PropertyGeometryList.h"
+#include "GeometryPy.h"
+#include "Part2DObject.h"
+
 
 using namespace App;
 using namespace Base;
@@ -48,21 +41,19 @@ using namespace Part;
 // PropertyGeometryList
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TYPESYSTEM_SOURCE(Part::PropertyGeometryList, App::PropertyLists);
+TYPESYSTEM_SOURCE(Part::PropertyGeometryList, App::PropertyLists)
 
 //**************************************************************************
 // Construction/Destruction
 
 
-PropertyGeometryList::PropertyGeometryList()
-{
-
-}
+PropertyGeometryList::PropertyGeometryList() = default;
 
 PropertyGeometryList::~PropertyGeometryList()
 {
-    for (std::vector<Geometry*>::iterator it = _lValueList.begin(); it != _lValueList.end(); ++it)
-        if (*it) delete *it;
+    for (auto it : _lValueList) {
+        if (it) delete it;
+    }
 }
 
 void PropertyGeometryList::setSize(int newSize)
@@ -72,7 +63,7 @@ void PropertyGeometryList::setSize(int newSize)
     _lValueList.resize(newSize);
 }
 
-int PropertyGeometryList::getSize(void) const
+int PropertyGeometryList::getSize() const
 {
     return static_cast<int>(_lValueList.size());
 }
@@ -82,8 +73,8 @@ void PropertyGeometryList::setValue(const Geometry* lValue)
     if (lValue) {
         aboutToSetValue();
         Geometry* newVal = lValue->clone();
-        for (unsigned int i = 0; i < _lValueList.size(); i++)
-            delete _lValueList[i];
+        for (auto it : _lValueList)
+            delete it;
         _lValueList.resize(1);
         _lValueList[0] = newVal;
         hasSetValue();
@@ -92,18 +83,40 @@ void PropertyGeometryList::setValue(const Geometry* lValue)
 
 void PropertyGeometryList::setValues(const std::vector<Geometry*>& lValue)
 {
+    auto copy = lValue;
+    for(auto &geo : copy) // copy of the individual geometry pointers
+        geo = geo->clone();
+
+    setValues(std::move(copy));
+}
+
+void PropertyGeometryList::setValues(std::vector<Geometry*> &&lValue)
+{
     aboutToSetValue();
-    std::vector<Geometry*> oldVals(_lValueList);
-    _lValueList.resize(lValue.size());
-    // copy all objects
-    for (unsigned int i = 0; i < lValue.size(); i++)
-        _lValueList[i] = lValue[i]->clone();
-    for (unsigned int i = 0; i < oldVals.size(); i++)
-        delete oldVals[i];
+    std::set<Geometry*> valueSet(_lValueList.begin(),_lValueList.end());
+    for(auto v : lValue)
+        valueSet.erase(v);
+    _lValueList = std::move(lValue);
+    for(auto v : valueSet)
+        delete v;
     hasSetValue();
 }
 
-PyObject *PropertyGeometryList::getPyObject(void)
+void PropertyGeometryList::set1Value(int idx, std::unique_ptr<Geometry> &&lValue)
+{
+    if(idx>=(int)_lValueList.size())
+        throw Base::IndexError("Index out of bound");
+    aboutToSetValue();
+    if(idx < 0)
+        _lValueList.push_back(lValue.release());
+    else {
+        delete _lValueList[idx];
+        _lValueList[idx] = lValue.release();
+    }
+    hasSetValue();
+}
+
+PyObject *PropertyGeometryList::getPyObject()
 {
     PyObject* list = PyList_New(getSize());
     for (int i = 0; i < getSize(); i++)
@@ -113,13 +126,16 @@ PyObject *PropertyGeometryList::getPyObject(void)
 
 void PropertyGeometryList::setPyObject(PyObject *value)
 {
-    if (PyList_Check(value)) {
-        Py_ssize_t nSize = PyList_Size(value);
+    // check container of this property to notify about changes
+    Part2DObject* part2d = dynamic_cast<Part2DObject*>(this->getContainer());
+
+    if (PySequence_Check(value)) {
+        Py_ssize_t nSize = PySequence_Size(value);
         std::vector<Geometry*> values;
         values.resize(nSize);
 
         for (Py_ssize_t i=0; i < nSize; ++i) {
-            PyObject* item = PyList_GetItem(value, i);
+            PyObject* item = PySequence_GetItem(value, i);
             if (!PyObject_TypeCheck(item, &(GeometryPy::Type))) {
                 std::string error = std::string("types in list must be 'Geometry', not ");
                 error += item->ob_type->tp_name;
@@ -130,10 +146,14 @@ void PropertyGeometryList::setPyObject(PyObject *value)
         }
 
         setValues(values);
+        if (part2d)
+            part2d->acceptGeometry();
     }
     else if (PyObject_TypeCheck(value, &(GeometryPy::Type))) {
         GeometryPy  *pcObject = static_cast<GeometryPy*>(value);
         setValue(pcObject->getGeometryPtr());
+        if (part2d)
+            part2d->acceptGeometry();
     }
     else {
         std::string error = std::string("type must be 'Geometry' or list of 'Geometry', not ");
@@ -142,15 +162,37 @@ void PropertyGeometryList::setPyObject(PyObject *value)
     }
 }
 
+void PropertyGeometryList::trySaveGeometry(Geometry * geom, Base::Writer &writer) const
+{
+    // Not all geometry classes implement Save() and throw an exception instead
+    try {
+        geom->Save(writer);
+    }
+    catch (const Base::NotImplementedError& e) {
+        Base::Console().Warning(std::string("PropertyGeometryList"), "Not yet implemented: %s\n", e.what());
+    }
+}
+
+void PropertyGeometryList::tryRestoreGeometry(Geometry * geom, Base::XMLReader &reader)
+{
+    // Not all geometry classes implement Restore() and throw an exception instead
+    try {
+        geom->Restore(reader);
+    }
+    catch (const Base::NotImplementedError& e) {
+        Base::Console().Warning(std::string("PropertyGeometryList"), "Not yet implemented: %s\n", e.what());
+    }
+}
+
 void PropertyGeometryList::Save(Writer &writer) const
 {
     writer.Stream() << writer.ind() << "<GeometryList count=\"" << getSize() <<"\">" << endl;
     writer.incInd();
     for (int i = 0; i < getSize(); i++) {
-        writer.Stream() << writer.ind() << "<Geometry  type=\"" 
+        writer.Stream() << writer.ind() << "<Geometry  type=\""
                         << _lValueList[i]->getTypeId().getName() << "\">" << endl;;
         writer.incInd();
-        _lValueList[i]->Save(writer);
+        trySaveGeometry(_lValueList[i], writer);
         writer.decInd();
         writer.Stream() << writer.ind() << "</Geometry>" << endl;
     }
@@ -161,28 +203,43 @@ void PropertyGeometryList::Save(Writer &writer) const
 void PropertyGeometryList::Restore(Base::XMLReader &reader)
 {
     // read my element
+    reader.clearPartialRestoreObject();
     reader.readElement("GeometryList");
     // get the value of my attribute
     int count = reader.getAttributeAsInteger("count");
-
     std::vector<Geometry*> values;
     values.reserve(count);
     for (int i = 0; i < count; i++) {
         reader.readElement("Geometry");
         const char* TypeName = reader.getAttribute("type");
-        Geometry *newG = (Geometry *)Base::Type::fromName(TypeName).createInstance();
-        newG->Restore(reader);
-        values.push_back(newG);
+        Geometry *newG = static_cast<Geometry *>(Base::Type::fromName(TypeName).createInstance());
+        tryRestoreGeometry(newG, reader);
+
+        if(reader.testStatus(Base::XMLReader::ReaderStatus::PartialRestoreInObject)) {
+            Base::Console().Error("Geometry \"%s\" within a PropertyGeometryList was subject to a partial restore.\n",reader.localName());
+            if(isOrderRelevant()) {
+                // Pushes the best try by the Geometry class
+                values.push_back(newG);
+            }
+            else {
+                delete newG;
+            }
+            reader.clearPartialRestoreObject();
+        }
+        else {
+            values.push_back(newG);
+        }
+
         reader.readEndElement("Geometry");
     }
 
     reader.readEndElement("GeometryList");
 
     // assignment
-    setValues(values);
+    setValues(std::move(values));
 }
 
-Property *PropertyGeometryList::Copy(void) const
+App::Property *PropertyGeometryList::Copy() const
 {
     PropertyGeometryList *p = new PropertyGeometryList();
     p->setValues(_lValueList);
@@ -195,7 +252,7 @@ void PropertyGeometryList::Paste(const Property &from)
     setValues(FromList._lValueList);
 }
 
-unsigned int PropertyGeometryList::getMemSize(void) const
+unsigned int PropertyGeometryList::getMemSize() const
 {
     int size = sizeof(PropertyGeometryList);
     for (int i = 0; i < getSize(); i++)

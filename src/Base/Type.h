@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Riegel         <juergen.riegel@web.de>                  *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -30,6 +30,9 @@
 #include <map>
 #include <set>
 #include <vector>
+#ifndef FC_GLOBAL_H
+#include <FCGlobal.h>
+#endif
 
 namespace Base
 {
@@ -78,33 +81,39 @@ class BaseExport Type
 {
 public:
   /// Construction
-  Type(const Type& type);
-  Type(void);
+  Type(const Type& type) = default;
+  Type(Type&& type) = default;
+  Type() = default;
   /// Destruction
-  virtual ~Type();
+  ~Type() = default;
 
   /// creates a instance of this type
-  void *createInstance(void);
+  void *createInstance();
   /// creates a instance of the named type
   static void *createInstanceByName(const char* TypeName, bool bLoadModule=false);
+  static void importModule(const char* TypeName);
 
-  typedef void * (*instantiationMethod)(void);
+  using instantiationMethod = void * (*)();
 
   static Type fromName(const char *name);
-  const char *getName(void) const;
-  const Type getParent(void) const;
+  static Type fromKey(unsigned int key);
+  const char *getName() const;
+  const Type getParent() const;
   bool isDerivedFrom(const Type type) const;
 
   static int getAllDerivedFrom(const Type type, std::vector<Type>& List);
+  /// Returns the given named type if is derived from parent type, otherwise return bad type
+  static Type getTypeIfDerivedFrom(const char* name , const Type parent, bool bLoadModule=false);
 
-  static int getNumTypes(void);
+  static int getNumTypes();
 
-  static const Type createType(const Type parent, const char *name,instantiationMethod method = 0);
+  static const Type createType(const Type parent, const char *name,instantiationMethod method = nullptr);
 
-  unsigned int getKey(void) const;
-  bool isBad(void) const;
+  unsigned int getKey() const;
+  bool isBad() const;
 
-  void operator =  (const Type type); 
+  Type& operator =  (const Type& type) = default;
+  Type& operator =  (Type&& type) = default;
   bool operator == (const Type type) const;
   bool operator != (const Type type) const;
 
@@ -113,30 +122,26 @@ public:
   bool operator >= (const Type type) const;
   bool operator >  (const Type type) const;
 
-  static Type badType(void);
-  static void init(void);
-  static void destruct(void);
+  static Type badType();
+  static void init();
+  static void destruct();
 
 protected:
   static std::string getModuleName(const char* ClassName);
 
 
 private:
-
-
-  unsigned int index;
-
+  unsigned int index{0};
 
   static std::map<std::string,unsigned int> typemap;
   static std::vector<TypeData*>     typedata;
-
   static std::set<std::string>  loadModuleSet;
 
 };
 
 
 inline unsigned int
-Type::getKey(void) const
+Type::getKey() const
 {
   return this->index;
 }
@@ -145,12 +150,6 @@ inline bool
 Type::operator != (const Type type) const
 {
   return (this->getKey() != type.getKey());
-}
-
-inline void
-Type::operator = (const Type type) 
-{
-  this->index = type.getKey();
 }
 
 inline bool
@@ -184,7 +183,7 @@ Type::operator >  (const Type type) const
 }
 
 inline bool
-Type::isBad(void) const
+Type::isBad() const
 {
   return (this->index == 0);
 }

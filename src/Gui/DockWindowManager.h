@@ -20,13 +20,15 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_DOCKWINDOWMANAGER_H
 #define GUI_DOCKWINDOWMANAGER_H
 
-#include <QStringList>
+#include <QObject>
+#include <FCGlobal.h>
+
 
 class QDockWidget;
+class QWidget;
 
 namespace Gui {
 
@@ -57,7 +59,7 @@ private:
  * Class that manages the widgets inside a QDockWidget.
  * \author Werner Mayer
  */
-class GuiExport DockWindowManager : QObject
+class GuiExport DockWindowManager : public QObject
 {
     Q_OBJECT
 
@@ -67,15 +69,16 @@ public:
     static void destruct();
 
     bool registerDockWindow(const char* name, QWidget* widget);
+    QWidget* unregisterDockWindow(const char* name);
     void setup(DockWindowItems*);
 
     /// Adds a QDockWidget to the main window and sets \a widget as its widget
-    QDockWidget* addDockWindow(const char* name, QWidget* widget,  
+    QDockWidget* addDockWindow(const char* name, QWidget* widget,
                  Qt::DockWidgetArea pos = Qt::AllDockWidgetAreas);
     /// Removes and destroys the QDockWidget and returns the widget
     /// with name \a name added with @ref addDockWindow.
     QWidget* removeDockWindow(const char* name);
-    /// Removes and destroys the QDockWidget that conains \a dock. \a dock
+    /// Removes and destroys the QDockWidget that contains \a dock. \a dock
     /// does not get destroyed.
     void removeDockWindow(QWidget* dock);
     /// Returns the widget with name \a name added with @ref addDockWindow.
@@ -83,10 +86,15 @@ public:
     /// returned from @ref addDockWindow. If you want to access the QDockWidget
     /// you get it with parentWidget() of the returned widget.
     QWidget* getDockWindow(const char* name) const;
+    /// Returns the QDockWidget container
+    QDockWidget* getDockContainer(const char* name) const;
     /// Returns a list of all widgets which set to a QDockWidget.
     QList<QWidget*> getDockWindows() const;
+    /// If the corresponding dock widget isn't visible then activate it
+    void activate(QWidget* widget);
 
     void saveState();
+    void loadState();
     void retranslate();
 
 private Q_SLOTS:
@@ -101,13 +109,14 @@ private Q_SLOTS:
 
 private:
     QDockWidget* findDockWidget(const QList<QDockWidget*>&, const QString&) const;
-    
+    void tabifyDockWidgets(DockWindowItems*);
+
     DockWindowManager();
-    ~DockWindowManager();
+    ~DockWindowManager() override;
     static DockWindowManager* _instance;
     struct DockWindowManagerP* d;
 };
 
 } // namespace Gui
 
-#endif // GUI_DOCKWINDOWMANAGER_H 
+#endif // GUI_DOCKWINDOWMANAGER_H

@@ -28,8 +28,8 @@
 #endif
 
 #include "WhatsThis.h"
-#include "MainWindow.h"
 #include "Action.h"
+#include "MainWindow.h"
 
 
 using namespace Gui;
@@ -42,19 +42,17 @@ bool StdCmdDescription::_descrMode = false;
 StdCmdDescription::StdCmdDescription()
   : Command("Std_DescriptionMode")
 {
-  sGroup        = QT_TR_NOOP("Help");
+  sGroup        = "Help";
   sMenuText     = QT_TR_NOOP("Des&cription");
   sToolTipText  = QT_TR_NOOP("Long description of commands");
-  sWhatsThis    = QT_TR_NOOP("Long description of commands");
+  sWhatsThis    = "Std_DescriptionMode";
   sStatusTip    = QT_TR_NOOP("Long description of commands");
   sAccel        = "F1";
 }
 
-StdCmdDescription::~StdCmdDescription()
-{
-}
+StdCmdDescription::~StdCmdDescription() = default;
 
-Action * StdCmdDescription::createAction(void)
+Action * StdCmdDescription::createAction()
 {
   Action *pcAction = Command::createAction();
   pcAction->setCheckable( true );
@@ -63,6 +61,7 @@ Action * StdCmdDescription::createAction(void)
 
 void StdCmdDescription::activated(int iMsg)
 {
+  Q_UNUSED(iMsg);
   if ( !inDescriptionMode() )
     enterDescriptionMode();
   else

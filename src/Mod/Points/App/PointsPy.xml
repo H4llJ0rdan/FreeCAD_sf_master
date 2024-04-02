@@ -3,11 +3,11 @@
 	<PythonExport
 		Father="ComplexGeoDataPy"
 		Include="Mod/Points/App/Points.h"
-		Name="PointsPy" 
+		Name="PointsPy"
 		Twin="PointKernel"
-		TwinPointer="PointKernel" 
-		Namespace="Points" 
-		FatherInclude="App/ComplexGeoDataPy.h" 
+		TwinPointer="PointKernel"
+		Namespace="Points"
+		FatherInclude="App/ComplexGeoDataPy.h"
 		FatherNamespace="Data"
 		Constructor="true">
 		<Documentation>
@@ -44,11 +44,21 @@ transforming and much more.
         <UserDocu>add one or more (list of) points to the object</UserDocu>
       </Documentation>
     </Methode>
+    <Methode Name="fromSegment" Const="true">
+      <Documentation>
+        <UserDocu>Get a new point object from a given segment</UserDocu>
+      </Documentation>
+    </Methode>
+    <Methode Name="fromValid" Const="true">
+      <Documentation>
+        <UserDocu>Get a new point object from points with valid coordinates (i.e. that are not NaN)</UserDocu>
+      </Documentation>
+    </Methode>
     <Attribute Name="CountPoints" ReadOnly="true">
 			<Documentation>
 				<UserDocu>Return the number of vertices of the points object.</UserDocu>
 			</Documentation>
-			<Parameter Name="CountPoints" Type="Int" />
+			<Parameter Name="CountPoints" Type="Long" />
 		</Attribute>
 		<Attribute Name="Points" ReadOnly="true">
 			<Documentation>

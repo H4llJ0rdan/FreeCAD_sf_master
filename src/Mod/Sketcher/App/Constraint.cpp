@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2008     *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,14 +20,15 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
+#include <QDateTime>
+#include <cmath>
 #endif
 
-#include <Base/Writer.h>
 #include <Base/Reader.h>
-
+#include <Base/Tools.h>
+#include <Base/Writer.h>
 
 #include "Constraint.h"
 #include "ConstraintPy.h"
@@ -39,94 +40,203 @@ using namespace Base;
 
 TYPESYSTEM_SOURCE(Sketcher::Constraint, Base::Persistence)
 
-const int Constraint::GeoUndef = -2000;
-
 Constraint::Constraint()
-: Type(None),
-  Name(""),
-  Value(0.0),
-  First(GeoUndef),
-  FirstPos(none),
-  Second(GeoUndef),
-  SecondPos(none),
-  Third(GeoUndef),
-  ThirdPos(none),
-  LabelDistance(10.f),
-  LabelPosition(0.f)
+    : Value(0.0)
+    , Type(None)
+    , AlignmentType(Undef)
+    , First(GeoEnum::GeoUndef)
+    , FirstPos(PointPos::none)
+    , Second(GeoEnum::GeoUndef)
+    , SecondPos(PointPos::none)
+    , Third(GeoEnum::GeoUndef)
+    , ThirdPos(PointPos::none)
+    , LabelDistance(10.f)
+    , LabelPosition(0.f)
+    , isDriving(true)
+    , InternalAlignmentIndex(-1)
+    , isInVirtualSpace(false)
+    , isActive(true)
 {
+    // Initialize a random number generator, to avoid Valgrind false positives.
+    static boost::mt19937 ran;
+    static bool seeded = false;
+
+    if (!seeded) {
+        ran.seed(QDateTime::currentMSecsSinceEpoch() & 0xffffffff);
+        seeded = true;
+    }
+    static boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
+
+    tag = gen();
 }
 
-Constraint::Constraint(const Constraint& from)
-: Type(from.Type),
-  Name(from.Name),
-  Value(from.Value),
-  First(from.First),
-  FirstPos(from.FirstPos),
-  Second(from.Second),
-  SecondPos(from.SecondPos),
-  Third(from.Third),
-  ThirdPos(from.ThirdPos),
-  LabelDistance(from.LabelDistance),
-  LabelPosition(from.LabelPosition)
-{
-}
-
-Constraint::~Constraint()
-{
-}
-
-Constraint *Constraint::clone(void) const
+Constraint* Constraint::clone() const
 {
     return new Constraint(*this);
 }
 
-PyObject *Constraint::getPyObject(void)
+Constraint* Constraint::copy() const
+{
+    Constraint* temp = new Constraint();
+    temp->Value = this->Value;
+    temp->Type = this->Type;
+    temp->AlignmentType = this->AlignmentType;
+    temp->Name = this->Name;
+    temp->First = this->First;
+    temp->FirstPos = this->FirstPos;
+    temp->Second = this->Second;
+    temp->SecondPos = this->SecondPos;
+    temp->Third = this->Third;
+    temp->ThirdPos = this->ThirdPos;
+    temp->LabelDistance = this->LabelDistance;
+    temp->LabelPosition = this->LabelPosition;
+    temp->isDriving = this->isDriving;
+    temp->InternalAlignmentIndex = this->InternalAlignmentIndex;
+    temp->isInVirtualSpace = this->isInVirtualSpace;
+    temp->isActive = this->isActive;
+    // Do not copy tag, otherwise it is considered a clone, and a "rename" by the expression engine.
+    return temp;
+}
+
+PyObject* Constraint::getPyObject()
 {
     return new ConstraintPy(new Constraint(*this));
 }
 
-unsigned int Constraint::getMemSize (void) const
+Quantity Constraint::getPresentationValue() const
+{
+    Quantity quantity;
+    switch (Type) {
+        case Distance:
+        case Radius:
+        case Diameter:
+        case DistanceX:
+        case DistanceY:
+            quantity.setValue(Value);
+            quantity.setUnit(Unit::Length);
+            break;
+        case Angle:
+            quantity.setValue(toDegrees<double>(Value));
+            quantity.setUnit(Unit::Angle);
+            break;
+        case SnellsLaw:
+        case Weight:
+            quantity.setValue(Value);
+            break;
+        default:
+            quantity.setValue(Value);
+            break;
+    }
+
+    QuantityFormat format = quantity.getFormat();
+    format.option = QuantityFormat::None;
+    format.format = QuantityFormat::Default;
+    format.precision = 6;  // QString's default
+    quantity.setFormat(format);
+    return quantity;
+}
+
+unsigned int Constraint::getMemSize() const
 {
     return 0;
 }
 
-void Constraint::Save (Writer &writer) const
+void Constraint::Save(Writer& writer) const
 {
+    std::string encodeName = encodeAttribute(Name);
     writer.Stream() << writer.ind() << "<Constrain "
-    << "Name=\""          <<  Name            << "\" "
-    << "Type=\""          <<  (int)Type       << "\" "
-    << "Value=\""         <<  Value           << "\" "
-    << "First=\""         <<  First           << "\" "
-    << "FirstPos=\""      <<  (int)  FirstPos << "\" "
-    << "Second=\""        <<  Second          << "\" "
-    << "SecondPos=\""     <<  (int) SecondPos << "\" "
-    << "Third=\""         <<  Third           << "\" "
-    << "ThirdPos=\""      <<  (int) ThirdPos  << "\" "
-    << "LabelDistance=\"" <<  LabelDistance   << "\" "
-    << "LabelPosition=\"" <<  LabelPosition   << "\" />"
-    << std::endl;
+                    << "Name=\"" << encodeName << "\" "
+                    << "Type=\"" << (int)Type << "\" ";
+    if (this->Type == InternalAlignment) {
+        writer.Stream() << "InternalAlignmentType=\"" << (int)AlignmentType << "\" "
+                        << "InternalAlignmentIndex=\"" << InternalAlignmentIndex << "\" ";
+    }
+    writer.Stream() << "Value=\"" << Value << "\" "
+                    << "First=\"" << First << "\" "
+                    << "FirstPos=\"" << (int)FirstPos << "\" "
+                    << "Second=\"" << Second << "\" "
+                    << "SecondPos=\"" << (int)SecondPos << "\" "
+                    << "Third=\"" << Third << "\" "
+                    << "ThirdPos=\"" << (int)ThirdPos << "\" "
+                    << "LabelDistance=\"" << LabelDistance << "\" "
+                    << "LabelPosition=\"" << LabelPosition << "\" "
+                    << "IsDriving=\"" << (int)isDriving << "\" "
+                    << "IsInVirtualSpace=\"" << (int)isInVirtualSpace << "\" "
+                    << "IsActive=\"" << (int)isActive << "\" />"
+
+                    << std::endl;
 }
 
-void Constraint::Restore(XMLReader &reader)
+void Constraint::Restore(XMLReader& reader)
 {
     reader.readElement("Constrain");
-    Name      = reader.getAttribute("Name");
-    Type      = (ConstraintType)  reader.getAttributeAsInteger("Type");
-    Value     = reader.getAttributeAsFloat("Value");
-    First     = reader.getAttributeAsInteger("First");
-    FirstPos  = (PointPos)  reader.getAttributeAsInteger("FirstPos");
-    Second    = reader.getAttributeAsInteger("Second");
-    SecondPos = (PointPos)  reader.getAttributeAsInteger("SecondPos");
+    Name = reader.getAttribute("Name");
+    Type = static_cast<ConstraintType>(reader.getAttributeAsInteger("Type"));
+    Value = reader.getAttributeAsFloat("Value");
+    First = reader.getAttributeAsInteger("First");
+    FirstPos = static_cast<PointPos>(reader.getAttributeAsInteger("FirstPos"));
+    Second = reader.getAttributeAsInteger("Second");
+    SecondPos = static_cast<PointPos>(reader.getAttributeAsInteger("SecondPos"));
+
+    if (this->Type == InternalAlignment) {
+        AlignmentType = static_cast<InternalAlignmentType>(
+            reader.getAttributeAsInteger("InternalAlignmentType"));
+
+        if (reader.hasAttribute("InternalAlignmentIndex")) {
+            InternalAlignmentIndex = reader.getAttributeAsInteger("InternalAlignmentIndex");
+        }
+    }
+    else {
+        AlignmentType = Undef;
+    }
 
     // read the third geo group if present
     if (reader.hasAttribute("Third")) {
-        Third    = reader.getAttributeAsInteger("Third");
-        ThirdPos = (PointPos)  reader.getAttributeAsInteger("ThirdPos");
+        Third = reader.getAttributeAsInteger("Third");
+        ThirdPos = static_cast<PointPos>(reader.getAttributeAsInteger("ThirdPos"));
     }
-    // Read the distance a constraint label has been moved
-    if (reader.hasAttribute("LabelDistance"))
-        LabelDistance = (float)reader.getAttributeAsFloat("LabelDistance");
 
-    if (reader.hasAttribute("LabelPosition"))
+    // Read the distance a constraint label has been moved
+    if (reader.hasAttribute("LabelDistance")) {
+        LabelDistance = (float)reader.getAttributeAsFloat("LabelDistance");
+    }
+
+    if (reader.hasAttribute("LabelPosition")) {
         LabelPosition = (float)reader.getAttributeAsFloat("LabelPosition");
+    }
+
+    if (reader.hasAttribute("IsDriving")) {
+        isDriving = reader.getAttributeAsInteger("IsDriving") ? true : false;
+    }
+
+    if (reader.hasAttribute("IsInVirtualSpace")) {
+        isInVirtualSpace = reader.getAttributeAsInteger("IsInVirtualSpace") ? true : false;
+    }
+
+    if (reader.hasAttribute("IsActive")) {
+        isActive = reader.getAttributeAsInteger("IsActive") ? true : false;
+    }
+}
+
+void Constraint::substituteIndex(int fromGeoId, int toGeoId)
+{
+    if (this->First == fromGeoId) {
+        this->First = toGeoId;
+    }
+    if (this->Second == fromGeoId) {
+        this->Second = toGeoId;
+    }
+    if (this->Third == fromGeoId) {
+        this->Third = toGeoId;
+    }
+}
+
+std::string Constraint::typeToString(ConstraintType type)
+{
+    return type2str[type];
+}
+
+std::string Constraint::internalAlignmentTypeToString(InternalAlignmentType alignment)
+{
+    return internalAlignmentType2str[alignment];
 }

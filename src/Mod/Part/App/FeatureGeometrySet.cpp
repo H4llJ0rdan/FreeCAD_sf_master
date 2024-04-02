@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2010     *
+ *   Copyright (c) 2010 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,12 +20,7 @@
  *                                                                         *
  ***************************************************************************/
 
- 
 #include "PreCompiled.h"
-#ifndef _PreComp_
-#endif
-
-#include "Geometry.h"
 
 #include "FeatureGeometrySet.h"
 
@@ -38,28 +33,28 @@ PROPERTY_SOURCE(Part::FeatureGeometrySet, Part::Feature)
 
 FeatureGeometrySet::FeatureGeometrySet()
 {
-    ADD_PROPERTY(GeometrySet,(0));
+    ADD_PROPERTY(GeometrySet,(nullptr));
 }
 
 
-App::DocumentObjectExecReturn *FeatureGeometrySet::execute(void)
+App::DocumentObjectExecReturn *FeatureGeometrySet::execute()
 {
     TopoShape result;
 
     const std::vector<Geometry*> &Geoms = GeometrySet.getValues();
 
     bool first = true;
-    for(std::vector<Geometry*>::const_iterator it=Geoms.begin();it!=Geoms.end();++it){
-        TopoDS_Shape sh = (*it)->toShape();
+    for(auto Geom : Geoms) {
+        TopoDS_Shape sh = Geom->toShape();
         if (first) {
             first = false;
-            result._Shape = sh;
+            result.setShape(sh);
         }
         else {
-            result._Shape = result.fuse(sh);
+            result.setShape(result.fuse(sh));
         }
     }
-    
+
     Shape.setValue(result);
 
     return App::DocumentObject::StdReturn;

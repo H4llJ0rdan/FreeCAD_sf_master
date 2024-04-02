@@ -20,7 +20,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <QContextMenuEvent>
@@ -30,33 +29,29 @@
 # include <QTextCursor>
 #endif
 
+#include <Base/Parameter.h>
+
 #include "PythonEditor.h"
-#include "PythonDebugger.h"
 #include "Application.h"
 #include "BitmapFactory.h"
 #include "Macro.h"
-#include "FileDialog.h"
-#include "DlgEditorImp.h"
+#include "PythonDebugger.h"
 
-#include <Base/Interpreter.h>
-#include <Base/Exception.h>
-#include <Base/Parameter.h>
 
 using namespace Gui;
 
 namespace Gui {
 struct PythonEditorP
 {
-    int   debugLine;
+    int   debugLine{-1};
     QRect debugRect;
     QPixmap breakpoint;
     QPixmap debugMarker;
     QString filename;
     PythonDebugger* debugger;
     PythonEditorP()
-        : debugLine(-1),
-          breakpoint(QLatin1String(":/icons/breakpoint.png")),
-          debugMarker(QLatin1String(":/icons/debug-marker.png"))
+        : breakpoint(BitmapFactory().iconFromTheme("breakpoint").pixmap(16,16)),
+          debugMarker(BitmapFactory().iconFromTheme("debug-marker").pixmap(16,16))
     {
         debugger = Application::Instance->macroManager()->debugger();
     }
@@ -67,7 +62,7 @@ struct PythonEditorP
 
 /**
  *  Constructs a PythonEditor which is a child of 'parent' and does the
- *  syntax highlighting for the Python language. 
+ *  syntax highlighting for the Python language.
  */
 PythonEditor::PythonEditor(QWidget* parent)
   : TextEditor(parent)
@@ -75,23 +70,20 @@ PythonEditor::PythonEditor(QWidget* parent)
     d = new PythonEditorP();
     this->setSyntaxHighlighter(new PythonSyntaxHighlighter(this));
 
-    // set acelerators
-    QShortcut* comment = new QShortcut(this);
-    comment->setKey(Qt::ALT + Qt::Key_C);
+    // set accelerators
+    auto comment = new QShortcut(this);
+    comment->setKey(QKeySequence(QString::fromLatin1("ALT+C")));
 
-    QShortcut* uncomment = new QShortcut(this);
-    uncomment->setKey(Qt::ALT + Qt::Key_U);
+    auto uncomment = new QShortcut(this);
+    uncomment->setKey(QKeySequence(QString::fromLatin1("ALT+U")));
 
-    connect(comment, SIGNAL(activated()), 
-            this, SLOT(onComment()));
-    connect(uncomment, SIGNAL(activated()), 
-            this, SLOT(onUncomment()));
+    connect(comment, &QShortcut::activated, this, &PythonEditor::onComment);
+    connect(uncomment, &QShortcut::activated, this, &PythonEditor::onUncomment);
 }
 
 /** Destroys the object and frees any allocated resources */
 PythonEditor::~PythonEditor()
 {
-    getWindowParameter()->Detach( this );
     delete d;
 }
 
@@ -155,9 +147,13 @@ void PythonEditor::drawMarker(int line, int x, int y, QPainter* p)
 void PythonEditor::contextMenuEvent ( QContextMenuEvent * e )
 {
     QMenu* menu = createStandardContextMenu();
-    menu->addSeparator();
-    menu->addAction( tr("Comment"), this, SLOT( onComment() ), Qt::ALT + Qt::Key_C );
-    menu->addAction( tr("Uncomment"), this, SLOT( onUncomment() ), Qt::ALT + Qt::Key_U );
+    if (!isReadOnly()) {
+        menu->addSeparator();
+        QAction* comment = menu->addAction( tr("Comment"), this, &PythonEditor::onComment);
+        comment->setShortcut(QKeySequence(QString::fromLatin1("ALT+C")));
+        QAction* uncomment = menu->addAction( tr("Uncomment"), this, &PythonEditor::onUncomment);
+        uncomment->setShortcut(QKeySequence(QString::fromLatin1("ALT+U")));
+    }
 
     menu->exec(e->globalPos());
     delete menu;
@@ -225,16 +221,18 @@ public:
                  << QLatin1String("def") << QLatin1String("del")
                  << QLatin1String("elif") << QLatin1String("else")
                  << QLatin1String("except") << QLatin1String("exec")
-                 << QLatin1String("finally") << QLatin1String("for")
-                 << QLatin1String("from") << QLatin1String("global")
-                 << QLatin1String("if") << QLatin1String("import")
-                 << QLatin1String("in") << QLatin1String("is")
-                 << QLatin1String("lambda") << QLatin1String("None")
+                 << QLatin1String("False") << QLatin1String("finally")
+                 << QLatin1String("for") << QLatin1String("from")
+                 << QLatin1String("global") << QLatin1String("if")
+                 << QLatin1String("import") << QLatin1String("in")
+                 << QLatin1String("is") << QLatin1String("lambda")
+                 << QLatin1String("None") << QLatin1String("nonlocal")
                  << QLatin1String("not") << QLatin1String("or")
                  << QLatin1String("pass") << QLatin1String("print")
                  << QLatin1String("raise") << QLatin1String("return")
-                 << QLatin1String("try") << QLatin1String("while")
-                 << QLatin1String("with") << QLatin1String("yield");
+                 << QLatin1String("True") << QLatin1String("try")
+                 << QLatin1String("while") << QLatin1String("with")
+                 << QLatin1String("yield");
     }
 
     QStringList keywords;
@@ -275,7 +273,7 @@ void PythonSyntaxHighlighter::highlightBlock (const QString & text)
   const int DefineName    = 8;     // Text after the keyword def
 
   int endStateOfLastPara = previousBlockState();
-  if (endStateOfLastPara < 0 || endStateOfLastPara > maximumUserState()) 
+  if (endStateOfLastPara < 0 || endStateOfLastPara > maximumUserState())
     endStateOfLastPara = Standard;
 
   while ( i < text.length() )
@@ -312,7 +310,7 @@ void PythonSyntaxHighlighter::highlightBlock (const QString & text)
         case '\'':
           {
             // Begin either string literal or block comment
-            if ((i>=2) && text.at(i-1) == QLatin1Char('\'') && 
+            if ((i>=2) && text.at(i-1) == QLatin1Char('\'') &&
                 text.at(i-2) == QLatin1Char('\''))
             {
               setFormat( i-2, 3, this->colorByType(SyntaxHighlighter::BlockComment));
@@ -329,9 +327,9 @@ void PythonSyntaxHighlighter::highlightBlock (const QString & text)
           {
             // ignore whitespaces
           } break;
-        case '(': case ')': case '[': case ']': 
-        case '+': case '-': case '*': case '/': 
-        case ':': case '%': case '^': case '~': 
+        case '(': case ')': case '[': case ']':
+        case '+': case '-': case '*': case '/':
+        case ':': case '%': case '^': case '~':
         case '!': case '=': case '<': case '>': // possibly two characters
           {
             setFormat(i, 1, this->colorByType(SyntaxHighlighter::Operator));
@@ -463,10 +461,10 @@ void PythonSyntaxHighlighter::highlightBlock (const QString & text)
   }
 
   // only block comments can have several lines
-  if ( endStateOfLastPara != Blockcomment1 && endStateOfLastPara != Blockcomment2 ) 
+  if ( endStateOfLastPara != Blockcomment1 && endStateOfLastPara != Blockcomment2 )
   {
     endStateOfLastPara = Standard ;
-  } 
+  }
 
   setCurrentBlockState(endStateOfLastPara);
 }

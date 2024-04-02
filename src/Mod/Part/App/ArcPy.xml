@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenerateModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="generateMetaModel_Module.xsd">
-  <PythonExport 
-      Father="GeometryCurvePy" 
-      Name="ArcPy" 
-      Twin="GeomTrimmedCurve" 
-      TwinPointer="GeomTrimmedCurve" 
-      Include="Mod/Part/App/Geometry.h" 
-      Namespace="Part" 
-      FatherInclude="Mod/Part/App/GeometryCurvePy.h" 
+  <PythonExport
+      Father="TrimmedCurvePy"
+      Name="ArcPy"
+      PythonName="Part.Arc"
+      Twin="GeomTrimmedCurve"
+      TwinPointer="GeomTrimmedCurve"
+      Include="Mod/Part/App/Geometry.h"
+      Namespace="Part"
+      FatherInclude="Mod/Part/App/TrimmedCurvePy.h"
       FatherNamespace="Part"
       Constructor="true">
     <Documentation>
@@ -19,6 +20,13 @@
       ArcPy(const Geom_Circle &amp; circ, PyTypeObject *T = &amp;Type)
       :PyObjectBase(new Geom_Circle(circ),T){}
     const Geom_Circle &amp; value(void) const {return *getGeom_CirclePtr();}
+	</ClassDeclarations>
+	-->
+	<!--
+	<ClassDeclarations>public:
+      ArcPy(const Geom_Ellipse &amp; circ, PyTypeObject *T = &amp;Type)
+      :PyObjectBase(new Geom_Ellipse(circ),T){}
+    const Geom_Ellipse &amp; value(void) const {return *getGeom_EllipsePtr();}
 	</ClassDeclarations>
 	-->
   </PythonExport>

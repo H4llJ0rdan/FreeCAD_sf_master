@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,7 +24,7 @@
 #ifndef PARTGUI_VIEWPROVIDERPLANEPARAMETRIC_H
 #define PARTGUI_VIEWPROVIDERPLANEPARAMETRIC_H
 
-#include "ViewProvider.h"
+#include "ViewProviderPrimitive.h"
 
 
 class TopoDS_Shape;
@@ -33,28 +33,40 @@ class SoSeparator;
 class SbVec3f;
 class SoTransform;
 
-namespace Gui {
-  class View3DInventorViewer;
-  class SoFCSelection;
-}
-
 namespace PartGui {
 
 
-class PartGuiExport ViewProviderPlaneParametric:public ViewProviderPart
+class PartGuiExport ViewProviderPlaneParametric : public ViewProviderPrimitive
 {
-    PROPERTY_HEADER(PartGui::ViewProviderPlaneParametric);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderPlaneParametric);
 
 public:
     /// constructor
     ViewProviderPlaneParametric();
     /// destructor
-    virtual ~ViewProviderPlaneParametric();
+    ~ViewProviderPlaneParametric() override;
 
-    std::vector<std::string> getDisplayModes(void) const;
+    std::vector<std::string> getDisplayModes() const override;
 
 protected:
 
+};
+
+class PartGuiExport ViewProviderFace : public ViewProviderPlaneParametric
+{
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderFace);
+
+public:
+    ViewProviderFace();
+    ~ViewProviderFace() override;
+
+    std::vector<App::DocumentObject*> claimChildren() const override;
+    bool canDragObjects() const override;
+    bool canDragObject(App::DocumentObject*) const override;
+    void dragObject(App::DocumentObject*) override;
+    bool canDropObjects() const override;
+    bool canDropObject(App::DocumentObject*) const override;
+    void dropObject(App::DocumentObject*) override;
 };
 
 } // namespace PartGui

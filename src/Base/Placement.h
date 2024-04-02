@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2006 Juergen Riegel                                     *
+ *   Copyright (c) 2006 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,18 +20,17 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef BASE_PLACEMENT_H
 #define BASE_PLACEMENT_H
 
-#include "Vector3D.h"
 #include "Rotation.h"
-#include "Matrix.h"
-
+#include "Vector3D.h"
 
 
 namespace Base {
 
+class DualQuat;
+class Matrix4D;
 
 /**
  * The Placement class.
@@ -40,24 +39,37 @@ class BaseExport Placement
 {
 public:
     /// default constructor
-    Placement(void);
-    Placement(const Placement&);
+    Placement();
+    Placement(const Placement&) = default;
+    Placement(Placement&&) = default;
     Placement(const Base::Matrix4D& matrix);
     Placement(const Vector3d& Pos, const Rotation &Rot);
     Placement(const Vector3d& Pos, const Rotation &Rot, const Vector3d& Cnt);
-    /// Destruction
-    ~Placement () {}
 
-    Matrix4D toMatrix(void) const;
+    /** specialty constructors */
+    //@{
+    static Placement fromDualQuaternion(DualQuat qq);
+    //@}
+
+    /// Destruction
+    ~Placement () = default;
+
+    Matrix4D toMatrix() const;
     void fromMatrix(const Matrix4D& m);
-    const Vector3d& getPosition(void) const {return _pos;}
-    const Rotation& getRotation(void) const {return _rot;}
+    DualQuat toDualQuaternion() const;
+    const Vector3d& getPosition() const {return _pos;}
+    const Rotation& getRotation() const {return _rot;}
     void setPosition(const Vector3d& Pos){_pos=Pos;}
     void setRotation(const Rotation& Rot) {_rot = Rot;}
 
+    bool isIdentity() const;
+    bool isIdentity(double tol) const;
     void invert();
     Placement inverse() const;
     void move(const Vector3d& MovVec);
+
+    bool isSame(const Placement&) const;
+    bool isSame(const Placement&, double tol) const;
 
     /** Operators. */
     //@{
@@ -65,14 +77,21 @@ public:
     Placement operator *(const Placement & p) const;
     bool operator == (const Placement&) const;
     bool operator != (const Placement&) const;
-    Placement& operator = (const Placement&);
+    Placement& operator = (const Placement&) = default;
+    Placement& operator = (Placement&&) = default;
+    Placement pow(double t, bool shorten = true) const;
+
+    Placement& multRight(const Base::Placement& p);
+    Placement& multLeft(const Base::Placement& p);
 
     void multVec(const Vector3d & src, Vector3d & dst) const;
+    void multVec(const Vector3f & src, Vector3f & dst) const;
     //@}
 
     static Placement slerp(const Placement & p0, const Placement & p1, double t);
+    static Placement sclerp(const Placement & p0, const Placement & p1, double t, bool shorten = true);
 
-protected:
+private:
     Vector3<double> _pos;
     Base::Rotation  _rot;
 };
@@ -80,6 +99,6 @@ protected:
 } // namespace Base
 
 
-#endif // BASE_PLACEMENT_H 
+#endif // BASE_PLACEMENT_H
 
 

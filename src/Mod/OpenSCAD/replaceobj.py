@@ -1,5 +1,4 @@
 #***************************************************************************
-#*                                                                         *
 #*   Copyright (c) 2012 Sebastian Hoogen <github@sebastianhoogen.de>       *
 #*                                                                         *
 #*   This program is free software; you can redistribute it and/or modify  *
@@ -20,33 +19,40 @@
 #*                                                                         *
 #***************************************************************************
 
-__title__="FreeCAD OpenSCAD Workbench - replace object fuction"
+__title__ = "FreeCAD OpenSCAD Workbench - replace object function"
 __author__ = "Sebastian Hoogen"
-__url__ = ["http://www.freecadweb.org"]
+__url__ = ["https://www.freecad.org"]
 
 '''
-This fucntions allows to replace an object in the feature hierarchy
+This functions allows to replace an object in the feature hierarchy
 '''
 
-def replaceobj(parent,oldchild,newchild):
+
+def replaceobj(parent, oldchild, newchild):
     for propname in parent.PropertiesList:
-        propvalue=parent.getPropertyByName(propname)
+        propvalue = parent.getPropertyByName(propname)
         if type(propvalue) == list:
+            bModified = False
             for dontcare in range(propvalue.count(oldchild)):
                 propvalue[propvalue.index(oldchild)] = newchild
-            setattr(parent,propname,propvalue)
-            #print propname, parent.getPropertyByName(propname)
+                bModified = True
+            if bModified:
+                if propname == "ExpressionEngine":
+                    # fixme: proper handling?
+                    FreeCAD.Console.PrintWarning("Expressions in "+parent.Name+" need to be modified, but they were not. Please do that manually.")
+                    continue
+                setattr(parent,propname,propvalue)
         else:
             if propvalue == oldchild:
                 setattr(parent,propname,newchild)
-                print propname, parent.getPropertyByName(propname)
-            #else: print propname,propvalue
+                print(propname, parent.getPropertyByName(propname))
+            #else: print(propname,propvalue)
     parent.touch()
 
 def replaceobjfromselection(objs):
-    # The Parent can be ommited as long as one object is orphaned
-    if len(objs)==2:
-        InListLength= tuple((len(obj.InList)) for obj in objs)
+    # The Parent can be omitted as long as one object is orphaned
+    if len(objs) == 2:
+        InListLength = tuple((len(obj.InList)) for obj in objs)
         if InListLength == (0,1):
             newchild,oldchild  = objs
             parent = oldchild.InList[0]
@@ -56,7 +62,7 @@ def replaceobjfromselection(objs):
         else:
             raise ValueError("Selection ambiguous. Please select oldchild,\
             newchild and parent")
-    elif len(objs)==3:
+    elif len(objs) == 3:
         if objs[2] in objs[0].InList: oldchild, newchild, parent = objs
         elif objs[0] in objs[1].InList: parent, oldchild, newchild = objs
         elif objs[0] in objs[2].InList: parent, newchild, oldchild = objs
@@ -64,15 +70,15 @@ def replaceobjfromselection(objs):
         elif objs[1] in objs[2].InList: newchild, parent, oldchild = objs
         elif objs[2] in objs[1].InList: newchild, oldchild, parent = objs
         else:
-            raise ValueError("Cannot determin current parent-child relationship")
+            raise ValueError("Cannot determine current parent-child relationship")
     else:
         raise ValueError("Wrong number of selected objects")
     replaceobj(parent,oldchild,newchild)
     parent.Document.recompute()
 
+
 if __name__ == '__main__':
-    import FreeCAD,FreeCADGui
-    objs=[selobj.Object for selobj in FreeCADGui.Selection.getSelectionEx()]
+    import FreeCAD
+    import FreeCADGui
+    objs = [selobj.Object for selobj in FreeCADGui.Selection.getSelectionEx()]
     replaceobjfromselection(objs)
-
-

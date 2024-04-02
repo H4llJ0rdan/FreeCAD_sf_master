@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -24,31 +24,29 @@
 #ifndef PARTGUI_ViewProviderGroove_H
 #define PARTGUI_ViewProviderGroove_H
 
-#include "ViewProvider.h"
+#include "ViewProviderSketchBased.h"
 
 
 namespace PartDesignGui {
 
-class PartDesignGuiExport ViewProviderGroove : public ViewProvider
+class PartDesignGuiExport ViewProviderGroove : public ViewProviderSketchBased
 {
-    PROPERTY_HEADER(PartGui::ViewProviderGroove);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderGroove);
 
 public:
     /// constructor
     ViewProviderGroove();
     /// destructor
-    virtual ~ViewProviderGroove();
+    ~ViewProviderGroove() override;
 
-    /// grouping handling 
-    std::vector<App::DocumentObject*> claimChildren(void)const;
-
-    void setupContextMenu(QMenu*, QObject*, const char*);
-
-    virtual bool onDelete(const std::vector<std::string> &);
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-    virtual void unsetEdit(int ModNum);
+    /**
+     * Returns a newly created TaskDlgRevolutionParameters
+     * NOTE: as for now groove and revolution share the dialog implementation
+     */
+    TaskDlgFeatureParameters *getEditDialog() override;
 
 };
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,61 +20,43 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef __PRECOMPILED__
 #define __PRECOMPILED__
 
 #include <FCConfig.h>
 
-// Exporting of App classes
-#ifdef FC_OS_WIN32
-# define ReenExport     __declspec(dllexport)
-# define PartExport     __declspec(dllimport)
-# define MeshExport     __declspec(dllimport)
-# define PointsExport   __declspec(dllimport)
-#else // for Linux
-# define ReenExport
-# define PartExport
-# define MeshExport
-# define PointsExport
+#ifdef _MSC_VER
+#pragma warning(disable : 4181)
+#pragma warning(disable : 4267)
+#pragma warning(disable : 4275)
+#pragma warning(disable : 4305)
+#pragma warning(disable : 4522)
 #endif
 
-#ifdef _MSC_VER
-#   pragma warning(disable : 4181)
-#   pragma warning(disable : 4275)
-#   pragma warning(disable : 4305)
+// pcl headers include <boost/bind.hpp> instead of <boost/bind/bind.hpp>
+#ifndef BOOST_BIND_GLOBAL_PLACEHOLDERS
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS
 #endif
 
 #ifdef _PreComp_
 
 // standard
-#include <iostream>
-#include <sstream>
-#include <stdio.h>
-#include <assert.h>
-#include <string>
 #include <map>
-#include <vector>
-#include <set>
-#include <bitset>
+
+// boost
+#include <boost/math/special_functions/fpclassify.hpp>
 
 // OpenCasCade
+#include <Geom_BSplineSurface.hxx>
+#include <Precision.hxx>
+#include <TColgp_Array1OfPnt.hxx>
 #include <math_Gauss.hxx>
 #include <math_Householder.hxx>
-#include <math_Matrix.hxx>
-#include <TColStd_Array1OfReal.hxx>
-#include <TColStd_Array1OfInteger.hxx>
-#include <TColgp_Array1OfPnt.hxx>
-#include <TColgp_Array2OfPnt.hxx>
-#include <TColgp_Array1OfPnt2d.hxx>
-#include <Geom_BSplineSurface.hxx>
-#include <Handle_Geom_BSplineSurface.hxx>
-#include <BRepBuilderAPI_MakeFace.hxx>
-#include <TopoDS_Face.hxx>
 
-#include <Python.h>
+// Qt
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QtConcurrentMap>
 
-
+#endif  // _PreComp_
 #endif
-#endif // _PreComp_
-

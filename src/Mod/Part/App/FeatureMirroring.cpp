@@ -20,17 +20,14 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <gp.hxx>
+# include <BRepBuilderAPI_Transform.hxx>
 # include <gp_Ax2.hxx>
 # include <gp_Dir.hxx>
 # include <gp_Pnt.hxx>
 # include <gp_Trsf.hxx>
-# include <BRepBuilderAPI_Transform.hxx>
 #endif
-
 
 #include "FeatureMirroring.h"
 
@@ -41,7 +38,7 @@ PROPERTY_SOURCE(Part::Mirroring, Part::Feature)
 
 Mirroring::Mirroring()
 {
-    ADD_PROPERTY(Source,(0));
+    ADD_PROPERTY(Source,(nullptr));
     ADD_PROPERTY_TYPE(Base,(Base::Vector3d()),"Plane",App::Prop_None,"The base point of the plane");
     ADD_PROPERTY_TYPE(Normal,(Base::Vector3d(0,0,1)),"Plane",App::Prop_None,"The normal of the plane");
 }
@@ -72,19 +69,37 @@ void Mirroring::onChanged(const App::Property* prop)
     Part::Feature::onChanged(prop);
 }
 
-App::DocumentObjectExecReturn *Mirroring::execute(void)
+void Mirroring::handleChangedPropertyType(Base::XMLReader &reader, const char *TypeName, App::Property *prop)
+{
+    if (prop == &Base && strcmp(TypeName, "App::PropertyVector") == 0) {
+        App::PropertyVector v;
+
+        v.Restore(reader);
+
+        Base.setValue(v.getValue());
+    }
+    else if (prop == &Normal && strcmp(TypeName, "App::PropertyVector") == 0) {
+        App::PropertyVector v;
+
+        v.Restore(reader);
+
+        Normal.setValue(v.getValue());
+    }
+    else {
+        Part::Feature::handleChangedPropertyType(reader, TypeName, prop);
+    }
+}
+
+App::DocumentObjectExecReturn *Mirroring::execute()
 {
     App::DocumentObject* link = Source.getValue();
     if (!link)
         return new App::DocumentObjectExecReturn("No object linked");
-    if (!link->getTypeId().isDerivedFrom(Part::Feature::getClassTypeId()))
-        return new App::DocumentObjectExecReturn("Linked object is not a Part object");
-    Part::Feature *source = static_cast<Part::Feature*>(link);
     Base::Vector3d base = Base.getValue();
     Base::Vector3d norm = Normal.getValue();
 
     try {
-        const TopoDS_Shape& shape = source->Shape.getValue();
+        const TopoDS_Shape& shape = Feature::getShape(link);
         if (shape.IsNull())
             Standard_Failure::Raise("Cannot mirroR empty shape");
         gp_Ax2 ax2(gp_Pnt(base.x,base.y,base.z), gp_Dir(norm.x,norm.y,norm.z));
@@ -97,8 +112,7 @@ App::DocumentObjectExecReturn *Mirroring::execute(void)
         this->Shape.setValue(mkTrf.Shape());
         return App::DocumentObject::StdReturn;
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 }

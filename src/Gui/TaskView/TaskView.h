@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,14 +24,13 @@
 #ifndef GUI_TASKVIEW_TASKVIEW_H
 #define GUI_TASKVIEW_TASKVIEW_H
 
-#include <map>
-#include <string>
 #include <vector>
-#include <boost/signals.hpp>
+#include <QScrollArea>
 
-#include <Gui/iisTaskPanel/include/iisTaskPanel>
+#include <Gui/QSint/include/QSint>
 #include <Gui/Selection.h>
 #include "TaskWatcher.h"
+
 
 namespace App {
 class Property;
@@ -40,11 +39,11 @@ class Property;
 namespace Gui {
 class ControlSingleton;
 namespace DockWnd{
-class CombiView;
+class ComboView;
 }
 namespace TaskView {
 
-typedef boost::signals::connection Connection;
+using Connection = boost::signals2::connection;
 class TaskEditControl;
 class TaskDialog;
 
@@ -57,34 +56,70 @@ public:
     //~TaskContent();
 };
 
-class GuiExport TaskGroup : public iisTaskGroup, public TaskContent
+class GuiExport TaskGroup : public QSint::ActionBox, public TaskContent
 {
     Q_OBJECT
 
 public:
-    TaskGroup(QWidget *parent = 0);
-    ~TaskGroup();
+    explicit TaskGroup(QWidget *parent = nullptr);
+    explicit TaskGroup(const QString & headerText, QWidget *parent = nullptr);
+    explicit TaskGroup(const QPixmap & icon, const QString & headerText, QWidget *parent = nullptr);
+    ~TaskGroup() override;
 
 protected:
-    void actionEvent (QActionEvent*);
+    void actionEvent (QActionEvent*) override;
 };
 
 /// Father class of content with header and Icon
-class GuiExport TaskBox : public iisTaskBox, public TaskContent
+class GuiExport TaskBox : public QSint::ActionGroup, public TaskContent
 {
     Q_OBJECT
 
 public:
-    TaskBox(const QPixmap &icon, const QString &title, bool expandable, QWidget *parent);
-    ~TaskBox();
+    /** Constructor. Creates TaskBox without header.
+      */
+    explicit TaskBox(QWidget *parent = nullptr);
+
+    /** Constructor. Creates TaskBox with header's
+        text set to \a title, but with no icon.
+
+        If \a expandable set to \a true (default), the group can be expanded/collapsed by the user.
+      */
+    explicit TaskBox(const QString& title,
+                     bool expandable = true,
+                     QWidget *parent = nullptr);
+
+    /** Constructor. Creates TaskBox with header's
+        text set to \a title and icon set to \a icon.
+
+        If \a expandable set to \a true (default), the group can be expanded/collapsed by the user.
+      */
+    explicit TaskBox(const QPixmap& icon,
+                     const QString& title,
+                     bool expandable = true,
+                     QWidget *parent = nullptr);
+    QSize minimumSizeHint() const override;
+
+    ~TaskBox() override;
     void hideGroupBox();
+    bool isGroupVisible() const;
 
 protected:
-    void showEvent(QShowEvent*);
-    void actionEvent (QActionEvent*);
+    void showEvent(QShowEvent*) override;
+    void actionEvent (QActionEvent*) override;
 
 private:
     bool wasShown;
+};
+
+class GuiExport TaskPanel : public QSint::ActionPanel
+{
+    Q_OBJECT
+
+public:
+    explicit TaskPanel(QWidget *parent = nullptr);
+    ~TaskPanel() override;
+    QSize minimumSizeHint() const override;
 };
 
 /// Father class of content of a Free widget (without header and Icon), shut be an exception!
@@ -93,8 +128,8 @@ class GuiExport TaskWidget : public QWidget, public TaskContent
     Q_OBJECT
 
 public:
-    TaskWidget(QWidget *parent=0);
-    ~TaskWidget();
+    explicit TaskWidget(QWidget *parent=nullptr);
+    ~TaskWidget() override;
 };
 
 /** TaskView class
@@ -107,18 +142,23 @@ class GuiExport TaskView : public QScrollArea, public Gui::SelectionSingleton::O
     Q_OBJECT
 
 public:
-    TaskView(QWidget *parent = 0);
-    ~TaskView();
+    explicit TaskView(QWidget *parent = nullptr);
+    ~TaskView() override;
 
     /// Observer message from the Selection
-    virtual void OnChange(Gui::SelectionSingleton::SubjectType &rCaller,
-                          Gui::SelectionSingleton::MessageType Reason);
+    void OnChange(Gui::SelectionSingleton::SubjectType &rCaller,
+                          Gui::SelectionSingleton::MessageType Reason) override;
 
-    friend class Gui::DockWnd::CombiView;
+    friend class Gui::DockWnd::ComboView;
     friend class Gui::ControlSingleton;
 
     void addTaskWatcher(const std::vector<TaskWatcher*> &Watcher);
-    void clearTaskWatcher(void);
+    void clearTaskWatcher();
+
+    void clearActionStyle();
+    void restoreActionStyle();
+
+    QSize minimumSizeHint() const override;
 
 protected Q_SLOTS:
     void accept();
@@ -126,16 +166,22 @@ protected Q_SLOTS:
     void helpRequested();
     void clicked (QAbstractButton * button);
 
+private:
+    void triggerMinimumSizeHint();
+    void adjustMinimumSizeHint();
+
 protected:
-    void keyPressEvent(QKeyEvent*);
-    void addTaskWatcher(void);
-    void removeTaskWatcher(void);
+    void keyPressEvent(QKeyEvent* event) override;
+    bool event(QEvent* event) override;
+
+    void addTaskWatcher();
+    void removeTaskWatcher();
     /// update the visibility of the TaskWatcher accordant to the selection
-    void updateWatcher(void);
-    /// used by Gui::Contol to register Dialogs
+    void updateWatcher();
+    /// used by Gui::Control to register Dialogs
     void showDialog(TaskDialog *dlg);
     // removes the running dialog after accept() or reject() from the TaskView
-    void removeDialog(void);
+    void removeDialog();
 
     void slotActiveDocument(const App::Document&);
     void slotDeletedDocument();
@@ -144,7 +190,7 @@ protected:
 
     std::vector<TaskWatcher*> ActiveWatcher;
 
-    iisTaskPanel* taskPanel;
+    QSint::ActionPanel* taskPanel;
     TaskDialog *ActiveDialog;
     TaskEditControl *ActiveCtrl;
 

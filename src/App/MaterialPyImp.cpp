@@ -23,32 +23,81 @@
 
 #include "PreCompiled.h"
 
-#include "App/Material.h"
-
 // inclusion of the generated files (generated out of MaterialPy.xml)
 #include "MaterialPy.h"
 #include "MaterialPy.cpp"
+#include <Base/PyWrapParseTupleAndKeywords.h>
 
 using namespace App;
 
-// returns a string which represents the object e.g. when printed in python
-std::string MaterialPy::representation(void) const
+PyObject *MaterialPy::PyMake(struct _typeobject *, PyObject *, PyObject *)  // Python wrapper
 {
-    return std::string("<Material object>");
+    // create a new instance of MaterialPy and the Twin object
+    return new MaterialPy(new Material);
+}
+
+// constructor method
+int MaterialPy::PyInit(PyObject* args, PyObject* kwds)
+{
+    PyObject* diffuse = nullptr;
+    PyObject* ambient = nullptr;
+    PyObject* specular = nullptr;
+    PyObject* emissive = nullptr;
+    PyObject* shininess = nullptr;
+    PyObject* transparency = nullptr;
+    static const std::array<const char *, 7> kwds_colors{"DiffuseColor", "AmbientColor", "SpecularColor",
+                                                         "EmissiveColor", "Shininess", "Transparency", nullptr};
+
+    if (!Base::Wrapped_ParseTupleAndKeywords(args, kwds, "|OOOOOO", kwds_colors,
+        &diffuse, &ambient, &specular, &emissive, &shininess, &transparency)) {
+        return -1;
+    }
+
+    if (diffuse) {
+        setDiffuseColor(Py::Tuple(diffuse));
+    }
+
+    if (ambient) {
+        setAmbientColor(Py::Tuple(ambient));
+    }
+
+    if (specular) {
+        setSpecularColor(Py::Tuple(specular));
+    }
+
+    if (emissive) {
+        setEmissiveColor(Py::Tuple(emissive));
+    }
+
+    if (shininess) {
+        setShininess(Py::Float(shininess));
+    }
+
+    if (transparency) {
+        setTransparency(Py::Float(transparency));
+    }
+
+    return 0;
+}
+
+// returns a string which represents the object e.g. when printed in python
+std::string MaterialPy::representation() const
+{
+    return {"<Material object>"};
 }
 
 PyObject* MaterialPy::set(PyObject * args)
 {
     char *pstr;
-    if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
-        return NULL;                             // NULL triggers exception 
+    if (!PyArg_ParseTuple(args, "s", &pstr))
+        return nullptr;
 
     getMaterialPtr()->set(pstr);
 
     Py_Return;
 }
 
-Py::Tuple MaterialPy::getAmbientColor(void) const
+Py::Tuple MaterialPy::getAmbientColor() const
 {
     Py::Tuple tuple(4);
     tuple.setItem(0, Py::Float(getMaterialPtr()->ambientColor.r));
@@ -69,7 +118,7 @@ void MaterialPy::setAmbientColor(Py::Tuple arg)
     getMaterialPtr()->ambientColor = c;
 }
 
-Py::Tuple MaterialPy::getDiffuseColor(void) const
+Py::Tuple MaterialPy::getDiffuseColor() const
 {
     Py::Tuple tuple(4);
     tuple.setItem(0, Py::Float(getMaterialPtr()->diffuseColor.r));
@@ -90,7 +139,7 @@ void MaterialPy::setDiffuseColor(Py::Tuple arg)
     getMaterialPtr()->diffuseColor = c;
 }
 
-Py::Tuple MaterialPy::getEmissiveColor(void) const
+Py::Tuple MaterialPy::getEmissiveColor() const
 {
     Py::Tuple tuple(4);
     tuple.setItem(0, Py::Float(getMaterialPtr()->emissiveColor.r));
@@ -111,7 +160,7 @@ void MaterialPy::setEmissiveColor(Py::Tuple arg)
     getMaterialPtr()->emissiveColor = c;
 }
 
-Py::Tuple MaterialPy::getSpecularColor(void) const
+Py::Tuple MaterialPy::getSpecularColor() const
 {
     Py::Tuple tuple(4);
     tuple.setItem(0, Py::Float(getMaterialPtr()->specularColor.r));
@@ -132,7 +181,7 @@ void MaterialPy::setSpecularColor(Py::Tuple arg)
     getMaterialPtr()->specularColor = c;
 }
 
-Py::Float MaterialPy::getShininess(void) const
+Py::Float MaterialPy::getShininess() const
 {
     return Py::Float(getMaterialPtr()->shininess);
 }
@@ -142,7 +191,7 @@ void MaterialPy::setShininess(Py::Float arg)
     getMaterialPtr()->shininess = (float)arg;
 }
 
-Py::Float MaterialPy::getTransparency(void) const
+Py::Float MaterialPy::getTransparency() const
 {
     return Py::Float(getMaterialPtr()->transparency);
 }
@@ -154,10 +203,10 @@ void MaterialPy::setTransparency(Py::Float arg)
 
 PyObject *MaterialPy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int MaterialPy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }

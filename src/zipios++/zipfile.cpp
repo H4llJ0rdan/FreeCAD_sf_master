@@ -9,6 +9,9 @@
 #include "zipios_defs.h"
 
 #include "backbuffer.h"
+#if defined(_WIN32) && defined(ZIPIOS_UTF8)
+#include <Base/FileInfo.h>
+#endif
 
 namespace zipios {
 
@@ -33,7 +36,12 @@ ZipFile::ZipFile( const string &name , int s_off, int e_off
 
   _filename = name ;
   
+#if defined(_WIN32) && defined(ZIPIOS_UTF8)
+  std::wstring wsname = Base::FileInfo(name).toStdWString();
+  ifstream _zipfile( wsname.c_str(), ios::in | ios::binary ) ;
+#else
   ifstream _zipfile( name.c_str(), ios::in | ios::binary ) ;
+#endif
   init( _zipfile ) ;
 }
 
@@ -65,8 +73,8 @@ istream *ZipFile::getInputStream( const string &entry_name,
 
   ConstEntryPointer ent = getEntry( entry_name, matchpath ) ;
   
-  if ( ent == 0 )
-    return 0 ;
+  if ( !ent )
+    return nullptr ;
   else
     return new ZipInputStream( _filename,	
 			   static_cast< const ZipCDirEntry * >( ent.get() )->
@@ -102,7 +110,7 @@ bool ZipFile::readCentralDirectory ( istream &_zipfile ) {
 
   int entry_num = 0 ;
   // Giving the default argument in the next line to keep Visual C++ quiet
-  _entries.resize ( _eocd.totalCount(), 0 ) ;
+  _entries.resize ( _eocd.totalCount(), nullptr ) ;
   while ( ( entry_num < _eocd.totalCount() ) ) {
     ZipCDirEntry *ent = new ZipCDirEntry ; 
     _entries[ entry_num ] = ent ;
@@ -190,7 +198,7 @@ void ZipFile::setError ( string error_str ) {
 
 /*
   Zipios++ - a small C++ library that provides easy access to .zip files.
-  Copyright (C) 2000  Thomas Søndergaard
+  Copyright (C) 2000  Thomas SÃ¸ndergaard
   
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public

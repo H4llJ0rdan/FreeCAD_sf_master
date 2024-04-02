@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2012     *
+ *   Copyright (c) 2012 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,12 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_ViewProviderPlacement_H
 #define GUI_ViewProviderPlacement_H
 
+#include "AxisOrigin.h"
 #include "ViewProviderGeometryObject.h"
-#include <QObject>
+#include "ViewProviderPythonFeature.h"
+
 
 class SoFontStyle;
 class SoText2;
@@ -39,37 +40,34 @@ class SoMaterial;
 namespace Gui
 {
 
-
 class GuiExport ViewProviderPlacement : public ViewProviderGeometryObject
 {
-    PROPERTY_HEADER(Gui::ViewProviderPlacement);
+    PROPERTY_HEADER_WITH_OVERRIDE(Gui::ViewProviderPlacement);
 
 public:
     /// Constructor
-    ViewProviderPlacement(void);
-    virtual ~ViewProviderPlacement();
+    ViewProviderPlacement();
+    ~ViewProviderPlacement() override;
 
-    void attach(App::DocumentObject *);
-    void updateData(const App::Property*);
-    std::vector<std::string> getDisplayModes(void) const;
-    void setDisplayMode(const char* ModeName);
+    void attach(App::DocumentObject *) override;
+    void updateData(const App::Property*) override;
+    std::vector<std::string> getDisplayModes() const override;
+    void setDisplayMode(const char* ModeName) override;
 
-   /// indicates if the ViewProvider use the new Selection model
-    virtual bool useNewSelectionModel(void) const {return true;}
+    /// indicates if the ViewProvider use the new Selection model
+    bool useNewSelectionModel() const override {return true;}
     /// indicates if the ViewProvider can be selected
-    virtual bool isSelectable(void) const ;
-    /// return a hit element to the selection path or 0
-    virtual std::string getElement(const SoDetail *) const;
-    virtual SoDetail* getDetail(const char*) const;
+    bool isSelectable() const override;
+
+    bool getElementPicked(const SoPickedPoint *pp, std::string &subname) const override;
+    bool getDetailPath(const char *, SoFullPath *, bool, SoDetail *&) const override;
 
 protected:
-    void onChanged(const App::Property* prop);
+    void onChanged(const App::Property* prop) override;
 
-private:
-    SoCoordinate3    * pCoords;
-    SoMaterial       * pMat;
-    SoIndexedLineSet * pLines;
 };
+
+using ViewProviderPlacementPython = ViewProviderPythonFeatureT<ViewProviderPlacement>;
 
 } //namespace Gui
 

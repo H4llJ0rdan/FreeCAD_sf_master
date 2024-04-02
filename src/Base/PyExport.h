@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -74,12 +74,12 @@ class PyObjectBase;
  *  The other case is that we have a member variable in our C++ class that holds the Python object
  *  then we either can create this Python in the constructor or create it the first  time when GetPyObject()
  *  gets called. In the destructor then we must decrement the Python object to avoid a memory leak while
- *  GetPyObject() then increments the Python object everytime it gets called.
+ *  GetPyObject() then increments the Python object every time it gets called.
  *
  *  @remark One big consequence of this specification is that the programmer must know whether the Python interpreter
  *  gets the Python object or not. If the interpreter gets the object then it decrements the counter later on when
  *  the internal variable is freed. In case the interpreter doesn't get this object then the programmer must do the
- *  decrement on his own.
+ *  decrement on their own.
  *
  *  @note To not to undermine this specification the programmer must make sure to get the Python object always via
  *  GetPyObject().
@@ -101,8 +101,8 @@ class PyObjectBase;
 /** Python Object handle class
  *  Using pointers on classes derived from PyObjectBase would
  *  be potentionaly dangerous because you would have to take
- *  care of the referenc counting of python by your self. There
- *  fore this class was designd. It takes care of references and
+ *  care of the reference counting of python by your self. Hence
+ *  this class was designed. It takes care of references and
  *  as long as a object of this class exists the handled class get
  *  not destructed. That means a PyObjectBase derived object you can
  *  only destruct by destructing all FCPyHandle and all python
@@ -118,30 +118,30 @@ public:
 
     /** pointer and default constructor
      *  the good way would be not using pointer
-     *  instead using a overwriten new operator in the
-     *  HandledType class! But is not easy to inforce!
+     *  instead using a overwritten new operator in the
+     *  HandledType class! But is not easy to enforce!
      */
-    PyHandle(HandledType *ToHandel=0L)
-            :_pHandels(ToHandel) {
-        if (_pHandels)
-            _pHandels->IncRef();
+    PyHandle(HandledType *ToHandle=0L)
+            :_pHandles(ToHandle) {
+        if (_pHandles)
+            _pHandles->IncRef();
     }
 
     /// Copy constructor
-    PyHandle(const PyHandle <HandledType> &ToHandel)
-            :_pHandels(ToHandel._pHandels) {
-        if (_pHandels)
-            _pHandels->IncRef();
+    PyHandle(const PyHandle <HandledType> &ToHandle)
+            :_pHandles(ToHandle._pHandles) {
+        if (_pHandles)
+            _pHandles->IncRef();
     }
 
     /** destructor
-     *  Release the referenc count which cause,
+     *  Release the reference count which cause,
      *  if was the last one, the referenced object to
      *  destruct!
      */
     ~PyHandle() {
-        if (_pHandels)
-            _pHandels->DecRef();
+        if (_pHandles)
+            _pHandles->DecRef();
     }
 
     //**************************************************************************
@@ -149,83 +149,83 @@ public:
 
     // assign operator from a pointer
     PyHandle <HandledType>  &operator=(/*const*/ HandledType* other) {
-        if (_pHandels)
-            _pHandels->DecRef();
-        // FIXME: Should be without "->_pHandels", shouldn't it? (Werner)
-        _pHandels = other;//_pHandels = other->_pHandels;
-        if (_pHandels)
-            _pHandels->IncRef();
+        if (_pHandles)
+            _pHandles->DecRef();
+        // FIXME: Should be without "->_pHandles", shouldn't it? (Werner)
+        _pHandles = other;//_pHandles = other->_pHandles;
+        if (_pHandles)
+            _pHandles->IncRef();
         return *this;
     }
 
     // assign operator from a handle
     PyHandle <HandledType>  &operator=(const PyHandle <HandledType> &other) {
-        if (_pHandels)
-            _pHandels->DecRef();
-        _pHandels = other._pHandels;
-        if (_pHandels)
-            _pHandels->IncRef();
+        if (_pHandles)
+            _pHandles->DecRef();
+        _pHandles = other._pHandles;
+        if (_pHandles)
+            _pHandles->IncRef();
         return *this;
     }
 
-    /// derefrence operators
+    /// dereference operators
     HandledType &operator*() {
-        return *_pHandels;
+        return *_pHandles;
     }
 
-    /// derefrence operators
+    /// dereference operators
     HandledType *operator->() {
-        return _pHandels;
+        return _pHandles;
     }
 
-    /// derefrence operators
+    /// dereference operators
     const HandledType &operator*() const {
-        return _pHandels;
+        return _pHandles;
     }
 
-    /// derefrence operators
+    /// dereference operators
     const HandledType *operator->() const {
-        return _pHandels;
+        return _pHandles;
     }
 
     /** lower operator
      *  needed for sorting in maps and sets
      */
     bool operator<(const PyHandle<HandledType> &other) const {
-        //return _pHandels<&other;
+        //return _pHandles<&other;
         // FIXME: Shouldn't we compare both pointers?. (Werner)
-        return _pHandels<other._pHandels;
+        return _pHandles<other._pHandles;
     }
 
     /// equal operator
     bool operator==(const PyHandle<HandledType> &other) const {
-        //return _pHandels==&other;
+        //return _pHandles==&other;
         // FIXME: Shouldn't we compare both pointers?. (Werner)
-        return _pHandels==other._pHandels;
+        return _pHandles==other._pHandles;
     }
 
     /// returns the type as PyObject
-    PyObject* getPyObject(void) const {
-        // return (PyObject*) _pHandels;
+    PyObject* getPyObject() const {
+        // return (PyObject*) _pHandles;
         // FIXME: Shouldn't we return the pointer's object?. (Werner)
-        return const_cast<HandledType*>(_pHandels)->getPyObject();
+        return const_cast<HandledType*>(_pHandles)->getPyObject();
     }
     //**************************************************************************
     // checking on the state
 
-    /// Test if it handels something
-    bool IsValid(void) const {
-        return _pHandels!=0;
+    /// Test if it handles something
+    bool IsValid() const {
+        return _pHandles!=0;
     }
 
-    /// Test if it not handels something
-    bool IsNull(void) const {
-        return _pHandels==0;
+    /// Test if it not handles something
+    bool IsNull() const {
+        return _pHandles==0;
     }
 
 private:
     /// the pointer on the handled object
-    HandledType *_pHandels;
+    HandledType *_pHandles;
 
 };
 

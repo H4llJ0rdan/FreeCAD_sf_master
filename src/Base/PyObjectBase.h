@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -46,18 +46,19 @@
 #undef isalnum
 #endif
 #define slots
-#include <iostream>
 #include <bitset>
+#include <cstring>
 
-#include <typeinfo>
 #include "Exception.h"
+#ifndef PYCXX_PYTHON_2TO3
+#define PYCXX_PYTHON_2TO3
+#endif
 #include <CXX/Objects.hxx>
 
 
-
 /** Python static class macro for definition
- * sets up a static function entry in a class inheriting 
- * from PyObjectBase. Its a pure convenience macro. You can also do
+ * sets up a static function entry in a class inheriting
+ * from PyObjectBase. It's a pure convenience macro. You can also do
  * it by hand if you want. It looks like that:
  * \code
  * static PyObject* X (PyObject *self,PyObject *args,PyObject *kwd);
@@ -76,7 +77,7 @@
  * \code
  * PyObject* CLASS::SFUNC (PyObject *self,PyObject *args,PyObject *kwd)
  * \endcode
- * see PYFUNCDEF_S for details 
+ * see PYFUNCDEF_S for details
  * @param CLASS is the class in which the macro take place.
  * @param SFUNC is the object method get implemented
  * @see PYFUNCDEF_S
@@ -84,14 +85,11 @@
  */
 #define PYFUNCIMP_S(CLASS,SFUNC) PyObject* CLASS::SFUNC (PyObject *self,PyObject *args,PyObject *kwd)
 
-/**
- * Union to convert from PyTypeObject to PyObject pointer.
- */
-union PyType_Object {
-    PyTypeObject *t;
-    PyObject *o;
-};
 
+/** Macro for initialization function of Python modules.
+ */
+#define PyMOD_INIT_FUNC(name) PyMODINIT_FUNC PyInit_##name(void)
+#define PyMOD_Return(name) return name
 
 
 /*------------------------------
@@ -109,11 +107,23 @@ inline int streq(const char *A, const char *B)  // define "streq"
 
 inline void Assert(int expr, char *msg)         // C++ assert
 {
-    if (!expr) 
+    if (!expr)
     {
       fprintf(stderr, "%s\n", msg);
       exit(-1);
     };
+}
+
+inline PyObject* getTypeAsObject(PyTypeObject* type) {
+    // See https://en.cppreference.com/w/cpp/string/byte/memcpy
+    // and https://en.cppreference.com/w/cpp/language/reinterpret_cast
+    PyObject* obj{};
+    std::memcpy(&obj, &type, sizeof type);
+    return obj;
+}
+
+inline bool asBoolean(PyObject *obj) {
+    return PyObject_IsTrue(obj) != 0;
 }
 
 }
@@ -125,17 +135,17 @@ inline void Assert(int expr, char *msg)         // C++ assert
 /// some basic python macros
 #define Py_NEWARGS 1
 /// return with no return value if nothing happens
-#define Py_Return Py_INCREF(Py_None); return Py_None;
+#define Py_Return return Py_INCREF(Py_None), Py_None
 /// returns an error
-#define Py_Error(E, M)   {PyErr_SetString(E, M); return NULL;}
+#define Py_Error(E, M)   _Py_Error(return(nullptr),E,M)
+#define _Py_Error(R, E, M)   {PyErr_SetString(E, M); R;}
+/// returns an error
+#define Py_ErrorObj(E, O)   _Py_ErrorObj(return(nullptr),E,O)
+#define _Py_ErrorObj(R, E, O)   {PyErr_SetObject(E, O); R;}
 /// checks on a condition and returns an error on failure
 #define Py_Try(F) {if (!(F)) return NULL;}
 /// assert which returns with an error on failure
-#define Py_Assert(A,E,M) {if (!(A)) {PyErr_SetString(E, M); return NULL;}}
-
-
-/// Define the PyParent Object
-typedef PyTypeObject * PyParentObject;
+#define Py_Assert(A,E,M) {if (!(A)) {PyErr_SetString(E, M); return nullptr;}}
 
 
 /// This must be the first line of each PyC++ class
@@ -143,25 +153,7 @@ typedef PyTypeObject * PyParentObject;
 public:                                                     \
     static PyTypeObject   Type;                             \
     static PyMethodDef    Methods[];                        \
-    static PyParentObject Parents[];                        \
-    virtual PyTypeObject *GetType(void) {return &Type;}     \
-    virtual PyParentObject *GetParents(void) {return Parents;}
-
-/** This defines the _getattr_up macro
- *  which allows attribute and method calls
- *  to be properly passed up the hierarchy.
- */
-#define _getattr_up(Parent)                                 \
-{                                                           \
-    PyObject *rvalue = Py_FindMethod(Methods, this, attr);  \
-    if (rvalue == NULL)                                     \
-    {                                                       \
-        PyErr_Clear();                                      \
-        return Parent::_getattr(attr);                      \
-    }                                                       \
-    else                                                    \
-        return rvalue;                                      \
-} 
+    virtual PyTypeObject *GetType(void) {return &Type;}
 
 /*------------------------------
  * PyObjectBase
@@ -173,7 +165,7 @@ namespace Base
 
 /** The PyObjectBase class, exports the class as a python type
  *  PyObjectBase is the base class for all C++ classes which
- *  need to get exported into the python namespace. This class is 
+ *  need to get exported into the python namespace. This class is
  *  very important because nearly all important classes in FreeCAD
  *  are visible in python for macro recording and automation purpose.
  *  The class App::Document is a good expample for an exported class.
@@ -190,9 +182,9 @@ namespace Base
  *  @see Py_Return
  *  @see Py_Error
  *  @see Py_Try
- *  @see Py_Assert  
+ *  @see Py_Assert
  */
-class BaseExport PyObjectBase : public PyObject 
+class BaseExport PyObjectBase : public PyObject //NOLINT
 {
     /** Py_Header struct from python.h.
      *  Every PyObjectBase object is also a python object. So you can use
@@ -200,11 +192,23 @@ class BaseExport PyObjectBase : public PyObject
      */
     Py_Header
 
+    enum Status {
+        Valid = 0,
+        Immutable = 1,
+        Notify = 2,
+        NoTrack = 3
+    };
+
 protected:
     /// destructor
     virtual ~PyObjectBase();
 
-public:  
+    /// Overrides the pointer to the twin object
+    void setTwinPointer(void* ptr) {
+        _pcTwinPointer = ptr;
+    }
+
+public:
     /** Constructor
      *  Sets the Type of the object (for inheritance) and decrease the
      *  the reference count of the PyObject.
@@ -214,9 +218,14 @@ public:
     static void PyDestructor(PyObject *P)   // python wrapper
     {  delete ((PyObjectBase *) P);  }
     /// incref method wrapper (see python extending manual)
-    PyObjectBase* IncRef(void) {Py_INCREF(this);return this;}
-    /// decref method wrapper (see python extending manual)	
-    PyObjectBase* DecRef(void) {Py_DECREF(this);return this;}
+    PyObjectBase* IncRef() {Py_INCREF(this);return this;}
+    /// decref method wrapper (see python extending manual)
+    PyObjectBase* DecRef() {Py_DECREF(this);return this;}
+
+    /// Get the pointer of the twin object
+    void* getTwinPointer() const {
+        return _pcTwinPointer;
+    }
 
     /** GetAttribute implementation
      *  This method implements the retrieval of object attributes.
@@ -224,12 +233,12 @@ public:
      *  this method.
      *  You have to call the method of the base class.
      *  Note: if you reimplement _gettattr() in a inheriting class you
-     *  need to call the method of the base class! Otherwise even the 
+     *  need to call the method of the base class! Otherwise even the
      *  methods of the object will disappear!
      */
-    virtual PyObject *_getattr(char *attr);
-    /// static wrapper for pythons _getattr()
-    static  PyObject *__getattr(PyObject * PyObj, char *attr);
+    virtual PyObject *_getattr(const char *attr);
+    /// static wrapper for pythons _getattro()
+    static  PyObject *__getattro(PyObject * PyObj, PyObject *attro);
 
     /** SetAttribute implementation
      *  This method implements the setting of object attributes.
@@ -237,9 +246,9 @@ public:
      *  this method.
      *  You have to call the method of the base class.
      */
-    virtual int _setattr(char *attr, PyObject *value);    // _setattr method
-    /// static wrapper for pythons _setattr(). // This should be the entry in Type. 
-    static  int __setattr(PyObject *PyObj, char *attr, PyObject *value);
+    virtual int _setattr(const char *attro, PyObject *value);    // _setattr method
+    /// static wrapper for pythons _setattro(). // This should be the entry in Type.
+    static  int __setattro(PyObject *PyObj, PyObject *attro, PyObject *value);
 
     /** _repr method
     * Override this method to return a string object with some
@@ -255,19 +264,19 @@ public:
     * }
     * \endcode
     */
-    virtual PyObject *_repr(void);
+    virtual PyObject *_repr();
     /// python wrapper for the _repr() function
     static  PyObject *__repr(PyObject *PyObj)	{
         if (!((PyObjectBase*) PyObj)->isValid()){
             PyErr_Format(PyExc_ReferenceError, "Cannot print representation of deleted object");
-            return NULL;
+            return nullptr;
         }
         return ((PyObjectBase*) PyObj)->_repr();
     }
 
     /** PyInit method
     * Override this method to initialize a newly created
-    * instance of the class (Constuctor)
+    * instance of the class (Constructor)
     */
     virtual int PyInit(PyObject* /*args*/, PyObject* /*kwd*/)
     {
@@ -279,43 +288,71 @@ public:
         return ((PyObjectBase*) self)->PyInit(args, kwd);
     }
 
-    void setInvalid() { 
+    void setInvalid() {
         // first bit is not set, i.e. invalid
-        StatusBits.reset(0);
-        _pcTwinPointer = 0;
+        StatusBits.reset(Valid);
+        clearAttributes();
+        _pcTwinPointer = nullptr;
     }
 
     bool isValid() {
-        return StatusBits.test(0);
+        return StatusBits.test(Valid);
     }
 
     void setConst() {
         // second bit is set, i.e. immutable
-        StatusBits.set(1);
+        StatusBits.set(Immutable);
     }
 
     bool isConst() {
-        return StatusBits.test(1);
+        return StatusBits.test(Immutable);
     }
 
-    void setAttributeOf(const char* attr, const PyObjectBase* par);
+    void setShouldNotify(bool on) {
+        StatusBits.set(Notify, on);
+    }
+
+    bool shouldNotify() const {
+        return StatusBits.test(Notify);
+    }
+
     void startNotify();
 
-    typedef void* PointerType ;
+    void setNotTracking(bool on=true) {
+        StatusBits.set(NoTrack, on);
+    }
+
+    bool isNotTracking() const {
+        return StatusBits.test(NoTrack);
+    }
+
+    using PointerType = void*;
+
+private:
+    void setAttributeOf(const char* attr, PyObject* par);
+    void resetAttribute();
+    PyObject* getTrackedAttribute(const char* attr);
+    void trackAttribute(const char* attr, PyObject* obj);
+    void untrackAttribute(const char* attr);
+    void clearAttributes();
 
 protected:
-    std::bitset<32> StatusBits;
+    std::bitset<32> StatusBits; //NOLINT
     /// pointer to the handled class
-    void * _pcTwinPointer;
-    PyObjectBase* parent;
-    char* attribute;
+    void * _pcTwinPointer; //NOLINT
+
+public:
+    PyObject* baseProxy{nullptr}; //NOLINT
+
+private:
+    PyObject* attrDict{nullptr};
 };
 
 
 
 
 /** Python dynamic class macro for definition
- * sets up a static/dynamic function entry in a class inheriting 
+ * sets up a static/dynamic function entry in a class inheriting
  * from PyObjectBase. Its a pure convenience macro. You can also do
  * it by hand if you want. It looks like that:
  * \code
@@ -324,7 +361,7 @@ protected:
  *        {return ((FCPyParametrGrp*)self)->PyGetGrp(args);};
  * \endcode
  * first the method is defined which have the functionality then the
- * static wrapper is used to provide a callback for python. The call 
+ * static wrapper is used to provide a callback for python. The call
  * is simply mapped to the method.
  * @param CLASS is the class in which the macro take place.
  * @param DFUNC is the object method get defined and called
@@ -359,7 +396,7 @@ static PyObject * s##DFUNC (PyObject *self, PyObject *args, PyObject * /*kwd*/){
  * PyMethodDef DocTypeStdPy::Methods[] = {
  * 	{"AddFeature",    (PyCFunction) sAddFeature,    Py_NEWARGS},
  * 	{"RemoveFeature", (PyCFunction) sRemoveFeature, Py_NEWARGS},
- *	{NULL, NULL}		
+ *	{NULL, NULL}
  * };
  * \endcode
  * instead of:
@@ -367,20 +404,30 @@ static PyObject * s##DFUNC (PyObject *self, PyObject *args, PyObject * /*kwd*/){
  * PyMethodDef DocTypeStdPy::Methods[] = {
  *	PYMETHODEDEF(AddFeature)
  *	PYMETHODEDEF(RemoveFeature)
- *	{NULL, NULL}		
+ *	{NULL, NULL}
  * };
  * \endcode
- * see PYFUNCDEF_D for details 
+ * see PYFUNCDEF_D for details
  * @param FUNC is the object method get defined
  * @see PYFUNCDEF_D
  * @see PyObjectBase
  */
 #define PYMETHODEDEF(FUNC)	{"" #FUNC "",(PyCFunction) s##FUNC,Py_NEWARGS},
 
-BaseExport extern PyObject* BaseExceptionFreeCADError;
-#define PY_FCERROR (Base::BaseExceptionFreeCADError ? \
- BaseExceptionFreeCADError : PyExc_RuntimeError)
+BaseExport extern PyObject* PyExc_FC_GeneralError;
+#define PY_FCERROR (Base::PyExc_FC_GeneralError ? \
+ PyExc_FC_GeneralError : PyExc_RuntimeError)
 
+BaseExport extern PyObject* PyExc_FC_FreeCADAbort;
+BaseExport extern PyObject* PyExc_FC_XMLBaseException;
+BaseExport extern PyObject* PyExc_FC_XMLParseException;
+BaseExport extern PyObject* PyExc_FC_XMLAttributeError;
+BaseExport extern PyObject* PyExc_FC_UnknownProgramOption;
+BaseExport extern PyObject* PyExc_FC_BadFormatError;
+BaseExport extern PyObject* PyExc_FC_BadGraphError;
+BaseExport extern PyObject* PyExc_FC_ExpressionError;
+BaseExport extern PyObject* PyExc_FC_ParserError;
+BaseExport extern PyObject* PyExc_FC_CADKernelError;
 
 /** Exception handling for python callback functions
  * Is a convenience macro to manage the exception handling of python callback
@@ -390,14 +437,14 @@ BaseExport extern PyObject* BaseExceptionFreeCADError;
  * PYFUNCIMP_D(DocTypeStdPy,AddFeature)
  * {
  *   char *pstr;
- *   if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
- *      return NULL;                             // NULL triggers exception 
- * 
+ *   if (!PyArg_ParseTuple(args, "s", &pstr))
+ *      return nullptr;
+ *
  *   try {
  *     Feature *pcFtr = _pcDocTypeStd->AddFeature(pstr);
  *   }catch(...)                                                        \
  *   {                                                                 \
- * 	 	Py_Error(Base::BaseExceptionFreeCADError,"Unknown C++ exception");          \
+ * 	 	Py_Error(Base::PyExc_FC_GeneralError,"Unknown C++ exception");          \
  *   }catch(FCException e) ..... // and so on....                                                               \
  * }
  * \endcode
@@ -406,104 +453,101 @@ BaseExport extern PyObject* BaseExceptionFreeCADError;
  * PYFUNCIMP_D(DocTypeStdPy,AddFeature)
  * {
  *   char *pstr;
- *   if (!PyArg_ParseTuple(args, "s", &pstr))     // convert args: Python->C 
- *      return NULL;                             // NULL triggers exception 
- * 
+ *   if (!PyArg_ParseTuple(args, "s", &pstr))
+ *      return nullptr;
+ *
  *  PY_TRY {
  *    Feature *pcFtr = _pcDocTypeStd->AddFeature(pstr);
  *  }PY_CATCH;
  * }
  * \endcode
- * this catch maps all of the FreeCAD standard exception to a clear output for the 
+ * this catch maps all of the FreeCAD standard exception to a clear output for the
  * Python exception.
  * @see PYMETHODEDEF
  * @see PyObjectBase
  */
-#define PY_TRY	try 
+#define PY_TRY	try
 
-#ifndef DONT_CATCH_CXX_EXCEPTIONS 
-/// see docu of PY_TRY 
-#  define PY_CATCH catch(Base::Exception &e)                        \
+#define __PY_CATCH(R)                                               \
+    catch(Base::Exception &e)                                       \
     {                                                               \
-        std::string str;                                            \
-        str += "FreeCAD exception thrown (";                        \
-        str += e.what();                                            \
-        str += ")";                                                 \
-        e.ReportException();                                        \
-        Py_Error(Base::BaseExceptionFreeCADError,str.c_str());      \
+        auto pye = e.getPyExceptionType();                          \
+        if(!pye)                                                    \
+            pye = Base::PyExc_FC_GeneralError;                      \
+        _Py_ErrorObj(R,pye,e.getPyObject());                        \
     }                                                               \
-    catch(std::exception &e)                                        \
+    catch(const std::exception &e)                                  \
     {                                                               \
-        std::string str;                                            \
-        str += "STL exception thrown (";                            \
-        str += e.what();                                            \
-        str += ")";                                                 \
-        Base::Console().Error(str.c_str());                         \
-        Py_Error(Base::BaseExceptionFreeCADError,str.c_str());      \
+        _Py_Error(R,Base::PyExc_FC_GeneralError, e.what());         \
     }                                                               \
     catch(const Py::Exception&)                                     \
     {                                                               \
-        return NULL;                                                \
+        R;                                                          \
     }                                                               \
-    catch(const char *e)                                            \
-    {                                                               \
-        Py_Error(Base::BaseExceptionFreeCADError,e);                \
-    }                                                               \
+
+#ifndef DONT_CATCH_CXX_EXCEPTIONS
+/// see docu of PY_TRY
+#  define _PY_CATCH(R)                                              \
+    __PY_CATCH(R)                                                   \
     catch(...)                                                      \
     {                                                               \
-        Py_Error(Base::BaseExceptionFreeCADError,"Unknown C++ exception"); \
+        _Py_Error(R,Base::PyExc_FC_GeneralError,"Unknown C++ exception"); \
     }
 
 #else
-/// see docu of PY_TRY 
-#  define PY_CATCH catch(Base::Exception &e)                        \
-    {                                                               \
-        std::string str;                                            \
-        str += "FreeCAD exception thrown (";                        \
-        str += e.what();                                            \
-        str += ")";                                                 \
-        e.ReportException();                                        \
-        Py_Error(Base::BaseExceptionFreeCADError,str.c_str());      \
-    }                                                               \
-    catch(std::exception &e)                                        \
-    {                                                               \
-        std::string str;                                            \
-        str += "STL exception thrown (";                            \
-        str += e.what();                                            \
-        str += ")";                                                 \
-        Base::Console().Error(str.c_str());                         \
-        Py_Error(Base::BaseExceptionFreeCADError,str.c_str());      \
-    }                                                               \
-    catch(const Py::Exception&)                                     \
-    {                                                               \
-        return NULL;                                                \
-    }                                                               \
-    catch(const char *e)                                            \
-    {                                                               \
-        Py_Error(Base::BaseExceptionFreeCADError,e);                \
-    }
-
+/// see docu of PY_TRY
+#  define _PY_CATCH(R) __PY_CATCH(R)
 #endif  // DONT_CATCH_CXX_EXCEPTIONS
 
-/// Root definition of the inheritance tree of the FreeCAD python objects
-#define PARENTSBasePyObjectBase &Base::PyObjectBase::Type,NULL
+#define PY_CATCH _PY_CATCH(return(nullptr))
 
-/** Python helper class 
+/** Python helper class
  *  This class encapsulate the Decoding of UTF8 to a python object.
  *  Including exception handling.
  */
 inline PyObject * PyAsUnicodeObject(const char *str)
 {
     // Returns a new reference, don't increment it!
-    PyObject *p = PyUnicode_DecodeUTF8(str,strlen(str),0);
-    if(!p)
-        throw Base::Exception("UTF8 conversion failure at PyAsUnicodeString()");
+    Py_ssize_t len = Py_SAFE_DOWNCAST(strlen(str), size_t, Py_ssize_t);
+    PyObject *p = PyUnicode_DecodeUTF8(str, len, nullptr);
+    if (!p)
+        throw Base::UnicodeError("UTF8 conversion failure at PyAsUnicodeString()");
     return p;
 }
 
 inline PyObject * PyAsUnicodeObject(const std::string &str)
 {
     return PyAsUnicodeObject(str.c_str());
+}
+
+/** Helper functions to check if a python object is of a specific type or None,
+ *  otherwise raise an exception.
+ *  If the object is None, the pointer is set to nullptr.
+ */
+inline void PyTypeCheck(PyObject** ptr, PyTypeObject* type, const char* msg=nullptr)
+{
+    if (*ptr == Py_None) {
+        *ptr = nullptr;
+        return;
+    }
+    if (!PyObject_TypeCheck(*ptr, type)) {
+        if (!msg) {
+            std::stringstream str;
+            str << "Type must be " << type->tp_name << " or None, not " << (*ptr)->ob_type->tp_name;
+            throw Base::TypeError(str.str());
+        }
+        throw Base::TypeError(msg);
+    }
+}
+
+inline void PyTypeCheck(PyObject** ptr, int (*method)(PyObject*), const char* msg)
+{
+    if (*ptr == Py_None) {
+        *ptr = nullptr;
+        return;
+    }
+    if (!method(*ptr))
+        throw Base::TypeError(msg);
 }
 
 

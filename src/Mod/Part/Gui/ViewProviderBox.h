@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,7 +24,7 @@
 #ifndef PARTGUI_VIEWPROVIDERBOX_H
 #define PARTGUI_VIEWPROVIDERBOX_H
 
-#include "ViewProvider.h"
+#include "ViewProviderPrimitive.h"
 
 
 class TopoDS_Shape;
@@ -33,25 +33,20 @@ class SoSeparator;
 class SbVec3f;
 class SoTransform;
 
-namespace Gui {
-  class View3DInventorViewer;
-  class SoFCSelection;
-}
-
 namespace PartGui {
 
 
-class PartGuiExport ViewProviderBox:public ViewProviderPart
+class PartGuiExport ViewProviderBox : public ViewProviderPrimitive
 {
-    PROPERTY_HEADER(PartGui::ViewProviderBox);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderBox);
 
 public:
     /// constructor
     ViewProviderBox();
     /// destructor
-    virtual ~ViewProviderBox();
+    ~ViewProviderBox() override;
 
-    std::vector<std::string> getDisplayModes(void) const;
+    std::vector<std::string> getDisplayModes() const override;
 
 protected:
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,48 +20,64 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
 #include <Base/Interpreter.h>
+#include <Base/PyObjectBase.h>
 #include <Gui/Application.h>
 #include <Gui/Language/Translator.h>
+
+#include "ViewProviderEdge2TracObject.h"
 #include "ViewProviderRobotObject.h"
 #include "ViewProviderTrajectory.h"
-#include "ViewProviderEdge2TracObject.h"
-#include "ViewProviderTrajectoryDressUp.h"
 #include "ViewProviderTrajectoryCompound.h"
+#include "ViewProviderTrajectoryDressUp.h"
 #include "Workbench.h"
-//#include "resources/qrc_Robot.cpp"
+
 
 // use a different name to CreateCommand()
-void CreateRobotCommands(void);
-void CreateRobotCommandsExport(void);
-void CreateRobotCommandsInsertRobots(void);
-void CreateRobotCommandsTrajectory(void);
+void CreateRobotCommands();
+void CreateRobotCommandsExport();
+void CreateRobotCommandsInsertRobots();
+void CreateRobotCommandsTrajectory();
 
 void loadRobotResource()
 {
     // add resources and reloads the translators
     Q_INIT_RESOURCE(Robot);
+    Q_INIT_RESOURCE(Robot_translation);
     Gui::Translator::instance()->refresh();
 }
 
-/* registration table  */
-extern struct PyMethodDef RobotGui_Import_methods[];
+namespace RobotGui
+{
+class Module: public Py::ExtensionModule<Module>
+{
+public:
+    Module()
+        : Py::ExtensionModule<Module>("RobotGui")
+    {
+        initialize("This module is the RobotGui module.");  // register with Python
+    }
+
+private:
+};
+
+PyObject* initModule()
+{
+    return Base::Interpreter().addModule(new Module);
+}
+
+}  // namespace RobotGui
 
 
 /* Python entry */
-extern "C" {
-void RobotGuiExport initRobotGui()  
+PyMOD_INIT_FUNC(RobotGui)
 {
-     if (!Gui::Application::Instance) {
+    if (!Gui::Application::Instance) {
         PyErr_SetString(PyExc_ImportError, "Cannot load Gui module in console application.");
-        return;
+        PyMOD_Return(nullptr);
     }
     try {
         Base::Interpreter().runString("import PartGui");
@@ -73,17 +89,17 @@ void RobotGuiExport initRobotGui()
         // default Cintinuity is off
         Base::Interpreter().runString("_DefCont = False");
         // default Cintinuity is off
-        Base::Interpreter().runString("_DefAccelaration = '1 m/s^2'");
+        Base::Interpreter().runString("_DefAcceleration = '1 m/s^2'");
         // default orientation of a waypoint if no other constraint
         Base::Interpreter().runString("_DefOrientation = FreeCAD.Rotation()");
         // default displacement while e.g. picking
         Base::Interpreter().runString("_DefDisplacement = FreeCAD.Vector(0,0,0)");
     }
-    catch(const Base::Exception& e) {
+    catch (const Base::Exception& e) {
         PyErr_SetString(PyExc_ImportError, e.what());
-        return;
+        PyMOD_Return(nullptr);
     }
-    (void) Py_InitModule("RobotGui", RobotGui_Import_methods);   /* mod name, table ptr */
+    PyObject* mod = RobotGui::initModule();
     Base::Console().Log("Loading GUI of Robot module... done\n");
 
     // instantiating the commands
@@ -92,16 +108,18 @@ void RobotGuiExport initRobotGui()
     CreateRobotCommandsInsertRobots();
     CreateRobotCommandsTrajectory();
 
+    // clang-format off
     // addition objects
     RobotGui::Workbench                      ::init();
-	RobotGui::ViewProviderRobotObject        ::init();
-	RobotGui::ViewProviderTrajectory         ::init();
-	RobotGui::ViewProviderEdge2TracObject    ::init();
-	RobotGui::ViewProviderTrajectoryCompound ::init();
-	RobotGui::ViewProviderTrajectoryDressUp  ::init();
+    RobotGui::ViewProviderRobotObject        ::init();
+    RobotGui::ViewProviderTrajectory         ::init();
+    RobotGui::ViewProviderEdge2TracObject    ::init();
+    RobotGui::ViewProviderTrajectoryCompound ::init();
+    RobotGui::ViewProviderTrajectoryDressUp  ::init();
+    // clang-format on
 
-     // add resources and reloads the translators
+    // add resources and reloads the translators
     loadRobotResource();
-}
 
-} // extern "C" {
+    PyMOD_Return(mod);
+}

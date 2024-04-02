@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) YEAR YOUR NAME         <Your e-mail address>            *
+ *   Copyright (c) 2011 Werner Mayer <wmayer[at]users.sourceforge.net>     *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,16 +24,18 @@
 #ifndef BASE_FILETEMPLATE_H
 #define BASE_FILETEMPLATE_H
 
-// Std. configurations
-
 #include <string>
+#ifndef FC_GLOBAL_H
+#include <FCGlobal.h>
+#endif
+
 
 namespace Base
 {
 
 
 /** A test class. A more elaborate class description.
- * Detaild description with some formating:
+ * Detailed description with some formatting:
  *  \par
  *  bla blablablablablablabl:
  *  \code
@@ -41,13 +43,13 @@ namespace Base
  *  Base::Console().Log("Stage: %d",i);
  *  \endcode
  *  \par
- *  nother blablablablablablablablablabl:
+ *  another blablablablablablablablablabl:
  * Text before the list
  * - list item 1
  *   - sub item 1
  *     - sub sub item 1
  *     - sub sub item 2
- *     . 
+ *     .
  *     The dot above ends the sub sub item list.
  *     More text for the first sub item
  *   .
@@ -65,12 +67,12 @@ namespace Base
  *  <li> mouse events
  *     <ol>
  *     <li>mouse move event
- *     <li>mouse click event\n
+ *     <li>mouse click event
  *         More info about the click event.
  *     <li>mouse double click event
  *     </ol>
  *  <li> keyboard events
- *     <ol>     
+ *     <ol>
  *     <li>key down event
  *     <li>key up event
  *     </ol>
@@ -89,18 +91,18 @@ public:
 
     int testMe(int a,const char *s);
 
-    /** 
+    /**
      * An enum.
      * More detailed enum description.
      */
 
-    enum TEnum { 
-        TVal1, /**< enum value TVal1. */  
-        TVal2, /**< enum value TVal2. */  
-        TVal3  /**< enum value TVal3. */  
-    } 
-    *enumPtr, /**< enum pointer. Details. */
-    enumVar;  /**< enum variable. Details. */
+    enum TEnum {
+        TVal1, /**< enum value TVal1. */
+        TVal2, /**< enum value TVal2. */
+        TVal3  /**< enum value TVal3. */
+    }
+    *enumPtr{nullptr}, /**< enum pointer. Details. */
+    enumVar{TVal1};  /**< enum variable. Details. */
 
     /**
      * A pure virtual member.
@@ -113,25 +115,25 @@ public:
     /** @name a group of methods */
     //@{
     /// I am method one
-    virtual void one(void)=0;
+    virtual void one()=0;
     /// I am method two
-    virtual void two(void)=0;
+    virtual void two()=0;
     /// I am method three
-    virtual void three(void)=0;
+    virtual void three()=0;
     //@}
 
 
-    /** 
+    /**
     * a public variable.
     * Details.
     */
-    int publicVar;
- 
+    int publicVar{0};
+
     /**
      * a function variable.
      * Details.
      */
-    int (*handler)(int a,int b);
+    int (*handler)(int a,int b){nullptr};
 
     std::string something;
 };

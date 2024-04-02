@@ -20,27 +20,26 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
 # include <Inventor/nodes/SoMaterial.h>
 #endif
 
-#include "ViewProviderBuilder.h"
 #include <App/PropertyStandard.h>
+
+#include "ViewProviderBuilder.h"
+#include "SoFCSelection.h"
+#include "Window.h"
+
 
 using namespace Gui;
 
 std::map<Base::Type, Base::Type> ViewProviderBuilder::_prop_to_view;
 
-ViewProviderBuilder::ViewProviderBuilder() 
-{
-}
+ViewProviderBuilder::ViewProviderBuilder() = default;
 
-ViewProviderBuilder::~ViewProviderBuilder()
-{
-}
+ViewProviderBuilder::~ViewProviderBuilder() = default;
 
 void ViewProviderBuilder::add(const Base::Type& prop, const Base::Type& view)
 {
@@ -51,35 +50,64 @@ ViewProvider* ViewProviderBuilder::create(const Base::Type& type)
 {
     std::map<Base::Type, Base::Type>::iterator it = _prop_to_view.find(type);
     if (it != _prop_to_view.end())
-        return reinterpret_cast<ViewProvider*>(it->second.createInstance());
-    return 0;
+        return static_cast<ViewProvider*>(it->second.createInstance());
+    return nullptr;
+}
+
+Gui::SoFCSelection* ViewProviderBuilder::createSelection()
+{
+    auto sel = new Gui::SoFCSelection();
+
+    float transparency;
+    ParameterGrp::handle hGrp = Gui::WindowParameter::getDefaultParameter()->GetGroup("View");
+    bool enablePre = hGrp->GetBool("EnablePreselection", true);
+    bool enableSel = hGrp->GetBool("EnableSelection", true);
+    if (!enablePre) {
+        sel->highlightMode = Gui::SoFCSelection::OFF;
+    }
+    else {
+        // Search for a user defined value with the current color as default
+        SbColor highlightColor = sel->colorHighlight.getValue();
+        auto highlight = (unsigned long)(highlightColor.getPackedValue());
+        highlight = hGrp->GetUnsigned("HighlightColor", highlight);
+        highlightColor.setPackedValue((uint32_t)highlight, transparency);
+        sel->colorHighlight.setValue(highlightColor);
+    }
+    if (!enableSel) {
+        sel->selectionMode = Gui::SoFCSelection::SEL_OFF;
+    }
+    else {
+        // Do the same with the selection color
+        SbColor selectionColor = sel->colorSelection.getValue();
+        auto selection = (unsigned long)(selectionColor.getPackedValue());
+        selection = hGrp->GetUnsigned("SelectionColor", selection);
+        selectionColor.setPackedValue((uint32_t)selection, transparency);
+        sel->colorSelection.setValue(selectionColor);
+    }
+
+    return sel;
 }
 
 // --------------------------------------
 
-ViewProviderColorBuilder::ViewProviderColorBuilder() 
-{
-}
+ViewProviderColorBuilder::ViewProviderColorBuilder() = default;
 
-ViewProviderColorBuilder::~ViewProviderColorBuilder()
-{
-}
+ViewProviderColorBuilder::~ViewProviderColorBuilder() = default;
 
-void ViewProviderColorBuilder::buildNodes(const App::Property* prop, std::vector<SoNode*>&) const
+void ViewProviderColorBuilder::buildNodes(const App::Property* prop, std::vector<SoNode*>& node) const
 {
-    const App::PropertyColorList* color = static_cast<const App::PropertyColorList*>(prop);
+    const auto color = static_cast<const App::PropertyColorList*>(prop);
     const std::vector<App::Color>& val = color->getValues();
     unsigned long i=0;
 
-    SoMaterial* material = new SoMaterial();
-    material->enableNotify(false);
-    material->diffuseColor.deleteValues(0);
+    auto material = new SoMaterial();
     material->diffuseColor.setNum(val.size());
 
-    for (std::vector<App::Color>::const_iterator it = val.begin(); it != val.end(); ++it) {
-        material->diffuseColor.set1Value(i++, SbColor(it->r, it->g, it->b));
+    SbColor* colors = material->diffuseColor.startEditing();
+    for (const auto & it : val) {
+        colors[i].setValue(it.r, it.g, it.b);
+        i++;
     }
-
-    material->enableNotify(true);
-    material->touch();
+    material->diffuseColor.finishEditing();
+    node.push_back(material);
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2009     *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,54 +20,60 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef FEM_FEMMESH_H
 #define FEM_FEMMESH_H
 
-#include <App/ComplexGeoData.h>
-#include <Base/Placement.h>
-#include <Base/Quantity.h>
-
-#include <vector>
 #include <list>
-#include <boost/shared_ptr.hpp>
+#include <memory>
+#include <vector>
+
+#include <SMDSAbs_ElementType.hxx>
+#include <SMESH_Version.h>
+
+#include <App/ComplexGeoData.h>
+#include <Base/Quantity.h>
+#include <Mod/Fem/FemGlobal.h>
+
 
 class SMESH_Gen;
 class SMESH_Mesh;
 class SMESH_Hypothesis;
 class TopoDS_Shape;
 class TopoDS_Face;
+class TopoDS_Edge;
+class TopoDS_Vertex;
+class TopoDS_Solid;
 
 namespace Fem
 {
 
-typedef boost::shared_ptr<SMESH_Hypothesis> SMESH_HypothesisPtr;
+using SMESH_HypothesisPtr = std::shared_ptr<SMESH_Hypothesis>;
 
 /** The representation of a FemMesh
  */
-class AppFemExport FemMesh : public Data::ComplexGeoData
+class FemExport FemMesh: public Data::ComplexGeoData
 {
-    TYPESYSTEM_HEADER();
+    TYPESYSTEM_HEADER_WITH_OVERRIDE();
 
 public:
     FemMesh();
     FemMesh(const FemMesh&);
-    ~FemMesh();
+    ~FemMesh() override;
 
-    FemMesh &operator=(const FemMesh&);
+    FemMesh& operator=(const FemMesh&);
     const SMESH_Mesh* getSMesh() const;
     SMESH_Mesh* getSMesh();
-    SMESH_Gen * getGenerator();
-    void addHypothesis(const TopoDS_Shape & aSubShape, SMESH_HypothesisPtr hyp);
-    void setStanardHypotheses();
+    static SMESH_Gen* getGenerator();
+    void addHypothesis(const TopoDS_Shape& aSubShape, SMESH_HypothesisPtr hyp);
+    void setStandardHypotheses();
     void compute();
 
     // from base class
-    virtual unsigned int getMemSize (void) const;
-    virtual void Save (Base::Writer &/*writer*/) const;
-    virtual void Restore(Base::XMLReader &/*reader*/);
-    void SaveDocFile (Base::Writer &writer) const;
-    void RestoreDocFile(Base::Reader &reader);
+    unsigned int getMemSize() const override;
+    void Save(Base::Writer& /*writer*/) const override;
+    void Restore(Base::XMLReader& /*reader*/) override;
+    void SaveDocFile(Base::Writer& writer) const override;
+    void RestoreDocFile(Base::Reader& reader) override;
 
     /** @name Subelement management */
     //@{
@@ -75,40 +81,79 @@ public:
      *  List of different subelement types
      *  it is NOT a list of the subelements itself
      */
-    virtual std::vector<const char*> getElementTypes(void) const;
-    virtual unsigned long countSubElements(const char* Type) const;
+    std::vector<const char*> getElementTypes() const override;
+    unsigned long countSubElements(const char* Type) const override;
     /// get the subelement by type and number
-    virtual Data::Segment* getSubElement(const char* Type, unsigned long) const;
+    Data::Segment* getSubElement(const char* Type, unsigned long) const override;
+    /** Get points from object with given accuracy */
+    void getPoints(std::vector<Base::Vector3d>& Points,
+                   std::vector<Base::Vector3d>& Normals,
+                   double Accuracy,
+                   uint16_t flags = 0) const override;
     //@}
 
-    /** @name search and retraivel */
+    /** @name search and retrieval */
     //@{
-    /// retriving by region growing
-    std::set<long> getSurfaceNodes(long ElemId,short FaceId, float Angle=360)const;
-    /// retrivinb by face
-    std::set<long> getSurfaceNodes(const TopoDS_Face &face)const;
+    /// retrieving by region growing
+    std::set<long> getSurfaceNodes(long ElemId, short FaceId, float Angle = 360) const;
+    /// retrieving by solid
+    std::set<int> getNodesBySolid(const TopoDS_Solid& solid) const;
+    /// retrieving by face
+    std::set<int> getNodesByFace(const TopoDS_Face& face) const;
+    /// retrieving by edge
+    std::set<int> getNodesByEdge(const TopoDS_Edge& edge) const;
+    /// retrieving by vertex
+    std::set<int> getNodesByVertex(const TopoDS_Vertex& vertex) const;
+    /// retrieving node IDs by element ID
+    std::list<int> getElementNodes(int id) const;
+    /// retrieving elements IDs by node ID
+    std::list<int> getNodeElements(int id, SMDSAbs_ElementType type = SMDSAbs_All) const;
+    /// retrieving face IDs number by face
+    std::list<int> getFacesByFace(const TopoDS_Face& face) const;
+    /// retrieving edge IDs number by edge
+    std::list<int> getEdgesByEdge(const TopoDS_Edge& edge) const;
+    /// retrieving volume IDs and face IDs number by face
+    std::list<std::pair<int, int>> getVolumesByFace(const TopoDS_Face& face) const;
+    /// retrieving volume IDs and CalculiX face number by face
+    std::map<int, int> getccxVolumesByFace(const TopoDS_Face& face) const;
+    /// retrieving IDs of edges not belonging to any face (and thus not belonging to any volume too)
+    std::set<int> getEdgesOnly() const;
+    /// retrieving IDs of faces not belonging to any volume
+    std::set<int> getFacesOnly() const;
     //@}
 
     /** @name Placement control */
     //@{
-    /// set the transformation 
-    void setTransform(const Base::Matrix4D& rclTrf);
-    /// get the transformation 
-    Base::Matrix4D getTransform(void) const;
+    /// set the transformation
+    void setTransform(const Base::Matrix4D& rclTrf) override;
+    /// get the transformation
+    Base::Matrix4D getTransform() const override;
     /// Bound box from the shape
-    Base::BoundBox3d getBoundBox(void)const;
+    Base::BoundBox3d getBoundBox() const override;
     /// get the volume (when there are volume elements)
-    Base::Quantity getVolume(void)const;
+    Base::Quantity getVolume() const;
     //@}
 
     /** @name Modification */
     //@{
     /// Applies a transformation on the real geometric data type
-    void transformGeometry(const Base::Matrix4D &rclMat);
+    void transformGeometry(const Base::Matrix4D& rclMat) override;
     //@}
 
-    struct FemMeshInfo {
-	    int numFaces; 
+    /** @name Group management */
+    //@{
+    /// Adds group to mesh
+    int addGroup(const std::string, const std::string, const int = -1);
+    /// Adds elements to group (int due to int used by raw SMESH functions)
+    void addGroupElements(int, const std::set<int>&);
+    /// Remove group (Name due to similarity to SMESH basis functions)
+    bool removeGroup(int);
+    //@}
+
+
+    struct FemMeshInfo
+    {
+        int numFaces;
         int numNode;
         int numTria;
         int numQuad;
@@ -122,27 +167,31 @@ public:
     };
 
     ///
-    struct FemMeshInfo getInfo(void) const;
+    struct FemMeshInfo getInfo() const;
 
     /// import from files
-    void read(const char *FileName);
-    void write(const char *FileName) const;
-    void writeABAQUS(const std::string &Filename) const;
+    void read(const char* FileName);
+    void write(const char* FileName) const;
+    void writeABAQUS(const std::string& Filename, int elemParam, bool groupParam) const;
+    void writeZ88(const std::string& FileName) const;
 
 private:
     void copyMeshData(const FemMesh&);
-    void readNastran(const std::string &Filename);
+    void readNastran(const std::string& Filename);
+    void readNastran95(const std::string& Filename);
+    void readZ88(const std::string& Filename);
+    void readAbaqus(const std::string& Filename);
 
 private:
     /// positioning matrix
     Base::Matrix4D _Mtrx;
-    SMESH_Gen  *myGen;
-    SMESH_Mesh *myMesh;
+    SMESH_Mesh* myMesh;
 
     std::list<SMESH_HypothesisPtr> hypoth;
+    static SMESH_Gen* _mesh_gen;
 };
 
-} //namespace Part
+}  // namespace Fem
 
 
-#endif // FEM_FEMMESH_H
+#endif  // FEM_FEMMESH_H

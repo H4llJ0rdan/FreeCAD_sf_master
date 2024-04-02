@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2012 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2012 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,18 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_ProjectView_H
 #define GUI_ProjectView_H
 
 #include <QTreeView>
 
-#include <App/Document.h>
-#include <App/Application.h>
 
-#include <Gui/DockWindow.h>
-#include <Gui/Selection.h>
-class QDirModel;
+class QFileSystemModel;
 
 namespace Gui {
 
@@ -44,14 +39,13 @@ class ProjectWidget : public QTreeView
     Q_OBJECT
 
 public:
-    ProjectWidget(QWidget* parent=0);
-    ~ProjectWidget();
+    explicit ProjectWidget(QWidget* parent=nullptr);
+    ~ProjectWidget() override;
 
 private:
-    QDirModel *fileModel;
- 
-};
+    QFileSystemModel *fileModel;
 
+};
 
 
 }

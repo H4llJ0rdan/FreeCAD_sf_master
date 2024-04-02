@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2005     *
+ *   Copyright (c) 2005 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,14 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 
- 
 #include "PreCompiled.h"
-#ifndef _PreComp_
-#endif
 
 #include <Base/Console.h>
-#include <Base/Exception.h>
-#include <Base/Sequencer.h>
+
 #include "FeaturePartCurveNet.h"
 
 
@@ -47,7 +43,7 @@ short CurveNet::mustExecute() const
     return 0;
 }
 
-App::DocumentObjectExecReturn *CurveNet::execute(void)
+App::DocumentObjectExecReturn *CurveNet::execute()
 {
     Base::FileInfo fi(FileName.getValue());
     if (!fi.isReadable()) {
@@ -57,7 +53,7 @@ App::DocumentObjectExecReturn *CurveNet::execute(void)
     }
 
     TopoShape aShape;
-    aShape.read((const Standard_CString)FileName.getValue());
+    aShape.read(FileName.getValue());
     this->Shape.setValue(aShape);
 
     return App::DocumentObject::StdReturn;

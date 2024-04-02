@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,50 +20,71 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <Python.h>
-#endif
 
 #include <Base/Console.h>
+#include <Base/Interpreter.h>
+#include <Base/PyObjectBase.h>
 #include <Gui/Application.h>
 #include <Gui/Language/Translator.h>
+
+#include "CurveOnMesh.h"
 #include "Workbench.h"
-//#include "resources/qrc_MeshPart.cpp"
+
 
 // use a different name to CreateCommand()
-void CreateMeshPartCommands(void);
+void CreateMeshPartCommands();
 
 void loadMeshPartResource()
 {
     // add resources and reloads the translators
     Q_INIT_RESOURCE(MeshPart);
+    Q_INIT_RESOURCE(MeshPart_translation);
     Gui::Translator::instance()->refresh();
 }
 
-/* registration table  */
-extern struct PyMethodDef MeshPartGui_Import_methods[];
+namespace MeshPartGui
+{
+class Module: public Py::ExtensionModule<Module>
+{
+public:
+    Module()
+        : Py::ExtensionModule<Module>("MeshPartGui")
+    {
+        initialize("This module is the MeshPartGui module.");  // register with Python
+    }
+
+private:
+};
+
+PyObject* initModule()
+{
+    return Base::Interpreter().addModule(new Module);
+}
+
+}  // namespace MeshPartGui
 
 
 /* Python entry */
-extern "C" {
-void MeshPartGuiExport initMeshPartGui()
+PyMOD_INIT_FUNC(MeshPartGui)
 {
     if (!Gui::Application::Instance) {
         PyErr_SetString(PyExc_ImportError, "Cannot load Gui module in console application.");
-        return;
+        PyMOD_Return(nullptr);
     }
 
-    (void) Py_InitModule("MeshPartGui", MeshPartGui_Import_methods);   /* mod name, table ptr */
+    PyObject* mod = MeshPartGui::initModule();
     Base::Console().Log("Loading GUI of MeshPart module... done\n");
 
+    // clang-format off
     // instantiating the commands
     CreateMeshPartCommands();
-    MeshPartGui::Workbench::init();
+    MeshPartGui::Workbench                  ::init();
+    MeshPartGui::ViewProviderCurveOnMesh    ::init();
+    // clang-format on
 
-     // add resources and reloads the translators
+    // add resources and reloads the translators
     loadMeshPartResource();
-}
 
-} // extern "C" {
+    PyMOD_Return(mod);
+}

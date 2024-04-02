@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,7 +24,7 @@
 #ifndef GUI_MACRO_H
 #define GUI_MACRO_H
 
-// Std. configurations
+#include <tuple>
 #include <QString>
 #include <QStringList>
 #include <Base/Observer.h>
@@ -36,36 +36,94 @@ struct ApplicationP;
 class PythonConsole;
 class PythonDebugger;
 
+class MacroFile
+{
+public:
+    MacroFile();
+    void open(const char *sName);
+    /// indicates if a macro recording is in progress
+    bool isOpen() const {
+        return openMacro;
+    }
+    void append(const QString&);
+    void append(const QStringList&);
+    QString fileName() const {
+        return macroName;
+    }
+    bool commit();
+    void cancel();
+
+private:
+    QStringList macroInProgress;    /**< Container for the macro */
+    QString macroName;              /**< name of the macro */
+    bool openMacro{false};
+};
+
+class MacroOutputBuffer
+{
+public:
+    MacroOutputBuffer();
+    /// Return the added lines regardless of recording or not
+    long getLines() const {
+        return totalLines;
+    }
+    /// insert a new pending line in the macro
+    void addPendingLine(int type, const char* line);
+    bool addPendingLineIfComment(int type, const char* line);
+    bool hasPendingLines() const {
+        return !pendingLine.empty();
+    }
+    void incrementIfNoComment(int type);
+
+    long totalLines{0};
+    std::vector<std::pair<int, std::string> > pendingLine;
+};
+
+class MacroOutputOption
+{
+public:
+    MacroOutputOption();
+    std::tuple<bool, bool> values(int type) const;
+
+    static bool isComment(int type);
+    static bool isGuiCommand(int type);
+    static bool isAppCommand(int type);
+
+    bool recordGui{true};
+    bool guiAsComment{true};
+    bool scriptToPyConsole{true};
+};
+
 /** Macro recording and play back management
  * The purpos of this class is to handle record function calls from a command and save it in
  * a macro file (so far).
- * \author Jürgen Riegel
+ * \author JÃ¼rgen Riegel
  */
-class GuiExport MacroManager : public Base::Observer<const char*> 
+class GuiExport MacroManager : public Base::Observer<const char*>
 {
 protected:
     MacroManager();
-    ~MacroManager();
+    ~MacroManager() override;
 
 public:
 
     /** Macro type enumeration  */
-    enum MacroType { 
-        File, /**< The macro will be saved in a file */  
-        User, /**< The macro belongs to the Application and will be saved in the UserParameter */  
-        Doc   /**< The macro belongs to the Document and will be saved and restored with the Document */  
-    }; 
+    enum MacroType {
+        File, /**< The macro will be saved in a file */
+        User, /**< The macro belongs to the Application and will be saved in the UserParameter */
+        Doc   /**< The macro belongs to the Document and will be saved and restored with the Document */
+    };
 
     /** Line type enumeration  */
-    enum LineType { 
+    enum LineType {
         App,  /**< The line effects only the document and Application (FreeCAD) */
         Gui,  /**< The line effects the Gui (FreeCADGui) */
-        Cmt   /**< The line is handled as a comment */
-    }; 
+        Cmt,  /**< The line is handled as a comment */
+    };
 
     /** Opens a new Macro recording session
      * Starts a session with the type and the name of the macro.
-     * All user interactions will be recorded as long as the commit() or cancel() isn't called. 
+     * All user interactions will be recorded as long as the commit() or cancel() isn't called.
      * There is only one recording session possible. Trying to open a second one causes an exception:
      * @param eType Type of the macro
      * @param sName Name or path of the macro
@@ -74,15 +132,19 @@ public:
      */
     void open(MacroType eType,const char *sName);
     /// close (and save) the recording session
-    void commit(void);
+    void commit();
     /// cancels the recording session
-    void cancel(void);
-    /// indicates if a macro recording in in progress
-    bool isOpen(void) const {return openMacro;}
+    void cancel();
+    /// indicates if a macro recording is in progress
+    bool isOpen() const {
+        return macroFile.isOpen();
+    }
     /// insert a new line in the macro
-    void addLine(LineType Type,const char* sLine);
-    /** Set the active module 
-     * This is normaly done by the workbench switch. It sets
+    void addLine(LineType Type, const char* sLine);
+    /// insert a new pending line in the macro
+    void addPendingLine(LineType type, const char* line);
+    /** Set the active module
+     * This is normally done by the workbench switch. It sets
      * the actually active application module so when the macro
      * gets started the right import can be issued.
      */
@@ -90,18 +152,26 @@ public:
     void run(MacroType eType,const char *sName);
     /// Get the Python debugger
     PythonDebugger* debugger() const;
+    PythonConsole* getPythonConsole() const;
     /** Observes its parameter group. */
-    void OnChange(Base::Subject<const char*> &rCaller, const char * sReason);
+    void OnChange(Base::Subject<const char*> &rCaller, const char * sReason) override;
 
-protected:
-    QStringList macroInProgress;    /**< Container for the macro */
-    QString macroName;              /**< name of the macro */
-    bool openMacro;
-    bool recordGui;
-    bool guiAsComment;
-    bool scriptToPyConsole;
-    bool localEnv;
-    PythonConsole* pyConsole;       // link to the python console
+    /// Return the added lines regardless of recording or not
+    long getLines() const {
+        return buffer.getLines();
+    }
+
+private:
+    void processPendingLines();
+    void makeComment(QStringList& lines) const;
+    void addToOutput(LineType type, const char* line);
+
+private:
+    MacroFile macroFile;
+    MacroOutputBuffer buffer;
+    MacroOutputOption option;
+    bool localEnv{true};
+    mutable PythonConsole* pyConsole{nullptr};       // link to the python console
     PythonDebugger* pyDebugger;
     Base::Reference<ParameterGrp> params;  // link to the Macro parameter group
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2005 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2005 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,16 +20,15 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef _SoFCSelectionAction_h
 #define _SoFCSelectionAction_h
 
-//#include <Inventor/SoAction.h> 
-#include <Inventor/actions/SoSubAction.h>
-#include <Inventor/events/SoSubEvent.h>
-#include <Inventor/actions/SoGLRenderAction.h>
 #include <Inventor/SbColor.h>
+#include <Inventor/actions/SoGLRenderAction.h>
+#include <Inventor/fields/SoSFColor.h>
+#include <Inventor/fields/SoSFString.h>
 #include <vector>
+#include <FCGlobal.h>
 
 class SoSFString;
 class SoSFColor;
@@ -39,9 +38,34 @@ namespace Gui {
 class SelectionChanges;
 
 /**
+ * The SoFCHighlightAction class is used to inform an SoFCSelection node
+ * whether an object gets highlighted.
+ * @author JÃ¼rgen Riegel
+ */
+class GuiExport SoFCHighlightAction : public SoAction
+{
+    SO_ACTION_HEADER(SoFCHighlightAction);
+
+public:
+    SoFCHighlightAction (const SelectionChanges &SelCh);
+    ~SoFCHighlightAction() override;
+
+    static void initClass();
+    static void finish();
+
+    const SelectionChanges &SelChange;
+
+protected:
+    void beginTraversal(SoNode *node) override;
+
+private:
+    static void callDoAction(SoAction *action,SoNode *node);
+};
+
+/**
  * The SoFCSelectionAction class is used to inform an SoFCSelection node
- * whether an object gets selected. 
- * @author Jürgen Riegel
+ * whether an object gets selected.
+ * @author JÃ¼rgen Riegel
  */
 class GuiExport SoFCSelectionAction : public SoAction
 {
@@ -49,15 +73,15 @@ class GuiExport SoFCSelectionAction : public SoAction
 
 public:
     SoFCSelectionAction (const SelectionChanges &SelCh);
-    ~SoFCSelectionAction();
+    ~SoFCSelectionAction() override;
 
     static void initClass();
-    static void finish(void);
+    static void finish();
 
     const SelectionChanges &SelChange;
 
 protected:
-    virtual void beginTraversal(SoNode *node);
+    void beginTraversal(SoNode *node) override;
 
 private:
     static void callDoAction(SoAction *action,SoNode *node);
@@ -65,7 +89,7 @@ private:
 
 /**
  * The SoFCEnableSelectionAction class is used to inform an SoFCSelection node
- * whether selection is enabled or disabled. 
+ * whether selection is enabled or disabled.
  * @author Werner Mayer
  */
 class GuiExport SoFCEnableSelectionAction : public SoAction
@@ -74,15 +98,15 @@ class GuiExport SoFCEnableSelectionAction : public SoAction
 
 public:
     SoFCEnableSelectionAction (const SbBool& sel);
-    ~SoFCEnableSelectionAction();
+    ~SoFCEnableSelectionAction() override;
 
-    const SbBool& selection;
+    SbBool selection;
 
     static void initClass();
-    static void finish(void);
+    static void finish();
 
 protected:
-    virtual void beginTraversal(SoNode *node);
+    void beginTraversal(SoNode *node) override;
 
 private:
     static void callDoAction(SoAction *action,SoNode *node);
@@ -90,7 +114,7 @@ private:
 
 /**
  * The SoFCEnableHighlightAction class is used to inform an SoFCSelection node
- * whether preselection is enabled or disabled. 
+ * whether preselection is enabled or disabled.
  * @author Werner Mayer
  */
 class GuiExport SoFCEnableHighlightAction : public SoAction
@@ -99,15 +123,15 @@ class GuiExport SoFCEnableHighlightAction : public SoAction
 
 public:
     SoFCEnableHighlightAction (const SbBool& sel);
-    ~SoFCEnableHighlightAction();
+    ~SoFCEnableHighlightAction() override;
 
-    const SbBool& highlight;
+    SbBool highlight;
 
     static void initClass();
-    static void finish(void);
+    static void finish();
 
 protected:
-    virtual void beginTraversal(SoNode *node);
+    void beginTraversal(SoNode *node) override;
 
 private:
     static void callDoAction(SoAction *action,SoNode *node);
@@ -115,7 +139,7 @@ private:
 
 /**
  * The SoFCSelectionColorAction class is used to inform an SoFCSelection node
- * which selection color is used. 
+ * which selection color is used.
  * @author Werner Mayer
  */
 class GuiExport SoFCSelectionColorAction : public SoAction
@@ -124,15 +148,15 @@ class GuiExport SoFCSelectionColorAction : public SoAction
 
 public:
     SoFCSelectionColorAction (const SoSFColor& col);
-    ~SoFCSelectionColorAction();
+    ~SoFCSelectionColorAction() override;
 
-    const SoSFColor& selectionColor;
+    SoSFColor selectionColor;
 
     static void initClass();
-    static void finish(void);
+    static void finish();
 
 protected:
-    virtual void beginTraversal(SoNode *node);
+    void beginTraversal(SoNode *node) override;
 
 private:
     static void callDoAction(SoAction *action,SoNode *node);
@@ -140,7 +164,7 @@ private:
 
 /**
  * The SoFCHighlightColorAction class is used to inform an SoFCSelection node
- * which preselection color is used. 
+ * which preselection color is used.
  * @author Werner Mayer
  */
 class GuiExport SoFCHighlightColorAction : public SoAction
@@ -149,15 +173,15 @@ class GuiExport SoFCHighlightColorAction : public SoAction
 
 public:
     SoFCHighlightColorAction (const SoSFColor& col);
-    ~SoFCHighlightColorAction();
+    ~SoFCHighlightColorAction() override;
 
-    const SoSFColor& highlightColor;
+    SoSFColor highlightColor;
 
     static void initClass();
-    static void finish(void);
+    static void finish();
 
 protected:
-    virtual void beginTraversal(SoNode *node);
+    void beginTraversal(SoNode *node) override;
 
 private:
     static void callDoAction(SoAction *action,SoNode *node);
@@ -165,7 +189,7 @@ private:
 
 /**
  * The SoFCDocumentAction class is used to inform an SoFCSelection node
- * when a document has been renamed. 
+ * when a document has been renamed.
  * @author Werner Mayer
  */
 class GuiExport SoFCDocumentAction : public SoAction
@@ -174,15 +198,15 @@ class GuiExport SoFCDocumentAction : public SoAction
 
 public:
     SoFCDocumentAction (const SoSFString& docName);
-    ~SoFCDocumentAction();
+    ~SoFCDocumentAction() override;
 
-    const SoSFString& documentName;
+    SoSFString documentName;
 
     static void initClass();
-    static void finish(void);
+    static void finish();
 
 protected:
-    virtual void beginTraversal(SoNode *node);
+    void beginTraversal(SoNode *node) override;
 
 private:
     static void callDoAction(SoAction *action,SoNode *node);
@@ -199,16 +223,16 @@ class GuiExport SoFCDocumentObjectAction : public SoAction
 
 public:
     SoFCDocumentObjectAction ();
-    ~SoFCDocumentObjectAction();
+    ~SoFCDocumentObjectAction() override;
 
     void setHandled();
     SbBool isHandled() const;
 
     static void initClass();
-    static void finish(void);
+    static void finish();
 
 protected:
-    virtual void beginTraversal(SoNode *node);
+    void beginTraversal(SoNode *node) override;
 
 private:
     static void callDoAction(SoAction *action,SoNode *node);
@@ -219,7 +243,7 @@ public:
     SbString componentName;
 
 private:
-    SbBool _handled;
+    SbBool _handled{false};
 };
 
 /**
@@ -232,7 +256,7 @@ class GuiExport SoGLSelectAction : public SoAction
 
 public:
     SoGLSelectAction (const SbViewportRegion& region, const SbViewportRegion& select);
-    ~SoGLSelectAction();
+    ~SoGLSelectAction() override;
 
     void setHandled();
     SbBool isHandled() const;
@@ -241,7 +265,7 @@ public:
     static void initClass();
 
 protected:
-    virtual void beginTraversal(SoNode *node);
+    void beginTraversal(SoNode *node) override;
 
 private:
     static void callDoAction(SoAction *action,SoNode *node);
@@ -252,7 +276,7 @@ public:
 private:
     const SbViewportRegion& vpregion;
     const SbViewportRegion& vpselect;
-    SbBool _handled;
+    SbBool _handled{false};
 };
 
 /**
@@ -264,7 +288,7 @@ class GuiExport SoVisibleFaceAction : public SoAction
 
 public:
     SoVisibleFaceAction ();
-    ~SoVisibleFaceAction();
+    ~SoVisibleFaceAction() override;
 
     void setHandled();
     SbBool isHandled() const;
@@ -272,13 +296,13 @@ public:
     static void initClass();
 
 protected:
-    virtual void beginTraversal(SoNode *node);
+    void beginTraversal(SoNode *node) override;
 
 private:
     static void callDoAction(SoAction *action,SoNode *node);
 
 private:
-    SbBool _handled;
+    SbBool _handled{false};
 };
 
 class SoBoxSelectionRenderActionP;
@@ -287,40 +311,62 @@ class SoBoxSelectionRenderActionP;
  * @author Werner Mayer
  */
 class GuiExport SoBoxSelectionRenderAction : public SoGLRenderAction {
-    typedef SoGLRenderAction inherited;
+    using inherited = SoGLRenderAction;
 
     SO_ACTION_HEADER(SoBoxSelectionRenderAction);
 
 public:
-    SoBoxSelectionRenderAction(void);
+    SoBoxSelectionRenderAction();
     SoBoxSelectionRenderAction(const SbViewportRegion & viewportregion);
-    virtual ~SoBoxSelectionRenderAction();
+    ~SoBoxSelectionRenderAction() override;
 
-    static void initClass(void);
+    static void initClass();
 
-    virtual void apply(SoNode * node);
-    virtual void apply(SoPath * path);
-    virtual void apply(const SoPathList & pathlist, SbBool obeysrules = FALSE);
+    void apply(SoNode * node) override;
+    void apply(SoPath * path) override;
+    void apply(const SoPathList & pathlist, SbBool obeysrules = false) override;
     void setVisible(SbBool b) { hlVisible = b; }
     SbBool isVisible() const { return hlVisible; }
     void setColor(const SbColor & color);
-    const SbColor & getColor(void);
+    const SbColor & getColor();
     void setLinePattern(unsigned short pattern);
-    unsigned short getLinePattern(void) const;
+    unsigned short getLinePattern() const;
     void setLineWidth(const float width);
-    float getLineWidth(void) const;
+    float getLineWidth() const;
 
 protected:
     SbBool hlVisible;
 
 private:
-    void constructorCommon(void);
+    void constructorCommon();
     void drawBoxes(SoPath * pathtothis, const SoPathList * pathlist);
 
     SoBoxSelectionRenderActionP * pimpl;
 };
 
+/**
+ * Helper class no notify nodes to update VBO.
+ * @author Werner Mayer
+ */
+class GuiExport SoUpdateVBOAction : public SoAction
+{
+    SO_ACTION_HEADER(SoUpdateVBOAction);
+
+public:
+    SoUpdateVBOAction ();
+    ~SoUpdateVBOAction() override;
+
+    static void initClass();
+    static void finish();
+
+protected:
+    void beginTraversal(SoNode *node) override;
+
+private:
+    static void callDoAction(SoAction *action,SoNode *node);
+};
+
 } // namespace Gui
 
 
-#endif // _SoFCSelectionAction_h 
+#endif // _SoFCSelectionAction_h

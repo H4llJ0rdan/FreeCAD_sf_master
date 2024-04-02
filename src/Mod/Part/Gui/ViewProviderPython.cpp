@@ -20,7 +20,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #include <Standard_math.hxx>
@@ -28,20 +27,17 @@
 # include <Inventor/nodes/SoSeparator.h>
 #endif
 #include <Gui/ViewProviderBuilder.h>
-#include <Mod/Part/App/PartFeature.h>
+
 #include "ViewProviderPython.h"
+
 
 using namespace PartGui;
 
 PROPERTY_SOURCE(PartGui::ViewProviderCustom, PartGui::ViewProviderPart)
 
-ViewProviderCustom::ViewProviderCustom()
-{
-}
+ViewProviderCustom::ViewProviderCustom() = default;
 
-ViewProviderCustom::~ViewProviderCustom()
-{
-}
+ViewProviderCustom::~ViewProviderCustom() = default;
 
 void ViewProviderCustom::onChanged(const App::Property* prop)
 {

@@ -1,295 +1,459 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="no" sourcelanguage="en">
+<TS version="2.1" language="no" sourcelanguage="en">
   <context>
     <name>Angle</name>
     <message>
       <source>Form</source>
-      <translation type="unfinished">Skjema</translation>
+      <translation>Skjema</translation>
     </message>
     <message>
       <source>A:</source>
-      <translation type="unfinished">A:</translation>
+      <translation>A:</translation>
     </message>
     <message>
       <source>B:</source>
-      <translation type="unfinished">B:</translation>
+      <translation>B:</translation>
     </message>
     <message>
       <source>C:</source>
-      <translation type="unfinished">B:</translation>
+      <translation>B:</translation>
     </message>
     <message>
       <source>Angle Snap</source>
-      <translation type="unfinished">Vinkelmagnet</translation>
+      <translation>Vinkelmagnet</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>1 °</source>
-      <translation type="unfinished">1 °</translation>
+      <translation>1 °</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>2 °</source>
-      <translation type="unfinished">2 °</translation>
+      <translation>2 °</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>5 °</source>
-      <translation type="unfinished">5 °</translation>
+      <translation>5 °</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>10 °</source>
-      <translation type="unfinished">10 °</translation>
+      <translation>10 °</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>20 °</source>
-      <translation type="unfinished">20 °</translation>
+      <translation>20 °</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>45 °</source>
-      <translation type="unfinished">45 °</translation>
+      <translation>45 °</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>90 °</source>
-      <translation type="unfinished">90 °</translation>
+      <translation>90 °</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>180 °</source>
-      <translation type="unfinished">180 °</translation>
+      <translation>180 °</translation>
+    </message>
+  </context>
+  <context>
+    <name>App::Property</name>
+    <message>
+      <source>The displayed size of the origin</source>
+      <translation>Den viste størrelse for origo</translation>
+    </message>
+    <message>
+      <source>Visual size of the feature</source>
+      <translation>Vist størrelse på detaljen</translation>
+    </message>
+    <message>
+      <source>&lt;empty&gt;</source>
+      <translation type="unfinished">&lt;empty&gt;</translation>
+    </message>
+    <message>
+      <source>Angle</source>
+      <translation>Vinkel</translation>
+    </message>
+    <message>
+      <source>Axis</source>
+      <translation>Akse</translation>
+    </message>
+    <message>
+      <source>Position</source>
+      <translation>Posisjon</translation>
+    </message>
+    <message>
+      <source>Base</source>
+      <translation>Base</translation>
+    </message>
+  </context>
+  <context>
+    <name>CmdTestConsoleOutput</name>
+    <message>
+      <source>Standard-Test</source>
+      <translation>Standard-Test</translation>
+    </message>
+    <message>
+      <source>Test console output</source>
+      <translation>Resultat fra test-terminal</translation>
     </message>
   </context>
   <context>
     <name>CmdViewMeasureClearAll</name>
     <message>
       <source>Measure</source>
-      <translation type="unfinished">Measure</translation>
+      <translation>Mål</translation>
     </message>
     <message>
       <source>Clear measurement</source>
-      <translation type="unfinished">Clear measurement</translation>
+      <translation>Fjern måleverdi</translation>
     </message>
   </context>
   <context>
     <name>CmdViewMeasureToggleAll</name>
     <message>
       <source>Measure</source>
-      <translation type="unfinished">Measure</translation>
+      <translation>Mål</translation>
     </message>
     <message>
       <source>Toggle measurement</source>
-      <translation type="unfinished">Toggle measurement</translation>
+      <translation>Aktiver/deaktiver måleverdi</translation>
+    </message>
+  </context>
+  <context>
+    <name>Command</name>
+    <message>
+      <source>Edit</source>
+      <translation>Rediger</translation>
+    </message>
+    <message>
+      <source>Import</source>
+      <translation>Importer</translation>
+    </message>
+    <message>
+      <source>Delete</source>
+      <translation>Slett</translation>
+    </message>
+    <message>
+      <source>Paste expressions</source>
+      <translation>Lim inn uttrykk</translation>
+    </message>
+    <message>
+      <source>Make link group</source>
+      <translation>Opprett koblingsgruppe</translation>
+    </message>
+    <message>
+      <source>Make link</source>
+      <translation>Opprett kobling</translation>
+    </message>
+    <message>
+      <source>Make sub-link</source>
+      <translation>Opprett under-kobling</translation>
+    </message>
+    <message>
+      <source>Import links</source>
+      <translation>Importer koblinger</translation>
+    </message>
+    <message>
+      <source>Import all links</source>
+      <translation>Importer alle koblinger</translation>
+    </message>
+    <message>
+      <source>Insert measurement</source>
+      <translation>Sett inn måling</translation>
+    </message>
+    <message>
+      <source>Insert text document</source>
+      <translation>Sett inn tekstdokument</translation>
+    </message>
+    <message>
+      <source>Add a part</source>
+      <translation>Legg til en del</translation>
+    </message>
+    <message>
+      <source>Add a group</source>
+      <translation>Legg til en gruppe</translation>
+    </message>
+    <message>
+      <source>Align</source>
+      <translation type="unfinished">Align</translation>
+    </message>
+    <message>
+      <source>Placement</source>
+      <translation>Plassering</translation>
+    </message>
+    <message>
+      <source>Transform</source>
+      <translation>Transformer</translation>
+    </message>
+    <message>
+      <source>Link Transform</source>
+      <translation>Koblings-transformering</translation>
+    </message>
+    <message>
+      <source>Measure distance</source>
+      <translation>Mål avstand</translation>
     </message>
   </context>
   <context>
     <name>DlgCustomizeSpNavSettings</name>
     <message>
       <source>Spaceball Motion</source>
-      <translation type="unfinished">Romball bevegelse</translation>
-    </message>
-    <message>
-      <source>Global Sensitivity:  </source>
-      <translation type="unfinished">Global følsomhet:  </translation>
+      <translation>Romball bevegelse</translation>
     </message>
     <message>
       <source>Dominant Mode</source>
-      <translation type="unfinished">Dominerende modus</translation>
+      <translation>Dominerende modus</translation>
     </message>
     <message>
       <source>Flip Y/Z</source>
-      <translation type="unfinished">Vend Y/Z</translation>
+      <translation>Vend Y/Z</translation>
     </message>
     <message>
       <source>Enable Translations</source>
-      <translation type="unfinished">Aktiver oversettelser</translation>
+      <translation>Aktiver oversettelser</translation>
     </message>
     <message>
       <source>Enable Rotations</source>
-      <translation type="unfinished">Aktiver rotasjoner</translation>
+      <translation>Aktiver rotasjoner</translation>
     </message>
     <message>
       <source>Calibrate</source>
-      <translation type="unfinished">Kalibrere</translation>
+      <translation>Kalibrere</translation>
     </message>
     <message>
       <source>Default</source>
-      <translation type="unfinished">Standard</translation>
+      <translation>Standard</translation>
     </message>
     <message>
       <source>Enable</source>
-      <translation type="unfinished">Aktiverer</translation>
+      <translation>Aktiverer</translation>
     </message>
     <message>
       <source>Reverse</source>
-      <translation type="unfinished">Omvendt</translation>
+      <translation>Omvendt</translation>
+    </message>
+    <message>
+      <source>Global Sensitivity:</source>
+      <translation>Global følsomhet:</translation>
     </message>
   </context>
   <context>
-    <name>DlgUnitCalculator</name>
+    <name>DlgExpressionInput</name>
     <message>
-      <source>Units calculator</source>
-      <translation type="unfinished">Units calculator</translation>
+      <source>Formula editor</source>
+      <translation>Ligningsredigerer</translation>
     </message>
     <message>
-      <source>as:</source>
-      <translation type="unfinished">as:</translation>
+      <source>Result:</source>
+      <translation>Resultat:</translation>
     </message>
     <message>
-      <source>=&gt;</source>
-      <translation type="unfinished">=&gt;</translation>
+      <source>Ok</source>
+      <translation type="unfinished">Ok</translation>
     </message>
     <message>
-      <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <source>&amp;Clear</source>
+      <translation>&amp;Nullstill</translation>
     </message>
     <message>
-      <source>Copy</source>
-      <translation type="unfinished">Kopier</translation>
-    </message>
-    <message>
-      <source>Close</source>
-      <translation type="unfinished">Lukk</translation>
+      <source>Revert to last calculated value (as constant)</source>
+      <translation>Gå tilbake til siste beregnede verdi (som konstant)</translation>
     </message>
   </context>
   <context>
     <name>DownloadItem</name>
     <message>
       <source>Form</source>
-      <translation type="unfinished">Skjema</translation>
+      <translation>Skjema</translation>
     </message>
     <message>
       <source>Ico</source>
-      <translation type="unfinished">Ico</translation>
+      <translation>Ico</translation>
     </message>
     <message>
       <source>Filename</source>
-      <translation type="unfinished">Filename</translation>
+      <translation>Filnavn</translation>
+    </message>
+  </context>
+  <context>
+    <name>ExpressionLabel</name>
+    <message>
+      <source>Enter an expression...</source>
+      <translation type="unfinished">Enter an expression...</translation>
+    </message>
+    <message>
+      <source>Expression: </source>
+      <translation type="unfinished">Expression: </translation>
     </message>
   </context>
   <context>
     <name>Gui::AccelLineEdit</name>
     <message>
       <source>none</source>
-      <translation type="unfinished">ingen</translation>
+      <translation>ingen</translation>
     </message>
   </context>
   <context>
     <name>Gui::ActionSelector</name>
     <message>
       <source>Available:</source>
-      <translation type="unfinished">Tilgjengelig:</translation>
+      <translation>Tilgjengelig:</translation>
     </message>
     <message>
       <source>Selected:</source>
-      <translation type="unfinished">Valgt:</translation>
+      <translation>Valgt:</translation>
     </message>
     <message>
       <source>Add</source>
-      <translation type="unfinished">Legg til</translation>
+      <translation>Legg til</translation>
     </message>
     <message>
       <source>Remove</source>
-      <translation type="unfinished">Fjern</translation>
+      <translation>Fjern</translation>
     </message>
     <message>
       <source>Move up</source>
-      <translation type="unfinished">Flytt opp</translation>
+      <translation>Flytt opp</translation>
     </message>
     <message>
       <source>Move down</source>
-      <translation type="unfinished">Flytt ned</translation>
+      <translation>Flytt ned</translation>
     </message>
   </context>
   <context>
     <name>Gui::AlignmentView</name>
     <message>
       <source>Movable object</source>
-      <translation type="unfinished">Bevegelig objekt</translation>
+      <translation>Bevegelig objekt</translation>
     </message>
     <message>
       <source>Fixed object</source>
-      <translation type="unfinished">Fast objekt</translation>
+      <translation>Fast objekt</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Assistant</name>
+    <message>
+      <source>%1 Help</source>
+      <translation>%1 Hjelp</translation>
+    </message>
+    <message>
+      <source>%1 help files not found (%2). You might need to install the %1 documentation package.</source>
+      <translation>%1 hjelpefiler ikke funnet (%2). Du må kanskje installere %1 dokumentasjon pakken.</translation>
+    </message>
+    <message>
+      <source>Unable to launch Qt Assistant (%1)</source>
+      <translation>Kan ikke starte Qt assistent (%1)</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::AutoSaver</name>
+    <message>
+      <source>Please wait until the AutoRecovery file has been saved...</source>
+      <translation>Vennligst vent mens en sikkerhetskopi lagres til fil...</translation>
     </message>
   </context>
   <context>
     <name>Gui::BlenderNavigationStyle</name>
     <message>
       <source>Press left mouse button</source>
-      <translation type="unfinished">Trykk venstre museknapp</translation>
+      <translation>Trykk venstre museknapp</translation>
     </message>
     <message>
       <source>Press SHIFT and middle mouse button</source>
-      <translation type="unfinished">Trykk SHIFT og midtre museknapp</translation>
+      <translation>Trykk SHIFT og midtre museknapp</translation>
     </message>
     <message>
       <source>Press middle mouse button</source>
-      <translation type="unfinished">Trykk på midtre museknapp</translation>
+      <translation>Trykk på midtre museknapp</translation>
     </message>
     <message>
       <source>Scroll middle mouse button</source>
-      <translation type="unfinished">Rull musehjul</translation>
+      <translation>Rull musehjul</translation>
     </message>
   </context>
   <context>
     <name>Gui::CADNavigationStyle</name>
     <message>
       <source>Press left mouse button</source>
-      <translation type="unfinished">Trykk venstre museknapp</translation>
+      <translation>Trykk venstre museknapp</translation>
     </message>
     <message>
       <source>Press middle mouse button</source>
-      <translation type="unfinished">Trykk på midtre museknapp</translation>
+      <translation>Trykk på midtre museknapp</translation>
     </message>
     <message>
-      <source>Press middle and left or right mouse button</source>
-      <translation type="unfinished">Press middle and left or right mouse button</translation>
+      <source>Press middle+left or middle+right button</source>
+      <translation>Trykk midt+venstre eller midt+høyre knapp</translation>
     </message>
     <message>
-      <source>Scroll middle mouse button or keep middle button pressed
+      <source>Scroll middle mouse button or keep middle button depressed
 while doing a left or right click and move the mouse up or down</source>
-      <translation type="unfinished">Scroll middle mouse button or keep middle button pressed
-while doing a left or right click and move the mouse up or down</translation>
+      <translation>Rull midterste knapp, eller hold midterste knapp inne, mens du høyre- eller venstreklikker og beveger musen opp eller ned</translation>
     </message>
   </context>
   <context>
     <name>Gui::Command</name>
     <message>
       <source>Standard</source>
-      <translation type="unfinished">Standard</translation>
+      <translation>Standard</translation>
     </message>
   </context>
   <context>
     <name>Gui::ContainerDialog</name>
     <message>
       <source>&amp;OK</source>
-      <translation type="unfinished">&amp;OK</translation>
+      <translation>&amp;OK</translation>
     </message>
     <message>
       <source>&amp;Cancel</source>
-      <translation type="unfinished">&amp;Avbryt</translation>
+      <translation>&amp;Avbryt</translation>
     </message>
   </context>
   <context>
     <name>Gui::ControlSingleton</name>
     <message>
       <source>Task panel</source>
-      <translation type="unfinished">Oppgavepanel</translation>
+      <translation>Oppgavepanel</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::DAG::Model</name>
+    <message>
+      <source>Rename</source>
+      <translation>Omdøp</translation>
+    </message>
+    <message>
+      <source>Rename object</source>
+      <translation>Omdøp objekt</translation>
+    </message>
+    <message>
+      <source>Finish editing</source>
+      <translation>Fullfør redigering</translation>
+    </message>
+    <message>
+      <source>Finish editing object</source>
+      <translation>Fullfør å redigere objektet</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::AboutApplication</name>
     <message>
       <source>About</source>
-      <translation type="unfinished">Om</translation>
+      <translation>Om</translation>
     </message>
     <message>
       <source>Revision number</source>
-      <translation type="unfinished">Revisjonsnummer</translation>
+      <translation>Revisjonsnummer</translation>
     </message>
     <message>
       <source>Version</source>
-      <translation type="unfinished">Versjon</translation>
+      <translation>Versjon</translation>
     </message>
     <message>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
     <message>
       <source/>
@@ -297,45 +461,122 @@ while doing a left or right click and move the mouse up or down</translation>
     </message>
     <message>
       <source>Release date</source>
-      <translation type="unfinished">Utgivelsesdato</translation>
-    </message>
-    <message>
-      <source>License...</source>
-      <translation type="unfinished">Lisens...</translation>
+      <translation>Utgivelsesdato</translation>
     </message>
     <message>
       <source>Copy to clipboard</source>
-      <translation type="unfinished">Kopier til utklippstavlen</translation>
+      <translation>Kopier til utklippstavlen</translation>
     </message>
     <message>
       <source>Operating system</source>
-      <translation type="unfinished">Operativsystemet</translation>
+      <translation>Operativsystemet</translation>
     </message>
     <message>
       <source>Word size</source>
-      <translation type="unfinished">Word size</translation>
+      <translation>Ordstørrelse</translation>
+    </message>
+    <message>
+      <source>License</source>
+      <translation>Lisens</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::AboutDialog</name>
+    <message>
+      <source>Libraries</source>
+      <translation>Biblioteker</translation>
+    </message>
+    <message>
+      <source>This software uses open source components whose copyright and other proprietary rights belong to their respective owners:</source>
+      <translation>Denne programvaren bruker komponenter med åpen kildekode med opphavsrett og andre eiendomsrettigheter som tilhører de respektive eiere:</translation>
+    </message>
+    <message>
+      <source>License</source>
+      <translation>Lisens</translation>
+    </message>
+    <message>
+      <source>Collection</source>
+      <translation>Samling</translation>
+    </message>
+    <message>
+      <source>Credits</source>
+      <extracomment>Header for the Credits tab of the About screen</extracomment>
+      <translation>Bidragsytere</translation>
+    </message>
+    <message>
+      <source>FreeCAD would not be possible without the contributions of</source>
+      <translation type="unfinished">FreeCAD would not be possible without the contributions of</translation>
+    </message>
+    <message>
+      <source>Individuals</source>
+      <extracomment>Header for the list of individual people in the Credits list.</extracomment>
+      <translation type="unfinished">Individuals</translation>
+    </message>
+    <message>
+      <source>Organizations</source>
+      <extracomment>Header for the list of companies/organizations in the Credits list.</extracomment>
+      <translation type="unfinished">Organizations</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::ButtonModel</name>
     <message>
       <source>Button %1</source>
-      <translation type="unfinished">Knappen %1</translation>
+      <translation>Knappen %1</translation>
     </message>
     <message>
       <source>Out Of Range</source>
-      <translation type="unfinished">Utenfor området</translation>
+      <translation>Utenfor området</translation>
+    </message>
+    <message>
+      <source> "</source>
+      <translation> "</translation>
+    </message>
+    <message>
+      <source>"</source>
+      <translation>"</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::CameraDialog</name>
+    <message>
+      <source>Camera settings</source>
+      <translation>Kamerainnstillinger</translation>
+    </message>
+    <message>
+      <source>Orientation</source>
+      <translation>Orientering</translation>
+    </message>
+    <message>
+      <source>Q0</source>
+      <translation type="unfinished">Q0</translation>
+    </message>
+    <message>
+      <source>Q1</source>
+      <translation type="unfinished">Q1</translation>
+    </message>
+    <message>
+      <source>Q2</source>
+      <translation type="unfinished">Q2</translation>
+    </message>
+    <message>
+      <source>Q3</source>
+      <translation type="unfinished">Q3</translation>
+    </message>
+    <message>
+      <source>Current view</source>
+      <translation>Gjeldende visning</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::Clipping</name>
     <message>
       <source>Clipping</source>
-      <translation type="unfinished">Clipping</translation>
+      <translation>Tverrsnitt</translation>
     </message>
     <message>
       <source>Clipping X</source>
-      <translation type="unfinished">Clipping X</translation>
+      <translation>Tverrsnitt X</translation>
     </message>
     <message>
       <source>Flip</source>
@@ -343,104 +584,104 @@ while doing a left or right click and move the mouse up or down</translation>
     </message>
     <message>
       <source>Offset</source>
-      <translation type="unfinished">Avsetting</translation>
+      <translation>Avsetting</translation>
     </message>
     <message>
       <source>Clipping Y</source>
-      <translation type="unfinished">Clipping Y</translation>
+      <translation>Tverrsnitt Y</translation>
     </message>
     <message>
       <source>Clipping Z</source>
-      <translation type="unfinished">Clipping Z</translation>
+      <translation>Tverrsnitt Z</translation>
     </message>
     <message>
       <source>Clipping custom direction</source>
-      <translation type="unfinished">Clipping custom direction</translation>
+      <translation>Tverrsnitt med egendefinert retning</translation>
     </message>
     <message>
       <source>View</source>
-      <translation type="unfinished">Vis</translation>
+      <translation>Vis</translation>
     </message>
     <message>
       <source>Adjust to view direction</source>
-      <translation type="unfinished">Adjust to view direction</translation>
+      <translation>Juster til 3d-visnings retning</translation>
     </message>
     <message>
       <source>Direction</source>
-      <translation type="unfinished">Retning</translation>
+      <translation>Retning</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::CommandModel</name>
     <message>
       <source>Commands</source>
-      <translation type="unfinished">Kommandoer</translation>
+      <translation>Kommandoer</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DemoMode</name>
     <message>
       <source>View Turntable</source>
-      <translation type="unfinished">Vis dreieskive</translation>
+      <translation>Vis dreieskive</translation>
     </message>
     <message>
       <source>Speed</source>
-      <translation type="unfinished">Hastighet</translation>
+      <translation>Hastighet</translation>
     </message>
     <message>
       <source>Maximum</source>
-      <translation type="unfinished">Maksimum</translation>
+      <translation>Maksimum</translation>
     </message>
     <message>
       <source>Minimum</source>
-      <translation type="unfinished">Minimum</translation>
+      <translation>Minimum</translation>
     </message>
     <message>
       <source>Fullscreen</source>
-      <translation type="unfinished">Fullskjerm</translation>
+      <translation>Fullskjerm</translation>
     </message>
     <message>
       <source>Enable timer</source>
-      <translation type="unfinished">Aktiver tidtaker</translation>
+      <translation>Aktiver tidtaker</translation>
     </message>
     <message>
       <source> s</source>
-      <translation type="unfinished"> s</translation>
+      <translation> s</translation>
     </message>
     <message>
       <source>Angle</source>
-      <translation type="unfinished">Vinkel</translation>
+      <translation>Vinkel</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>90°</source>
-      <translation type="unfinished">90°</translation>
+      <translation>90°</translation>
     </message>
-    <message utf8="true">
+    <message>
       <source>-90°</source>
-      <translation type="unfinished">-90°</translation>
+      <translation>-90°</translation>
     </message>
     <message>
       <source>Play</source>
-      <translation type="unfinished">Spill av</translation>
+      <translation>Spill av</translation>
     </message>
     <message>
       <source>Stop</source>
-      <translation type="unfinished">Stopp</translation>
+      <translation>Stopp</translation>
     </message>
     <message>
       <source>Close</source>
-      <translation type="unfinished">Lukk</translation>
+      <translation>Lukk</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgActivateWindow</name>
     <message>
       <source>Choose Window</source>
-      <translation type="unfinished">Velg vindu</translation>
+      <translation>Velg vindu</translation>
     </message>
     <message>
       <source>&amp;Activate</source>
-      <translation type="unfinished">&amp;Aktiver</translation>
+      <translation>&amp;Aktiver</translation>
     </message>
     <message>
       <source/>
@@ -451,18 +692,61 @@ while doing a left or right click and move the mouse up or down</translation>
     <name>Gui::Dialog::DlgActivateWindowImp</name>
     <message>
       <source>Windows</source>
-      <translation type="unfinished">Vinduer</translation>
+      <translation>Vinduer</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgAddProperty</name>
+    <message>
+      <source>Add property</source>
+      <translation>Legg til egenskap</translation>
+    </message>
+    <message>
+      <source>Type</source>
+      <translation>Type</translation>
+    </message>
+    <message>
+      <source>Group</source>
+      <translation>Gruppe</translation>
+    </message>
+    <message>
+      <source>Name</source>
+      <translation>Navn</translation>
+    </message>
+    <message>
+      <source>Verbose description of the new property.</source>
+      <translation>Detaljert beskrivelse av ny egenskap.</translation>
+    </message>
+    <message>
+      <source>Documentation</source>
+      <translation>Dokumentasjon</translation>
+    </message>
+    <message>
+      <source>Prefix the property name with the group name in the form 'Group_Name' to avoid conflicts with an existing property.
+In this case the prefix will be automatically trimmed when shown in the property editor.
+However, the property is still used in a script with the full name, like 'obj.Group_Name'.
+
+If this is not ticked, then the property must be uniquely named, and it is accessed like 'obj.Name'.</source>
+      <translation type="unfinished">Prefix the property name with the group name in the form 'Group_Name' to avoid conflicts with an existing property.
+In this case the prefix will be automatically trimmed when shown in the property editor.
+However, the property is still used in a script with the full name, like 'obj.Group_Name'.
+
+If this is not ticked, then the property must be uniquely named, and it is accessed like 'obj.Name'.</translation>
+    </message>
+    <message>
+      <source>Prefix group name</source>
+      <translation type="unfinished">Prefix group name</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgAuthorization</name>
     <message>
       <source>Authorization</source>
-      <translation type="unfinished">Autorisasjon</translation>
+      <translation>Autorisasjon</translation>
     </message>
     <message>
       <source>Password:</source>
-      <translation type="unfinished">Passord:</translation>
+      <translation>Passord:</translation>
     </message>
     <message>
       <source/>
@@ -470,7 +754,7 @@ while doing a left or right click and move the mouse up or down</translation>
     </message>
     <message>
       <source>Username:</source>
-      <translation type="unfinished">Username:</translation>
+      <translation>Brukernavn:</translation>
     </message>
     <message>
       <source>Site:</source>
@@ -482,127 +766,142 @@ while doing a left or right click and move the mouse up or down</translation>
     </message>
   </context>
   <context>
+    <name>Gui::Dialog::DlgCheckableMessageBox</name>
+    <message>
+      <source>Dialog</source>
+      <translation>Dialog</translation>
+    </message>
+    <message>
+      <source>TextLabel</source>
+      <translation>Merkelapp</translation>
+    </message>
+    <message>
+      <source>CheckBox</source>
+      <translation>Avkryssingsboks</translation>
+    </message>
+  </context>
+  <context>
     <name>Gui::Dialog::DlgChooseIcon</name>
     <message>
       <source>Choose Icon</source>
-      <translation type="unfinished">Velg ikon</translation>
+      <translation>Velg ikon</translation>
     </message>
     <message>
-      <source>Add icons...</source>
-      <translation type="unfinished">Legge til ikoner...</translation>
+      <source>Icon folders...</source>
+      <translation>Ikon mapper...</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomActions</name>
     <message>
       <source>Macros</source>
-      <translation type="unfinished">Makroer</translation>
+      <translation>Makroer</translation>
     </message>
     <message>
       <source>Setup Custom Macros</source>
-      <translation type="unfinished">Sett opp egendefinerte makroer</translation>
+      <translation>Sett opp egendefinerte makroer</translation>
     </message>
     <message>
       <source>Macro:</source>
-      <translation type="unfinished">Makro:</translation>
+      <translation>Makro:</translation>
     </message>
     <message>
       <source>...</source>
-      <translation type="unfinished">...</translation>
+      <translation>...</translation>
     </message>
     <message>
       <source>Pixmap</source>
-      <translation type="unfinished">Pikseltilordning</translation>
+      <translation>Pikseltilordning</translation>
     </message>
     <message>
       <source>Accelerator:</source>
-      <translation type="unfinished">Akselerator:</translation>
+      <translation>Akselerator:</translation>
     </message>
     <message>
       <source>What's this:</source>
-      <translation type="unfinished">Hva er dette:</translation>
+      <translation>Hva er dette:</translation>
     </message>
     <message>
       <source>Status text:</source>
-      <translation type="unfinished">Statustekst:</translation>
+      <translation>Statustekst:</translation>
     </message>
     <message>
       <source>Tool tip:</source>
-      <translation type="unfinished">Verktøytips:</translation>
+      <translation>Verktøytips:</translation>
     </message>
     <message>
       <source>Menu text:</source>
-      <translation type="unfinished">Menytekst:</translation>
+      <translation>Menytekst:</translation>
     </message>
     <message>
       <source>Add</source>
-      <translation type="unfinished">Legg til</translation>
+      <translation>Legg til</translation>
     </message>
     <message>
       <source>Remove</source>
-      <translation type="unfinished">Fjern</translation>
+      <translation>Fjern</translation>
     </message>
     <message>
       <source>Replace</source>
-      <translation type="unfinished">Erstatt</translation>
+      <translation>Erstatt</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomActionsImp</name>
     <message>
       <source>Icons</source>
-      <translation type="unfinished">Ikoner</translation>
+      <translation>Ikoner</translation>
     </message>
     <message>
       <source>Macros</source>
-      <translation type="unfinished">Makroer</translation>
+      <translation>Makroer</translation>
     </message>
     <message>
       <source>No macro</source>
-      <translation type="unfinished">Ingen makro</translation>
+      <translation>Ingen makro</translation>
     </message>
     <message>
       <source>No macros found.</source>
-      <translation type="unfinished">Ingen makroer funnet.</translation>
+      <translation>Ingen makroer funnet.</translation>
     </message>
     <message>
       <source>Macro not found</source>
-      <translation type="unfinished">Makro ikke funnet</translation>
+      <translation>Makro ikke funnet</translation>
     </message>
     <message>
       <source>Sorry, couldn't find macro file '%1'.</source>
-      <translation type="unfinished">Beklager, kunne ikke finne makrofil '%1'.</translation>
+      <translation>Beklager, kunne ikke finne makrofil '%1'.</translation>
     </message>
     <message>
       <source>Empty macro</source>
-      <translation type="unfinished">Tom makro</translation>
+      <translation>Tom makro</translation>
     </message>
     <message>
       <source>Please specify the macro first.</source>
-      <translation type="unfinished">Spesifiser makro først.</translation>
+      <translation>Spesifiser makro først.</translation>
     </message>
     <message>
       <source>Empty text</source>
-      <translation type="unfinished">Tom tekst</translation>
+      <translation>Tom tekst</translation>
     </message>
     <message>
       <source>Please specify the menu text first.</source>
-      <translation type="unfinished">Vennligst oppgi menytekst først.</translation>
+      <translation>Vennligst oppgi menytekst først.</translation>
     </message>
     <message>
       <source>No item selected</source>
-      <translation type="unfinished">Ingen element er valgt</translation>
+      <translation>Ingen element er valgt</translation>
     </message>
     <message>
       <source>Please select a macro item first.</source>
-      <translation type="unfinished">Vennligst velg et makroelement først.</translation>
+      <translation>Vennligst velg et makroelement først.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomCommands</name>
     <message>
       <source>Commands</source>
-      <translation type="unfinished">Kommandoer</translation>
+      <translation>Kommandoer</translation>
     </message>
     <message>
       <source/>
@@ -613,293 +912,307 @@ while doing a left or right click and move the mouse up or down</translation>
     <name>Gui::Dialog::DlgCustomCommandsImp</name>
     <message>
       <source>Category</source>
-      <translation type="unfinished">Kategori</translation>
+      <translation>Kategori</translation>
     </message>
     <message>
       <source>Icon</source>
-      <translation type="unfinished">Ikon</translation>
+      <translation>Ikon</translation>
     </message>
     <message>
       <source>Command</source>
-      <translation type="unfinished">Kommando</translation>
+      <translation>Kommando</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomKeyboard</name>
     <message>
       <source>Keyboard</source>
-      <translation type="unfinished">Tastatur</translation>
+      <translation>Tastatur</translation>
     </message>
     <message>
       <source>Description:</source>
-      <translation type="unfinished">Beskrivelse:</translation>
+      <translation>Beskrivelse:</translation>
     </message>
     <message>
       <source>&amp;Category:</source>
-      <translation type="unfinished">&amp;Kategori:</translation>
+      <translation>&amp;Kategori:</translation>
     </message>
     <message>
       <source>C&amp;ommands:</source>
-      <translation type="unfinished">K&amp;ommandoer:</translation>
+      <translation>K&amp;ommandoer:</translation>
     </message>
     <message>
       <source>Current shortcut:</source>
-      <translation type="unfinished">Gjeldende snarvei:</translation>
+      <translation>Gjeldende snarvei:</translation>
     </message>
     <message>
       <source>Press &amp;new shortcut:</source>
-      <translation type="unfinished">Trykk &amp;ny snarvei:</translation>
+      <translation>Trykk &amp;ny snarvei:</translation>
     </message>
     <message>
       <source>Currently assigned to:</source>
-      <translation type="unfinished">For øyeblikket tilordnet:</translation>
+      <translation>For øyeblikket tilordnet:</translation>
     </message>
     <message>
       <source>&amp;Assign</source>
-      <translation type="unfinished">&amp;Tilordne</translation>
+      <translation>&amp;Tilordne</translation>
     </message>
     <message>
       <source>Alt+A</source>
-      <translation type="unfinished">Alt+A</translation>
+      <translation>Alt+A</translation>
     </message>
     <message>
       <source>&amp;Reset</source>
-      <translation type="unfinished">&amp;Tilbakestille</translation>
+      <translation>&amp;Tilbakestille</translation>
     </message>
     <message>
       <source>Alt+R</source>
-      <translation type="unfinished">Alt+R</translation>
+      <translation>Alt+R</translation>
     </message>
     <message>
       <source>Re&amp;set All</source>
-      <translation type="unfinished">Tilbake&amp;still alle</translation>
+      <translation>Tilbake&amp;still alle</translation>
     </message>
     <message>
       <source>Alt+S</source>
-      <translation type="unfinished">Alt+S</translation>
+      <translation>Alt+S</translation>
     </message>
     <message>
       <source/>
       <translation> </translation>
+    </message>
+    <message>
+      <source>Clear</source>
+      <translation>Tøm</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomKeyboardImp</name>
     <message>
       <source>Icon</source>
-      <translation type="unfinished">Ikon</translation>
+      <translation>Ikon</translation>
     </message>
     <message>
       <source>Command</source>
-      <translation type="unfinished">Kommando</translation>
+      <translation>Kommando</translation>
     </message>
     <message>
       <source>none</source>
-      <translation type="unfinished">ingen</translation>
+      <translation>ingen</translation>
     </message>
     <message>
       <source>Multiple defined shortcut</source>
-      <translation type="unfinished">Flerdefinert snarvei</translation>
-    </message>
-    <message>
-      <source>The shortcut '%1' is defined more than once. This could result into unexpected behaviour.</source>
-      <translation type="unfinished">Snarvei '%1' er definert mer enn én gang. Dette kan føre til uventet oppførsel.</translation>
+      <translation>Flerdefinert snarvei</translation>
     </message>
     <message>
       <source>Already defined shortcut</source>
-      <translation type="unfinished">Allerede definert snarvei</translation>
+      <translation>Allerede definert snarvei</translation>
     </message>
     <message>
-      <source>The shortcut '%1' is already assigned to '%2'.
-
-Please define another shortcut.</source>
-      <translation type="unfinished">Snarveien '%1' er allerede tilordnet '%2'.  Definer en annen snarvei.</translation>
+      <source>The shortcut '%1' is defined more than once. This could result in unexpected behaviour.</source>
+      <translation type="unfinished">The shortcut '%1' is defined more than once. This could result in unexpected behaviour.</translation>
+    </message>
+    <message>
+      <source>The shortcut '%1' is already assigned to '%2'.</source>
+      <translation type="unfinished">The shortcut '%1' is already assigned to '%2'.</translation>
+    </message>
+    <message>
+      <source>Do you want to override it?</source>
+      <translation type="unfinished">Do you want to override it?</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomToolBoxbarsImp</name>
     <message>
       <source>Toolbox bars</source>
-      <translation type="unfinished">Verktøykasselinjer</translation>
+      <translation>Verktøykasselinjer</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomToolbars</name>
     <message>
       <source>Toolbars</source>
-      <translation type="unfinished">Verktøylinjer</translation>
+      <translation>Verktøylinjer</translation>
     </message>
     <message>
       <source>&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;/head&gt;&lt;body style=" white-space: pre-wrap; font-family:MS Shell Dlg 2; font-size:7.8pt; font-weight:400; font-style:normal; text-decoration:none;"&gt;&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;"&gt;&lt;span style=" font-weight:600;"&gt;Note:&lt;/span&gt; The changes become active the next time you load the appropriate workbench&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation type="unfinished">&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;/head&gt;&lt;body style=" white-space: pre-wrap; font-family:MS Shell Dlg 2; font-size:7.8pt; font-weight:400; font-style:normal; text-decoration:none;"&gt;&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;"&gt;&lt;span style=" font-weight:600;"&gt;Merk:&lt;/span&gt; Forandringene blir aktive neste gang du laster riktig arbeidsbenk&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation>&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;/head&gt;&lt;body style=" white-space: pre-wrap; font-family:MS Shell Dlg 2; font-size:7.8pt; font-weight:400; font-style:normal; text-decoration:none;"&gt;&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;"&gt;&lt;span style=" font-weight:600;"&gt;Merk:&lt;/span&gt; Forandringene blir aktive neste gang du laster riktig arbeidsbenk&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
       <source>Move right</source>
-      <translation type="unfinished">Flytt til høyre</translation>
+      <translation>Flytt til høyre</translation>
     </message>
     <message>
       <source>&lt;b&gt;Move the selected item one level down.&lt;/b&gt;&lt;p&gt;This will also change the level of the parent item.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;b&gt;Flytt det valgte elementet ett nivå ned.&lt;/b&gt; &lt;p&gt; Dette vil også endre nivået på overordnet element. &lt;/p&gt;</translation>
+      <translation>&lt;b&gt;Flytt det valgte elementet ett nivå ned.&lt;/b&gt; &lt;p&gt; Dette vil også endre nivået på overordnet element. &lt;/p&gt;</translation>
     </message>
     <message>
       <source>Move left</source>
-      <translation type="unfinished">Flytt til venstre</translation>
+      <translation>Flytt til venstre</translation>
     </message>
     <message>
       <source>&lt;b&gt;Move the selected item one level up.&lt;/b&gt;&lt;p&gt;This will also change the level of the parent item.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;b&gt;Flytt det valgte elementet ett nivå opp.&lt;/b&gt; &lt;p&gt; Dette vil også endre nivået på overordnet element. &lt;/p&gt;</translation>
+      <translation>&lt;b&gt;Flytt det valgte elementet ett nivå opp.&lt;/b&gt; &lt;p&gt; Dette vil også endre nivået på overordnet element. &lt;/p&gt;</translation>
     </message>
     <message>
       <source>Move down</source>
-      <translation type="unfinished">Flytt ned</translation>
+      <translation>Flytt ned</translation>
     </message>
     <message>
       <source>&lt;b&gt;Move the selected item down.&lt;/b&gt;&lt;p&gt;The item will be moved within the hierarchy level.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;b&gt;Flytt det valgte elementet ned.&lt;/b&gt; &lt;p&gt; Elementet vil bli flyttet innenfor hierarkinivået. &lt;/p&gt;</translation>
+      <translation>&lt;b&gt;Flytt det valgte elementet ned.&lt;/b&gt; &lt;p&gt; Elementet vil bli flyttet innenfor hierarkinivået. &lt;/p&gt;</translation>
     </message>
     <message>
       <source>Move up</source>
-      <translation type="unfinished">Flytt opp</translation>
+      <translation>Flytt opp</translation>
     </message>
     <message>
       <source>&lt;b&gt;Move the selected item up.&lt;/b&gt;&lt;p&gt;The item will be moved within the hierarchy level.&lt;/p&gt;</source>
-      <translation type="unfinished">&lt;b&gt;Flytt det valgte elementet opp.&lt;/b&gt; &lt;p&gt; Elementet vil bli flyttet innenfor hierarkinivået. &lt;/p&gt;</translation>
+      <translation>&lt;b&gt;Flytt det valgte elementet opp.&lt;/b&gt; &lt;p&gt; Elementet vil bli flyttet innenfor hierarkinivået. &lt;/p&gt;</translation>
     </message>
     <message>
       <source>New...</source>
-      <translation type="unfinished">Ny...</translation>
+      <translation>Ny...</translation>
     </message>
     <message>
       <source>Rename...</source>
-      <translation type="unfinished">Omdøp...</translation>
+      <translation>Omdøp...</translation>
     </message>
     <message>
       <source>Delete</source>
-      <translation type="unfinished">Slett</translation>
+      <translation>Slett</translation>
     </message>
     <message>
       <source>Icon</source>
-      <translation type="unfinished">Ikon</translation>
+      <translation>Ikon</translation>
     </message>
     <message>
       <source>Command</source>
-      <translation type="unfinished">Kommando</translation>
+      <translation>Kommando</translation>
     </message>
     <message>
       <source>&lt;Separator&gt;</source>
-      <translation type="unfinished">&lt;Separator&gt;</translation>
+      <translation>&lt;Separator&gt;</translation>
     </message>
     <message>
       <source>New toolbar</source>
-      <translation type="unfinished">Ny verktøylinje</translation>
+      <translation>Ny verktøylinje</translation>
     </message>
     <message>
       <source>Toolbar name:</source>
-      <translation type="unfinished">Verktøylinjenavn:</translation>
+      <translation>Verktøylinjenavn:</translation>
     </message>
     <message>
       <source>Duplicated name</source>
-      <translation type="unfinished">Duplisert navn</translation>
+      <translation>Duplisert navn</translation>
     </message>
     <message>
       <source>The toolbar name '%1' is already used</source>
-      <translation type="unfinished">Verktøylinjenavn '%1' er allerede i bruk</translation>
+      <translation>Verktøylinjenavn '%1' er allerede i bruk</translation>
     </message>
     <message>
       <source>Rename toolbar</source>
-      <translation type="unfinished">Omdøp verktøylinje</translation>
+      <translation>Omdøp verktøylinje</translation>
     </message>
     <message>
       <source/>
       <translation> </translation>
+    </message>
+    <message>
+      <source>Global</source>
+      <translation>Global</translation>
+    </message>
+    <message>
+      <source>%1 module not loaded</source>
+      <translation type="unfinished">%1 module not loaded</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomizeImp</name>
     <message>
       <source>Customize</source>
-      <translation type="unfinished">Tilpass</translation>
+      <translation>Tilpass</translation>
     </message>
     <message>
       <source>&amp;Help</source>
-      <translation type="unfinished">&amp;Hjelp</translation>
+      <translation>&amp;Hjelp</translation>
     </message>
     <message>
       <source>&amp;Close</source>
-      <translation type="unfinished">&amp;Lukk</translation>
+      <translation>&amp;Lukk</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomizeSpNavSettings</name>
     <message>
       <source>Spaceball Motion</source>
-      <translation type="unfinished">Romball bevegelse</translation>
+      <translation>Romball bevegelse</translation>
     </message>
     <message>
       <source>No Spaceball Present</source>
-      <translation type="unfinished">Ingen Romball tilstede</translation>
+      <translation>Ingen Romball tilstede</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgCustomizeSpaceball</name>
     <message>
       <source>No Spaceball Present</source>
-      <translation type="unfinished">Ingen Romball tilstede</translation>
+      <translation>Ingen Romball tilstede</translation>
     </message>
     <message>
       <source>Buttons</source>
-      <translation type="unfinished">Knapper</translation>
-    </message>
-    <message>
-      <source>Clear</source>
-      <translation type="unfinished">Tøm</translation>
+      <translation>Knapper</translation>
     </message>
     <message>
       <source>Print Reference</source>
-      <translation type="unfinished">Utskriftsreferanse</translation>
+      <translation>Utskriftsreferanse</translation>
     </message>
     <message>
       <source>Spaceball Buttons</source>
-      <translation type="unfinished">Romball knapper</translation>
+      <translation>Romball knapper</translation>
+    </message>
+    <message>
+      <source>Reset</source>
+      <translation>Tilbakestill</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgDisplayProperties</name>
     <message>
       <source>Display properties</source>
-      <translation type="unfinished">Skjermegenskaper</translation>
+      <translation>Skjermegenskaper</translation>
     </message>
     <message>
       <source>Display</source>
-      <translation type="unfinished">Skjerm</translation>
+      <translation>Skjerm</translation>
     </message>
     <message>
       <source>Transparency:</source>
-      <translation type="unfinished">Gjennomsiktighet:</translation>
+      <translation>Gjennomsiktighet:</translation>
     </message>
     <message>
       <source>Line width:</source>
-      <translation type="unfinished">Linjebredde:</translation>
+      <translation>Linjebredde:</translation>
     </message>
     <message>
       <source>Point size:</source>
-      <translation type="unfinished">Punktstørrelse:</translation>
+      <translation>Punktstørrelse:</translation>
     </message>
     <message>
       <source>Material</source>
-      <translation type="unfinished">Materiale</translation>
+      <translation>Materiale</translation>
     </message>
     <message>
       <source>...</source>
-      <translation type="unfinished">...</translation>
+      <translation>...</translation>
     </message>
     <message>
       <source>Viewing mode</source>
-      <translation type="unfinished">Visningsmodus</translation>
+      <translation>Visningsmodus</translation>
     </message>
     <message>
       <source>Plot mode:</source>
-      <translation type="unfinished">Plottmodus:</translation>
+      <translation>Plottmodus:</translation>
     </message>
     <message>
       <source/>
@@ -907,167 +1220,370 @@ Please define another shortcut.</source>
     </message>
     <message>
       <source>Line transparency:</source>
-      <translation type="unfinished">Gjennomsiktighet for linje:</translation>
+      <translation>Gjennomsiktighet for linje:</translation>
     </message>
     <message>
       <source>Line color:</source>
-      <translation type="unfinished">Linjefarge:</translation>
+      <translation>Linjefarge:</translation>
     </message>
     <message>
       <source>Shape color:</source>
-      <translation type="unfinished">Figurfarge:</translation>
+      <translation>Figurfarge:</translation>
     </message>
     <message>
       <source>Color plot:</source>
-      <translation type="unfinished">Fargeplot:</translation>
+      <translation>Fargeplot:</translation>
     </message>
     <message>
       <source>Document window:</source>
-      <translation type="unfinished">Dokumentvindu:</translation>
+      <translation>Dokumentvindu:</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgDisplayPropertiesImp</name>
+    <message>
+      <source>Default</source>
+      <translation>Standard</translation>
+    </message>
+    <message>
+      <source>Aluminium</source>
+      <translation>Aluminium</translation>
+    </message>
+    <message>
+      <source>Brass</source>
+      <translation>Messing</translation>
+    </message>
+    <message>
+      <source>Bronze</source>
+      <translation>Bronse</translation>
+    </message>
+    <message>
+      <source>Copper</source>
+      <translation>Kopper</translation>
+    </message>
+    <message>
+      <source>Chrome</source>
+      <translation>Krom</translation>
+    </message>
+    <message>
+      <source>Emerald</source>
+      <translation>Smaragd</translation>
+    </message>
+    <message>
+      <source>Gold</source>
+      <translation>Gull</translation>
+    </message>
+    <message>
+      <source>Jade</source>
+      <translation>Jade</translation>
+    </message>
+    <message>
+      <source>Metalized</source>
+      <translation type="unfinished">Metalized</translation>
+    </message>
+    <message>
+      <source>Neon GNC</source>
+      <translation>Neon GNC</translation>
+    </message>
+    <message>
+      <source>Neon PHC</source>
+      <translation>Neon PHC</translation>
+    </message>
+    <message>
+      <source>Obsidian</source>
+      <translation>Obsidian</translation>
+    </message>
+    <message>
+      <source>Pewter</source>
+      <translation>Tinn</translation>
+    </message>
+    <message>
+      <source>Plaster</source>
+      <translation>Gips</translation>
+    </message>
+    <message>
+      <source>Plastic</source>
+      <translation>Plast</translation>
+    </message>
+    <message>
+      <source>Ruby</source>
+      <translation>Rubin</translation>
+    </message>
+    <message>
+      <source>Satin</source>
+      <translation type="unfinished">Satin</translation>
+    </message>
+    <message>
+      <source>Shiny plastic</source>
+      <translation>Skinnende plast</translation>
+    </message>
+    <message>
+      <source>Silver</source>
+      <translation>Sølv</translation>
+    </message>
+    <message>
+      <source>Steel</source>
+      <translation>Stål</translation>
+    </message>
+    <message>
+      <source>Stone</source>
+      <translation>Stein</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgEditorSettings</name>
     <message>
       <source>Editor</source>
-      <translation type="unfinished">Redigeringsprogram</translation>
+      <translation>Redigeringsprogram</translation>
     </message>
     <message>
       <source>Options</source>
-      <translation type="unfinished">Alternativer</translation>
+      <translation>Alternativer</translation>
     </message>
     <message>
       <source>Enable line numbers</source>
-      <translation type="unfinished">Aktiver linjenumre</translation>
+      <translation>Aktiver linjenumre</translation>
     </message>
     <message>
       <source>Enable folding</source>
-      <translation type="unfinished">Aktiver folding</translation>
+      <translation>Aktiver folding</translation>
     </message>
     <message>
       <source>Indentation</source>
-      <translation type="unfinished">Innrykk</translation>
+      <translation>Innrykk</translation>
     </message>
     <message>
       <source>Insert spaces</source>
-      <translation type="unfinished">Sett inn mellomrom</translation>
+      <translation>Sett inn mellomrom</translation>
     </message>
     <message>
       <source>Tab size:</source>
-      <translation type="unfinished">Tabulatorstørrelse:</translation>
+      <translation>Tabulatorstørrelse:</translation>
     </message>
     <message>
       <source>Indent size:</source>
-      <translation type="unfinished">Innrykkstørrelse:</translation>
+      <translation>Innrykkstørrelse:</translation>
     </message>
     <message>
       <source>Keep tabs</source>
-      <translation type="unfinished">Behold tabulatorer</translation>
-    </message>
-    <message>
-      <source>Display Items</source>
-      <translation type="unfinished">Vis elementer</translation>
+      <translation>Behold tabulatorer</translation>
     </message>
     <message>
       <source>Family:</source>
-      <translation type="unfinished">Familie:</translation>
+      <translation>Familie:</translation>
     </message>
     <message>
       <source>Size:</source>
-      <translation type="unfinished">Størrelse:</translation>
+      <translation>Størrelse:</translation>
     </message>
     <message>
       <source>Preview:</source>
-      <translation type="unfinished">Forhåndsvisning:</translation>
+      <translation>Forhåndsvisning:</translation>
     </message>
     <message>
       <source/>
       <translation> </translation>
+    </message>
+    <message>
+      <source>Pressing &lt;Tab&gt; will insert amount of defined indent size</source>
+      <translation type="unfinished">Pressing &lt;Tab&gt; will insert amount of defined indent size</translation>
+    </message>
+    <message>
+      <source>Tabulator raster (how many spaces)</source>
+      <translation type="unfinished">Tabulator raster (how many spaces)</translation>
+    </message>
+    <message>
+      <source>How many spaces will be inserted when pressing &lt;Tab&gt;</source>
+      <translation type="unfinished">How many spaces will be inserted when pressing &lt;Tab&gt;</translation>
+    </message>
+    <message>
+      <source>Pressing &lt;Tab&gt; will insert a tabulator with defined tab size</source>
+      <translation type="unfinished">Pressing &lt;Tab&gt; will insert a tabulator with defined tab size</translation>
+    </message>
+    <message>
+      <source>Display items</source>
+      <translation type="unfinished">Display items</translation>
+    </message>
+    <message>
+      <source>Font size to be used for selected code type</source>
+      <translation type="unfinished">Font size to be used for selected code type</translation>
+    </message>
+    <message>
+      <source>Color and font settings will be applied to selected type</source>
+      <translation type="unfinished">Color and font settings will be applied to selected type</translation>
+    </message>
+    <message>
+      <source>Font family to be used for selected code type</source>
+      <translation type="unfinished">Font family to be used for selected code type</translation>
+    </message>
+    <message>
+      <source>Color:</source>
+      <translation type="unfinished">Color:</translation>
+    </message>
+    <message>
+      <source>Code lines will be numbered</source>
+      <translation type="unfinished">Code lines will be numbered</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgGeneral</name>
     <message>
       <source>General</source>
-      <translation type="unfinished">Generelle</translation>
+      <translation>Generelle</translation>
     </message>
     <message>
       <source>Start up</source>
-      <translation type="unfinished">Oppstart</translation>
+      <translation>Oppstart</translation>
     </message>
     <message>
       <source>Enable splash screen at start up</source>
-      <translation type="unfinished">Aktiver velkomstbilde ved oppstart</translation>
-    </message>
-    <message>
-      <source>Switch to tab of report window:</source>
-      <translation type="unfinished">Bytt til fane for rapportvindu:</translation>
+      <translation>Aktiver velkomstbilde ved oppstart</translation>
     </message>
     <message>
       <source>Auto load module after start up:</source>
-      <translation type="unfinished">Autostart modul etter oppstart:</translation>
+      <translation>Autostart modul etter oppstart:</translation>
     </message>
     <message>
       <source>Language</source>
-      <translation type="unfinished">Språk</translation>
+      <translation>Språk</translation>
     </message>
     <message>
       <source>Change language:</source>
-      <translation type="unfinished">Endre språk:</translation>
+      <translation>Endre språk:</translation>
     </message>
     <message>
       <source>Main window</source>
-      <translation type="unfinished">Hovedvindu</translation>
+      <translation>Hovedvindu</translation>
     </message>
     <message>
       <source>Size of recent file list</source>
-      <translation type="unfinished">Størrelse på liste for nylig brukte filer</translation>
-    </message>
-    <message>
-      <source>Window style:</source>
-      <translation type="unfinished">Vindustil:</translation>
+      <translation>Størrelse på liste for nylig brukte filer</translation>
     </message>
     <message>
       <source>Size of toolbar icons:</source>
-      <translation type="unfinished">Størrelse på verktøylinjeikoner:</translation>
+      <translation>Størrelse på verktøylinjeikoner:</translation>
     </message>
     <message>
       <source>Enable tiled background</source>
-      <translation type="unfinished">Enable tiled background</translation>
+      <translation>Aktiver fliselagt bakgrunn</translation>
     </message>
     <message>
       <source>Style sheet:</source>
-      <translation type="unfinished">Style sheet:</translation>
+      <translation>Stilark:</translation>
+    </message>
+    <message>
+      <source>Python console</source>
+      <translation>Pythonkonsoll</translation>
+    </message>
+    <message>
+      <source>Enable word wrap</source>
+      <translation>Aktivere tekstbryting</translation>
+    </message>
+    <message>
+      <source>Language of the application's user interface</source>
+      <translation>Språk i applikasjonens brukergrensesnitt</translation>
+    </message>
+    <message>
+      <source>How many files should be listed in recent files list</source>
+      <translation type="unfinished">How many files should be listed in recent files list</translation>
+    </message>
+    <message>
+      <source>Background of the main window will consist of tiles of a special image.
+See the FreeCAD Wiki for details about the image.</source>
+      <translation type="unfinished">Background of the main window will consist of tiles of a special image.
+See the FreeCAD Wiki for details about the image.</translation>
+    </message>
+    <message>
+      <source>Style sheet how user interface will look like</source>
+      <translation type="unfinished">Style sheet how user interface will look like</translation>
+    </message>
+    <message>
+      <source>Choose your preference for toolbar icon size. You can adjust
+this according to your screen size or personal taste</source>
+      <translation type="unfinished">Choose your preference for toolbar icon size. You can adjust
+this according to your screen size or personal taste</translation>
+    </message>
+    <message>
+      <source>Tree view mode:</source>
+      <translation type="unfinished">Tree view mode:</translation>
+    </message>
+    <message>
+      <source>Customize how tree view is shown in the panel (restart required).
+
+'ComboView': combine tree view and property view into one panel.
+'TreeView and PropertyView': split tree view and property view into separate panel.
+'Both': keep all three panels, and you can have two sets of tree view and property view.</source>
+      <translation type="unfinished">Customize how tree view is shown in the panel (restart required).
+
+'ComboView': combine tree view and property view into one panel.
+'TreeView and PropertyView': split tree view and property view into separate panel.
+'Both': keep all three panels, and you can have two sets of tree view and property view.</translation>
+    </message>
+    <message>
+      <source>A Splash screen is a small loading window that is shown
+when FreeCAD is launching. If this option is checked, FreeCAD will
+display the splash screen</source>
+      <translation type="unfinished">A Splash screen is a small loading window that is shown
+when FreeCAD is launching. If this option is checked, FreeCAD will
+display the splash screen</translation>
+    </message>
+    <message>
+      <source>Choose which workbench will be activated and shown
+after FreeCAD launches</source>
+      <translation type="unfinished">Choose which workbench will be activated and shown
+after FreeCAD launches</translation>
+    </message>
+    <message>
+      <source>Words will be wrapped when they exceed available
+horizontal space in Python console</source>
+      <translation type="unfinished">Words will be wrapped when they exceed available
+horizontal space in Python console</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgGeneralImp</name>
     <message>
-      <source>Default (%1 x %1)</source>
-      <translation type="unfinished">Standard (%1 x %1)</translation>
-    </message>
-    <message>
-      <source>Small (%1 x %1)</source>
-      <translation type="unfinished">Liten (%1 x %1)</translation>
-    </message>
-    <message>
-      <source>Large (%1 x %1)</source>
-      <translation type="unfinished">Stor (%1 x %1)</translation>
-    </message>
-    <message>
-      <source>Extra large (%1 x %1)</source>
-      <translation type="unfinished">Ekstra stor (%1 x %1)</translation>
-    </message>
-    <message>
       <source>No style sheet</source>
-      <translation type="unfinished">No style sheet</translation>
+      <translation>Ingen stilark</translation>
+    </message>
+    <message>
+      <source>Small (%1px)</source>
+      <translation>Liten (%1px)</translation>
+    </message>
+    <message>
+      <source>Medium (%1px)</source>
+      <translation>Middels (%1px)</translation>
+    </message>
+    <message>
+      <source>Large (%1px)</source>
+      <translation>Stor (%1px)</translation>
+    </message>
+    <message>
+      <source>Extra large (%1px)</source>
+      <translation>Ekstra stor (%1px)</translation>
+    </message>
+    <message>
+      <source>Custom (%1px)</source>
+      <translation>Egendefinert (%1px)</translation>
+    </message>
+    <message>
+      <source>Combo View</source>
+      <translation>Kombinert visning</translation>
+    </message>
+    <message>
+      <source>TreeView and PropertyView</source>
+      <translation type="unfinished">TreeView and PropertyView</translation>
+    </message>
+    <message>
+      <source>Both</source>
+      <translation type="unfinished">Both</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgInputDialog</name>
     <message>
       <source>Input</source>
-      <translation type="unfinished">Inndata</translation>
+      <translation>Inndata</translation>
     </message>
     <message>
       <source/>
@@ -1078,176 +1594,283 @@ Please define another shortcut.</source>
     <name>Gui::Dialog::DlgInspector</name>
     <message>
       <source>Scene Inspector</source>
-      <translation type="unfinished">Sceneinspektør</translation>
+      <translation>Sceneinspektør</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgMacroExecute</name>
     <message>
       <source>Execute macro</source>
-      <translation type="unfinished">Kjør makro</translation>
+      <translation>Kjør makro</translation>
     </message>
     <message>
       <source>Macro name:</source>
-      <translation type="unfinished">Makronavn:</translation>
-    </message>
-    <message>
-      <source>Macro destination:</source>
-      <translation type="unfinished">Makrodestinasjon:</translation>
+      <translation>Makronavn:</translation>
     </message>
     <message>
       <source>Execute</source>
-      <translation type="unfinished">Kjør</translation>
+      <translation>Kjør</translation>
     </message>
     <message>
       <source>Close</source>
-      <translation type="unfinished">Lukk</translation>
+      <translation>Lukk</translation>
     </message>
     <message>
       <source>Create</source>
-      <translation type="unfinished">Lag</translation>
+      <translation>Lag</translation>
     </message>
     <message>
       <source>Delete</source>
-      <translation type="unfinished">Slett</translation>
+      <translation>Slett</translation>
     </message>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
+    </message>
+    <message>
+      <source>User macros</source>
+      <translation>Bruker makroer</translation>
+    </message>
+    <message>
+      <source>System macros</source>
+      <translation>System makroer</translation>
+    </message>
+    <message>
+      <source>User macros location:</source>
+      <translation>Plassering for makroer:</translation>
+    </message>
+    <message>
+      <source>Rename</source>
+      <translation>Omdøp</translation>
+    </message>
+    <message>
+      <source>Duplicate</source>
+      <translation type="unfinished">Duplicate</translation>
+    </message>
+    <message>
+      <source>Addons...</source>
+      <translation>Tilleggsmoduler...</translation>
+    </message>
+    <message>
+      <source>Toolbar</source>
+      <translation>Verktøylinje</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgMacroExecuteImp</name>
     <message>
       <source>Macros</source>
-      <translation type="unfinished">Makroer</translation>
+      <translation>Makroer</translation>
     </message>
     <message>
       <source>Macro file</source>
-      <translation type="unfinished">Makrofil</translation>
+      <translation>Makrofil</translation>
     </message>
     <message>
       <source>Enter a file name, please:</source>
-      <translation type="unfinished">Vennligst skriv inn et filnavn:</translation>
+      <translation>Vennligst skriv inn et filnavn:</translation>
     </message>
     <message>
       <source>Existing file</source>
-      <translation type="unfinished">Eksisterende fil</translation>
+      <translation>Eksisterende fil</translation>
     </message>
     <message>
       <source>'%1'.
 This file already exists.</source>
-      <translation type="unfinished">'%1'.
+      <translation>'%1'.
 Denne filen finnes allerede.</translation>
     </message>
     <message>
       <source>Delete macro</source>
-      <translation type="unfinished">Slett makro</translation>
+      <translation>Slett makro</translation>
     </message>
     <message>
       <source>Do you really want to delete the macro '%1'?</source>
-      <translation type="unfinished">Ønsker du virkelig å slette makroen '%1'?</translation>
+      <translation>Ønsker du virkelig å slette makroen '%1'?</translation>
     </message>
     <message>
       <source>Cannot create file</source>
-      <translation type="unfinished">Kan ikke lage fil</translation>
+      <translation>Kan ikke lage fil</translation>
     </message>
     <message>
       <source>Creation of file '%1' failed.</source>
-      <translation type="unfinished">Oppretting av filen '%1' mislyktes.</translation>
+      <translation>Oppretting av filen '%1' mislyktes.</translation>
+    </message>
+    <message>
+      <source>Read-only</source>
+      <translation>Skrivebeskyttet</translation>
+    </message>
+    <message>
+      <source>Renaming Macro File</source>
+      <translation type="unfinished">Renaming Macro File</translation>
+    </message>
+    <message>
+      <source>Enter new name:</source>
+      <translation type="unfinished">Enter new name:</translation>
+    </message>
+    <message>
+      <source>'%1'
+ already exists.</source>
+      <translation>'%1' finnes allerede.</translation>
+    </message>
+    <message>
+      <source>Rename Failed</source>
+      <translation type="unfinished">Rename Failed</translation>
+    </message>
+    <message>
+      <source>Failed to rename to '%1'.
+Perhaps a file permission error?</source>
+      <translation type="unfinished">Failed to rename to '%1'.
+Perhaps a file permission error?</translation>
+    </message>
+    <message>
+      <source>Duplicate Macro</source>
+      <translation type="unfinished">Duplicate Macro</translation>
+    </message>
+    <message>
+      <source>Duplicate Failed</source>
+      <translation type="unfinished">Duplicate Failed</translation>
+    </message>
+    <message>
+      <source>Failed to duplicate to '%1'.
+Perhaps a file permission error?</source>
+      <translation type="unfinished">Failed to duplicate to '%1'.
+Perhaps a file permission error?</translation>
+    </message>
+    <message>
+      <source>Do not show again</source>
+      <translation type="unfinished">Do not show again</translation>
+    </message>
+    <message>
+      <source>Guided Walkthrough</source>
+      <translation type="unfinished">Guided Walkthrough</translation>
+    </message>
+    <message>
+      <source>This will guide you in setting up this macro in a custom global toolbar.  Instructions will be in red text inside the dialog.
+
+Note: your changes will be applied when you next switch workbenches
+</source>
+      <translation type="unfinished">This will guide you in setting up this macro in a custom global toolbar.  Instructions will be in red text inside the dialog.
+
+Note: your changes will be applied when you next switch workbenches
+</translation>
+    </message>
+    <message>
+      <source>Walkthrough, dialog 1 of 2</source>
+      <translation type="unfinished">Walkthrough, dialog 1 of 2</translation>
+    </message>
+    <message>
+      <source>Walkthrough instructions: Fill in missing fields (optional) then click Add, then Close</source>
+      <translation type="unfinished">Walkthrough instructions: Fill in missing fields (optional) then click Add, then Close</translation>
+    </message>
+    <message>
+      <source>Walkthrough, dialog 1 of 1</source>
+      <translation type="unfinished">Walkthrough, dialog 1 of 1</translation>
+    </message>
+    <message>
+      <source>Walkthrough, dialog 2 of 2</source>
+      <translation type="unfinished">Walkthrough, dialog 2 of 2</translation>
+    </message>
+    <message>
+      <source>Walkthrough instructions: Click right arrow button (-&gt;), then Close.</source>
+      <translation type="unfinished">Walkthrough instructions: Click right arrow button (-&gt;), then Close.</translation>
+    </message>
+    <message>
+      <source>Walkthrough instructions: Click New, then right arrow (-&gt;) button, then Close.</source>
+      <translation type="unfinished">Walkthrough instructions: Click New, then right arrow (-&gt;) button, then Close.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgMacroRecord</name>
     <message>
       <source>Macro recording</source>
-      <translation type="unfinished">Macroopptak</translation>
+      <translation>Macroopptak</translation>
     </message>
     <message>
       <source>Macro name:</source>
-      <translation type="unfinished">Makronavn:</translation>
+      <translation>Makronavn:</translation>
     </message>
     <message>
       <source>Stop</source>
-      <translation type="unfinished">Stopp</translation>
+      <translation>Stopp</translation>
     </message>
     <message>
       <source>Cancel</source>
-      <translation type="unfinished">Avbryt</translation>
+      <translation>Avbryt</translation>
     </message>
     <message>
       <source>Macro path:</source>
-      <translation type="unfinished">Makrobane:</translation>
+      <translation>Makrobane:</translation>
     </message>
     <message>
       <source>...</source>
-      <translation type="unfinished">...</translation>
+      <translation>...</translation>
     </message>
     <message>
       <source>Record</source>
-      <translation type="unfinished">Spill inn</translation>
+      <translation>Spill inn</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgMacroRecordImp</name>
     <message>
       <source>Macro recorder</source>
-      <translation type="unfinished">Makroopptaker</translation>
+      <translation>Makroopptaker</translation>
     </message>
     <message>
       <source>Specify first a place to save.</source>
-      <translation type="unfinished">Angi først et sted å lagre.</translation>
+      <translation>Angi først et sted å lagre.</translation>
     </message>
     <message>
       <source>Existing macro</source>
-      <translation type="unfinished">Eksisterende makro</translation>
+      <translation>Eksisterende makro</translation>
     </message>
     <message>
       <source>The macro '%1' already exists. Do you want to overwrite?</source>
-      <translation type="unfinished">Makroen '%1' finnes allerede. Vil du overskrive?</translation>
+      <translation>Makroen '%1' finnes allerede. Vil du overskrive?</translation>
     </message>
     <message>
       <source>The macro directory doesn't exist. Please, choose another one.</source>
-      <translation type="unfinished">Makromappen finnes ikke. Vennligst, velg en annen.</translation>
+      <translation>Makromappen finnes ikke. Vennligst, velg en annen.</translation>
     </message>
     <message>
       <source>Choose macro directory</source>
-      <translation type="unfinished">Velg makromappe</translation>
+      <translation>Velg makromappe</translation>
     </message>
     <message>
       <source>You have no write permission for the directory. Please, choose another one.</source>
-      <translation type="unfinished">You have no write permission for the directory. Please, choose another one.</translation>
+      <translation>Du har ikke skrive tilgang til katalogen. Velg en annen.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgMaterialProperties</name>
     <message>
       <source>Material properties</source>
-      <translation type="unfinished">Materialegenskaper</translation>
+      <translation>Materialegenskaper</translation>
     </message>
     <message>
       <source>Material</source>
-      <translation type="unfinished">Materiale</translation>
+      <translation>Materiale</translation>
     </message>
     <message>
       <source>Diffuse color:</source>
-      <translation type="unfinished">Diffusér fargen:</translation>
+      <translation>Diffusér fargen:</translation>
     </message>
     <message>
       <source>Specular color:</source>
-      <translation type="unfinished">Gjenskinnfarge:</translation>
+      <translation>Gjenskinnfarge:</translation>
     </message>
     <message>
       <source>Shininess:</source>
-      <translation type="unfinished">Blankhet:</translation>
+      <translation>Blankhet:</translation>
     </message>
     <message>
       <source>%</source>
-      <translation type="unfinished">%</translation>
+      <translation>%</translation>
     </message>
     <message>
       <source>Ambient color:</source>
-      <translation type="unfinished">Omgivelsesfarge:</translation>
+      <translation>Omgivelsesfarge:</translation>
     </message>
     <message>
       <source/>
@@ -1255,101 +1878,168 @@ Denne filen finnes allerede.</translation>
     </message>
     <message>
       <source>Emissive color:</source>
-      <translation type="unfinished">Emissiv farge:</translation>
+      <translation>Emissiv farge:</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgOnlineHelp</name>
     <message>
       <source>On-line help</source>
-      <translation type="unfinished">Internetthjelp</translation>
+      <translation>Internetthjelp</translation>
     </message>
     <message>
       <source>Help viewer</source>
-      <translation type="unfinished">Hjelp visning</translation>
+      <translation>Hjelp visning</translation>
     </message>
     <message>
       <source>Location of start page</source>
-      <translation type="unfinished">Plassering av startsiden</translation>
+      <translation>Plassering av startsiden</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgOnlineHelpImp</name>
     <message>
-      <source>HTML files (*.html *.htm)</source>
-      <translation type="unfinished">HTML filer (*.html *.htm)</translation>
-    </message>
-    <message>
       <source>Access denied</source>
-      <translation type="unfinished">Ingen tilgang</translation>
+      <translation>Ingen tilgang</translation>
     </message>
     <message>
       <source>Access denied to '%1'
 
 Specify another directory, please.</source>
-      <translation type="unfinished">Ingen tilgang til '%1' 
+      <translation>Ingen tilgang til '%1' 
 Vennligst angi en annen mappe.</translation>
+    </message>
+    <message>
+      <source>HTML files</source>
+      <translation>HTML-filer</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgParameter</name>
     <message>
       <source>Parameter Editor</source>
-      <translation type="unfinished">Parameterredigering</translation>
+      <translation>Parameterredigering</translation>
     </message>
     <message>
       <source>Save to disk</source>
-      <translation type="unfinished">Lagre til disk</translation>
+      <translation>Lagre til disk</translation>
     </message>
     <message>
       <source>Alt+C</source>
-      <translation type="unfinished">Alt+C</translation>
+      <translation>Alt+C</translation>
     </message>
     <message>
       <source>&amp;Close</source>
-      <translation type="unfinished">&amp;Lukk</translation>
+      <translation>&amp;Lukk</translation>
+    </message>
+    <message>
+      <source>Find...</source>
+      <translation type="unfinished">Find...</translation>
+    </message>
+    <message>
+      <source>Sorted</source>
+      <translation type="unfinished">Sorted</translation>
+    </message>
+    <message>
+      <source>Quick search</source>
+      <translation type="unfinished">Quick search</translation>
+    </message>
+    <message>
+      <source>Type in a group name to find it</source>
+      <translation type="unfinished">Type in a group name to find it</translation>
+    </message>
+    <message>
+      <source>Search Group</source>
+      <translation type="unfinished">Search Group</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgParameterFind</name>
+    <message>
+      <source>Find</source>
+      <translation type="unfinished">Find</translation>
+    </message>
+    <message>
+      <source>Find what:</source>
+      <translation type="unfinished">Find what:</translation>
+    </message>
+    <message>
+      <source>Look at</source>
+      <translation type="unfinished">Look at</translation>
+    </message>
+    <message>
+      <source>Groups</source>
+      <translation type="unfinished">Groups</translation>
+    </message>
+    <message>
+      <source>Names</source>
+      <translation type="unfinished">Names</translation>
+    </message>
+    <message>
+      <source>Values</source>
+      <translation type="unfinished">Values</translation>
+    </message>
+    <message>
+      <source>Match whole string only</source>
+      <translation type="unfinished">Match whole string only</translation>
+    </message>
+    <message>
+      <source>Find Next</source>
+      <translation type="unfinished">Find Next</translation>
+    </message>
+    <message>
+      <source>Not found</source>
+      <translation type="unfinished">Not found</translation>
+    </message>
+    <message>
+      <source>Can't find the text: %1</source>
+      <translation type="unfinished">Can't find the text: %1</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgParameterImp</name>
     <message>
       <source>Group</source>
-      <translation type="unfinished">Gruppe</translation>
+      <translation>Gruppe</translation>
     </message>
     <message>
       <source>Name</source>
-      <translation type="unfinished">Navn</translation>
+      <translation>Navn</translation>
     </message>
     <message>
       <source>Type</source>
-      <translation type="unfinished">Type</translation>
+      <translation>Type</translation>
     </message>
     <message>
       <source>Value</source>
-      <translation type="unfinished">Verdi</translation>
+      <translation>Verdi</translation>
     </message>
     <message>
       <source>User parameter</source>
-      <translation type="unfinished">Brukerparameter</translation>
+      <translation>Brukerparameter</translation>
     </message>
     <message>
       <source>Invalid input</source>
-      <translation type="unfinished">Ugyldig inndata</translation>
+      <translation>Ugyldig inndata</translation>
     </message>
     <message>
       <source>Invalid key name '%1'</source>
-      <translation type="unfinished">Ugyldig nøkkelnavn '%1'</translation>
+      <translation>Ugyldig nøkkelnavn '%1'</translation>
     </message>
     <message>
       <source>System parameter</source>
-      <translation type="unfinished">Systemparameter</translation>
+      <translation>Systemparameter</translation>
+    </message>
+    <message>
+      <source>Search Group</source>
+      <translation type="unfinished">Search Group</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgPreferences</name>
     <message>
       <source>Preferences</source>
-      <translation type="unfinished">Preferanser</translation>
+      <translation>Preferanser</translation>
     </message>
     <message>
       <source/>
@@ -1360,50 +2050,62 @@ Vennligst angi en annen mappe.</translation>
     <name>Gui::Dialog::DlgPreferencesImp</name>
     <message>
       <source>Wrong parameter</source>
-      <translation type="unfinished">Feil parameter</translation>
+      <translation>Feil parameter</translation>
+    </message>
+    <message>
+      <source>Clear user settings</source>
+      <translation>Fjern bruker innstillingene</translation>
+    </message>
+    <message>
+      <source>Do you want to clear all your user settings?</source>
+      <translation>Vil du fjerne alle bruker innstillingene?</translation>
+    </message>
+    <message>
+      <source>If you agree all your settings will be cleared.</source>
+      <translation>Hvis du godtar fjernes alle innstillingene.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgProjectInformation</name>
     <message>
       <source>Project information</source>
-      <translation type="unfinished">Prosjektinformasjon</translation>
+      <translation>Prosjektinformasjon</translation>
     </message>
     <message>
       <source>Information</source>
-      <translation type="unfinished">Informasjon</translation>
+      <translation>Informasjon</translation>
     </message>
     <message>
       <source>&amp;Name:</source>
-      <translation type="unfinished">&amp;Navn:</translation>
+      <translation>&amp;Navn:</translation>
     </message>
     <message>
       <source>Commen&amp;t:</source>
-      <translation type="unfinished">Kommen&amp;tar:</translation>
+      <translation>Kommen&amp;tar:</translation>
     </message>
     <message>
       <source>Path:</source>
-      <translation type="unfinished">Bane:</translation>
+      <translation>Bane:</translation>
     </message>
     <message>
       <source>&amp;Last modified by:</source>
-      <translation type="unfinished">&amp;Sist endret av:</translation>
+      <translation>&amp;Sist endret av:</translation>
     </message>
     <message>
       <source>Created &amp;by:</source>
-      <translation type="unfinished">Laget &amp;av:</translation>
+      <translation>Laget &amp;av:</translation>
     </message>
     <message>
       <source>Com&amp;pany:</source>
-      <translation type="unfinished">Fir&amp;ma:</translation>
+      <translation>Fir&amp;ma:</translation>
     </message>
     <message>
       <source>Last &amp;modification date:</source>
-      <translation type="unfinished">Siste &amp;modifikasjonsdato:</translation>
+      <translation>Siste &amp;modifikasjonsdato:</translation>
     </message>
     <message>
       <source>Creation &amp;date:</source>
-      <translation type="unfinished">Opprettelse&amp;sdato:</translation>
+      <translation>Opprettelse&amp;sdato:</translation>
     </message>
     <message>
       <source/>
@@ -1411,140 +2113,156 @@ Vennligst angi en annen mappe.</translation>
     </message>
     <message>
       <source>UUID:</source>
-      <translation type="unfinished">UUID:</translation>
+      <translation>UUID:</translation>
     </message>
     <message>
       <source>License information:</source>
-      <translation type="unfinished">License information:</translation>
+      <translation>Lisens informasjon:</translation>
     </message>
     <message>
       <source>License URL</source>
-      <translation type="unfinished">License URL</translation>
+      <translation>Lisens URL</translation>
     </message>
     <message>
       <source>Open in browser</source>
-      <translation type="unfinished">Open in browser</translation>
+      <translation>Åpne i nettleser</translation>
+    </message>
+    <message>
+      <source>Program version:</source>
+      <translation type="unfinished">Program version:</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgProjectUtility</name>
     <message>
       <source>Project utility</source>
-      <translation type="unfinished">Prosjektverktøy</translation>
+      <translation>Prosjektverktøy</translation>
     </message>
     <message>
       <source>Extract project</source>
-      <translation type="unfinished">Pakk ut prosjekt</translation>
+      <translation>Pakk ut prosjekt</translation>
     </message>
     <message>
       <source>Source</source>
-      <translation type="unfinished">Kilde</translation>
-    </message>
-    <message>
-      <source>Project file (*.fcstd)</source>
-      <translation type="unfinished">Projektfil (*.fcstd)</translation>
+      <translation>Kilde</translation>
     </message>
     <message>
       <source>Destination</source>
-      <translation type="unfinished">Destinasjon</translation>
+      <translation>Destinasjon</translation>
     </message>
     <message>
       <source>Extract</source>
-      <translation type="unfinished">Pakk ut</translation>
+      <translation>Pakk ut</translation>
     </message>
     <message>
       <source>Create project</source>
-      <translation type="unfinished">Opprett prosjekt</translation>
-    </message>
-    <message>
-      <source>Document.xml</source>
-      <translation type="unfinished">Dokument.xml</translation>
+      <translation>Opprett prosjekt</translation>
     </message>
     <message>
       <source>Create</source>
-      <translation type="unfinished">Lag</translation>
+      <translation>Lag</translation>
     </message>
     <message>
       <source>Load project file after creation</source>
-      <translation type="unfinished">Last inn projektfil etter opprettelse</translation>
+      <translation>Last inn projektfil etter opprettelse</translation>
     </message>
     <message>
       <source>Empty source</source>
-      <translation type="unfinished">Tom kilde</translation>
+      <translation>Tom kilde</translation>
     </message>
     <message>
       <source>No source is defined.</source>
-      <translation type="unfinished">Ingen kilde er definert.</translation>
+      <translation>Ingen kilde er definert.</translation>
     </message>
     <message>
       <source>Empty destination</source>
-      <translation type="unfinished">Tom destinasjon</translation>
+      <translation>Tom destinasjon</translation>
     </message>
     <message>
       <source>No destination is defined.</source>
-      <translation type="unfinished">Ingen destinasjon er definert.</translation>
+      <translation>Ingen destinasjon er definert.</translation>
+    </message>
+    <message>
+      <source>Project file</source>
+      <translation>Prosjekt fil</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgPropertyLink</name>
     <message>
       <source>Link</source>
-      <translation type="unfinished">Link</translation>
+      <translation>Lenke</translation>
     </message>
     <message>
-      <source>Show all object types</source>
-      <translation type="unfinished">Show all object types</translation>
+      <source>Search</source>
+      <translation>Søk</translation>
     </message>
     <message>
-      <source>No selection</source>
-      <translation type="unfinished">Ingen valg</translation>
+      <source>A search pattern to filter the results above</source>
+      <translation type="unfinished">A search pattern to filter the results above</translation>
     </message>
     <message>
-      <source>Please select an object of the list</source>
-      <translation type="unfinished">Please select an object of the list</translation>
+      <source>Filter by type</source>
+      <translation type="unfinished">Filter by type</translation>
+    </message>
+    <message>
+      <source>Sync sub-object selection</source>
+      <translation type="unfinished">Sync sub-object selection</translation>
+    </message>
+    <message>
+      <source>Reset</source>
+      <translation>Tilbakestill</translation>
+    </message>
+    <message>
+      <source>Clear</source>
+      <translation>Tøm</translation>
+    </message>
+    <message>
+      <source>If enabled, then 3D view selection will be synchronized with full object hierarchy.</source>
+      <translation type="unfinished">If enabled, then 3D view selection will be synchronized with full object hierarchy.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgReportView</name>
     <message>
       <source>Output window</source>
-      <translation type="unfinished">Utdatavindu</translation>
+      <translation>Utdatavindu</translation>
     </message>
     <message>
       <source>Output</source>
-      <translation type="unfinished">Utdata</translation>
+      <translation>Utdata</translation>
     </message>
     <message>
       <source>Record log messages</source>
-      <translation type="unfinished">Registrer loggmeldinger</translation>
+      <translation>Registrer loggmeldinger</translation>
     </message>
     <message>
       <source>Record warnings</source>
-      <translation type="unfinished">Registrer advarsler</translation>
+      <translation>Registrer advarsler</translation>
     </message>
     <message>
       <source>Record error messages</source>
-      <translation type="unfinished">Registrer feilmeldinger</translation>
+      <translation>Registrer feilmeldinger</translation>
     </message>
     <message>
       <source>Colors</source>
-      <translation type="unfinished">Farger</translation>
+      <translation>Farger</translation>
     </message>
     <message>
       <source>Normal messages:</source>
-      <translation type="unfinished">Vanlige meldinger:</translation>
+      <translation>Vanlige meldinger:</translation>
     </message>
     <message>
       <source>Log messages:</source>
-      <translation type="unfinished">Loggmeldinger:</translation>
+      <translation>Loggmeldinger:</translation>
     </message>
     <message>
       <source>Warnings:</source>
-      <translation type="unfinished">Advarsler:</translation>
+      <translation>Advarsler:</translation>
     </message>
     <message>
       <source>Errors:</source>
-      <translation type="unfinished">Feil:</translation>
+      <translation>Feil:</translation>
     </message>
     <message>
       <source/>
@@ -1552,251 +2270,511 @@ Vennligst angi en annen mappe.</translation>
     </message>
     <message>
       <source>Redirect internal Python errors to report view</source>
-      <translation type="unfinished">Omadressere interne Python-feil til rapportvisning</translation>
+      <translation>Omadressere interne Python-feil til rapportvisning</translation>
     </message>
     <message>
       <source>Redirect internal Python output to report view</source>
-      <translation type="unfinished">Omdiriger intern Python utskrift til å rapportere visning</translation>
+      <translation>Omdiriger intern Python utskrift til å rapportere visning</translation>
+    </message>
+    <message>
+      <source>Python interpreter</source>
+      <translation type="unfinished">Python interpreter</translation>
+    </message>
+    <message>
+      <source>Log messages will be recorded</source>
+      <translation type="unfinished">Log messages will be recorded</translation>
+    </message>
+    <message>
+      <source>Warnings will be recorded</source>
+      <translation type="unfinished">Warnings will be recorded</translation>
+    </message>
+    <message>
+      <source>Error messages will be recorded</source>
+      <translation type="unfinished">Error messages will be recorded</translation>
+    </message>
+    <message>
+      <source>When an error has occurred, the Report View dialog becomes visible
+on-screen while displaying the error</source>
+      <translation type="unfinished">When an error has occurred, the Report View dialog becomes visible
+on-screen while displaying the error</translation>
+    </message>
+    <message>
+      <source>Show report view on error</source>
+      <translation type="unfinished">Show report view on error</translation>
+    </message>
+    <message>
+      <source>When a warning has occurred, the Report View dialog becomes visible
+on-screen while displaying the warning</source>
+      <translation type="unfinished">When a warning has occurred, the Report View dialog becomes visible
+on-screen while displaying the warning</translation>
+    </message>
+    <message>
+      <source>Show report view on warning</source>
+      <translation type="unfinished">Show report view on warning</translation>
+    </message>
+    <message>
+      <source>When a normal message has occurred, the Report View dialog becomes visible
+on-screen while displaying the message</source>
+      <translation type="unfinished">When a normal message has occurred, the Report View dialog becomes visible
+on-screen while displaying the message</translation>
+    </message>
+    <message>
+      <source>Show report view on normal message</source>
+      <translation type="unfinished">Show report view on normal message</translation>
+    </message>
+    <message>
+      <source>When a log message has occurred, the Report View dialog becomes visible
+on-screen while displaying the log message</source>
+      <translation type="unfinished">When a log message has occurred, the Report View dialog becomes visible
+on-screen while displaying the log message</translation>
+    </message>
+    <message>
+      <source>Show report view on log message</source>
+      <translation type="unfinished">Show report view on log message</translation>
+    </message>
+    <message>
+      <source>Font color for normal messages in Report view panel</source>
+      <translation type="unfinished">Font color for normal messages in Report view panel</translation>
+    </message>
+    <message>
+      <source>Font color for log messages in Report view panel</source>
+      <translation type="unfinished">Font color for log messages in Report view panel</translation>
+    </message>
+    <message>
+      <source>Font color for warning messages in Report view panel</source>
+      <translation type="unfinished">Font color for warning messages in Report view panel</translation>
+    </message>
+    <message>
+      <source>Font color for error messages in Report view panel</source>
+      <translation type="unfinished">Font color for error messages in Report view panel</translation>
+    </message>
+    <message>
+      <source>Internal Python output will be redirected
+from Python console to Report view panel</source>
+      <translation type="unfinished">Internal Python output will be redirected
+from Python console to Report view panel</translation>
+    </message>
+    <message>
+      <source>Internal Python error messages will be redirected
+from Python console to Report view panel</source>
+      <translation type="unfinished">Internal Python error messages will be redirected
+from Python console to Report view panel</translation>
+    </message>
+    <message>
+      <source>Include a timecode for each report</source>
+      <translation type="unfinished">Include a timecode for each report</translation>
+    </message>
+    <message>
+      <source>Include a timecode for each entry</source>
+      <translation type="unfinished">Include a timecode for each entry</translation>
+    </message>
+    <message>
+      <source>Normal messages will be recorded</source>
+      <translation type="unfinished">Normal messages will be recorded</translation>
+    </message>
+    <message>
+      <source>Record normal messages</source>
+      <translation type="unfinished">Record normal messages</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgRunExternal</name>
     <message>
       <source>Running external program</source>
-      <translation type="unfinished">Kjører eksternt program</translation>
+      <translation>Kjører eksternt program</translation>
     </message>
     <message>
       <source>TextLabel</source>
-      <translation type="unfinished">Merkelapp</translation>
+      <translation>Merkelapp</translation>
     </message>
     <message>
       <source>Advanced &gt;&gt;</source>
-      <translation type="unfinished">Avansert &gt;&gt;</translation>
+      <translation>Avansert &gt;&gt;</translation>
     </message>
     <message>
       <source>...</source>
-      <translation type="unfinished">...</translation>
+      <translation>...</translation>
     </message>
     <message>
       <source>Accept changes</source>
-      <translation type="unfinished">Godta endringer</translation>
+      <translation>Godta endringer</translation>
     </message>
     <message>
       <source>Discard changes</source>
-      <translation type="unfinished">Forkast endringer</translation>
+      <translation>Forkast endringer</translation>
     </message>
     <message>
       <source>Abort program</source>
-      <translation type="unfinished">Avbryt program</translation>
+      <translation>Avbryt program</translation>
     </message>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>Select a file</source>
-      <translation type="unfinished">Velg en fil</translation>
+      <translation>Velg en fil</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettings3DView</name>
     <message>
       <source>3D View</source>
-      <translation type="unfinished">3D-visning</translation>
-    </message>
-    <message>
-      <source>3D View settings</source>
-      <translation type="unfinished">Innstillinger for 3D-visning</translation>
+      <translation>3D-visning</translation>
     </message>
     <message>
       <source>Show coordinate system in the corner</source>
-      <translation type="unfinished">Vis koordinatsystem i hjørnet</translation>
+      <translation>Vis koordinatsystem i hjørnet</translation>
     </message>
     <message>
       <source>Show counter of frames per second</source>
-      <translation type="unfinished">Vis teller for bilder per sekund</translation>
-    </message>
-    <message>
-      <source>Enable animation</source>
-      <translation type="unfinished">Aktiver animasjon</translation>
-    </message>
-    <message>
-      <source>Eye to eye distance for stereo modes:</source>
-      <translation type="unfinished">Øyeavstand for stereomoduser:</translation>
+      <translation>Vis teller for bilder per sekund</translation>
     </message>
     <message>
       <source>Camera type</source>
-      <translation type="unfinished">Kameratype</translation>
-    </message>
-    <message>
-      <source>Orthographic rendering</source>
-      <translation type="unfinished">Ortografisk presentasjonsgjengivelse</translation>
-    </message>
-    <message>
-      <source>Perspective rendering</source>
-      <translation type="unfinished">Perspektiv presentasjonsgjengivelse</translation>
+      <translation>Kameratype</translation>
     </message>
     <message>
       <source/>
       <translation> </translation>
     </message>
     <message>
-      <source>3D Navigation</source>
-      <translation type="unfinished">3D-navigasjon</translation>
-    </message>
-    <message>
-      <source>Mouse...</source>
-      <translation type="unfinished">Mus...</translation>
-    </message>
-    <message>
-      <source>Intensity of backlight</source>
-      <translation type="unfinished">Intensitet på bakgrunnsbelysning</translation>
-    </message>
-    <message>
-      <source>Enable backlight color</source>
-      <translation type="unfinished">Aktiver bakgrunnsbelysningsfarge</translation>
-    </message>
-    <message>
-      <source>Orbit style</source>
-      <translation type="unfinished">Banestil</translation>
-    </message>
-    <message>
-      <source>Turntable</source>
-      <translation type="unfinished">Dreieskive</translation>
-    </message>
-    <message>
-      <source>Trackball</source>
-      <translation type="unfinished">Styrekulen</translation>
-    </message>
-    <message>
-      <source>Invert zoom</source>
-      <translation type="unfinished">Inverter zoom</translation>
-    </message>
-    <message>
-      <source>Zoom at cursor</source>
-      <translation type="unfinished">Zoom på markøren</translation>
-    </message>
-    <message>
-      <source>Zoom step</source>
-      <translation type="unfinished">Zoom-trinn</translation>
-    </message>
-    <message>
       <source>Anti-Aliasing</source>
-      <translation type="unfinished">Anti-Aliasing</translation>
+      <translation>Utjevning</translation>
     </message>
     <message>
       <source>None</source>
-      <translation type="unfinished">Ingen</translation>
+      <translation>Ingen</translation>
     </message>
     <message>
       <source>Line Smoothing</source>
-      <translation type="unfinished">Line Smoothing</translation>
+      <translation>Linje utjevning</translation>
     </message>
     <message>
       <source>MSAA 2x</source>
-      <translation type="unfinished">MSAA 2x</translation>
+      <translation>MSAA 2x</translation>
     </message>
     <message>
       <source>MSAA 4x</source>
-      <translation type="unfinished">MSAA 4x</translation>
+      <translation>MSAA 4x</translation>
     </message>
     <message>
       <source>MSAA 8x</source>
-      <translation type="unfinished">MSAA 8x</translation>
+      <translation>MSAA 8x</translation>
+    </message>
+    <message>
+      <source>Or&amp;thographic rendering</source>
+      <translation type="unfinished">Or&amp;thographic rendering</translation>
+    </message>
+    <message>
+      <source>Perspective renderin&amp;g</source>
+      <translation type="unfinished">Perspective renderin&amp;g</translation>
+    </message>
+    <message>
+      <source>Marker size:</source>
+      <translation type="unfinished">Marker size:</translation>
+    </message>
+    <message>
+      <source>General</source>
+      <translation>Generelle</translation>
+    </message>
+    <message>
+      <source>Main coordinate system will always be shown in
+lower right corner within opened files</source>
+      <translation type="unfinished">Main coordinate system will always be shown in
+lower right corner within opened files</translation>
+    </message>
+    <message>
+      <source>Time needed for last operation and resulting frame rate
+will be shown at the lower left corner in opened files</source>
+      <translation type="unfinished">Time needed for last operation and resulting frame rate
+will be shown at the lower left corner in opened files</translation>
+    </message>
+    <message>
+      <source>If checked, application will remember which workbench is active for each tab of the viewport</source>
+      <translation type="unfinished">If checked, application will remember which workbench is active for each tab of the viewport</translation>
+    </message>
+    <message>
+      <source>Remember active workbench by tab</source>
+      <translation type="unfinished">Remember active workbench by tab</translation>
+    </message>
+    <message>
+      <source>Rendering</source>
+      <translation type="unfinished">Rendering</translation>
+    </message>
+    <message>
+      <source>If selected, Vertex Buffer Objects (VBO) will be used.
+A VBO is an OpenGL feature that provides methods for uploading
+vertex data (position, normal vector, color, etc.) to the graphics card.
+VBOs offer substantial performance gains because the data resides
+in the graphics memory rather than the system memory and so it
+can be rendered directly by GPU. 
+
+Note: Sometimes this feature may lead to a host of different
+issues ranging from graphical anomalies to GPU crash bugs. Remember to
+report this setting as enabled when seeking support on the FreeCAD forums</source>
+      <translation type="unfinished">If selected, Vertex Buffer Objects (VBO) will be used.
+A VBO is an OpenGL feature that provides methods for uploading
+vertex data (position, normal vector, color, etc.) to the graphics card.
+VBOs offer substantial performance gains because the data resides
+in the graphics memory rather than the system memory and so it
+can be rendered directly by GPU. 
+
+Note: Sometimes this feature may lead to a host of different
+issues ranging from graphical anomalies to GPU crash bugs. Remember to
+report this setting as enabled when seeking support on the FreeCAD forums</translation>
+    </message>
+    <message>
+      <source>Use OpenGL VBO (Vertex Buffer Object)</source>
+      <translation type="unfinished">Use OpenGL VBO (Vertex Buffer Object)</translation>
+    </message>
+    <message>
+      <source>Render cache</source>
+      <translation type="unfinished">Render cache</translation>
+    </message>
+    <message>
+      <source>'Render Caching' is another way to say 'Rendering Acceleration'.
+There are 3 options available to achieve this: 
+1) 'Auto' (default), let Coin3D decide where to cache.
+2) 'Distributed', manually turn on cache for all view provider root node.
+3) 'Centralized', manually turn off cache in all nodes of all view provider, and
+only cache at the scene graph root node. This offers the fastest rendering speed
+but slower response to any scene changes.</source>
+      <translation type="unfinished">'Render Caching' is another way to say 'Rendering Acceleration'.
+There are 3 options available to achieve this: 
+1) 'Auto' (default), let Coin3D decide where to cache.
+2) 'Distributed', manually turn on cache for all view provider root node.
+3) 'Centralized', manually turn off cache in all nodes of all view provider, and
+only cache at the scene graph root node. This offers the fastest rendering speed
+but slower response to any scene changes.</translation>
+    </message>
+    <message>
+      <source>Auto</source>
+      <translation>Automatisk</translation>
+    </message>
+    <message>
+      <source>Distributed</source>
+      <translation type="unfinished">Distributed</translation>
+    </message>
+    <message>
+      <source>Centralized</source>
+      <translation type="unfinished">Centralized</translation>
+    </message>
+    <message>
+      <source>Transparent objects:</source>
+      <translation type="unfinished">Transparent objects:</translation>
+    </message>
+    <message>
+      <source>Render types of transparent objects</source>
+      <translation type="unfinished">Render types of transparent objects</translation>
+    </message>
+    <message>
+      <source>One pass</source>
+      <translation type="unfinished">One pass</translation>
+    </message>
+    <message>
+      <source>Backface pass</source>
+      <translation type="unfinished">Backface pass</translation>
+    </message>
+    <message>
+      <source>Size of vertices in the Sketcher workbench</source>
+      <translation type="unfinished">Size of vertices in the Sketcher workbench</translation>
+    </message>
+    <message>
+      <source>Eye to eye distance for stereo modes</source>
+      <translation type="unfinished">Eye to eye distance for stereo modes</translation>
+    </message>
+    <message>
+      <source>Backlight is enabled with the defined color</source>
+      <translation type="unfinished">Backlight is enabled with the defined color</translation>
+    </message>
+    <message>
+      <source>Backlight color</source>
+      <translation type="unfinished">Backlight color</translation>
+    </message>
+    <message>
+      <source>Intensity</source>
+      <translation type="unfinished">Intensity</translation>
+    </message>
+    <message>
+      <source>Intensity of the backlight</source>
+      <translation type="unfinished">Intensity of the backlight</translation>
+    </message>
+    <message>
+      <source>Objects will be projected in orthographic projection</source>
+      <translation type="unfinished">Objects will be projected in orthographic projection</translation>
+    </message>
+    <message>
+      <source>Objects will appear in a perspective projection</source>
+      <translation type="unfinished">Objects will appear in a perspective projection</translation>
+    </message>
+    <message>
+      <source>Axis cross will be shown by default at file
+opening or creation</source>
+      <translation type="unfinished">Axis cross will be shown by default at file
+opening or creation</translation>
+    </message>
+    <message>
+      <source>Show axis cross by default</source>
+      <translation type="unfinished">Show axis cross by default</translation>
+    </message>
+    <message>
+      <source>Pick radius (px):</source>
+      <translation type="unfinished">Pick radius (px):</translation>
+    </message>
+    <message>
+      <source>Area for picking elements in 3D view.
+Larger value eases to pick things, but can make small features impossible to select.
+               </source>
+      <translation type="unfinished">Area for picking elements in 3D view.
+Larger value eases to pick things, but can make small features impossible to select.
+               </translation>
+    </message>
+    <message>
+      <source>This option is useful for troubleshooting graphics card and driver problems.
+
+Changing this option requires a restart of the application.</source>
+      <translation type="unfinished">This option is useful for troubleshooting graphics card and driver problems.
+
+Changing this option requires a restart of the application.</translation>
+    </message>
+    <message>
+      <source>Use software OpenGL</source>
+      <translation type="unfinished">Use software OpenGL</translation>
+    </message>
+    <message>
+      <source>What kind of multisample anti-aliasing is used</source>
+      <translation type="unfinished">What kind of multisample anti-aliasing is used</translation>
+    </message>
+    <message>
+      <source>Eye-to-eye distance used for stereo projections.
+The specified value is a factor that will be multiplied with the
+bounding box size of the 3D object that is currently displayed.</source>
+      <translation type="unfinished">Eye-to-eye distance used for stereo projections.
+The specified value is a factor that will be multiplied with the
+bounding box size of the 3D object that is currently displayed.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettings3DViewImp</name>
     <message>
-      <source>%1 navigation</source>
-      <translation type="unfinished">%1navigasjon</translation>
+      <source>Anti-aliasing</source>
+      <translation>Utjevning</translation>
+    </message>
+    <message>
+      <source>Open a new viewer or restart %1 to apply anti-aliasing changes.</source>
+      <translation type="unfinished">Open a new viewer or restart %1 to apply anti-aliasing changes.</translation>
+    </message>
+    <message>
+      <source>5px</source>
+      <translation type="unfinished">5px</translation>
+    </message>
+    <message>
+      <source>7px</source>
+      <translation type="unfinished">7px</translation>
+    </message>
+    <message>
+      <source>9px</source>
+      <translation type="unfinished">9px</translation>
+    </message>
+    <message>
+      <source>11px</source>
+      <translation type="unfinished">11px</translation>
+    </message>
+    <message>
+      <source>13px</source>
+      <translation type="unfinished">13px</translation>
+    </message>
+    <message>
+      <source>15px</source>
+      <translation type="unfinished">15px</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettingsColorGradient</name>
     <message>
       <source>Color model</source>
-      <translation type="unfinished">Fargemodell</translation>
+      <translation>Fargemodell</translation>
     </message>
     <message>
       <source>&amp;Gradient:</source>
-      <translation type="unfinished">&amp;Overgang:</translation>
+      <translation>&amp;Overgang:</translation>
     </message>
     <message>
       <source>red-yellow-green-cyan-blue</source>
-      <translation type="unfinished">rød-gul-grønn-cyan-blå</translation>
+      <translation>rød-gul-grønn-cyan-blå</translation>
     </message>
     <message>
       <source>blue-cyan-green-yellow-red</source>
-      <translation type="unfinished">blå-cyan-grønn-gul-rød</translation>
+      <translation>blå-cyan-grønn-gul-rød</translation>
     </message>
     <message>
       <source>white-black</source>
-      <translation type="unfinished">hvit-svart</translation>
+      <translation>hvit-svart</translation>
     </message>
     <message>
       <source>black-white</source>
-      <translation type="unfinished">svart-hvit</translation>
+      <translation>svart-hvit</translation>
     </message>
     <message>
       <source>Visibility</source>
-      <translation type="unfinished">Synlighet</translation>
+      <translation>Synlighet</translation>
     </message>
     <message>
       <source>Out g&amp;rayed</source>
-      <translation type="unfinished">Ut g&amp;rånet</translation>
+      <translation>Ut g&amp;rånet</translation>
     </message>
     <message>
       <source>Alt+R</source>
-      <translation type="unfinished">Alt+R</translation>
+      <translation>Alt+R</translation>
     </message>
     <message>
       <source>Out &amp;invisible</source>
-      <translation type="unfinished">Ut &amp;usynlig</translation>
+      <translation>Ut &amp;usynlig</translation>
     </message>
     <message>
       <source>Alt+I</source>
-      <translation type="unfinished">Alt+I</translation>
+      <translation>Alt+I</translation>
     </message>
     <message>
       <source>Style</source>
-      <translation type="unfinished">Stil</translation>
+      <translation>Stil</translation>
     </message>
     <message>
       <source>&amp;Zero</source>
-      <translation type="unfinished">&amp;Null</translation>
+      <translation>&amp;Null</translation>
     </message>
     <message>
       <source>Alt+Z</source>
-      <translation type="unfinished">Alt+Z</translation>
+      <translation>Alt+Z</translation>
     </message>
     <message>
       <source>&amp;Flow</source>
-      <translation type="unfinished">&amp;Flyt</translation>
+      <translation>&amp;Flyt</translation>
     </message>
     <message>
       <source>Alt+F</source>
-      <translation type="unfinished">Alt+F</translation>
+      <translation>Alt+F</translation>
     </message>
     <message>
       <source>Parameter range</source>
-      <translation type="unfinished">Parameterrekkevidde</translation>
+      <translation>Parameterrekkevidde</translation>
     </message>
     <message>
       <source>Mi&amp;nimum:</source>
-      <translation type="unfinished">Mi&amp;nimum:</translation>
+      <translation>Mi&amp;nimum:</translation>
     </message>
     <message>
       <source>Ma&amp;ximum:</source>
-      <translation type="unfinished">Ma&amp;ksimum:</translation>
+      <translation>Ma&amp;ksimum:</translation>
     </message>
     <message>
       <source>&amp;Labels:</source>
-      <translation type="unfinished">&amp;Etiketter:</translation>
+      <translation>&amp;Etiketter:</translation>
     </message>
     <message>
       <source>&amp;Decimals:</source>
-      <translation type="unfinished">&amp;Desimaler:</translation>
+      <translation>&amp;Desimaler:</translation>
     </message>
     <message>
       <source/>
@@ -1804,67 +2782,67 @@ Vennligst angi en annen mappe.</translation>
     </message>
     <message>
       <source>Color-gradient settings</source>
-      <translation type="unfinished">Fargeovergangsinnstillinger</translation>
+      <translation>Fargeovergangsinnstillinger</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettingsColorGradientImp</name>
     <message>
       <source>Wrong parameter</source>
-      <translation type="unfinished">Feil parameter</translation>
+      <translation>Feil parameter</translation>
     </message>
     <message>
       <source>The maximum value must be higher than the minimum value.</source>
-      <translation type="unfinished">Maksimumsverdien må være høyere enn minimumsverdien.</translation>
+      <translation>Maksimumsverdien må være høyere enn minimumsverdien.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettingsDocument</name>
     <message>
       <source>Document</source>
-      <translation type="unfinished">Dokument</translation>
+      <translation>Dokument</translation>
     </message>
     <message>
       <source>General</source>
-      <translation type="unfinished">Generelle</translation>
+      <translation>Generelle</translation>
     </message>
     <message>
       <source>Document save compression level
 (0 = none, 9 = highest, 3 = default)</source>
-      <translation type="unfinished">Dokumentetlagring komprimeringsnivå
+      <translation>Dokumentetlagring komprimeringsnivå
 (0=ingen, 9=høyest, 3=standard)</translation>
     </message>
     <message>
       <source>Create new document at start up</source>
-      <translation type="unfinished">Lag nytt dokument ved oppstart</translation>
+      <translation>Lag nytt dokument ved oppstart</translation>
     </message>
     <message>
       <source>Storage</source>
-      <translation type="unfinished">Lagring</translation>
+      <translation>Lagring</translation>
     </message>
     <message>
       <source>Saving transactions (Auto-save)</source>
-      <translation type="unfinished">Autolagrer forandringer underveis</translation>
+      <translation>Autolagrer forandringer underveis</translation>
     </message>
     <message>
       <source>Discard saved transaction after saving document</source>
-      <translation type="unfinished">Forkast lagrede forandringer etter du har lagret dokumentet manuelt</translation>
+      <translation>Forkast lagrede forandringer etter du har lagret dokumentet manuelt</translation>
     </message>
     <message>
       <source>Save thumbnail into project file when saving document</source>
-      <translation type="unfinished">Lagre miniatyrbilde til prosjektfil når du lagrer dokument</translation>
+      <translation>Lagre miniatyrbilde til prosjektfil når du lagrer dokument</translation>
     </message>
     <message>
-      <source>Create up to backup files when resaving document</source>
-      <translation type="unfinished">Lag opp til sikkerhetskopifiler når dokumentet lagres på nytt</translation>
+      <source>Maximum number of backup files to keep when resaving document</source>
+      <translation type="unfinished">Maximum number of backup files to keep when resaving document</translation>
     </message>
     <message>
       <source>Document objects</source>
-      <translation type="unfinished">Dokumentobjekter</translation>
+      <translation>Dokumentobjekter</translation>
     </message>
     <message>
       <source>Allow duplicate object labels in one document</source>
-      <translation type="unfinished">Tillat dupliserte objektetiketter i ett dokument</translation>
+      <translation>Tillat dupliserte objektetiketter i ett dokument</translation>
     </message>
     <message>
       <source>Maximum Undo/Redo steps</source>
@@ -1874,68 +2852,275 @@ Vennligst angi en annen mappe.</translation>
       <source>Using Undo/Redo on documents</source>
       <translation type="unfinished">Using Undo/Redo on documents</translation>
     </message>
+    <message>
+      <source>Authoring and License</source>
+      <translation type="unfinished">Authoring and License</translation>
+    </message>
+    <message>
+      <source>Author name</source>
+      <translation type="unfinished">Author name</translation>
+    </message>
+    <message>
+      <source>Set on save</source>
+      <translation type="unfinished">Set on save</translation>
+    </message>
+    <message>
+      <source>Company</source>
+      <translation>Firma</translation>
+    </message>
+    <message>
+      <source>Default license</source>
+      <translation>Standard lisens</translation>
+    </message>
+    <message>
+      <source>All rights reserved</source>
+      <translation>Alle rettigheter forbeholdt</translation>
+    </message>
+    <message>
+      <source>Public Domain</source>
+      <translation type="unfinished">Public Domain</translation>
+    </message>
+    <message>
+      <source>FreeArt</source>
+      <translation type="unfinished">FreeArt</translation>
+    </message>
+    <message>
+      <source>Other</source>
+      <translation type="unfinished">Other</translation>
+    </message>
+    <message>
+      <source>License URL</source>
+      <translation>Lisens URL</translation>
+    </message>
+    <message>
+      <source>Run AutoRecovery at startup</source>
+      <translation type="unfinished">Run AutoRecovery at startup</translation>
+    </message>
+    <message>
+      <source>Save AutoRecovery information every</source>
+      <translation type="unfinished">Save AutoRecovery information every</translation>
+    </message>
+    <message>
+      <source>Add the program logo to the generated thumbnail</source>
+      <translation type="unfinished">Add the program logo to the generated thumbnail</translation>
+    </message>
+    <message>
+      <source>The application will create a new document when started</source>
+      <translation type="unfinished">The application will create a new document when started</translation>
+    </message>
+    <message>
+      <source>Compression level for FCStd files</source>
+      <translation type="unfinished">Compression level for FCStd files</translation>
+    </message>
+    <message>
+      <source>All changes in documents are stored so that they can be undone/redone</source>
+      <translation type="unfinished">All changes in documents are stored so that they can be undone/redone</translation>
+    </message>
+    <message>
+      <source>How many Undo/Redo steps should be recorded</source>
+      <translation type="unfinished">How many Undo/Redo steps should be recorded</translation>
+    </message>
+    <message>
+      <source>Allow user aborting document recomputation by pressing ESC.
+This feature may slightly increase recomputation time.</source>
+      <translation type="unfinished">Allow user aborting document recomputation by pressing ESC.
+This feature may slightly increase recomputation time.</translation>
+    </message>
+    <message>
+      <source>Allow aborting recomputation</source>
+      <translation type="unfinished">Allow aborting recomputation</translation>
+    </message>
+    <message>
+      <source>If there is a recovery file available the application will
+automatically run a file recovery when it is started.</source>
+      <translation type="unfinished">If there is a recovery file available the application will
+automatically run a file recovery when it is started.</translation>
+    </message>
+    <message>
+      <source>How often a recovery file is written</source>
+      <translation type="unfinished">How often a recovery file is written</translation>
+    </message>
+    <message>
+      <source>A thumbnail will be stored when document is saved</source>
+      <translation type="unfinished">A thumbnail will be stored when document is saved</translation>
+    </message>
+    <message>
+      <source>Size</source>
+      <translation type="unfinished">Size</translation>
+    </message>
+    <message>
+      <source>Sets the size of the thumbnail that is stored in the document.
+Common sizes are 128, 256 and 512</source>
+      <translation type="unfinished">Sets the size of the thumbnail that is stored in the document.
+Common sizes are 128, 256 and 512</translation>
+    </message>
+    <message>
+      <source>The program logo will be added to the thumbnail</source>
+      <translation type="unfinished">The program logo will be added to the thumbnail</translation>
+    </message>
+    <message>
+      <source>How many backup files will be kept when saving document</source>
+      <translation type="unfinished">How many backup files will be kept when saving document</translation>
+    </message>
+    <message>
+      <source>Backup files will get extension '.FCbak' and file names
+get date suffix according to the specified format</source>
+      <translation type="unfinished">Backup files will get extension '.FCbak' and file names
+get date suffix according to the specified format</translation>
+    </message>
+    <message>
+      <source>Use date and FCBak extension</source>
+      <translation type="unfinished">Use date and FCBak extension</translation>
+    </message>
+    <message>
+      <source>Date format</source>
+      <translation type="unfinished">Date format</translation>
+    </message>
+    <message>
+      <source>Allow objects to have same label/name</source>
+      <translation type="unfinished">Allow objects to have same label/name</translation>
+    </message>
+    <message>
+      <source>Enable partial loading of external linked documents.
+Then only referenced objects and their dependencies will be loaded
+when a linked document is auto-opened together with the main document.
+A partially loaded document cannot be edited. Double click the document
+icon in the tree view to fully reload it.</source>
+      <translation type="unfinished">Enable partial loading of external linked documents.
+Then only referenced objects and their dependencies will be loaded
+when a linked document is auto-opened together with the main document.
+A partially loaded document cannot be edited. Double click the document
+icon in the tree view to fully reload it.</translation>
+    </message>
+    <message>
+      <source>Disable partial loading of external linked objects</source>
+      <translation type="unfinished">Disable partial loading of external linked objects</translation>
+    </message>
+    <message>
+      <source>All documents that will be created will get the specified author name.
+Keep blank for anonymous.
+You can also use the form: John Doe &lt;john@doe.com&gt;</source>
+      <translation type="unfinished">All documents that will be created will get the specified author name.
+Keep blank for anonymous.
+You can also use the form: John Doe &lt;john@doe.com&gt;</translation>
+    </message>
+    <message>
+      <source>The field 'Last modified by' will be set to specified author when saving the file</source>
+      <translation type="unfinished">The field 'Last modified by' will be set to specified author when saving the file</translation>
+    </message>
+    <message>
+      <source>Default company name to use for new files</source>
+      <translation type="unfinished">Default company name to use for new files</translation>
+    </message>
+    <message>
+      <source>Default license for new documents</source>
+      <translation type="unfinished">Default license for new documents</translation>
+    </message>
+    <message>
+      <source>Creative Commons Attribution</source>
+      <translation type="unfinished">Creative Commons Attribution</translation>
+    </message>
+    <message>
+      <source>Creative Commons Attribution-ShareAlike</source>
+      <translation type="unfinished">Creative Commons Attribution-ShareAlike</translation>
+    </message>
+    <message>
+      <source>Creative Commons Attribution-NoDerivatives</source>
+      <translation type="unfinished">Creative Commons Attribution-NoDerivatives</translation>
+    </message>
+    <message>
+      <source>Creative Commons Attribution-NonCommercial</source>
+      <translation type="unfinished">Creative Commons Attribution-NonCommercial</translation>
+    </message>
+    <message>
+      <source>Creative Commons Attribution-NonCommercial-ShareAlike</source>
+      <translation type="unfinished">Creative Commons Attribution-NonCommercial-ShareAlike</translation>
+    </message>
+    <message>
+      <source>Creative Commons Attribution-NonCommercial-NoDerivatives</source>
+      <translation type="unfinished">Creative Commons Attribution-NonCommercial-NoDerivatives</translation>
+    </message>
+    <message>
+      <source>URL describing more about the license</source>
+      <translation type="unfinished">URL describing more about the license</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgSettingsDocumentImp</name>
+    <message>
+      <source>The format of the date to use.</source>
+      <translation type="unfinished">The format of the date to use.</translation>
+    </message>
+    <message>
+      <source>Default</source>
+      <translation>Standard</translation>
+    </message>
+    <message>
+      <source>Format</source>
+      <translation type="unfinished">Format</translation>
+    </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettingsEditorImp</name>
     <message>
       <source>Text</source>
-      <translation type="unfinished">Tekst</translation>
+      <translation>Tekst</translation>
     </message>
     <message>
       <source>Bookmark</source>
-      <translation type="unfinished">Bokmerke</translation>
+      <translation>Bokmerke</translation>
     </message>
     <message>
       <source>Breakpoint</source>
-      <translation type="unfinished">Brytingspunkt</translation>
+      <translation>Brytingspunkt</translation>
     </message>
     <message>
       <source>Keyword</source>
-      <translation type="unfinished">Nøkkelord</translation>
+      <translation>Nøkkelord</translation>
     </message>
     <message>
       <source>Comment</source>
-      <translation type="unfinished">Kommentar</translation>
+      <translation>Kommentar</translation>
     </message>
     <message>
       <source>Block comment</source>
-      <translation type="unfinished">Blokkkommentar</translation>
+      <translation>Blokkkommentar</translation>
     </message>
     <message>
       <source>Number</source>
-      <translation type="unfinished">Nummer</translation>
+      <translation>Nummer</translation>
     </message>
     <message>
       <source>String</source>
-      <translation type="unfinished">Streng</translation>
+      <translation>Streng</translation>
     </message>
     <message>
       <source>Character</source>
-      <translation type="unfinished">Tegn</translation>
+      <translation>Tegn</translation>
     </message>
     <message>
       <source>Class name</source>
-      <translation type="unfinished">Klassenavn</translation>
+      <translation>Klassenavn</translation>
     </message>
     <message>
       <source>Define name</source>
-      <translation type="unfinished">Definer navn</translation>
+      <translation>Definer navn</translation>
     </message>
     <message>
       <source>Operator</source>
-      <translation type="unfinished">Operatør</translation>
+      <translation>Operatør</translation>
     </message>
     <message>
       <source>Python output</source>
-      <translation type="unfinished">Python-utdata</translation>
+      <translation>Python-utdata</translation>
     </message>
     <message>
       <source>Python error</source>
-      <translation type="unfinished">Python-feil</translation>
+      <translation>Python-feil</translation>
     </message>
     <message>
       <source>Items</source>
-      <translation type="unfinished">Elementer</translation>
+      <translation>Elementer</translation>
     </message>
     <message>
       <source>Current line highlight</source>
@@ -1946,234 +3131,235 @@ Vennligst angi en annen mappe.</translation>
     <name>Gui::Dialog::DlgSettingsImage</name>
     <message>
       <source>Image settings</source>
-      <translation type="unfinished">Bildeinnstillinger</translation>
+      <translation>Bildeinnstillinger</translation>
     </message>
     <message>
       <source>Image properties</source>
-      <translation type="unfinished">Bildeegenskaper</translation>
+      <translation>Bildeegenskaper</translation>
     </message>
     <message>
       <source>Back&amp;ground:</source>
-      <translation type="unfinished">Bak&amp;grunn:</translation>
+      <translation>Bak&amp;grunn:</translation>
     </message>
     <message>
       <source>Current</source>
-      <translation type="unfinished">Gjeldende</translation>
+      <translation>Gjeldende</translation>
     </message>
     <message>
       <source>White</source>
-      <translation type="unfinished">Hvit</translation>
+      <translation>Hvit</translation>
     </message>
     <message>
       <source>Black</source>
-      <translation type="unfinished">Svart</translation>
-    </message>
-    <message>
-      <source>Transparent</source>
-      <translation type="unfinished">Gjennomsiktig</translation>
+      <translation>Svart</translation>
     </message>
     <message>
       <source>Image dimensions</source>
-      <translation type="unfinished">Bildedimensjoner</translation>
+      <translation>Bildedimensjoner</translation>
     </message>
     <message>
       <source>Pixel</source>
-      <translation type="unfinished">Piksel</translation>
+      <translation>Piksel</translation>
     </message>
     <message>
       <source>&amp;Width:</source>
-      <translation type="unfinished">&amp;Bredde:</translation>
+      <translation>&amp;Bredde:</translation>
     </message>
     <message>
       <source>Current screen</source>
-      <translation type="unfinished">Gjeldende skjermbilde</translation>
+      <translation>Gjeldende skjermbilde</translation>
     </message>
     <message>
       <source>Icon       32  x 32</source>
-      <translation type="unfinished">Ikon 32 x 32</translation>
+      <translation>Ikon 32 x 32</translation>
     </message>
     <message>
       <source>Icon       64 x 64</source>
-      <translation type="unfinished">Ikon 64 x 64</translation>
+      <translation>Ikon 64 x 64</translation>
     </message>
     <message>
       <source>Icon       128 x 128</source>
-      <translation type="unfinished">Ikon 128 x 128</translation>
-    </message>
-    <message>
-      <source>CGA       320 x 200</source>
-      <translation type="unfinished">CGA       320 x 200</translation>
-    </message>
-    <message>
-      <source>QVGA     320 x 240</source>
-      <translation type="unfinished">QVGA     320 x 240</translation>
-    </message>
-    <message>
-      <source>VGA       640 x 480</source>
-      <translation type="unfinished">VGA       640 x 480</translation>
-    </message>
-    <message>
-      <source>NTSC     720 x 480</source>
-      <translation type="unfinished">NTSC     720 x 480</translation>
-    </message>
-    <message>
-      <source>PAL        768 x 578</source>
-      <translation type="unfinished">PAL        768 x 578</translation>
-    </message>
-    <message>
-      <source>SVGA     800 x 600</source>
-      <translation type="unfinished">SVGA     800 x 600</translation>
-    </message>
-    <message>
-      <source>XGA       1024 x 768</source>
-      <translation type="unfinished">XGA       1024 x 768</translation>
-    </message>
-    <message>
-      <source>HD720   1280 x 720</source>
-      <translation type="unfinished">HD720   1280 x 720</translation>
-    </message>
-    <message>
-      <source>SXGA     1280 x 1024</source>
-      <translation type="unfinished">SXGA     1280 x 1024</translation>
-    </message>
-    <message>
-      <source>SXGA+   1400 x 1050</source>
-      <translation type="unfinished">SXGA+   1400 x 1050</translation>
-    </message>
-    <message>
-      <source>UXGA     1600 x 1200</source>
-      <translation type="unfinished">UXGA     1600 x 1200</translation>
-    </message>
-    <message>
-      <source>HD1080 1920 x 1080</source>
-      <translation type="unfinished">HD1080 1920 x 1080</translation>
-    </message>
-    <message>
-      <source>WUXGA  1920 x 1200</source>
-      <translation type="unfinished">WUXGA  1920 x 1200</translation>
-    </message>
-    <message>
-      <source>QXGA     2048 x 1538</source>
-      <translation type="unfinished">QXGA     2048 x 1538</translation>
-    </message>
-    <message>
-      <source>WQXGA  2560 x 1600</source>
-      <translation type="unfinished">WQXGA  2560 x 1600</translation>
-    </message>
-    <message>
-      <source>QSXGA   2560 x 2048</source>
-      <translation type="unfinished">QSXGA   2560 x 2048</translation>
-    </message>
-    <message utf8="true">
-      <source>QUXGA   3200 × 2400</source>
-      <translation type="unfinished">QUXGA   3200 × 2400</translation>
-    </message>
-    <message utf8="true">
-      <source>HUXGA   6400 × 4800</source>
-      <translation type="unfinished">HUXGA   6400 × 4800</translation>
-    </message>
-    <message>
-      <source>!!!          10000 x 10000</source>
-      <translation type="unfinished">!!!          10000 x 10000</translation>
+      <translation>Ikon 128 x 128</translation>
     </message>
     <message>
       <source>Standard sizes:</source>
-      <translation type="unfinished">Standard størrelser:</translation>
+      <translation>Standard størrelser:</translation>
     </message>
     <message>
       <source>&amp;Height:</source>
-      <translation type="unfinished">&amp;Høyde:</translation>
+      <translation>&amp;Høyde:</translation>
     </message>
     <message>
       <source>Aspect ratio:</source>
-      <translation type="unfinished">Bildeformat:</translation>
+      <translation>Bildeformat:</translation>
     </message>
     <message>
       <source>&amp;Screen</source>
-      <translation type="unfinished">&amp;Skjermbilde</translation>
+      <translation>&amp;Skjermbilde</translation>
     </message>
     <message>
       <source>Alt+S</source>
-      <translation type="unfinished">Alt+S</translation>
+      <translation>Alt+S</translation>
     </message>
     <message>
       <source>&amp;4:3</source>
-      <translation type="unfinished">&amp;4:3</translation>
+      <translation>&amp;4:3</translation>
     </message>
     <message>
       <source>Alt+4</source>
-      <translation type="unfinished">Alt+4</translation>
+      <translation>Alt+4</translation>
     </message>
     <message>
       <source>1&amp;6:9</source>
-      <translation type="unfinished">1&amp;6:9</translation>
+      <translation>1&amp;6:9</translation>
     </message>
     <message>
       <source>Alt+6</source>
-      <translation type="unfinished">Alt+6</translation>
+      <translation>Alt+6</translation>
     </message>
     <message>
       <source>&amp;1:1</source>
-      <translation type="unfinished">&amp;1:1</translation>
+      <translation>&amp;1:1</translation>
     </message>
     <message>
       <source>Alt+1</source>
-      <translation type="unfinished">Alt+1</translation>
+      <translation>Alt+1</translation>
     </message>
     <message>
       <source>Image comment</source>
-      <translation type="unfinished">Bildekommentar</translation>
+      <translation>Bildekommentar</translation>
     </message>
     <message>
       <source>Insert MIBA</source>
-      <translation type="unfinished">Sett inn MIBA</translation>
+      <translation>Sett inn MIBA</translation>
     </message>
     <message>
       <source>Insert comment</source>
-      <translation type="unfinished">Sett inn kommentar</translation>
+      <translation>Sett inn kommentar</translation>
+    </message>
+    <message>
+      <source>Transparent</source>
+      <translation type="unfinished">Transparent</translation>
+    </message>
+    <message>
+      <source>Add watermark</source>
+      <translation>Lag Vannmerke</translation>
+    </message>
+    <message>
+      <source>Creation method:</source>
+      <translation type="unfinished">Creation method:</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgSettingsImageImp</name>
+    <message>
+      <source>Offscreen (New)</source>
+      <translation type="unfinished">Offscreen (New)</translation>
+    </message>
+    <message>
+      <source>Offscreen (Old)</source>
+      <translation type="unfinished">Offscreen (Old)</translation>
+    </message>
+    <message>
+      <source>Framebuffer (custom)</source>
+      <translation type="unfinished">Framebuffer (custom)</translation>
+    </message>
+    <message>
+      <source>Framebuffer (as is)</source>
+      <translation type="unfinished">Framebuffer (as is)</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgSettingsLazyLoaded</name>
+    <message>
+      <source>Unloaded Workbenches</source>
+      <translation type="unfinished">Unloaded Workbenches</translation>
+    </message>
+    <message>
+      <source>Workbench Name</source>
+      <translation type="unfinished">Workbench Name</translation>
+    </message>
+    <message>
+      <source>Autoload?</source>
+      <translation type="unfinished">Autoload?</translation>
+    </message>
+    <message>
+      <source>Load Now</source>
+      <translation type="unfinished">Load Now</translation>
+    </message>
+    <message>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;To preserve resources, FreeCAD does not load workbenches until they are used. Loading them may provide access to additional preferences related to their functionality.&lt;/p&gt;&lt;p&gt;The following workbenches are available in your installation:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;To preserve resources, FreeCAD does not load workbenches until they are used. Loading them may provide access to additional preferences related to their functionality.&lt;/p&gt;&lt;p&gt;The following workbenches are available in your installation:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgSettingsLazyLoadedImp</name>
+    <message>
+      <source>Workbench</source>
+      <translation>Arbeidsbenk</translation>
+    </message>
+    <message>
+      <source>Autoload</source>
+      <translation type="unfinished">Autoload</translation>
+    </message>
+    <message>
+      <source>If checked</source>
+      <translation type="unfinished">If checked</translation>
+    </message>
+    <message>
+      <source>will be loaded automatically when FreeCAD starts up</source>
+      <translation type="unfinished">will be loaded automatically when FreeCAD starts up</translation>
+    </message>
+    <message>
+      <source>This is the current startup module, and must be autoloaded. See Preferences/General/Autoload to change.</source>
+      <translation type="unfinished">This is the current startup module, and must be autoloaded. See Preferences/General/Autoload to change.</translation>
+    </message>
+    <message>
+      <source>Loaded</source>
+      <translation type="unfinished">Loaded</translation>
+    </message>
+    <message>
+      <source>Load now</source>
+      <translation type="unfinished">Load now</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettingsMacro</name>
     <message>
       <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
+      <translation>Makro</translation>
     </message>
     <message>
       <source>Macro recording settings</source>
-      <translation type="unfinished">Innstillinger for makroopptak</translation>
+      <translation>Innstillinger for makroopptak</translation>
     </message>
     <message>
       <source>Logging Commands</source>
-      <translation type="unfinished">Logging kommandoer</translation>
+      <translation>Logging kommandoer</translation>
     </message>
     <message>
       <source>Show script commands in python console</source>
-      <translation type="unfinished">Vis skriptkommandoer i python konsoll</translation>
+      <translation>Vis skriptkommandoer i python konsoll</translation>
     </message>
     <message>
       <source>Log all commands issued by menus to file:</source>
-      <translation type="unfinished">Logg alle kommandoer utstedt av menyer til fil:</translation>
+      <translation>Logg alle kommandoer utstedt av menyer til fil:</translation>
     </message>
     <message>
       <source>FullScript.FCScript</source>
-      <translation type="unfinished">FullSkript.FCSkript</translation>
+      <translation>FullSkript.FCSkript</translation>
     </message>
     <message>
       <source>Gui commands</source>
-      <translation type="unfinished">Guikommandoer</translation>
-    </message>
-    <message>
-      <source>Recording GUI commands</source>
-      <translation type="unfinished">Spiller inn GUI kommandoer</translation>
+      <translation>Guikommandoer</translation>
     </message>
     <message>
       <source>Record as comment</source>
-      <translation type="unfinished">Spill inn som kommentar</translation>
+      <translation>Spill inn som kommentar</translation>
     </message>
     <message>
       <source>Macro path</source>
-      <translation type="unfinished">Makrobane</translation>
+      <translation>Makrobane</translation>
     </message>
     <message>
       <source>General macro settings</source>
@@ -2183,36 +3369,336 @@ Vennligst angi en annen mappe.</translation>
       <source>Run macros in local environment</source>
       <translation type="unfinished">Run macros in local environment</translation>
     </message>
+    <message>
+      <source>Record GUI commands</source>
+      <translation type="unfinished">Record GUI commands</translation>
+    </message>
+    <message>
+      <source>Variables defined by macros are created as local variables</source>
+      <translation type="unfinished">Variables defined by macros are created as local variables</translation>
+    </message>
+    <message>
+      <source>Commands executed by macro scripts are shown in Python console</source>
+      <translation type="unfinished">Commands executed by macro scripts are shown in Python console</translation>
+    </message>
+    <message>
+      <source>Recorded macros will also contain user interface commands</source>
+      <translation type="unfinished">Recorded macros will also contain user interface commands</translation>
+    </message>
+    <message>
+      <source>Recorded macros will also contain user interface commands as comments</source>
+      <translation type="unfinished">Recorded macros will also contain user interface commands as comments</translation>
+    </message>
+    <message>
+      <source>The directory in which the application will search for macros</source>
+      <translation type="unfinished">The directory in which the application will search for macros</translation>
+    </message>
+    <message>
+      <source>Recent macros menu</source>
+      <translation type="unfinished">Recent macros menu</translation>
+    </message>
+    <message>
+      <source>Size of recent macro list</source>
+      <translation type="unfinished">Size of recent macro list</translation>
+    </message>
+    <message>
+      <source>How many macros should be listed in recent macros list</source>
+      <translation type="unfinished">How many macros should be listed in recent macros list</translation>
+    </message>
+    <message>
+      <source>Shortcut count</source>
+      <translation type="unfinished">Shortcut count</translation>
+    </message>
+    <message>
+      <source>How many recent macros should have shortcuts</source>
+      <translation type="unfinished">How many recent macros should have shortcuts</translation>
+    </message>
+    <message>
+      <source>Keyboard Modifiers</source>
+      <translation type="unfinished">Keyboard Modifiers</translation>
+    </message>
+    <message>
+      <source>Keyboard modifiers, default = Ctrl+Shift+</source>
+      <translation type="unfinished">Keyboard modifiers, default = Ctrl+Shift+</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgSettingsNavigation</name>
+    <message>
+      <source>Navigation</source>
+      <translation>Navigasjon</translation>
+    </message>
+    <message>
+      <source>Navigation cube</source>
+      <translation type="unfinished">Navigation cube</translation>
+    </message>
+    <message>
+      <source>Steps by turn</source>
+      <translation type="unfinished">Steps by turn</translation>
+    </message>
+    <message>
+      <source>Number of steps by turn when using arrows (default = 8 : step angle = 360/8 = 45 deg)</source>
+      <translation type="unfinished">Number of steps by turn when using arrows (default = 8 : step angle = 360/8 = 45 deg)</translation>
+    </message>
+    <message>
+      <source>Corner</source>
+      <translation type="unfinished">Corner</translation>
+    </message>
+    <message>
+      <source>Corner where navigation cube is shown</source>
+      <translation type="unfinished">Corner where navigation cube is shown</translation>
+    </message>
+    <message>
+      <source>Top left</source>
+      <translation>Øverst til venstre</translation>
+    </message>
+    <message>
+      <source>Top right</source>
+      <translation>Øverst til høyre</translation>
+    </message>
+    <message>
+      <source>Bottom left</source>
+      <translation>Nederst til venstre</translation>
+    </message>
+    <message>
+      <source>Bottom right</source>
+      <translation>Nederst til høyre</translation>
+    </message>
+    <message>
+      <source>3D Navigation</source>
+      <translation>3D-navigasjon</translation>
+    </message>
+    <message>
+      <source>List the mouse button configs for each chosen navigation setting.
+Select a set and then press the button to view said configurations.</source>
+      <translation type="unfinished">List the mouse button configs for each chosen navigation setting.
+Select a set and then press the button to view said configurations.</translation>
+    </message>
+    <message>
+      <source>Mouse...</source>
+      <translation>Mus...</translation>
+    </message>
+    <message>
+      <source>Navigation settings set</source>
+      <translation type="unfinished">Navigation settings set</translation>
+    </message>
+    <message>
+      <source>Orbit style</source>
+      <translation>Banestil</translation>
+    </message>
+    <message>
+      <source>Rotation orbit style.
+Trackball: moving the mouse horizontally will rotate the part around the y-axis
+Turntable: the part will be rotated around the z-axis.</source>
+      <translation type="unfinished">Rotation orbit style.
+Trackball: moving the mouse horizontally will rotate the part around the y-axis
+Turntable: the part will be rotated around the z-axis.</translation>
+    </message>
+    <message>
+      <source>Turntable</source>
+      <translation>Dreieskive</translation>
+    </message>
+    <message>
+      <source>Trackball</source>
+      <translation>Styrekulen</translation>
+    </message>
+    <message>
+      <source>New document scale</source>
+      <translation type="unfinished">New document scale</translation>
+    </message>
+    <message>
+      <source>Sets camera zoom for new documents.
+The value is the diameter of the sphere to fit on the screen.</source>
+      <translation type="unfinished">Sets camera zoom for new documents.
+The value is the diameter of the sphere to fit on the screen.</translation>
+    </message>
+    <message>
+      <source>mm</source>
+      <translation>mm</translation>
+    </message>
+    <message>
+      <source>Enable animated rotations</source>
+      <translation type="unfinished">Enable animated rotations</translation>
+    </message>
+    <message>
+      <source>Enable animation</source>
+      <translation>Aktiver animasjon</translation>
+    </message>
+    <message>
+      <source>Zoom operations will be performed at position of mouse pointer</source>
+      <translation type="unfinished">Zoom operations will be performed at position of mouse pointer</translation>
+    </message>
+    <message>
+      <source>Zoom at cursor</source>
+      <translation>Zoom på markøren</translation>
+    </message>
+    <message>
+      <source>Zoom step</source>
+      <translation>Zoom-trinn</translation>
+    </message>
+    <message>
+      <source>Direction of zoom operations will be inverted</source>
+      <translation type="unfinished">Direction of zoom operations will be inverted</translation>
+    </message>
+    <message>
+      <source>Invert zoom</source>
+      <translation>Inverter zoom</translation>
+    </message>
+    <message>
+      <source>Prevents view tilting when pinch-zooming.
+Affects only gesture navigation style.
+Mouse tilting is not disabled by this setting.</source>
+      <translation type="unfinished">Prevents view tilting when pinch-zooming.
+Affects only gesture navigation style.
+Mouse tilting is not disabled by this setting.</translation>
+    </message>
+    <message>
+      <source>Disable touchscreen tilt gesture</source>
+      <translation type="unfinished">Disable touchscreen tilt gesture</translation>
+    </message>
+    <message>
+      <source>Rotations in 3D will use current cursor position as center for rotation</source>
+      <translation type="unfinished">Rotations in 3D will use current cursor position as center for rotation</translation>
+    </message>
+    <message>
+      <source>Isometric</source>
+      <translation>Isometrisk</translation>
+    </message>
+    <message>
+      <source>Dimetric</source>
+      <translation type="unfinished">Dimetric</translation>
+    </message>
+    <message>
+      <source>Trimetric</source>
+      <translation type="unfinished">Trimetric</translation>
+    </message>
+    <message>
+      <source>Top</source>
+      <translation>Topp</translation>
+    </message>
+    <message>
+      <source>Front</source>
+      <translation>Front</translation>
+    </message>
+    <message>
+      <source>Left</source>
+      <translation>Venstre</translation>
+    </message>
+    <message>
+      <source>Right</source>
+      <translation>Høyre</translation>
+    </message>
+    <message>
+      <source>Rear</source>
+      <translation>Bak</translation>
+    </message>
+    <message>
+      <source>Bottom</source>
+      <translation>Bunn</translation>
+    </message>
+    <message>
+      <source>Custom</source>
+      <translation>Egendefinert</translation>
+    </message>
+    <message>
+      <source>Default camera orientation</source>
+      <translation type="unfinished">Default camera orientation</translation>
+    </message>
+    <message>
+      <source>Default camera orientation when creating a new document or selecting the home view</source>
+      <translation type="unfinished">Default camera orientation when creating a new document or selecting the home view</translation>
+    </message>
+    <message>
+      <source>Rotation mode</source>
+      <translation type="unfinished">Rotation mode</translation>
+    </message>
+    <message>
+      <source>Window center</source>
+      <translation type="unfinished">Window center</translation>
+    </message>
+    <message>
+      <source>Drag at cursor</source>
+      <translation type="unfinished">Drag at cursor</translation>
+    </message>
+    <message>
+      <source>Object center</source>
+      <translation type="unfinished">Object center</translation>
+    </message>
+    <message>
+      <source>Rotates to nearest possible state when clicking a cube face</source>
+      <translation type="unfinished">Rotates to nearest possible state when clicking a cube face</translation>
+    </message>
+    <message>
+      <source>Rotate to nearest</source>
+      <translation type="unfinished">Rotate to nearest</translation>
+    </message>
+    <message>
+      <source>Cube size</source>
+      <translation type="unfinished">Cube size</translation>
+    </message>
+    <message>
+      <source>Size of the navigation cube</source>
+      <translation type="unfinished">Size of the navigation cube</translation>
+    </message>
+    <message>
+      <source>How much will be zoomed.
+Zoom step of '1' means a factor of 7.5 for every zoom step.</source>
+      <translation type="unfinished">How much will be zoomed.
+Zoom step of '1' means a factor of 7.5 for every zoom step.</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgSettingsSelection</name>
+    <message>
+      <source>Selection</source>
+      <translation>Utvalg</translation>
+    </message>
+    <message>
+      <source>Auto switch to the 3D view containing the selected item</source>
+      <translation type="unfinished">Auto switch to the 3D view containing the selected item</translation>
+    </message>
+    <message>
+      <source>Auto expand tree item when the corresponding object is selected in 3D view</source>
+      <translation type="unfinished">Auto expand tree item when the corresponding object is selected in 3D view</translation>
+    </message>
+    <message>
+      <source>Preselect the object in 3D view when mouse over the tree item</source>
+      <translation type="unfinished">Preselect the object in 3D view when mouse over the tree item</translation>
+    </message>
+    <message>
+      <source>Record selection in tree view in order to go back/forward using navigation button</source>
+      <translation type="unfinished">Record selection in tree view in order to go back/forward using navigation button</translation>
+    </message>
+    <message>
+      <source>Add checkboxes for selection in document tree</source>
+      <translation type="unfinished">Add checkboxes for selection in document tree</translation>
+    </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettingsUnits</name>
     <message>
       <source>Units</source>
-      <translation type="unfinished">Enheter</translation>
+      <translation>Enheter</translation>
     </message>
     <message>
       <source>Units settings</source>
-      <translation type="unfinished">Enhetsinnstillinger</translation>
+      <translation>Enhetsinnstillinger</translation>
     </message>
     <message>
       <source>Standard (mm/kg/s/degree)</source>
-      <translation type="unfinished">Standard (mm/kg/s/grad)</translation>
+      <translation>Standard (mm/kg/s/grad)</translation>
     </message>
     <message>
       <source>MKS (m/kg/s/degree)</source>
-      <translation type="unfinished">MKS (m/kg/s/grad)</translation>
+      <translation>MKS (m/kg/s/grad)</translation>
     </message>
     <message>
       <source>Magnitude</source>
-      <translation type="unfinished">Magnitude</translation>
+      <translation>Magnitude</translation>
     </message>
     <message>
       <source>Unit</source>
-      <translation type="unfinished">Enhet</translation>
-    </message>
-    <message>
-      <source>User system:</source>
-      <translation type="unfinished">Brukersystem:</translation>
+      <translation>Enhet</translation>
     </message>
     <message>
       <source>US customary (in/lb)</source>
@@ -2226,148 +3712,414 @@ Vennligst angi en annen mappe.</translation>
       <source>Imperial decimal (in/lb)</source>
       <translation type="unfinished">Imperial decimal (in/lb)</translation>
     </message>
+    <message>
+      <source>Building Euro (cm/m²/m³)</source>
+      <translation type="unfinished">Building Euro (cm/m²/m³)</translation>
+    </message>
+    <message>
+      <source>Metric small parts &amp; CNC(mm, mm/min)</source>
+      <translation type="unfinished">Metric small parts &amp; CNC(mm, mm/min)</translation>
+    </message>
+    <message>
+      <source>Minimum fractional inch:</source>
+      <translation type="unfinished">Minimum fractional inch:</translation>
+    </message>
+    <message>
+      <source>1/2"</source>
+      <translation type="unfinished">1/2"</translation>
+    </message>
+    <message>
+      <source>1/4"</source>
+      <translation type="unfinished">1/4"</translation>
+    </message>
+    <message>
+      <source>1/8"</source>
+      <translation type="unfinished">1/8"</translation>
+    </message>
+    <message>
+      <source>1/16"</source>
+      <translation type="unfinished">1/16"</translation>
+    </message>
+    <message>
+      <source>1/32"</source>
+      <translation type="unfinished">1/32"</translation>
+    </message>
+    <message>
+      <source>1/64"</source>
+      <translation type="unfinished">1/64"</translation>
+    </message>
+    <message>
+      <source>1/128"</source>
+      <translation type="unfinished">1/128"</translation>
+    </message>
+    <message>
+      <source>Unit system:</source>
+      <translation type="unfinished">Unit system:</translation>
+    </message>
+    <message>
+      <source>Number of decimals that should be shown for numbers and dimensions</source>
+      <translation type="unfinished">Number of decimals that should be shown for numbers and dimensions</translation>
+    </message>
+    <message>
+      <source>Unit system that should be used for all parts the application</source>
+      <translation type="unfinished">Unit system that should be used for all parts the application</translation>
+    </message>
+    <message>
+      <source>Minimum fractional inch to be displayed</source>
+      <translation type="unfinished">Minimum fractional inch to be displayed</translation>
+    </message>
+    <message>
+      <source>Building US (ft-in/sqft/cft)</source>
+      <translation type="unfinished">Building US (ft-in/sqft/cft)</translation>
+    </message>
+    <message>
+      <source>Imperial for Civil Eng (ft, ft/sec)</source>
+      <translation type="unfinished">Imperial for Civil Eng (ft, ft/sec)</translation>
+    </message>
+    <message>
+      <source>FEM (mm, N, sec)</source>
+      <translation type="unfinished">FEM (mm, N, sec)</translation>
+    </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgSettingsViewColor</name>
     <message>
       <source>Colors</source>
-      <translation type="unfinished">Farger</translation>
+      <translation>Farger</translation>
     </message>
     <message>
       <source>Selection</source>
-      <translation type="unfinished">Utvalg</translation>
+      <translation>Utvalg</translation>
     </message>
     <message>
       <source>Enable selection highlighting</source>
-      <translation type="unfinished">Aktiver utheving av valg</translation>
+      <translation>Aktiver utheving av valg</translation>
     </message>
     <message>
       <source>Enable preselection highlighting</source>
-      <translation type="unfinished">Aktiver utheving av forvalg</translation>
+      <translation>Aktiver utheving av forvalg</translation>
     </message>
     <message>
       <source>Background color</source>
-      <translation type="unfinished">Bakgrunnsfarge</translation>
+      <translation>Bakgrunnsfarge</translation>
     </message>
     <message>
       <source>Middle color</source>
-      <translation type="unfinished">Midtfarge</translation>
+      <translation>Midtfarge</translation>
     </message>
     <message>
       <source>Color gradient</source>
-      <translation type="unfinished">Fargeovergang</translation>
+      <translation>Fargeovergang</translation>
     </message>
     <message>
       <source>Simple color</source>
-      <translation type="unfinished">Enkel farge</translation>
+      <translation>Enkel farge</translation>
+    </message>
+    <message>
+      <source>Object being edited</source>
+      <translation type="unfinished">Object being edited</translation>
+    </message>
+    <message>
+      <source>Active container</source>
+      <translation type="unfinished">Active container</translation>
+    </message>
+    <message>
+      <source>Enable preselection and highlight by specified color</source>
+      <translation type="unfinished">Enable preselection and highlight by specified color</translation>
+    </message>
+    <message>
+      <source>Enable selection highlighting and use specified color</source>
+      <translation type="unfinished">Enable selection highlighting and use specified color</translation>
+    </message>
+    <message>
+      <source>Background color for the model view</source>
+      <translation type="unfinished">Background color for the model view</translation>
+    </message>
+    <message>
+      <source>Background will have selected color</source>
+      <translation type="unfinished">Background will have selected color</translation>
+    </message>
+    <message>
+      <source>Color gradient will get selected color as middle color</source>
+      <translation type="unfinished">Color gradient will get selected color as middle color</translation>
+    </message>
+    <message>
+      <source>Bottom color</source>
+      <translation type="unfinished">Bottom color</translation>
+    </message>
+    <message>
+      <source>Background will have selected color gradient</source>
+      <translation type="unfinished">Background will have selected color gradient</translation>
+    </message>
+    <message>
+      <source>Top color</source>
+      <translation type="unfinished">Top color</translation>
+    </message>
+    <message>
+      <source>Tree view</source>
+      <translation>Trevisning</translation>
+    </message>
+    <message>
+      <source>Background color for objects in tree view that are currently edited</source>
+      <translation type="unfinished">Background color for objects in tree view that are currently edited</translation>
+    </message>
+    <message>
+      <source>Background color for active containers in tree view</source>
+      <translation type="unfinished">Background color for active containers in tree view</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgTipOfTheDay</name>
-    <message>
-      <source>Tip of the day</source>
-      <translation type="unfinished">Dagens tips</translation>
-    </message>
-    <message>
-      <source>&lt;b&gt;&lt;font face="Times New Roman"&gt;&lt;font size="+3"&gt;Did you know...&lt;/font&gt;&lt;/font&gt;&lt;/b&gt;</source>
-      <translation type="unfinished">&lt;b&gt;&lt;font face="Times New Roman"&gt;&lt;font size="+3"&gt;Visste du at...&lt;/font&gt;&lt;/font&gt;&lt;/b&gt;</translation>
-    </message>
-    <message>
-      <source>&amp;Show tips at start up</source>
-      <translation type="unfinished">&amp;Vis tips ved oppstart</translation>
-    </message>
-    <message>
-      <source>Alt+S</source>
-      <translation type="unfinished">Alt+S</translation>
-    </message>
-    <message>
-      <source>&amp;Next Tip</source>
-      <translation type="unfinished">&amp;Neste tips</translation>
-    </message>
-    <message>
-      <source>Alt+N</source>
-      <translation type="unfinished">Alt+N</translation>
-    </message>
-    <message>
-      <source>&amp;Close</source>
-      <translation type="unfinished">&amp;Lukk</translation>
-    </message>
-    <message>
-      <source>Alt+C</source>
-      <translation type="unfinished">Alt+C</translation>
-    </message>
     <message>
       <source/>
       <translation> </translation>
     </message>
   </context>
   <context>
-    <name>Gui::Dialog::DlgTipOfTheDayImp</name>
+    <name>Gui::Dialog::DlgUnitCalculator</name>
     <message>
-      <source>Download failed: %1
-</source>
-      <translation type="unfinished">Nedlasting mislyktes: %1 </translation>
+      <source>Units calculator</source>
+      <translation type="unfinished">Units calculator</translation>
     </message>
     <message>
-      <source>If you want to learn more about FreeCAD you must go to %1 or press the Help item in the Help menu.</source>
-      <translation type="unfinished">Hvis du ønsker å lære mer om FreeCAD må du gå til %1 eller bruk Hjelp i menyen.</translation>
+      <source>as:</source>
+      <translation type="unfinished">as:</translation>
+    </message>
+    <message>
+      <source>=&gt;</source>
+      <translation type="unfinished">=&gt;</translation>
+    </message>
+    <message>
+      <source>Quantity:</source>
+      <translation type="unfinished">Quantity:</translation>
+    </message>
+    <message>
+      <source>Copy</source>
+      <translation>Kopier</translation>
+    </message>
+    <message>
+      <source>Close</source>
+      <translation>Lukk</translation>
+    </message>
+    <message>
+      <source>Input the source value and unit</source>
+      <translation type="unfinished">Input the source value and unit</translation>
+    </message>
+    <message>
+      <source>Input here the unit for the result</source>
+      <translation type="unfinished">Input here the unit for the result</translation>
+    </message>
+    <message>
+      <source>Result</source>
+      <translation type="unfinished">Result</translation>
+    </message>
+    <message>
+      <source>List of last used calculations 
+To add a calculation press Return in the value input field</source>
+      <translation type="unfinished">List of last used calculations 
+To add a calculation press Return in the value input field</translation>
+    </message>
+    <message>
+      <source>Quantity</source>
+      <translation type="unfinished">Quantity</translation>
+    </message>
+    <message>
+      <source>Unit system:</source>
+      <translation type="unfinished">Unit system:</translation>
+    </message>
+    <message>
+      <source>Unit system to be used for the Quantity
+The preference system is the one set in the general preferences.</source>
+      <translation type="unfinished">Unit system to be used for the Quantity
+The preference system is the one set in the general preferences.</translation>
+    </message>
+    <message>
+      <source>Decimals:</source>
+      <translation type="unfinished">Decimals:</translation>
+    </message>
+    <message>
+      <source>Decimals for the Quantity</source>
+      <translation type="unfinished">Decimals for the Quantity</translation>
+    </message>
+    <message>
+      <source>Unit category:</source>
+      <translation type="unfinished">Unit category:</translation>
+    </message>
+    <message>
+      <source>Unit category for the Quantity</source>
+      <translation type="unfinished">Unit category for the Quantity</translation>
+    </message>
+    <message>
+      <source>Copy the result into the clipboard</source>
+      <translation type="unfinished">Copy the result into the clipboard</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DlgUnitsCalculator</name>
     <message>
-      <source>Unit mismatch</source>
-      <translation type="unfinished">Unit mismatch</translation>
+      <source>unit mismatch</source>
+      <translation type="unfinished">unit mismatch</translation>
+    </message>
+    <message>
+      <source>unknown unit:</source>
+      <translation type="unfinished">unknown unit:</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::DlgWorkbenches</name>
+    <message>
+      <source>Workbenches</source>
+      <translation type="unfinished">Workbenches</translation>
+    </message>
+    <message>
+      <source>Enabled workbenches</source>
+      <translation type="unfinished">Enabled workbenches</translation>
+    </message>
+    <message>
+      <source>Disabled workbenches</source>
+      <translation type="unfinished">Disabled workbenches</translation>
+    </message>
+    <message>
+      <source>Move down</source>
+      <translation>Flytt ned</translation>
+    </message>
+    <message>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Move the selected item down.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The item will be moved down&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Move the selected item down.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The item will be moved down&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+      <source>Move left</source>
+      <translation>Flytt til venstre</translation>
+    </message>
+    <message>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Remove the selected workbench from enabled workbenches&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Remove the selected workbench from enabled workbenches&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+      <source>Move right</source>
+      <translation>Flytt til høyre</translation>
+    </message>
+    <message>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Move the selected workbench to enabled workbenches.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Move the selected workbench to enabled workbenches.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+      <source>Sort enabled workbenches</source>
+      <translation type="unfinished">Sort enabled workbenches</translation>
+    </message>
+    <message>
+      <source>Move up</source>
+      <translation>Flytt opp</translation>
+    </message>
+    <message>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Move the selected item up.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The item will be moved up.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600;"&gt;Move the selected item up.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The item will be moved up.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+      <source>Add all to enabled workbenches</source>
+      <translation>Legg alle til aktiverte arbeidsbenker</translation>
+    </message>
+    <message>
+      <source>&lt;p&gt;Sort enabled workbenches&lt;/p&gt;</source>
+      <translation type="unfinished">&lt;p&gt;Sort enabled workbenches&lt;/p&gt;</translation>
+    </message>
+    <message>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:600;"&gt;Note:&lt;/span&gt;&lt;span style=" font-family:'MS Shell Dlg 2'; font-size:8pt;"&gt; The changes become active the next time you start the application&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:600;"&gt;Note:&lt;/span&gt;&lt;span style=" font-family:'MS Shell Dlg 2'; font-size:8pt;"&gt; The changes become active the next time you start the application&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::DockablePlacement</name>
     <message>
       <source>Placement</source>
-      <translation type="unfinished">Plassering</translation>
+      <translation>Plassering</translation>
     </message>
   </context>
   <context>
-    <name>Gui::Dialog::DownloadDialog</name>
+    <name>Gui::Dialog::DocumentRecovery</name>
     <message>
-      <source>Download</source>
-      <translation type="unfinished">Download</translation>
+      <source>Document Recovery</source>
+      <translation type="unfinished">Document Recovery</translation>
     </message>
     <message>
-      <source>Cancel</source>
-      <translation type="unfinished">Avbryt</translation>
+      <source>Status of recovered documents:</source>
+      <translation type="unfinished">Status of recovered documents:</translation>
     </message>
     <message>
-      <source>Close</source>
-      <translation type="unfinished">Lukk</translation>
+      <source>Document Name</source>
+      <translation type="unfinished">Document Name</translation>
     </message>
     <message>
-      <source>There already exists a file called %1 in the current directory. Overwrite?</source>
-      <translation type="unfinished">There already exists a file called %1 in the current directory. Overwrite?</translation>
+      <source>Status</source>
+      <translation type="unfinished">Status</translation>
     </message>
     <message>
-      <source>Unable to save the file %1: %2.</source>
-      <translation type="unfinished">Unable to save the file %1: %2.</translation>
+      <source>Start Recovery</source>
+      <translation type="unfinished">Start Recovery</translation>
     </message>
     <message>
-      <source>Downloading %1.</source>
-      <translation type="unfinished">Downloading %1.</translation>
+      <source>Not yet recovered</source>
+      <translation type="unfinished">Not yet recovered</translation>
     </message>
     <message>
-      <source>Download canceled.</source>
-      <translation type="unfinished">Download canceled.</translation>
+      <source>Unknown problem occurred</source>
+      <translation type="unfinished">Unknown problem occurred</translation>
     </message>
     <message>
-      <source>Download failed: %1.</source>
-      <translation type="unfinished">Nedlasting mislyktes: %1.</translation>
+      <source>Failed to recover</source>
+      <translation type="unfinished">Failed to recover</translation>
     </message>
     <message>
-      <source>Downloaded %1 to current directory.</source>
-      <translation type="unfinished">Downloaded %1 to current directory.</translation>
+      <source>Successfully recovered</source>
+      <translation type="unfinished">Successfully recovered</translation>
     </message>
     <message>
-      <source>%1 at %2</source>
-      <translation type="unfinished">%1 at %2</translation>
+      <source>Finish</source>
+      <translation>Fullfør</translation>
+    </message>
+    <message>
+      <source>Cleanup...</source>
+      <translation type="unfinished">Cleanup...</translation>
+    </message>
+    <message>
+      <source>Delete</source>
+      <translation>Slett</translation>
+    </message>
+    <message>
+      <source>Cleanup</source>
+      <translation type="unfinished">Cleanup</translation>
+    </message>
+    <message>
+      <source>Are you sure you want to delete the selected transient directories?</source>
+      <translation type="unfinished">Are you sure you want to delete the selected transient directories?</translation>
+    </message>
+    <message>
+      <source>When deleting the selected transient directory you won't be able to recover any files afterwards.</source>
+      <translation type="unfinished">When deleting the selected transient directory you won't be able to recover any files afterwards.</translation>
+    </message>
+    <message>
+      <source>Are you sure you want to delete all transient directories?</source>
+      <translation type="unfinished">Are you sure you want to delete all transient directories?</translation>
+    </message>
+    <message>
+      <source>Finished</source>
+      <translation type="unfinished">Finished</translation>
+    </message>
+    <message>
+      <source>Transient directories deleted.</source>
+      <translation type="unfinished">Transient directories deleted.</translation>
+    </message>
+    <message>
+      <source>Press 'Start Recovery' to start the recovery process of the document listed below.
+
+The 'Status' column shows whether the document could be recovered.</source>
+      <translation type="unfinished">Press 'Start Recovery' to start the recovery process of the document listed below.
+
+The 'Status' column shows whether the document could be recovered.</translation>
+    </message>
+    <message>
+      <source>When deleting all transient directories you won't be able to recover any files afterwards.</source>
+      <translation type="unfinished">When deleting all transient directories you won't be able to recover any files afterwards.</translation>
     </message>
   </context>
   <context>
@@ -2385,8 +4137,8 @@ Vennligst angi en annen mappe.</translation>
       <translation type="unfinished">Open containing folder</translation>
     </message>
     <message>
-      <source>Error opening save file: %1</source>
-      <translation type="unfinished">Error opening save file: %1</translation>
+      <source>Error opening saved file: %1</source>
+      <translation type="unfinished">Error opening saved file: %1</translation>
     </message>
     <message>
       <source>Error saving: %1</source>
@@ -2406,7 +4158,7 @@ Vennligst angi en annen mappe.</translation>
     </message>
     <message>
       <source>- %4 %5 remaining</source>
-      <translation type="unfinished">- %4 %5 remaining</translation>
+      <translation>-%4 %5 gjenværende</translation>
     </message>
     <message>
       <source>%1 of %2 (%3/sec) %4</source>
@@ -2418,7 +4170,7 @@ Vennligst angi en annen mappe.</translation>
     </message>
     <message>
       <source>%1 of %2 - Stopped</source>
-      <translation type="unfinished">%1 of %2 - Stopped</translation>
+      <translation>%1 av %2 - stoppet</translation>
     </message>
     <message>
       <source>bytes</source>
@@ -2445,7 +4197,7 @@ Vennligst angi en annen mappe.</translation>
     </message>
     <message>
       <source>0 Items</source>
-      <translation type="unfinished">0 Items</translation>
+      <translation>0 enheter</translation>
     </message>
     <message>
       <source>Download Manager</source>
@@ -2453,268 +4205,316 @@ Vennligst angi en annen mappe.</translation>
     </message>
     <message>
       <source>1 Download</source>
-      <translation type="unfinished">1 Download</translation>
+      <translation>1 Last ned</translation>
     </message>
     <message>
       <source>%1 Downloads</source>
-      <translation type="unfinished">%1 Downloads</translation>
+      <translation>%1 nedlastinger</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::IconDialog</name>
     <message>
-      <source>Add icon</source>
-      <translation type="unfinished">Add icon</translation>
+      <source>Icon folders</source>
+      <translation type="unfinished">Icon folders</translation>
+    </message>
+    <message>
+      <source>Add icon folder</source>
+      <translation>Legg til ikon mappe</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::IconFolders</name>
+    <message>
+      <source>Add or remove custom icon folders</source>
+      <translation>Legg til eller fjern tilpassede ikon mapper</translation>
+    </message>
+    <message>
+      <source>Remove folder</source>
+      <translation type="unfinished">Remove folder</translation>
+    </message>
+    <message>
+      <source>Removing a folder only takes effect after an application restart.</source>
+      <translation type="unfinished">Removing a folder only takes effect after an application restart.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::InputVector</name>
     <message>
       <source>Input vector</source>
-      <translation type="unfinished">Inndata vektor</translation>
+      <translation>Inndata vektor</translation>
     </message>
     <message>
       <source>Vector</source>
-      <translation type="unfinished">Vektor</translation>
+      <translation>Vektor</translation>
     </message>
     <message>
       <source>Z:</source>
-      <translation type="unfinished">Z:</translation>
+      <translation>Z:</translation>
     </message>
     <message>
       <source>Y:</source>
-      <translation type="unfinished">Y:</translation>
+      <translation>Y:</translation>
     </message>
     <message>
       <source>X:</source>
-      <translation type="unfinished">X:</translation>
-    </message>
-  </context>
-  <context>
-    <name>Gui::Dialog::LicenseDialog</name>
-    <message>
-      <source>Copyright</source>
-      <translation type="unfinished">Copyright</translation>
+      <translation>X:</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::MouseButtons</name>
     <message>
       <source>Mouse buttons</source>
-      <translation type="unfinished">Museknapper</translation>
+      <translation>Museknapper</translation>
     </message>
     <message>
       <source>Configuration</source>
-      <translation type="unfinished">Konfigurasjon</translation>
+      <translation>Konfigurasjon</translation>
     </message>
     <message>
       <source>Selection:</source>
-      <translation type="unfinished">Utvalg:</translation>
+      <translation>Utvalg:</translation>
     </message>
     <message>
       <source>Panning</source>
-      <translation type="unfinished">Panorering</translation>
+      <translation>Panorering</translation>
     </message>
     <message>
       <source>Rotation:</source>
-      <translation type="unfinished">Rotasjon:</translation>
+      <translation>Rotasjon:</translation>
     </message>
     <message>
       <source>Zooming:</source>
-      <translation type="unfinished">Zoome:</translation>
+      <translation>Zoome:</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::ParameterGroup</name>
     <message>
       <source>Expand</source>
-      <translation type="unfinished">Utvid</translation>
+      <translation>Utvid</translation>
     </message>
     <message>
       <source>Add sub-group</source>
-      <translation type="unfinished">Legg til undergruppe</translation>
+      <translation>Legg til undergruppe</translation>
     </message>
     <message>
       <source>Remove group</source>
-      <translation type="unfinished">Fjern gruppe</translation>
+      <translation>Fjern gruppe</translation>
     </message>
     <message>
       <source>Rename group</source>
-      <translation type="unfinished">Omdøp gruppe</translation>
+      <translation>Omdøp gruppe</translation>
     </message>
     <message>
       <source>Export parameter</source>
-      <translation type="unfinished">Eksporter parameter</translation>
+      <translation>Eksporter parameter</translation>
     </message>
     <message>
       <source>Import parameter</source>
-      <translation type="unfinished">Importer parameter</translation>
+      <translation>Importer parameter</translation>
     </message>
     <message>
       <source>Collapse</source>
-      <translation type="unfinished">Skjul</translation>
-    </message>
-    <message>
-      <source>Do really want to remove this parameter group?</source>
-      <translation type="unfinished">Ønsker du virkelig å fjerne denne parametergruppen?</translation>
+      <translation>Skjul</translation>
     </message>
     <message>
       <source>Existing sub-group</source>
-      <translation type="unfinished">Eksisterende undergruppe</translation>
+      <translation>Eksisterende undergruppe</translation>
     </message>
     <message>
       <source>The sub-group '%1' already exists.</source>
-      <translation type="unfinished">Undergruppe '%1' finnes allerede.</translation>
+      <translation>Undergruppe '%1' finnes allerede.</translation>
     </message>
     <message>
       <source>Export parameter to file</source>
-      <translation type="unfinished">Eksporter parameter til fil</translation>
-    </message>
-    <message>
-      <source>XML (*.FCParam)</source>
-      <translation type="unfinished">XML (*.FCParam)</translation>
+      <translation>Eksporter parameter til fil</translation>
     </message>
     <message>
       <source>Import parameter from file</source>
-      <translation type="unfinished">Importer parameter fra fil</translation>
+      <translation>Importer parameter fra fil</translation>
     </message>
     <message>
       <source>Import Error</source>
-      <translation type="unfinished">Importfeil</translation>
+      <translation>Importfeil</translation>
     </message>
     <message>
       <source>Reading from '%1' failed.</source>
-      <translation type="unfinished">Lesing fra '%1' mislyktes.</translation>
+      <translation>Lesing fra '%1' mislyktes.</translation>
+    </message>
+    <message>
+      <source>Do you really want to remove this parameter group?</source>
+      <translation type="unfinished">Do you really want to remove this parameter group?</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::ParameterValue</name>
     <message>
       <source>Change value</source>
-      <translation type="unfinished">Endre verdi</translation>
+      <translation>Endre verdi</translation>
     </message>
     <message>
       <source>Remove key</source>
-      <translation type="unfinished">Fjern nøkkelen</translation>
+      <translation>Fjern nøkkelen</translation>
     </message>
     <message>
       <source>Rename key</source>
-      <translation type="unfinished">Omdøp nøkkel</translation>
+      <translation>Omdøp nøkkel</translation>
     </message>
     <message>
       <source>New</source>
-      <translation type="unfinished">Ny</translation>
+      <translation>Ny</translation>
     </message>
     <message>
       <source>New string item</source>
-      <translation type="unfinished">Nytt streng-element</translation>
+      <translation>Nytt streng-element</translation>
     </message>
     <message>
       <source>New float item</source>
-      <translation type="unfinished">Nytt float-element</translation>
+      <translation>Nytt float-element</translation>
     </message>
     <message>
       <source>New integer item</source>
-      <translation type="unfinished">Nytt heltall-element</translation>
+      <translation>Nytt heltall-element</translation>
     </message>
     <message>
       <source>New unsigned item</source>
-      <translation type="unfinished">Nytt usignert element</translation>
+      <translation>Nytt usignert element</translation>
     </message>
     <message>
       <source>New Boolean item</source>
-      <translation type="unfinished">Nytt boolsk element</translation>
+      <translation>Nytt boolsk element</translation>
     </message>
     <message>
       <source>Existing item</source>
-      <translation type="unfinished">Eksisterende element</translation>
+      <translation>Eksisterende element</translation>
     </message>
     <message>
       <source>The item '%1' already exists.</source>
-      <translation type="unfinished">Elementet '%1' finnes allerede.</translation>
+      <translation>Elementet '%1' finnes allerede.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::Placement</name>
     <message>
       <source>Placement</source>
-      <translation type="unfinished">Plassering</translation>
+      <translation>Plassering</translation>
     </message>
     <message>
       <source>OK</source>
-      <translation type="unfinished">OK</translation>
+      <translation>OK</translation>
     </message>
     <message>
       <source>Translation:</source>
-      <translation type="unfinished">Oversettelse:</translation>
+      <translation>Oversettelse:</translation>
     </message>
     <message>
       <source>Z:</source>
-      <translation type="unfinished">Z:</translation>
+      <translation>Z:</translation>
     </message>
     <message>
       <source>Y:</source>
-      <translation type="unfinished">Y:</translation>
+      <translation>Y:</translation>
     </message>
     <message>
       <source>X:</source>
-      <translation type="unfinished">X:</translation>
+      <translation>X:</translation>
     </message>
     <message>
       <source>Rotation:</source>
-      <translation type="unfinished">Rotasjon:</translation>
+      <translation>Rotasjon:</translation>
     </message>
     <message>
       <source>Angle:</source>
-      <translation type="unfinished">Vinkel:</translation>
+      <translation>Vinkel:</translation>
     </message>
     <message>
       <source>Axis:</source>
-      <translation type="unfinished">Akse:</translation>
+      <translation>Akse:</translation>
     </message>
     <message>
       <source>Center:</source>
-      <translation type="unfinished">Senter:</translation>
-    </message>
-    <message>
-      <source>Pitch:</source>
-      <translation type="unfinished">Tipp:</translation>
-    </message>
-    <message>
-      <source>Roll:</source>
-      <translation type="unfinished">Rull:</translation>
-    </message>
-    <message>
-      <source>Yaw:</source>
-      <translation type="unfinished">Snu:</translation>
+      <translation>Senter:</translation>
     </message>
     <message>
       <source>Rotation axis with angle</source>
       <translation type="unfinished">Rotation axis with angle</translation>
     </message>
     <message>
-      <source>Euler angles</source>
-      <translation type="unfinished">Euler vinkler</translation>
-    </message>
-    <message>
-      <source>Apply placement changes immediately</source>
-      <translation type="unfinished">Bruk plasseringsendringer umiddelbart</translation>
-    </message>
-    <message>
-      <source>Apply incremental changes to object placement</source>
-      <translation type="unfinished">Bruk trinnvise endringer på objektplassering</translation>
-    </message>
-    <message>
       <source>Apply</source>
-      <translation type="unfinished">Bruk</translation>
+      <translation>Bruk</translation>
     </message>
     <message>
       <source>Reset</source>
-      <translation type="unfinished">Tilbakestill</translation>
+      <translation>Tilbakestill</translation>
     </message>
     <message>
       <source>Close</source>
-      <translation type="unfinished">Lukk</translation>
+      <translation>Lukk</translation>
+    </message>
+    <message>
+      <source>Incorrect quantity</source>
+      <translation type="unfinished">Incorrect quantity</translation>
+    </message>
+    <message>
+      <source>There are input fields with incorrect input, please ensure valid placement values!</source>
+      <translation type="unfinished">There are input fields with incorrect input, please ensure valid placement values!</translation>
+    </message>
+    <message>
+      <source>Use center of mass</source>
+      <translation type="unfinished">Use center of mass</translation>
+    </message>
+    <message>
+      <source>Axial:</source>
+      <translation type="unfinished">Axial:</translation>
+    </message>
+    <message>
+      <source>Apply axial</source>
+      <translation type="unfinished">Apply axial</translation>
+    </message>
+    <message>
+      <source>Shift click for opposite direction</source>
+      <translation type="unfinished">Shift click for opposite direction</translation>
+    </message>
+    <message>
+      <source>Selected points</source>
+      <translation type="unfinished">Selected points</translation>
+    </message>
+    <message>
+      <source>Apply incremental changes</source>
+      <translation type="unfinished">Apply incremental changes</translation>
+    </message>
+    <message>
+      <source>Please select 1, 2, or 3 points before clicking this button.  A point may be on a vertex, face, or edge.  If on a face or edge the point used will be the point at the mouse position along face or edge.  If 1 point is selected it will be used as the center of rotation.  If 2 points are selected the midpoint between them will be the center of rotation and a new custom axis will be created, if needed.  If 3 points are selected the first point becomes the center of rotation and lies on the vector that is normal to the plane defined by the 3 points.  Some distance and angle information is provided in the report view, which can be useful when aligning objects.  For your convenience when Shift + click is used the appropriate distance or angle is copied to the clipboard.</source>
+      <translation type="unfinished">Please select 1, 2, or 3 points before clicking this button.  A point may be on a vertex, face, or edge.  If on a face or edge the point used will be the point at the mouse position along face or edge.  If 1 point is selected it will be used as the center of rotation.  If 2 points are selected the midpoint between them will be the center of rotation and a new custom axis will be created, if needed.  If 3 points are selected the first point becomes the center of rotation and lies on the vector that is normal to the plane defined by the 3 points.  Some distance and angle information is provided in the report view, which can be useful when aligning objects.  For your convenience when Shift + click is used the appropriate distance or angle is copied to the clipboard.</translation>
+    </message>
+    <message>
+      <source>Around y-axis:</source>
+      <translation type="unfinished">Around y-axis:</translation>
+    </message>
+    <message>
+      <source>Around z-axis:</source>
+      <translation type="unfinished">Around z-axis:</translation>
+    </message>
+    <message>
+      <source>Around x-axis:</source>
+      <translation type="unfinished">Around x-axis:</translation>
+    </message>
+    <message>
+      <source>Rotation around the x-axis</source>
+      <translation type="unfinished">Rotation around the x-axis</translation>
+    </message>
+    <message>
+      <source>Rotation around the y-axis</source>
+      <translation type="unfinished">Rotation around the y-axis</translation>
+    </message>
+    <message>
+      <source>Rotation around the z-axis</source>
+      <translation type="unfinished">Rotation around the z-axis</translation>
+    </message>
+    <message>
+      <source>Euler angles (xy'z'')</source>
+      <translation type="unfinished">Euler angles (xy'z'')</translation>
     </message>
   </context>
   <context>
@@ -2725,98 +4525,168 @@ Vennligst angi en annen mappe.</translation>
     </message>
     <message>
       <source>Command</source>
-      <translation type="unfinished">Kommando</translation>
+      <translation>Kommando</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::Dialog::RemoteDebugger</name>
+    <message>
+      <source>Attach to remote debugger</source>
+      <translation type="unfinished">Attach to remote debugger</translation>
+    </message>
+    <message>
+      <source>winpdb</source>
+      <translation type="unfinished">winpdb</translation>
+    </message>
+    <message>
+      <source>Password:</source>
+      <translation>Passord:</translation>
+    </message>
+    <message>
+      <source>VS Code</source>
+      <translation type="unfinished">VS Code</translation>
+    </message>
+    <message>
+      <source>Address:</source>
+      <translation type="unfinished">Address:</translation>
+    </message>
+    <message>
+      <source>Port:</source>
+      <translation type="unfinished">Port:</translation>
+    </message>
+    <message>
+      <source>Redirect output</source>
+      <translation type="unfinished">Redirect output</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::SceneInspector</name>
     <message>
       <source>Dialog</source>
-      <translation type="unfinished">Dialog</translation>
+      <translation>Dialog</translation>
     </message>
     <message>
       <source>Close</source>
-      <translation type="unfinished">Lukk</translation>
+      <translation>Lukk</translation>
     </message>
     <message>
       <source>Refresh</source>
-      <translation type="unfinished">Oppdater</translation>
+      <translation>Oppdater</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::SceneModel</name>
     <message>
       <source>Inventor Tree</source>
-      <translation type="unfinished">Oppfinnertre</translation>
+      <translation>Oppfinnertre</translation>
     </message>
     <message>
       <source>Nodes</source>
-      <translation type="unfinished">Noder</translation>
+      <translation>Noder</translation>
     </message>
     <message>
       <source>Name</source>
-      <translation type="unfinished">Navn</translation>
+      <translation>Navn</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::TextureMapping</name>
     <message>
       <source>Texture</source>
-      <translation type="unfinished">Tekstur</translation>
+      <translation>Tekstur</translation>
     </message>
     <message>
       <source>Texture mapping</source>
-      <translation type="unfinished">Teksturtilordning</translation>
+      <translation>Teksturtilordning</translation>
     </message>
     <message>
       <source>Global</source>
-      <translation type="unfinished">Global</translation>
+      <translation>Global</translation>
     </message>
     <message>
       <source>Environment</source>
-      <translation type="unfinished">Miljø</translation>
+      <translation>Miljø</translation>
     </message>
     <message>
       <source>Image files (%1)</source>
-      <translation type="unfinished">Bildefiler (%1)</translation>
+      <translation>Bildefiler (%1)</translation>
     </message>
     <message>
       <source>No image</source>
-      <translation type="unfinished">Ingen bilder</translation>
+      <translation>Ingen bilder</translation>
     </message>
     <message>
       <source>The specified file is not a valid image file.</source>
-      <translation type="unfinished">Den angitte filen er ikke en gyldig bildefil.</translation>
+      <translation>Den angitte filen er ikke en gyldig bildefil.</translation>
     </message>
     <message>
       <source>No 3d view</source>
-      <translation type="unfinished">Ingen 3d-visning</translation>
+      <translation>Ingen 3d-visning</translation>
     </message>
     <message>
       <source>No active 3d view found.</source>
-      <translation type="unfinished">Ingen aktiv 3d-visning funnet.</translation>
+      <translation>Ingen aktiv 3d-visning funnet.</translation>
     </message>
   </context>
   <context>
     <name>Gui::Dialog::Transform</name>
     <message>
       <source>Cancel</source>
-      <translation type="unfinished">Avbryt</translation>
+      <translation>Avbryt</translation>
     </message>
     <message>
       <source>Transform</source>
-      <translation type="unfinished">Transformer</translation>
+      <translation>Transformer</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::DlgObjectSelection</name>
+    <message>
+      <source>Object selection</source>
+      <translation type="unfinished">Object selection</translation>
+    </message>
+    <message>
+      <source>The selected objects contain other dependencies. Please select which objects to export. All dependencies are auto selected by default.</source>
+      <translation type="unfinished">The selected objects contain other dependencies. Please select which objects to export. All dependencies are auto selected by default.</translation>
+    </message>
+    <message>
+      <source>Dependency</source>
+      <translation type="unfinished">Dependency</translation>
+    </message>
+    <message>
+      <source>Document</source>
+      <translation>Dokument</translation>
+    </message>
+    <message>
+      <source>Name</source>
+      <translation>Navn</translation>
+    </message>
+    <message>
+      <source>State</source>
+      <translation type="unfinished">State</translation>
+    </message>
+    <message>
+      <source>Hierarchy</source>
+      <translation type="unfinished">Hierarchy</translation>
+    </message>
+    <message>
+      <source>Selected</source>
+      <translation type="unfinished">Selected</translation>
+    </message>
+    <message>
+      <source>Partial</source>
+      <translation type="unfinished">Partial</translation>
     </message>
   </context>
   <context>
     <name>Gui::DlgTreeWidget</name>
     <message>
       <source>Dialog</source>
-      <translation type="unfinished">Dialog</translation>
+      <translation>Dialog</translation>
     </message>
     <message>
       <source>Items</source>
-      <translation type="unfinished">Elementer</translation>
+      <translation>Elementer</translation>
     </message>
     <message>
       <source/>
@@ -2824,107 +4694,48 @@ Vennligst angi en annen mappe.</translation>
     </message>
   </context>
   <context>
-    <name>Gui::DockWnd::CombiView</name>
+    <name>Gui::DockWnd::ComboView</name>
     <message>
-      <source>CombiView</source>
-      <translation type="unfinished">Kombivisning</translation>
-    </message>
-    <message>
-      <source>Project</source>
-      <translation type="unfinished">Prosjekt</translation>
-    </message>
-    <message>
-      <source>Tasks</source>
-      <translation type="unfinished">Oppgaver</translation>
+      <source>Combo View</source>
+      <translation>Kombinert visning</translation>
     </message>
     <message>
       <source>Model</source>
       <translation type="unfinished">Model</translation>
     </message>
-  </context>
-  <context>
-    <name>Gui::DockWnd::HelpView</name>
     <message>
-      <source>Previous</source>
-      <translation type="unfinished">Forrige</translation>
-    </message>
-    <message>
-      <source>Next</source>
-      <translation type="unfinished">Neste</translation>
-    </message>
-    <message>
-      <source>Home</source>
-      <translation type="unfinished">Hjem</translation>
-    </message>
-    <message>
-      <source>Open</source>
-      <translation type="unfinished">Åpne</translation>
-    </message>
-    <message>
-      <source>Open file</source>
-      <translation type="unfinished">Åpne fil</translation>
-    </message>
-    <message>
-      <source>All HTML files (*.html *.htm)</source>
-      <translation type="unfinished">Alle HTML filer (*.html *.htm)</translation>
-    </message>
-    <message>
-      <source>External browser</source>
-      <translation type="unfinished">Ekstern nettleser</translation>
-    </message>
-    <message>
-      <source>No external browser found. Specify in preferences, please</source>
-      <translation type="unfinished">Ingen ekstern nettleser funnet. Vennligst angi i preferanser</translation>
-    </message>
-    <message>
-      <source>Starting of %1 failed</source>
-      <translation type="unfinished">Start av %1 mislyktes</translation>
+      <source>Tasks</source>
+      <translation>Oppgaver</translation>
     </message>
   </context>
   <context>
     <name>Gui::DockWnd::PropertyDockView</name>
     <message>
       <source>Property View</source>
-      <translation type="unfinished">Egenskapsvisning</translation>
+      <translation>Egenskapsvisning</translation>
     </message>
   </context>
   <context>
     <name>Gui::DockWnd::ReportOutput</name>
     <message>
-      <source>Logging</source>
-      <translation type="unfinished">Logging</translation>
-    </message>
-    <message>
-      <source>Warning</source>
-      <translation type="unfinished">Advarsel</translation>
-    </message>
-    <message>
-      <source>Error</source>
-      <translation type="unfinished">Feil</translation>
-    </message>
-    <message>
       <source>Options</source>
-      <translation type="unfinished">Alternativer</translation>
+      <translation>Alternativer</translation>
     </message>
     <message>
       <source>Clear</source>
-      <translation type="unfinished">Tøm</translation>
+      <translation>Tøm</translation>
     </message>
     <message>
       <source>Save As...</source>
-      <translation type="unfinished">Lagre som...</translation>
+      <translation>Lagre som...</translation>
     </message>
     <message>
       <source>Save Report Output</source>
-      <translation type="unfinished">Lagre rapport utdata</translation>
-    </message>
-    <message>
-      <source>Plain Text Files (*.txt *.log)</source>
-      <translation type="unfinished">Rene tekstfiler (*.txt *.log)</translation>
+      <translation>Lagre rapport utdata</translation>
     </message>
     <message>
       <source>Go to end</source>
-      <translation type="unfinished">Gå til slutten</translation>
+      <translation>Gå til slutten</translation>
     </message>
     <message>
       <source>Redirect Python output</source>
@@ -2932,248 +4743,351 @@ Vennligst angi en annen mappe.</translation>
     </message>
     <message>
       <source>Redirect Python errors</source>
-      <translation type="unfinished">Omadressere Python-feil</translation>
+      <translation>Omadressere Python-feil</translation>
+    </message>
+    <message>
+      <source>Plain Text Files</source>
+      <translation type="unfinished">Plain Text Files</translation>
+    </message>
+    <message>
+      <source>Display message types</source>
+      <translation type="unfinished">Display message types</translation>
+    </message>
+    <message>
+      <source>Normal messages</source>
+      <translation type="unfinished">Normal messages</translation>
+    </message>
+    <message>
+      <source>Log messages</source>
+      <translation type="unfinished">Log messages</translation>
+    </message>
+    <message>
+      <source>Warnings</source>
+      <translation type="unfinished">Warnings</translation>
+    </message>
+    <message>
+      <source>Errors</source>
+      <translation type="unfinished">Errors</translation>
+    </message>
+    <message>
+      <source>Show report view on</source>
+      <translation type="unfinished">Show report view on</translation>
     </message>
   </context>
   <context>
     <name>Gui::DockWnd::ReportView</name>
     <message>
       <source>Output</source>
-      <translation type="unfinished">Utdata</translation>
+      <translation>Utdata</translation>
     </message>
     <message>
       <source>Python console</source>
-      <translation type="unfinished">Pythonkonsoll</translation>
+      <translation>Pythonkonsoll</translation>
     </message>
   </context>
   <context>
     <name>Gui::DockWnd::SelectionView</name>
     <message>
-      <source>Property View</source>
-      <translation type="unfinished">Egenskapsvisning</translation>
-    </message>
-  </context>
-  <context>
-    <name>Gui::DockWnd::TaskPanelView</name>
-    <message>
-      <source>Task View</source>
-      <translation type="unfinished">Oppgavevisning</translation>
-    </message>
-  </context>
-  <context>
-    <name>Gui::DockWnd::TextBrowser</name>
-    <message>
-      <source>Could not open file.</source>
-      <translation type="unfinished">Kunne ikke åpne fil.</translation>
+      <source>Search</source>
+      <translation>Søk</translation>
     </message>
     <message>
-      <source>You tried to access the address %1 which is currently unavailable. Please make sure that the URL exists and try reloading the page.</source>
-      <translation type="unfinished">Du prøvde å få tilgang til adressen %1 som for øyeblikket er utilgjengelig. Kontroller at nettadressen eksisterer og prøv å oppdatere siden.</translation>
+      <source>Searches object labels</source>
+      <translation type="unfinished">Searches object labels</translation>
     </message>
     <message>
-      <source>Connecting to %1</source>
-      <translation type="unfinished">Kobler til %1</translation>
+      <source>Clears the search field</source>
+      <translation type="unfinished">Clears the search field</translation>
     </message>
     <message>
-      <source>Sending to %1</source>
-      <translation type="unfinished">Sender til %1</translation>
+      <source>Select only</source>
+      <translation type="unfinished">Select only</translation>
     </message>
     <message>
-      <source>Reading from %1</source>
-      <translation type="unfinished">Leser fra %1</translation>
+      <source>Selects only this object</source>
+      <translation type="unfinished">Selects only this object</translation>
     </message>
     <message>
-      <source>Download failed: %1.</source>
-      <translation type="unfinished">Nedlasting mislyktes: %1.</translation>
+      <source>Deselect</source>
+      <translation>Velg bort</translation>
     </message>
     <message>
-      <source>Previous</source>
-      <translation type="unfinished">Forrige</translation>
+      <source>Deselects this object</source>
+      <translation type="unfinished">Deselects this object</translation>
     </message>
     <message>
-      <source>Forward</source>
-      <translation type="unfinished">Fremover</translation>
+      <source>Zoom fit</source>
+      <translation type="unfinished">Zoom fit</translation>
     </message>
     <message>
-      <source>Home</source>
-      <translation type="unfinished">Hjem</translation>
+      <source>Selects and fits this object in the 3D window</source>
+      <translation type="unfinished">Selects and fits this object in the 3D window</translation>
     </message>
     <message>
-      <source>Refresh</source>
-      <translation type="unfinished">Oppdater</translation>
+      <source>Go to selection</source>
+      <translation>Gå til valg</translation>
     </message>
     <message>
-      <source>Copy</source>
-      <translation type="unfinished">Kopier</translation>
+      <source>Selects and locates this object in the tree view</source>
+      <translation type="unfinished">Selects and locates this object in the tree view</translation>
     </message>
     <message>
-      <source>Select all</source>
-      <translation type="unfinished">Velg alle</translation>
+      <source>To python console</source>
+      <translation type="unfinished">To python console</translation>
     </message>
     <message>
-      <source>No description for</source>
-      <translation type="unfinished">Ingen beskrivelse for</translation>
+      <source>Reveals this object and its subelements in the python console.</source>
+      <translation type="unfinished">Reveals this object and its subelements in the python console.</translation>
+    </message>
+    <message>
+      <source>Mark to recompute</source>
+      <translation type="unfinished">Mark to recompute</translation>
+    </message>
+    <message>
+      <source>Mark this object to be recomputed</source>
+      <translation type="unfinished">Mark this object to be recomputed</translation>
+    </message>
+    <message>
+      <source>Selection View</source>
+      <translation type="unfinished">Selection View</translation>
+    </message>
+    <message>
+      <source>The number of selected items</source>
+      <translation type="unfinished">The number of selected items</translation>
+    </message>
+    <message>
+      <source>Duplicate subshape</source>
+      <translation type="unfinished">Duplicate subshape</translation>
+    </message>
+    <message>
+      <source>Creates a standalone copy of this subshape in the document</source>
+      <translation type="unfinished">Creates a standalone copy of this subshape in the document</translation>
+    </message>
+    <message>
+      <source>Picked object list</source>
+      <translation type="unfinished">Picked object list</translation>
     </message>
   </context>
   <context>
     <name>Gui::DocumentModel</name>
     <message>
       <source>Application</source>
-      <translation type="unfinished">Program</translation>
+      <translation>Program</translation>
     </message>
     <message>
       <source>Labels &amp; Attributes</source>
-      <translation type="unfinished">Etiketter og attributter</translation>
+      <translation>Etiketter og attributter</translation>
     </message>
   </context>
   <context>
     <name>Gui::EditorView</name>
     <message>
       <source>Modified file</source>
-      <translation type="unfinished">Modifisert fil</translation>
+      <translation>Modifisert fil</translation>
     </message>
     <message>
       <source>%1.
 
 This has been modified outside of the source editor. Do you want to reload it?</source>
-      <translation type="unfinished">%1. 
+      <translation>%1. 
 Dette har blitt endret utenfor kilderedigereren. Vil du laste den på nytt?</translation>
     </message>
     <message>
       <source>Unsaved document</source>
-      <translation type="unfinished">Ulagret dokument</translation>
+      <translation>Ulagret dokument</translation>
     </message>
     <message>
       <source>The document has been modified.
 Do you want to save your changes?</source>
-      <translation type="unfinished">Dokumentet har blitt endret. 
+      <translation>Dokumentet har blitt endret. 
 Vil du lagre endringene?</translation>
     </message>
     <message>
-      <source>FreeCAD macro (*.FCMacro);;Python (*.py)</source>
-      <translation type="unfinished">FreeCAD-makro (*.FCMacro);;Python (*. py)</translation>
-    </message>
-    <message>
       <source>Export PDF</source>
-      <translation type="unfinished">Eksporter PDF</translation>
-    </message>
-    <message>
-      <source>PDF file (*.pdf)</source>
-      <translation type="unfinished">PDF-fil (*.pdf)</translation>
+      <translation>Eksporter PDF</translation>
     </message>
     <message>
       <source>untitled[*]</source>
-      <translation type="unfinished">uten navn[*]</translation>
+      <translation>uten navn[*]</translation>
     </message>
     <message>
       <source> - Editor</source>
-      <translation type="unfinished"> -Redigerer</translation>
+      <translation> -Redigerer</translation>
     </message>
     <message>
       <source>%1 chars removed</source>
-      <translation type="unfinished">%1 tegn fjernet</translation>
+      <translation>%1 tegn fjernet</translation>
     </message>
     <message>
       <source>%1 chars added</source>
-      <translation type="unfinished">%1 tegn lagt til</translation>
+      <translation>%1 tegn lagt til</translation>
     </message>
     <message>
       <source>Formatted</source>
-      <translation type="unfinished">Formatert</translation>
+      <translation>Formatert</translation>
+    </message>
+    <message>
+      <source>FreeCAD macro</source>
+      <translation type="unfinished">FreeCAD macro</translation>
+    </message>
+    <message>
+      <source>PDF file</source>
+      <translation type="unfinished">PDF file</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::ExpressionLineEdit</name>
+    <message>
+      <source>Exact match</source>
+      <translation type="unfinished">Exact match</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::ExpressionTextEdit</name>
+    <message>
+      <source>Exact match</source>
+      <translation type="unfinished">Exact match</translation>
     </message>
   </context>
   <context>
     <name>Gui::FileChooser</name>
     <message>
       <source>Select a file</source>
-      <translation type="unfinished">Velg en fil</translation>
+      <translation>Velg en fil</translation>
     </message>
     <message>
       <source>Select a directory</source>
-      <translation type="unfinished">Velg en mappe</translation>
+      <translation>Velg en mappe</translation>
     </message>
   </context>
   <context>
     <name>Gui::FileDialog</name>
     <message>
       <source>Save as</source>
-      <translation type="unfinished">Lagre som</translation>
+      <translation>Lagre som</translation>
     </message>
     <message>
       <source>Open</source>
-      <translation type="unfinished">Åpne</translation>
+      <translation>Åpne</translation>
     </message>
   </context>
   <context>
     <name>Gui::FileOptionsDialog</name>
     <message>
       <source>Extended</source>
-      <translation type="unfinished">Utvidet</translation>
+      <translation>Utvidet</translation>
     </message>
     <message>
       <source>All files (*.*)</source>
-      <translation type="unfinished">Alle filer (*.*)</translation>
+      <translation>Alle filer (*.*)</translation>
     </message>
   </context>
   <context>
     <name>Gui::Flag</name>
     <message>
       <source>Top left</source>
-      <translation type="unfinished">Øverst til venstre</translation>
+      <translation>Øverst til venstre</translation>
     </message>
     <message>
       <source>Bottom left</source>
-      <translation type="unfinished">Nederst til venstre</translation>
+      <translation>Nederst til venstre</translation>
     </message>
     <message>
       <source>Top right</source>
-      <translation type="unfinished">Øverst til høyre</translation>
+      <translation>Øverst til høyre</translation>
     </message>
     <message>
       <source>Bottom right</source>
-      <translation type="unfinished">Nederst til høyre</translation>
+      <translation>Nederst til høyre</translation>
     </message>
     <message>
       <source>Remove</source>
-      <translation type="unfinished">Fjern</translation>
+      <translation>Fjern</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::GestureNavigationStyle</name>
+    <message>
+      <source>Tap OR click left mouse button.</source>
+      <translation type="unfinished">Tap OR click left mouse button.</translation>
+    </message>
+    <message>
+      <source>Drag screen with two fingers OR press right mouse button.</source>
+      <translation type="unfinished">Drag screen with two fingers OR press right mouse button.</translation>
+    </message>
+    <message>
+      <source>Drag screen with one finger OR press left mouse button. In Sketcher &amp;&amp; other edit modes, hold Alt in addition.</source>
+      <translation type="unfinished">Drag screen with one finger OR press left mouse button. In Sketcher &amp;&amp; other edit modes, hold Alt in addition.</translation>
+    </message>
+    <message>
+      <source>Pinch (place two fingers on the screen &amp;&amp; drag them apart from || towards each other) OR scroll middle mouse button OR PgUp/PgDown on keyboard.</source>
+      <translation type="unfinished">Pinch (place two fingers on the screen &amp;&amp; drag them apart from || towards each other) OR scroll middle mouse button OR PgUp/PgDown on keyboard.</translation>
     </message>
   </context>
   <context>
     <name>Gui::GraphvizView</name>
     <message>
-      <source>PNG format (*.png)</source>
-      <translation type="unfinished">PNG format (*.png)</translation>
-    </message>
-    <message>
-      <source>Bitmap format (*.bmp)</source>
-      <translation type="unfinished">Bitmap format (*.bmp)</translation>
-    </message>
-    <message>
-      <source>GIF format (*.gif)</source>
-      <translation type="unfinished">GIF format (*.gif)</translation>
-    </message>
-    <message>
-      <source>JPG format (*.jpg)</source>
-      <translation type="unfinished">JPG format (*.jpg)</translation>
-    </message>
-    <message>
-      <source>SVG format (*.svg)</source>
-      <translation type="unfinished">SVG format (*.svg)</translation>
-    </message>
-    <message>
-      <source>PDF format (*.pdf)</source>
-      <translation type="unfinished">PDF format (*.pdf)</translation>
-    </message>
-    <message>
       <source>Export graph</source>
       <translation type="unfinished">Export graph</translation>
+    </message>
+    <message>
+      <source>PNG format</source>
+      <translation type="unfinished">PNG format</translation>
+    </message>
+    <message>
+      <source>Bitmap format</source>
+      <translation type="unfinished">Bitmap format</translation>
+    </message>
+    <message>
+      <source>GIF format</source>
+      <translation type="unfinished">GIF format</translation>
+    </message>
+    <message>
+      <source>JPG format</source>
+      <translation type="unfinished">JPG format</translation>
+    </message>
+    <message>
+      <source>SVG format</source>
+      <translation type="unfinished">SVG format</translation>
+    </message>
+    <message>
+      <source>PDF format</source>
+      <translation type="unfinished">PDF format</translation>
+    </message>
+    <message>
+      <source>Graphviz not found</source>
+      <translation type="unfinished">Graphviz not found</translation>
+    </message>
+    <message>
+      <source>Graphviz couldn't be found on your system.</source>
+      <translation type="unfinished">Graphviz couldn't be found on your system.</translation>
+    </message>
+    <message>
+      <source>Read more about it here.</source>
+      <translation type="unfinished">Read more about it here.</translation>
+    </message>
+    <message>
+      <source>Do you want to specify its installation path if it's already installed?</source>
+      <translation type="unfinished">Do you want to specify its installation path if it's already installed?</translation>
+    </message>
+    <message>
+      <source>Graphviz installation path</source>
+      <translation type="unfinished">Graphviz installation path</translation>
+    </message>
+    <message>
+      <source>Graphviz failed</source>
+      <translation type="unfinished">Graphviz failed</translation>
+    </message>
+    <message>
+      <source>Graphviz failed to create an image file</source>
+      <translation type="unfinished">Graphviz failed to create an image file</translation>
     </message>
   </context>
   <context>
     <name>Gui::InputField</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>Save value</source>
@@ -3184,105 +5098,124 @@ Vil du lagre endringene?</translation>
     <name>Gui::InventorNavigationStyle</name>
     <message>
       <source>Press CTRL and left mouse button</source>
-      <translation type="unfinished">Trykk CTRL og venstre museknapp</translation>
+      <translation>Trykk CTRL og venstre museknapp</translation>
     </message>
     <message>
       <source>Press middle mouse button</source>
-      <translation type="unfinished">Trykk på midtre museknapp</translation>
+      <translation>Trykk på midtre museknapp</translation>
     </message>
     <message>
       <source>Press left mouse button</source>
-      <translation type="unfinished">Trykk venstre museknapp</translation>
+      <translation>Trykk venstre museknapp</translation>
     </message>
     <message>
       <source>Scroll middle mouse button</source>
-      <translation type="unfinished">Rull musehjul</translation>
+      <translation>Rull musehjul</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::LabelEditor</name>
+    <message>
+      <source>List</source>
+      <translation type="unfinished">List</translation>
     </message>
   </context>
   <context>
     <name>Gui::LocationDialog</name>
     <message>
       <source>Wrong direction</source>
-      <translation type="unfinished">Feil retning</translation>
+      <translation>Feil retning</translation>
     </message>
     <message>
       <source>Direction must not be the null vector</source>
-      <translation type="unfinished">Retningen kan ikke være nullvektoren</translation>
+      <translation>Retningen kan ikke være nullvektoren</translation>
     </message>
     <message>
       <source>X</source>
-      <translation type="unfinished">X</translation>
+      <translation>X</translation>
     </message>
     <message>
       <source>Y</source>
-      <translation type="unfinished">Y</translation>
+      <translation>Y</translation>
     </message>
     <message>
       <source>Z</source>
-      <translation type="unfinished">Z</translation>
+      <translation>Z</translation>
     </message>
     <message>
       <source>User defined...</source>
-      <translation type="unfinished">Brukerdefinert...</translation>
+      <translation>Brukerdefinert...</translation>
     </message>
   </context>
   <context>
     <name>Gui::LocationWidget</name>
     <message>
       <source>X:</source>
-      <translation type="unfinished">X:</translation>
+      <translation>X:</translation>
     </message>
     <message>
       <source>Y:</source>
-      <translation type="unfinished">Y:</translation>
+      <translation>Y:</translation>
     </message>
     <message>
       <source>Z:</source>
-      <translation type="unfinished">Z:</translation>
+      <translation>Z:</translation>
     </message>
     <message>
       <source>Direction:</source>
-      <translation type="unfinished">Retning:</translation>
+      <translation>Retning:</translation>
     </message>
   </context>
   <context>
     <name>Gui::MacroCommand</name>
     <message>
       <source>Macros</source>
-      <translation type="unfinished">Makroer</translation>
+      <translation>Makroer</translation>
+    </message>
+    <message>
+      <source>Macro file doesn't exist</source>
+      <translation type="unfinished">Macro file doesn't exist</translation>
+    </message>
+    <message>
+      <source>No such macro file: '%1'</source>
+      <translation type="unfinished">No such macro file: '%1'</translation>
     </message>
   </context>
   <context>
     <name>Gui::MainWindow</name>
     <message>
       <source>Dimension</source>
-      <translation type="unfinished">Dimensjon</translation>
+      <translation>Dimensjon</translation>
     </message>
     <message>
       <source>Ready</source>
-      <translation type="unfinished">Klar</translation>
+      <translation>Klar</translation>
     </message>
     <message>
       <source>Toggles this toolbar</source>
-      <translation type="unfinished">Veksler denne verktøylinjen</translation>
+      <translation>Veksler denne verktøylinjen</translation>
     </message>
     <message>
       <source>Toggles this dockable window</source>
-      <translation type="unfinished">Veksler dette dokkbare vinduet</translation>
+      <translation>Veksler dette dokkbare vinduet</translation>
     </message>
     <message>
       <source>Close All</source>
-      <translation type="unfinished">Lukk alle</translation>
+      <translation>Lukk alle</translation>
     </message>
     <message>
-      <source>Object dependencies</source>
-      <translation type="unfinished">Object dependencies</translation>
+      <source>Unsaved document</source>
+      <translation>Ulagret dokument</translation>
     </message>
     <message>
-      <source>The selected objects have a dependency to unselected objects.
-Do you want to copy them, too?</source>
-      <translation type="unfinished">The selected objects have a dependency to unselected objects.
-Do you want to copy them, too?</translation>
+      <source>The exported object contains external link. Please save the documentat least once before exporting.</source>
+      <translation type="unfinished">The exported object contains external link. Please save the documentat least once before exporting.</translation>
+    </message>
+    <message>
+      <source>To link to external objects, the document must be saved at least once.
+Do you want to save the document now?</source>
+      <translation type="unfinished">To link to external objects, the document must be saved at least once.
+Do you want to save the document now?</translation>
     </message>
   </context>
   <context>
@@ -3297,7 +5230,7 @@ Do you want to copy them, too?</translation>
     </message>
     <message>
       <source>Alignment[*]</source>
-      <translation type="unfinished">Alignment[*]</translation>
+      <translation>Justering [*]</translation>
     </message>
     <message>
       <source>Please, select at least one point in the left and the right view</source>
@@ -3351,11 +5284,11 @@ How do you want to proceed?</translation>
     </message>
     <message>
       <source>Ignore</source>
-      <translation type="unfinished">Ignorer</translation>
+      <translation>Ignorer</translation>
     </message>
     <message>
       <source>Abort</source>
-      <translation type="unfinished">Abort</translation>
+      <translation>Avbryt</translation>
     </message>
     <message>
       <source>Different number of points picked in left and right view. On the left view %1 points are picked, on the right view %2 points are picked.</source>
@@ -3375,261 +5308,397 @@ How do you want to proceed?</translation>
     </message>
   </context>
   <context>
+    <name>Gui::MayaGestureNavigationStyle</name>
+    <message>
+      <source>Tap OR click left mouse button.</source>
+      <translation type="unfinished">Tap OR click left mouse button.</translation>
+    </message>
+    <message>
+      <source>Drag screen with two fingers OR press ALT + middle mouse button.</source>
+      <translation type="unfinished">Drag screen with two fingers OR press ALT + middle mouse button.</translation>
+    </message>
+    <message>
+      <source>Drag screen with one finger OR press ALT + left mouse button. In Sketcher and other edit modes, hold Alt in addition.</source>
+      <translation type="unfinished">Drag screen with one finger OR press ALT + left mouse button. In Sketcher and other edit modes, hold Alt in addition.</translation>
+    </message>
+    <message>
+      <source>Pinch (place two fingers on the screen and drag them apart from or towards each other) OR scroll middle mouse button OR press ALT + right mouse button OR PgUp/PgDown on keyboard.</source>
+      <translation type="unfinished">Pinch (place two fingers on the screen and drag them apart from or towards each other) OR scroll middle mouse button OR press ALT + right mouse button OR PgUp/PgDown on keyboard.</translation>
+    </message>
+  </context>
+  <context>
     <name>Gui::NetworkRetriever</name>
     <message>
-      <source>Download started...
-</source>
-      <translation type="unfinished">Nedlasting har startet... </translation>
+      <source>Download started...</source>
+      <translation type="unfinished">Download started...</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::OpenCascadeNavigationStyle</name>
+    <message>
+      <source>Press left mouse button</source>
+      <translation>Trykk venstre museknapp</translation>
+    </message>
+    <message>
+      <source>Press CTRL and middle mouse button</source>
+      <translation type="unfinished">Press CTRL and middle mouse button</translation>
+    </message>
+    <message>
+      <source>Press CTRL and right mouse button</source>
+      <translation type="unfinished">Press CTRL and right mouse button</translation>
+    </message>
+    <message>
+      <source>Press CTRL and left mouse button</source>
+      <translation>Trykk CTRL og venstre museknapp</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::PrefQuantitySpinBox</name>
+    <message>
+      <source>Edit</source>
+      <translation>Rediger</translation>
+    </message>
+    <message>
+      <source>Save value</source>
+      <translation type="unfinished">Save value</translation>
+    </message>
+    <message>
+      <source>Clear list</source>
+      <translation type="unfinished">Clear list</translation>
     </message>
   </context>
   <context>
     <name>Gui::ProgressBar</name>
     <message>
       <source>Remaining: %1</source>
-      <translation type="unfinished">Gjenstående: %1</translation>
+      <translation>Gjenstående: %1</translation>
     </message>
     <message>
       <source>Aborting</source>
-      <translation type="unfinished">Avbryter</translation>
+      <translation>Avbryter</translation>
     </message>
     <message>
       <source>Do you really want to abort the operation?</source>
-      <translation type="unfinished">Vil du virkelig avbryte operasjonen?</translation>
+      <translation>Vil du virkelig avbryte operasjonen?</translation>
     </message>
   </context>
   <context>
     <name>Gui::ProgressDialog</name>
     <message>
       <source>Remaining: %1</source>
-      <translation type="unfinished">Gjenstående: %1</translation>
+      <translation>Gjenstående: %1</translation>
     </message>
     <message>
       <source>Aborting</source>
-      <translation type="unfinished">Avbryter</translation>
+      <translation>Avbryter</translation>
     </message>
     <message>
       <source>Do you really want to abort the operation?</source>
-      <translation type="unfinished">Vil du virkelig avbryte operasjonen?</translation>
+      <translation>Vil du virkelig avbryte operasjonen?</translation>
     </message>
   </context>
   <context>
     <name>Gui::PropertyEditor::LinkLabel</name>
     <message>
-      <source>Edit...</source>
-      <translation type="unfinished">Edit...</translation>
+      <source>Change the linked object</source>
+      <translation type="unfinished">Change the linked object</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::PropertyEditor::LinkSelection</name>
+    <message>
+      <source>Error</source>
+      <translation>Feil</translation>
+    </message>
+    <message>
+      <source>Object not found</source>
+      <translation type="unfinished">Object not found</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::PropertyEditor::PropertyEditor</name>
+    <message>
+      <source>Edit</source>
+      <translation>Rediger</translation>
+    </message>
+    <message>
+      <source>property</source>
+      <translation type="unfinished">property</translation>
+    </message>
+    <message>
+      <source>Show all</source>
+      <translation type="unfinished">Show all</translation>
+    </message>
+    <message>
+      <source>Add property</source>
+      <translation>Legg til egenskap</translation>
+    </message>
+    <message>
+      <source>Remove property</source>
+      <translation type="unfinished">Remove property</translation>
+    </message>
+    <message>
+      <source>Expression...</source>
+      <translation type="unfinished">Expression...</translation>
+    </message>
+    <message>
+      <source>Auto expand</source>
+      <translation type="unfinished">Auto expand</translation>
     </message>
   </context>
   <context>
     <name>Gui::PropertyEditor::PropertyModel</name>
     <message>
       <source>Property</source>
-      <translation type="unfinished">Egenskap</translation>
+      <translation>Egenskap</translation>
     </message>
     <message>
       <source>Value</source>
-      <translation type="unfinished">Verdi</translation>
+      <translation>Verdi</translation>
     </message>
   </context>
   <context>
     <name>Gui::PropertyView</name>
     <message>
       <source>View</source>
-      <translation type="unfinished">Vis</translation>
+      <translation>Vis</translation>
     </message>
     <message>
       <source>Data</source>
-      <translation type="unfinished">Data</translation>
+      <translation>Data</translation>
     </message>
   </context>
   <context>
     <name>Gui::PythonConsole</name>
     <message>
       <source>System exit</source>
-      <translation type="unfinished">Systemavsluttning</translation>
+      <translation>Systemavsluttning</translation>
     </message>
     <message>
       <source>The application is still running.
 Do you want to exit without saving your data?</source>
-      <translation type="unfinished">Programmet er fremdeles i gang.
+      <translation>Programmet er fremdeles i gang.
 Ønsker du å avslutte uten å lagre dine data?</translation>
     </message>
     <message>
       <source>Python console</source>
-      <translation type="unfinished">Pythonkonsoll</translation>
+      <translation>Pythonkonsoll</translation>
     </message>
     <message>
       <source>Unhandled PyCXX exception.</source>
-      <translation type="unfinished">Ubehandlet PyCXX unntak.</translation>
+      <translation>Ubehandlet PyCXX unntak.</translation>
     </message>
     <message>
       <source>Unhandled FreeCAD exception.</source>
-      <translation type="unfinished">Ubehandlet FreeCAD unntak.</translation>
+      <translation>Ubehandlet FreeCAD unntak.</translation>
     </message>
     <message>
       <source>Unhandled unknown C++ exception.</source>
-      <translation type="unfinished">Ubehandlet ukjent C++ unntak.</translation>
+      <translation>Ubehandlet ukjent C++ unntak.</translation>
     </message>
     <message>
       <source>&amp;Copy command</source>
-      <translation type="unfinished">&amp;Kopierkommando</translation>
+      <translation>&amp;Kopierkommando</translation>
     </message>
     <message>
       <source>&amp;Copy history</source>
-      <translation type="unfinished">&amp;Kopieringshistorie</translation>
+      <translation>&amp;Kopieringshistorie</translation>
     </message>
     <message>
       <source>Save history as...</source>
-      <translation type="unfinished">Lagre historie som...</translation>
+      <translation>Lagre historie som...</translation>
     </message>
     <message>
       <source>Insert file name...</source>
-      <translation type="unfinished">Sett inn filnavn...</translation>
+      <translation>Sett inn filnavn...</translation>
     </message>
     <message>
       <source>Save History</source>
-      <translation type="unfinished">Lagre Historie</translation>
-    </message>
-    <message>
-      <source>Macro Files (*.FCMacro *.py)</source>
-      <translation type="unfinished">Makrofiler (*.FCMacro *.py)</translation>
+      <translation>Lagre Historie</translation>
     </message>
     <message>
       <source>Insert file name</source>
-      <translation type="unfinished">Sett inn filnavn</translation>
-    </message>
-    <message>
-      <source>All Files (*.*)</source>
-      <translation type="unfinished">Alle filer (*.*)</translation>
+      <translation>Sett inn filnavn</translation>
     </message>
     <message>
       <source>Unhandled std C++ exception.</source>
-      <translation type="unfinished">Ubehandlet std C++ unntak.</translation>
+      <translation>Ubehandlet std C++ unntak.</translation>
     </message>
     <message>
       <source>Word wrap</source>
-      <translation type="unfinished">Tekstbryting</translation>
+      <translation>Tekstbryting</translation>
     </message>
     <message>
       <source>&amp;Copy</source>
-      <translation type="unfinished">&amp;Kopier</translation>
+      <translation>&amp;Kopier</translation>
     </message>
     <message>
       <source>&amp;Paste</source>
-      <translation type="unfinished">&amp;Lim inn</translation>
+      <translation>&amp;Lim inn</translation>
     </message>
     <message>
       <source>Select All</source>
-      <translation type="unfinished">Merk alle</translation>
+      <translation>Merk alle</translation>
     </message>
     <message>
       <source>Clear console</source>
       <translation type="unfinished">Clear console</translation>
+    </message>
+    <message>
+      <source>Macro Files</source>
+      <translation type="unfinished">Macro Files</translation>
+    </message>
+    <message>
+      <source>All Files</source>
+      <translation type="unfinished">All Files</translation>
+    </message>
+    <message>
+      <source>Save history</source>
+      <translation type="unfinished">Save history</translation>
+    </message>
+    <message>
+      <source>Saves Python history across %1 sessions</source>
+      <translation type="unfinished">Saves Python history across %1 sessions</translation>
     </message>
   </context>
   <context>
     <name>Gui::PythonEditor</name>
     <message>
       <source>Comment</source>
-      <translation type="unfinished">Kommentar</translation>
+      <translation>Kommentar</translation>
     </message>
     <message>
       <source>Uncomment</source>
-      <translation type="unfinished">Avkommentér</translation>
+      <translation>Avkommentér</translation>
     </message>
   </context>
   <context>
     <name>Gui::RecentFilesAction</name>
     <message>
       <source>Open file %1</source>
-      <translation type="unfinished">Åpne fil %1</translation>
+      <translation>Åpne fil %1</translation>
     </message>
     <message>
       <source>File not found</source>
-      <translation type="unfinished">Fant ikke filen</translation>
+      <translation>Fant ikke filen</translation>
     </message>
     <message>
       <source>The file '%1' cannot be opened.</source>
-      <translation type="unfinished">Filen '%1' kan ikke åpnes.</translation>
+      <translation>Filen '%1' kan ikke åpnes.</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::RecentMacrosAction</name>
+    <message>
+      <source>Run macro %1 (Shift+click to edit) shortcut: %2</source>
+      <translation type="unfinished">Run macro %1 (Shift+click to edit) shortcut: %2</translation>
+    </message>
+    <message>
+      <source>File not found</source>
+      <translation>Fant ikke filen</translation>
+    </message>
+    <message>
+      <source>The file '%1' cannot be opened.</source>
+      <translation>Filen '%1' kan ikke åpnes.</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::RevitNavigationStyle</name>
+    <message>
+      <source>Press left mouse button</source>
+      <translation>Trykk venstre museknapp</translation>
+    </message>
+    <message>
+      <source>Press middle mouse button</source>
+      <translation>Trykk på midtre museknapp</translation>
+    </message>
+    <message>
+      <source>Press SHIFT and middle mouse button</source>
+      <translation>Trykk SHIFT og midtre museknapp</translation>
+    </message>
+    <message>
+      <source>Scroll middle mouse button</source>
+      <translation>Rull musehjul</translation>
     </message>
   </context>
   <context>
     <name>Gui::SelectModule</name>
     <message>
       <source>Select module</source>
-      <translation type="unfinished">Velg modul</translation>
+      <translation>Velg modul</translation>
     </message>
     <message>
       <source>Open %1 as</source>
-      <translation type="unfinished">Åpne %1 som</translation>
+      <translation>Åpne %1 som</translation>
     </message>
     <message>
       <source>Select</source>
-      <translation type="unfinished">Velg</translation>
+      <translation>Velg</translation>
     </message>
   </context>
   <context>
     <name>Gui::StdCmdDescription</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>Des&amp;cription</source>
-      <translation type="unfinished">Be&amp;skrivelse</translation>
+      <translation>Be&amp;skrivelse</translation>
     </message>
     <message>
       <source>Long description of commands</source>
-      <translation type="unfinished">Lang beskrivelse av kommandoer</translation>
+      <translation>Lang beskrivelse av kommandoer</translation>
     </message>
   </context>
   <context>
     <name>Gui::StdCmdDownloadOnlineHelp</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>Download online help</source>
-      <translation type="unfinished">Last ned hjelp fra internett</translation>
+      <translation>Last ned hjelp fra internett</translation>
     </message>
     <message>
       <source>Download %1's online help</source>
-      <translation type="unfinished">Last ned %1's hjelp fra internett</translation>
+      <translation>Last ned %1's hjelp fra internett</translation>
     </message>
     <message>
       <source>Non-existing directory</source>
-      <translation type="unfinished">Ikkeeksisterende mappe</translation>
+      <translation>Ikkeeksisterende mappe</translation>
     </message>
     <message>
       <source>The directory '%1' does not exist.
 
 Do you want to specify an existing directory?</source>
-      <translation type="unfinished">Mappen '%1' eksisterer ikke.  
+      <translation>Mappen '%1' eksisterer ikke.  
 
 Vil du angi en eksisterende mappe?</translation>
     </message>
     <message>
       <source>Missing permission</source>
-      <translation type="unfinished">Mangler tillatelse</translation>
+      <translation>Mangler tillatelse</translation>
     </message>
     <message>
       <source>You don't have write permission to '%1'
 
 Do you want to specify another directory?</source>
-      <translation type="unfinished">Du har ikke skrivetilgang til '%1' 
+      <translation>Du har ikke skrivetilgang til '%1' 
 
 Vil du angi en annen mappe?</translation>
     </message>
     <message>
       <source>Stop downloading</source>
-      <translation type="unfinished">Stopp nedlasting</translation>
+      <translation>Stopp nedlasting</translation>
     </message>
   </context>
   <context>
     <name>Gui::StdCmdPythonHelp</name>
     <message>
       <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
+      <translation>Verktøy</translation>
     </message>
     <message>
       <source>Automatic python modules documentation</source>
@@ -3644,85 +5713,170 @@ Vil du angi en annen mappe?</translation>
     <name>Gui::TaskBoxAngle</name>
     <message>
       <source>Angle</source>
-      <translation type="unfinished">Vinkel</translation>
+      <translation>Vinkel</translation>
     </message>
   </context>
   <context>
     <name>Gui::TaskBoxPosition</name>
     <message>
       <source>Position</source>
-      <translation type="unfinished">Posisjon</translation>
+      <translation>Posisjon</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::TaskCSysDragger</name>
+    <message>
+      <source>Increments</source>
+      <translation type="unfinished">Increments</translation>
+    </message>
+    <message>
+      <source>Translation Increment:</source>
+      <translation type="unfinished">Translation Increment:</translation>
+    </message>
+    <message>
+      <source>Rotation Increment:</source>
+      <translation type="unfinished">Rotation Increment:</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::TaskElementColors</name>
+    <message>
+      <source>Set element color</source>
+      <translation type="unfinished">Set element color</translation>
+    </message>
+    <message>
+      <source>TextLabel</source>
+      <translation>Merkelapp</translation>
+    </message>
+    <message>
+      <source>Recompute after commit</source>
+      <translation type="unfinished">Recompute after commit</translation>
+    </message>
+    <message>
+      <source>Remove</source>
+      <translation>Fjern</translation>
+    </message>
+    <message>
+      <source>Edit</source>
+      <translation>Rediger</translation>
+    </message>
+    <message>
+      <source>Remove all</source>
+      <translation type="unfinished">Remove all</translation>
+    </message>
+    <message>
+      <source>Hide</source>
+      <translation type="unfinished">Hide</translation>
+    </message>
+    <message>
+      <source>Box select</source>
+      <translation type="unfinished">Box select</translation>
+    </message>
+    <message>
+      <source>On-top when selected</source>
+      <translation type="unfinished">On-top when selected</translation>
     </message>
   </context>
   <context>
     <name>Gui::TaskView::TaskAppearance</name>
     <message>
       <source>Plot mode:</source>
-      <translation type="unfinished">Plottmodus:</translation>
+      <translation>Plottmodus:</translation>
     </message>
     <message>
       <source>Point size:</source>
-      <translation type="unfinished">Punktstørrelse:</translation>
+      <translation>Punktstørrelse:</translation>
     </message>
     <message>
       <source>Line width:</source>
-      <translation type="unfinished">Linjebredde:</translation>
+      <translation>Linjebredde:</translation>
     </message>
     <message>
       <source>Transparency:</source>
-      <translation type="unfinished">Gjennomsiktighet:</translation>
+      <translation>Gjennomsiktighet:</translation>
     </message>
     <message>
       <source>Appearance</source>
-      <translation type="unfinished">Utseende</translation>
+      <translation>Utseende</translation>
     </message>
     <message>
       <source>Document window:</source>
-      <translation type="unfinished">Dokumentvindu:</translation>
+      <translation>Dokumentvindu:</translation>
     </message>
   </context>
   <context>
     <name>Gui::TaskView::TaskDialog</name>
     <message>
       <source>A dialog is already open in the task panel</source>
-      <translation type="unfinished">En dialog er allerede åpent i oppgavepanelet</translation>
+      <translation>En dialog er allerede åpent i oppgavepanelet</translation>
     </message>
   </context>
   <context>
     <name>Gui::TaskView::TaskEditControl</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
   </context>
   <context>
     <name>Gui::TaskView::TaskSelectLinkProperty</name>
     <message>
       <source>Appearance</source>
-      <translation type="unfinished">Utseende</translation>
+      <translation>Utseende</translation>
     </message>
     <message>
       <source>...</source>
-      <translation type="unfinished">...</translation>
+      <translation>...</translation>
     </message>
     <message>
       <source>edit selection</source>
-      <translation type="unfinished">redigere utvalg</translation>
+      <translation>redigere utvalg</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::TextDocumentEditorView</name>
+    <message>
+      <source>Text updated</source>
+      <translation type="unfinished">Text updated</translation>
+    </message>
+    <message>
+      <source>The text of the underlying object has changed. Discard changes and reload the text from the object?</source>
+      <translation type="unfinished">The text of the underlying object has changed. Discard changes and reload the text from the object?</translation>
+    </message>
+    <message>
+      <source>Yes, reload.</source>
+      <translation type="unfinished">Yes, reload.</translation>
+    </message>
+    <message>
+      <source>Unsaved document</source>
+      <translation>Ulagret dokument</translation>
+    </message>
+    <message>
+      <source>Do you want to save your changes before closing?</source>
+      <translation type="unfinished">Do you want to save your changes before closing?</translation>
+    </message>
+    <message>
+      <source>If you don't save, your changes will be lost.</source>
+      <translation type="unfinished">If you don't save, your changes will be lost.</translation>
+    </message>
+    <message>
+      <source>Edit text</source>
+      <translation type="unfinished">Edit text</translation>
     </message>
   </context>
   <context>
     <name>Gui::TouchpadNavigationStyle</name>
     <message>
       <source>Press left mouse button</source>
-      <translation type="unfinished">Trykk venstre museknapp</translation>
+      <translation>Trykk venstre museknapp</translation>
     </message>
     <message>
       <source>Press SHIFT button</source>
-      <translation type="unfinished">Trykk SHIFT-tasten</translation>
+      <translation>Trykk SHIFT-tasten</translation>
     </message>
     <message>
       <source>Press ALT button</source>
-      <translation type="unfinished">Trykk ALT-tasten</translation>
+      <translation>Trykk ALT-tasten</translation>
     </message>
     <message>
       <source>Press CTRL and SHIFT buttons</source>
@@ -3730,75 +5884,367 @@ Vil du angi en annen mappe?</translation>
     </message>
   </context>
   <context>
+    <name>Gui::Translator</name>
+    <message>
+      <source>English</source>
+      <translation>Engelsk</translation>
+    </message>
+    <message>
+      <source>German</source>
+      <translation>Tysk</translation>
+    </message>
+    <message>
+      <source>Spanish</source>
+      <translation>Spansk</translation>
+    </message>
+    <message>
+      <source>French</source>
+      <translation>Fransk</translation>
+    </message>
+    <message>
+      <source>Italian</source>
+      <translation>Italiensk</translation>
+    </message>
+    <message>
+      <source>Japanese</source>
+      <translation>Japansk</translation>
+    </message>
+    <message>
+      <source>Chinese Simplified</source>
+      <translation>Forenklet kinesisk</translation>
+    </message>
+    <message>
+      <source>Chinese Traditional</source>
+      <translation>Kinesisk, tradisjonell</translation>
+    </message>
+    <message>
+      <source>Korean</source>
+      <translation type="unfinished">Korean</translation>
+    </message>
+    <message>
+      <source>Russian</source>
+      <translation>Russisk</translation>
+    </message>
+    <message>
+      <source>Swedish</source>
+      <translation>Svensk</translation>
+    </message>
+    <message>
+      <source>Afrikaans</source>
+      <translation>Afrikaans</translation>
+    </message>
+    <message>
+      <source>Norwegian</source>
+      <translation>Norsk</translation>
+    </message>
+    <message>
+      <source>Portuguese, Brazilian</source>
+      <translation type="unfinished">Portuguese, Brazilian</translation>
+    </message>
+    <message>
+      <source>Portuguese</source>
+      <translation>Portugisisk</translation>
+    </message>
+    <message>
+      <source>Dutch</source>
+      <translation>Nederlandsk</translation>
+    </message>
+    <message>
+      <source>Ukrainian</source>
+      <translation>Ukrainsk</translation>
+    </message>
+    <message>
+      <source>Finnish</source>
+      <translation>Finsk</translation>
+    </message>
+    <message>
+      <source>Croatian</source>
+      <translation>Kroatisk</translation>
+    </message>
+    <message>
+      <source>Polish</source>
+      <translation>Polsk</translation>
+    </message>
+    <message>
+      <source>Czech</source>
+      <translation>Tjekkisk</translation>
+    </message>
+    <message>
+      <source>Hungarian</source>
+      <translation>Ungarsk</translation>
+    </message>
+    <message>
+      <source>Romanian</source>
+      <translation>Rumensk</translation>
+    </message>
+    <message>
+      <source>Slovak</source>
+      <translation>Slovakisk</translation>
+    </message>
+    <message>
+      <source>Turkish</source>
+      <translation>Tyrkisk</translation>
+    </message>
+    <message>
+      <source>Slovenian</source>
+      <translation>Slovensk</translation>
+    </message>
+    <message>
+      <source>Basque</source>
+      <translation type="unfinished">Basque</translation>
+    </message>
+    <message>
+      <source>Catalan</source>
+      <translation type="unfinished">Catalan</translation>
+    </message>
+    <message>
+      <source>Galician</source>
+      <translation type="unfinished">Galician</translation>
+    </message>
+    <message>
+      <source>Kabyle</source>
+      <translation type="unfinished">Kabyle</translation>
+    </message>
+    <message>
+      <source>Filipino</source>
+      <translation type="unfinished">Filipino</translation>
+    </message>
+    <message>
+      <source>Indonesian</source>
+      <translation type="unfinished">Indonesian</translation>
+    </message>
+    <message>
+      <source>Lithuanian</source>
+      <translation type="unfinished">Lithuanian</translation>
+    </message>
+    <message>
+      <source>Valencian</source>
+      <translation type="unfinished">Valencian</translation>
+    </message>
+    <message>
+      <source>Arabic</source>
+      <translation type="unfinished">Arabic</translation>
+    </message>
+    <message>
+      <source>Vietnamese</source>
+      <translation type="unfinished">Vietnamese</translation>
+    </message>
+  </context>
+  <context>
     <name>Gui::TreeDockWidget</name>
     <message>
       <source>Tree view</source>
-      <translation type="unfinished">Trevisning</translation>
+      <translation>Trevisning</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::TreePanel</name>
+    <message>
+      <source>Search</source>
+      <translation>Søk</translation>
     </message>
   </context>
   <context>
     <name>Gui::TreeWidget</name>
     <message>
       <source>Create group...</source>
-      <translation type="unfinished">Lag gruppe...</translation>
+      <translation>Lag gruppe...</translation>
     </message>
     <message>
       <source>Create a group</source>
-      <translation type="unfinished">Lag en gruppe</translation>
+      <translation>Lag en gruppe</translation>
     </message>
     <message>
       <source>Group</source>
-      <translation type="unfinished">Gruppe</translation>
+      <translation>Gruppe</translation>
     </message>
     <message>
       <source>Rename</source>
-      <translation type="unfinished">Omdøp</translation>
+      <translation>Omdøp</translation>
     </message>
     <message>
       <source>Rename object</source>
-      <translation type="unfinished">Omdøp objekt</translation>
+      <translation>Omdøp objekt</translation>
     </message>
     <message>
       <source>Labels &amp; Attributes</source>
-      <translation type="unfinished">Etiketter og attributter</translation>
+      <translation>Etiketter og attributter</translation>
     </message>
     <message>
       <source>Application</source>
-      <translation type="unfinished">Program</translation>
+      <translation>Program</translation>
     </message>
     <message>
       <source>Finish editing</source>
-      <translation type="unfinished">Fullfør redigering</translation>
+      <translation>Fullfør redigering</translation>
     </message>
     <message>
       <source>Finish editing object</source>
-      <translation type="unfinished">Fullfør å redigere objektet</translation>
+      <translation>Fullfør å redigere objektet</translation>
     </message>
     <message>
       <source>Activate document</source>
-      <translation type="unfinished">Aktiver dokument</translation>
+      <translation>Aktiver dokument</translation>
     </message>
     <message>
       <source>Activate document %1</source>
-      <translation type="unfinished">Aktiver dokument %1</translation>
+      <translation>Aktiver dokument %1</translation>
+    </message>
+    <message>
+      <source>Skip recomputes</source>
+      <translation type="unfinished">Skip recomputes</translation>
+    </message>
+    <message>
+      <source>Enable or disable recomputations of document</source>
+      <translation type="unfinished">Enable or disable recomputations of document</translation>
+    </message>
+    <message>
+      <source>Mark to recompute</source>
+      <translation type="unfinished">Mark to recompute</translation>
+    </message>
+    <message>
+      <source>Mark this object to be recomputed</source>
+      <translation type="unfinished">Mark this object to be recomputed</translation>
+    </message>
+    <message>
+      <source>%1, Internal name: %2</source>
+      <translation>%1, interne navnet: %2</translation>
+    </message>
+    <message>
+      <source>Search...</source>
+      <translation type="unfinished">Search...</translation>
+    </message>
+    <message>
+      <source>Search for objects</source>
+      <translation type="unfinished">Search for objects</translation>
+    </message>
+    <message>
+      <source>Description</source>
+      <translation>Beskrivelse</translation>
+    </message>
+    <message>
+      <source>Show hidden items</source>
+      <translation type="unfinished">Show hidden items</translation>
+    </message>
+    <message>
+      <source>Show hidden tree view items</source>
+      <translation type="unfinished">Show hidden tree view items</translation>
+    </message>
+    <message>
+      <source>Hide item</source>
+      <translation type="unfinished">Hide item</translation>
+    </message>
+    <message>
+      <source>Hide the item in tree</source>
+      <translation type="unfinished">Hide the item in tree</translation>
+    </message>
+    <message>
+      <source>Close document</source>
+      <translation type="unfinished">Close document</translation>
+    </message>
+    <message>
+      <source>Close the document</source>
+      <translation type="unfinished">Close the document</translation>
+    </message>
+    <message>
+      <source>Reload document</source>
+      <translation type="unfinished">Reload document</translation>
+    </message>
+    <message>
+      <source>Reload a partially loaded document</source>
+      <translation type="unfinished">Reload a partially loaded document</translation>
+    </message>
+    <message>
+      <source>Allow partial recomputes</source>
+      <translation type="unfinished">Allow partial recomputes</translation>
+    </message>
+    <message>
+      <source>Enable or disable recomputating editing object when 'skip recomputation' is enabled</source>
+      <translation type="unfinished">Enable or disable recomputating editing object when 'skip recomputation' is enabled</translation>
+    </message>
+    <message>
+      <source>Recompute object</source>
+      <translation type="unfinished">Recompute object</translation>
+    </message>
+    <message>
+      <source>Recompute the selected object</source>
+      <translation type="unfinished">Recompute the selected object</translation>
+    </message>
+    <message>
+      <source> (but must be executed)</source>
+      <translation type="unfinished"> (but must be executed)</translation>
+    </message>
+  </context>
+  <context>
+    <name>Gui::VectorListEditor</name>
+    <message>
+      <source>Vectors</source>
+      <translation type="unfinished">Vectors</translation>
+    </message>
+    <message>
+      <source>Table</source>
+      <translation type="unfinished">Table</translation>
+    </message>
+    <message>
+      <source>...</source>
+      <translation>...</translation>
     </message>
   </context>
   <context>
     <name>Gui::View3DInventor</name>
     <message>
       <source>Export PDF</source>
-      <translation type="unfinished">Eksporter PDF</translation>
+      <translation>Eksporter PDF</translation>
     </message>
     <message>
-      <source>PDF file (*.pdf)</source>
-      <translation type="unfinished">PDF-fil (*.pdf)</translation>
+      <source>PDF file</source>
+      <translation type="unfinished">PDF file</translation>
+    </message>
+    <message>
+      <source>Opening file failed</source>
+      <translation type="unfinished">Opening file failed</translation>
+    </message>
+    <message>
+      <source>Can't open file '%1' for writing.</source>
+      <translation type="unfinished">Can't open file '%1' for writing.</translation>
     </message>
   </context>
   <context>
     <name>Gui::WorkbenchGroup</name>
     <message>
       <source>Select the '%1' workbench</source>
-      <translation type="unfinished">Velg '%1' arbeidsbenk</translation>
+      <translation>Velg '%1' arbeidsbenk</translation>
+    </message>
+  </context>
+  <context>
+    <name>MAC_APPLICATION_MENU</name>
+    <message>
+      <source>Services</source>
+      <translation type="unfinished">Services</translation>
+    </message>
+    <message>
+      <source>Hide %1</source>
+      <translation type="unfinished">Hide %1</translation>
+    </message>
+    <message>
+      <source>Hide Others</source>
+      <translation type="unfinished">Hide Others</translation>
+    </message>
+    <message>
+      <source>Show All</source>
+      <translation type="unfinished">Show All</translation>
+    </message>
+    <message>
+      <source>Preferences...</source>
+      <translation type="unfinished">Preferences...</translation>
+    </message>
+    <message>
+      <source>Quit %1</source>
+      <translation type="unfinished">Quit %1</translation>
+    </message>
+    <message>
+      <source>About %1</source>
+      <translation>Om %1</translation>
     </message>
   </context>
   <context>
@@ -3816,582 +6262,862 @@ Vil du angi en annen mappe?</translation>
     <name>Position</name>
     <message>
       <source>Form</source>
-      <translation type="unfinished">Skjema</translation>
+      <translation>Skjema</translation>
     </message>
     <message>
       <source>X:</source>
-      <translation type="unfinished">X:</translation>
+      <translation>X:</translation>
     </message>
     <message>
       <source>Y:</source>
-      <translation type="unfinished">Y:</translation>
+      <translation>Y:</translation>
     </message>
     <message>
       <source>Z:</source>
-      <translation type="unfinished">Z:</translation>
+      <translation>Z:</translation>
     </message>
     <message>
       <source>0.1 mm</source>
-      <translation type="unfinished">0.1 mm</translation>
+      <translation>0.1 mm</translation>
     </message>
     <message>
       <source>0.5 mm</source>
-      <translation type="unfinished">0.5 mm</translation>
+      <translation>0.5 mm</translation>
     </message>
     <message>
       <source>1 mm</source>
-      <translation type="unfinished">1 mm</translation>
+      <translation>1 mm</translation>
     </message>
     <message>
       <source>2 mm</source>
-      <translation type="unfinished">2 mm</translation>
+      <translation>2 mm</translation>
     </message>
     <message>
       <source>5 mm</source>
-      <translation type="unfinished">5 mm</translation>
+      <translation>5 mm</translation>
     </message>
     <message>
       <source>10 mm</source>
-      <translation type="unfinished">10 mm</translation>
+      <translation>10 mm</translation>
     </message>
     <message>
       <source>20 mm</source>
-      <translation type="unfinished">20 mm</translation>
+      <translation>20 mm</translation>
     </message>
     <message>
       <source>50 mm</source>
-      <translation type="unfinished">50 mm</translation>
+      <translation>50 mm</translation>
     </message>
     <message>
       <source>100 mm</source>
-      <translation type="unfinished">100 mm</translation>
+      <translation>100 mm</translation>
     </message>
     <message>
       <source>200 mm</source>
-      <translation type="unfinished">200 mm</translation>
+      <translation>200 mm</translation>
     </message>
     <message>
       <source>500 mm</source>
-      <translation type="unfinished">500 mm</translation>
+      <translation>500 mm</translation>
     </message>
     <message>
       <source>1 m</source>
-      <translation type="unfinished">1 m</translation>
+      <translation>1 m</translation>
     </message>
     <message>
       <source>2 m</source>
-      <translation type="unfinished">2 m</translation>
+      <translation>2 m</translation>
     </message>
     <message>
       <source>5 m </source>
-      <translation type="unfinished">5 m </translation>
+      <translation>5 m </translation>
     </message>
     <message>
       <source>Grid Snap in</source>
-      <translation type="unfinished">Rutenett magnet i</translation>
+      <translation>Rutenett magnet i</translation>
+    </message>
+  </context>
+  <context>
+    <name>PropertyListDialog</name>
+    <message>
+      <source>Invalid input</source>
+      <translation>Ugyldig inndata</translation>
+    </message>
+    <message>
+      <source>Input in line %1 is not a number</source>
+      <translation type="unfinished">Input in line %1 is not a number</translation>
     </message>
   </context>
   <context>
     <name>QDockWidget</name>
     <message>
       <source>Tree view</source>
-      <translation type="unfinished">Trevisning</translation>
+      <translation>Trevisning</translation>
     </message>
     <message>
       <source>Property view</source>
-      <translation type="unfinished">Egenskapsvisning</translation>
+      <translation>Egenskapsvisning</translation>
     </message>
     <message>
       <source>Selection view</source>
-      <translation type="unfinished">Visning av valg</translation>
+      <translation>Visning av valg</translation>
     </message>
     <message>
       <source>Report view</source>
-      <translation type="unfinished">Rapportvisning</translation>
-    </message>
-    <message>
-      <source>Task View</source>
-      <translation type="unfinished">Oppgavevisning</translation>
+      <translation>Rapportvisning</translation>
     </message>
     <message>
       <source>Combo View</source>
-      <translation type="unfinished">Kombinert visning</translation>
+      <translation>Kombinert visning</translation>
     </message>
     <message>
       <source>Toolbox</source>
-      <translation type="unfinished">Verktøykasse</translation>
+      <translation>Verktøykasse</translation>
     </message>
     <message>
       <source>Python console</source>
-      <translation type="unfinished">Pythonkonsoll</translation>
+      <translation>Pythonkonsoll</translation>
     </message>
     <message>
       <source>Display properties</source>
-      <translation type="unfinished">Skjermegenskaper</translation>
+      <translation>Skjermegenskaper</translation>
+    </message>
+    <message>
+      <source>DAG View</source>
+      <translation type="unfinished">DAG View</translation>
     </message>
   </context>
   <context>
     <name>QObject</name>
     <message>
       <source>General</source>
-      <translation type="unfinished">Generelle</translation>
+      <translation>Generelle</translation>
     </message>
     <message>
       <source>Display</source>
-      <translation type="unfinished">Skjerm</translation>
+      <translation>Skjerm</translation>
     </message>
     <message>
       <source>Unknown filetype</source>
-      <translation type="unfinished">Ukjent filetype</translation>
+      <translation>Ukjent filetype</translation>
     </message>
     <message>
       <source>Cannot open unknown filetype: %1</source>
-      <translation type="unfinished">Kan ikke åpne ukjent filetype: %1</translation>
+      <translation>Kan ikke åpne ukjent filetype: %1</translation>
     </message>
     <message>
       <source>Cannot save to unknown filetype: %1</source>
-      <translation type="unfinished">Kan ikke lagre til ukjent filetype: %1</translation>
+      <translation>Kan ikke lagre til ukjent filetype: %1</translation>
     </message>
     <message>
       <source>Workbench failure</source>
-      <translation type="unfinished">Arbeidsbenkfeil</translation>
+      <translation>Arbeidsbenkfeil</translation>
     </message>
     <message>
       <source>%1</source>
-      <translation type="unfinished">%1</translation>
-    </message>
-    <message>
-      <source>Unable to launch Qt Assistant (%1)</source>
-      <translation type="unfinished">Kan ikke starte Qt assistent (%1)</translation>
+      <translation>%1</translation>
     </message>
     <message>
       <source>Exception</source>
-      <translation type="unfinished">Unntak</translation>
+      <translation>Unntak</translation>
     </message>
     <message>
       <source>Open document</source>
-      <translation type="unfinished">Åpne dokument</translation>
+      <translation>Åpne dokument</translation>
     </message>
     <message>
       <source>Import file</source>
-      <translation type="unfinished">Importer fil</translation>
+      <translation>Importer fil</translation>
     </message>
     <message>
       <source>Export file</source>
-      <translation type="unfinished">Eksporter fil</translation>
+      <translation>Eksporter fil</translation>
     </message>
     <message>
       <source>Printing...</source>
-      <translation type="unfinished">Skriver ut ...</translation>
+      <translation>Skriver ut ...</translation>
     </message>
     <message>
       <source>Cannot load workbench</source>
-      <translation type="unfinished">Kan ikke laste arbeidsbenk</translation>
+      <translation>Kan ikke laste arbeidsbenk</translation>
     </message>
     <message>
       <source>A general error occurred while loading the workbench</source>
-      <translation type="unfinished">En generell feil oppstod under lasting arbeidsbordet</translation>
+      <translation>En generell feil oppstod under lasting arbeidsbordet</translation>
     </message>
     <message>
       <source>Save views...</source>
-      <translation type="unfinished">Lagre visninger...</translation>
+      <translation>Lagre visninger...</translation>
     </message>
     <message>
       <source>Load views...</source>
-      <translation type="unfinished">Last visninger...</translation>
+      <translation>Last visninger...</translation>
     </message>
     <message>
       <source>Freeze view</source>
-      <translation type="unfinished">Frys visning</translation>
+      <translation>Frys visning</translation>
     </message>
     <message>
       <source>Clear views</source>
-      <translation type="unfinished">Tøm visninger</translation>
+      <translation>Tøm visninger</translation>
     </message>
     <message>
       <source>Restore view &amp;%1</source>
-      <translation type="unfinished">Gjenopprette visning &amp;%1</translation>
+      <translation>Gjenopprette visning &amp;%1</translation>
     </message>
     <message>
       <source>Save frozen views</source>
-      <translation type="unfinished">Lagre frosne visninger</translation>
-    </message>
-    <message>
-      <source>Frozen views (*.cam)</source>
-      <translation type="unfinished">Frosne visninger (*.cam)</translation>
+      <translation>Lagre frosne visninger</translation>
     </message>
     <message>
       <source>Restore views</source>
-      <translation type="unfinished">Gjenopprett visninger</translation>
+      <translation>Gjenopprett visninger</translation>
     </message>
     <message>
       <source>Importing the restored views would clear the already stored views.
 Do you want to continue?</source>
-      <translation type="unfinished">Importering av gjenopprettede visninger fjerner allerede lagrede visninger. Vil du fortsette?</translation>
+      <translation>Importering av gjenopprettede visninger fjerner allerede lagrede visninger. Vil du fortsette?</translation>
     </message>
     <message>
       <source>Restore frozen views</source>
-      <translation type="unfinished">Gjenopprett frosne visninger</translation>
+      <translation>Gjenopprett frosne visninger</translation>
     </message>
     <message>
       <source>Cannot open file '%1'.</source>
-      <translation type="unfinished">Kan ikke åpne filen '%1'.</translation>
-    </message>
-    <message>
-      <source>Docked</source>
-      <translation type="unfinished">Forankret</translation>
-    </message>
-    <message>
-      <source>Undocked</source>
-      <translation type="unfinished">Uforankret</translation>
-    </message>
-    <message>
-      <source>Fullscreen</source>
-      <translation type="unfinished">Fullskjerm</translation>
+      <translation>Kan ikke åpne filen '%1'.</translation>
     </message>
     <message>
       <source>files</source>
-      <translation type="unfinished">filer</translation>
+      <translation>filer</translation>
     </message>
     <message>
       <source>Save picture</source>
-      <translation type="unfinished">Lagre bilde</translation>
+      <translation>Lagre bilde</translation>
     </message>
     <message>
       <source>New sub-group</source>
-      <translation type="unfinished">Nye undergruppe</translation>
+      <translation>Nye undergruppe</translation>
     </message>
     <message>
       <source>Enter the name:</source>
-      <translation type="unfinished">Skriv inn navnet:</translation>
+      <translation>Skriv inn navnet:</translation>
     </message>
     <message>
       <source>New text item</source>
-      <translation type="unfinished">Nytt tekstelement</translation>
+      <translation>Nytt tekstelement</translation>
     </message>
     <message>
       <source>Enter your text:</source>
-      <translation type="unfinished">Skriv inn din tekst:</translation>
+      <translation>Skriv inn din tekst:</translation>
     </message>
     <message>
       <source>New integer item</source>
-      <translation type="unfinished">Nytt heltall-element</translation>
+      <translation>Nytt heltall-element</translation>
     </message>
     <message>
       <source>Enter your number:</source>
-      <translation type="unfinished">Skriv inn nummeret ditt:</translation>
+      <translation>Skriv inn nummeret ditt:</translation>
     </message>
     <message>
       <source>New unsigned item</source>
-      <translation type="unfinished">Nytt usignert element</translation>
+      <translation>Nytt usignert element</translation>
     </message>
     <message>
       <source>New float item</source>
-      <translation type="unfinished">Nytt float-element</translation>
+      <translation>Nytt float-element</translation>
     </message>
     <message>
       <source>New Boolean item</source>
-      <translation type="unfinished">Nytt boolsk element</translation>
+      <translation>Nytt boolsk element</translation>
     </message>
     <message>
       <source>Choose an item:</source>
-      <translation type="unfinished">Velg et element:</translation>
+      <translation>Velg et element:</translation>
     </message>
     <message>
       <source>Rename group</source>
-      <translation type="unfinished">Omdøp gruppe</translation>
+      <translation>Omdøp gruppe</translation>
     </message>
     <message>
       <source>The group '%1' cannot be renamed.</source>
-      <translation type="unfinished">Gruppen '%1' kan ikke omdøpes.</translation>
+      <translation>Gruppen '%1' kan ikke omdøpes.</translation>
     </message>
     <message>
       <source>Existing group</source>
-      <translation type="unfinished">Eksisterende gruppe</translation>
+      <translation>Eksisterende gruppe</translation>
     </message>
     <message>
       <source>The group '%1' already exists.</source>
-      <translation type="unfinished">Gruppen '%1' finnes allerede.</translation>
+      <translation>Gruppen '%1' finnes allerede.</translation>
     </message>
     <message>
       <source>Change value</source>
-      <translation type="unfinished">Endre verdi</translation>
+      <translation>Endre verdi</translation>
     </message>
     <message>
       <source>Save document under new filename...</source>
-      <translation type="unfinished">Lagre dokumentet under nytt filnavn...</translation>
+      <translation>Lagre dokumentet under nytt filnavn...</translation>
     </message>
     <message>
       <source>Saving aborted</source>
-      <translation type="unfinished">Lagring avbrutt</translation>
+      <translation>Lagring avbrutt</translation>
     </message>
     <message>
       <source>Unsaved document</source>
-      <translation type="unfinished">Ulagret dokument</translation>
-    </message>
-    <message>
-      <source>Save document before close?</source>
-      <translation type="unfinished">Lagre dokument før det lukkes?</translation>
+      <translation>Ulagret dokument</translation>
     </message>
     <message>
       <source>Save Macro</source>
-      <translation type="unfinished">Lagre makro</translation>
+      <translation>Lagre makro</translation>
     </message>
     <message>
       <source>Finish</source>
-      <translation type="unfinished">Fullfør</translation>
+      <translation>Fullfør</translation>
     </message>
     <message>
       <source>Clear</source>
-      <translation type="unfinished">Tøm</translation>
+      <translation>Tøm</translation>
     </message>
     <message>
       <source>Cancel</source>
-      <translation type="unfinished">Avbryt</translation>
+      <translation>Avbryt</translation>
     </message>
     <message>
       <source>Inner</source>
-      <translation type="unfinished">Indre</translation>
+      <translation>Indre</translation>
     </message>
     <message>
       <source>Outer</source>
-      <translation type="unfinished">Ytre</translation>
+      <translation>Ytre</translation>
     </message>
     <message>
       <source>No Browser</source>
-      <translation type="unfinished">Ingen nettleser</translation>
+      <translation>Ingen nettleser</translation>
     </message>
     <message>
       <source>Unable to open your browser.
 
 Please open a browser window and type in: http://localhost:%1.</source>
-      <translation type="unfinished">Kan ikke åpne nettleseren. Vennligst åpne et nettleservindu og skriv: http://localhost:%1.</translation>
+      <translation>Kan ikke åpne nettleseren. Vennligst åpne et nettleservindu og skriv: http://localhost:%1.</translation>
     </message>
     <message>
       <source>No Server</source>
-      <translation type="unfinished">Ingen Server</translation>
+      <translation>Ingen Server</translation>
     </message>
     <message>
       <source>Unable to start the server to port %1: %2.</source>
-      <translation type="unfinished">Kan ikke starte serveren til port %1: %2.</translation>
+      <translation>Kan ikke starte serveren til port %1: %2.</translation>
     </message>
     <message>
       <source>Unable to open your system browser.</source>
-      <translation type="unfinished">Kan ikke åpne systemets nettleser.</translation>
+      <translation>Kan ikke åpne systemets nettleser.</translation>
     </message>
     <message>
       <source>Options...</source>
-      <translation type="unfinished">Alternativer...</translation>
+      <translation>Alternativer...</translation>
     </message>
     <message>
       <source>Out of memory</source>
-      <translation type="unfinished">For lite minne</translation>
+      <translation>For lite minne</translation>
     </message>
     <message>
       <source>Not enough memory available to display the data.</source>
-      <translation type="unfinished">Ikke nok minne til å vise dataene.</translation>
+      <translation>Ikke nok minne til å vise dataene.</translation>
     </message>
     <message>
       <source>Cannot find file %1</source>
-      <translation type="unfinished">Finner ikke filen %1</translation>
+      <translation>Finner ikke filen %1</translation>
     </message>
     <message>
       <source>Cannot find file %1 neither in %2 nor in %3</source>
-      <translation type="unfinished">Finner ikke filen %1 verken i %2 eller i %3</translation>
+      <translation>Finner ikke filen %1 verken i %2 eller i %3</translation>
     </message>
     <message>
       <source>Save %1 Document</source>
-      <translation type="unfinished">Lagre %1 dokument</translation>
+      <translation>Lagre %1 dokument</translation>
     </message>
     <message>
       <source>%1 document (*.FCStd)</source>
-      <translation type="unfinished">%1 dokument (*.FCStd)</translation>
+      <translation>%1 dokument (*.FCStd)</translation>
     </message>
     <message>
       <source>Document not closable</source>
-      <translation type="unfinished">Dokumentet ikke kan lukkes</translation>
+      <translation>Dokumentet ikke kan lukkes</translation>
     </message>
     <message>
       <source>The document is not closable for the moment.</source>
-      <translation type="unfinished">Dokumentet kan ikke lukkes for øyeblikket.</translation>
+      <translation>Dokumentet kan ikke lukkes for øyeblikket.</translation>
     </message>
     <message>
       <source>No OpenGL</source>
-      <translation type="unfinished">Ingen OpenGL</translation>
+      <translation>Ingen OpenGL</translation>
     </message>
     <message>
       <source>This system does not support OpenGL</source>
-      <translation type="unfinished">Dette systemet støtter ikke OpenGL</translation>
+      <translation>Dette systemet støtter ikke OpenGL</translation>
     </message>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>Unable to load documentation.
 In order to load it Qt 4.4 or higher is required.</source>
-      <translation type="unfinished">Kan ikke laste dokumentasjon. For å laste er Qt 4.4 eller høyere er nødvendig.</translation>
-    </message>
-    <message>
-      <source>%1 Help</source>
-      <translation type="unfinished">%1 Hjelp</translation>
+      <translation>Kan ikke laste dokumentasjon. For å laste er Qt 4.4 eller høyere er nødvendig.</translation>
     </message>
     <message>
       <source>Exporting PDF...</source>
-      <translation type="unfinished">Eksporterer PDF...</translation>
+      <translation>Eksporterer PDF...</translation>
     </message>
     <message>
       <source>Wrong selection</source>
-      <translation type="unfinished">Feil valg</translation>
+      <translation>Feil valg</translation>
     </message>
     <message>
       <source>Only one object selected. Please select two objects.
 Be aware the point where you click matters.</source>
-      <translation type="unfinished">Bare ett objekt valgt. Velg to objekter. 
+      <translation>Bare ett objekt valgt. Velg to objekter. 
 Vær oppmerksom på at punktet hvor du klikker betyr noe.</translation>
     </message>
     <message>
       <source>Please select two objects.
 Be aware the point where you click matters.</source>
-      <translation type="unfinished">Velg to objekter. 
+      <translation>Velg to objekter. 
 Vær oppmerksom på at punktet hvor du klikker betyr noe.</translation>
     </message>
     <message>
       <source>New boolean item</source>
-      <translation type="unfinished">Nytt boolsk element</translation>
+      <translation>Nytt boolsk element</translation>
     </message>
     <message>
       <source>Navigation styles</source>
-      <translation type="unfinished">Navigeringsstiler</translation>
-    </message>
-    <message>
-      <source>%1 navigation</source>
-      <translation type="unfinished">%1navigasjon</translation>
+      <translation>Navigeringsstiler</translation>
     </message>
     <message>
       <source>Move annotation</source>
-      <translation type="unfinished">Flytt merknad</translation>
+      <translation>Flytt merknad</translation>
     </message>
     <message>
       <source>Transform</source>
-      <translation type="unfinished">Transformer</translation>
-    </message>
-    <message>
-      <source>The document is in editing mode and thus cannot be closed for the moment.
-You either have to finish or cancel the editing in the task panel.</source>
-      <translation type="unfinished">Dokumentet er i redigeringsmodus og kan dermed ikke lukkes. Du må fullføre eller avbryte redigeringen i oppgavepanelet først.</translation>
+      <translation>Transformer</translation>
     </message>
     <message>
       <source>Do you want to close this dialog?</source>
-      <translation type="unfinished">Ønsker du å lukke denne dialogen?</translation>
+      <translation>Ønsker du å lukke denne dialogen?</translation>
+    </message>
+    <message>
+      <source>Do you want to save your changes to document '%1' before closing?</source>
+      <translation type="unfinished">Do you want to save your changes to document '%1' before closing?</translation>
+    </message>
+    <message>
+      <source>If you don't save, your changes will be lost.</source>
+      <translation type="unfinished">If you don't save, your changes will be lost.</translation>
+    </message>
+    <message>
+      <source>Save a copy of the document under new filename...</source>
+      <translation type="unfinished">Save a copy of the document under new filename...</translation>
+    </message>
+    <message>
+      <source>Frozen views</source>
+      <translation type="unfinished">Frozen views</translation>
+    </message>
+    <message>
+      <source>Saving document failed</source>
+      <translation type="unfinished">Saving document failed</translation>
+    </message>
+    <message>
+      <source>Document</source>
+      <translation>Dokument</translation>
+    </message>
+    <message>
+      <source>Delete macro</source>
+      <translation>Slett makro</translation>
+    </message>
+    <message>
+      <source>Not allowed to delete system-wide macros</source>
+      <translation type="unfinished">Not allowed to delete system-wide macros</translation>
+    </message>
+    <message>
+      <source>Origin</source>
+      <translation type="unfinished">Origin</translation>
+    </message>
+    <message>
+      <source>Delete group content?</source>
+      <translation type="unfinished">Delete group content?</translation>
+    </message>
+    <message>
+      <source>The %1 is not empty, delete its content as well?</source>
+      <translation type="unfinished">The %1 is not empty, delete its content as well?</translation>
+    </message>
+    <message>
+      <source>Export failed</source>
+      <translation type="unfinished">Export failed</translation>
+    </message>
+    <message>
+      <source>Split</source>
+      <translation type="unfinished">Split</translation>
+    </message>
+    <message>
+      <source>Translation:</source>
+      <translation>Oversettelse:</translation>
+    </message>
+    <message>
+      <source>Rotation:</source>
+      <translation>Rotasjon:</translation>
+    </message>
+    <message>
+      <source>Toggle active part</source>
+      <translation type="unfinished">Toggle active part</translation>
+    </message>
+    <message>
+      <source>Edit text</source>
+      <translation type="unfinished">Edit text</translation>
+    </message>
+    <message>
+      <source>The exported object contains external link. Please save the documentat least once before exporting.</source>
+      <translation type="unfinished">The exported object contains external link. Please save the documentat least once before exporting.</translation>
+    </message>
+    <message>
+      <source>Delete failed</source>
+      <translation type="unfinished">Delete failed</translation>
+    </message>
+    <message>
+      <source>Dependency error</source>
+      <translation type="unfinished">Dependency error</translation>
+    </message>
+    <message>
+      <source>Copy selected</source>
+      <translation type="unfinished">Copy selected</translation>
+    </message>
+    <message>
+      <source>Copy active document</source>
+      <translation type="unfinished">Copy active document</translation>
+    </message>
+    <message>
+      <source>Copy all documents</source>
+      <translation type="unfinished">Copy all documents</translation>
+    </message>
+    <message>
+      <source>Paste</source>
+      <translation type="unfinished">Paste</translation>
+    </message>
+    <message>
+      <source>Expression error</source>
+      <translation type="unfinished">Expression error</translation>
+    </message>
+    <message>
+      <source>Failed to parse some of the expressions.
+Please check the Report View for more details.</source>
+      <translation type="unfinished">Failed to parse some of the expressions.
+Please check the Report View for more details.</translation>
+    </message>
+    <message>
+      <source>Failed to paste expressions</source>
+      <translation type="unfinished">Failed to paste expressions</translation>
+    </message>
+    <message>
+      <source>Simple group</source>
+      <translation type="unfinished">Simple group</translation>
+    </message>
+    <message>
+      <source>Group with links</source>
+      <translation type="unfinished">Group with links</translation>
+    </message>
+    <message>
+      <source>Group with transform links</source>
+      <translation type="unfinished">Group with transform links</translation>
+    </message>
+    <message>
+      <source>Create link group failed</source>
+      <translation type="unfinished">Create link group failed</translation>
+    </message>
+    <message>
+      <source>Create link failed</source>
+      <translation type="unfinished">Create link failed</translation>
+    </message>
+    <message>
+      <source>Failed to create relative link</source>
+      <translation type="unfinished">Failed to create relative link</translation>
+    </message>
+    <message>
+      <source>Unlink failed</source>
+      <translation type="unfinished">Unlink failed</translation>
+    </message>
+    <message>
+      <source>Replace link failed</source>
+      <translation type="unfinished">Replace link failed</translation>
+    </message>
+    <message>
+      <source>Failed to import links</source>
+      <translation type="unfinished">Failed to import links</translation>
+    </message>
+    <message>
+      <source>Failed to import all links</source>
+      <translation type="unfinished">Failed to import all links</translation>
+    </message>
+    <message>
+      <source>Invalid name</source>
+      <translation type="unfinished">Invalid name</translation>
+    </message>
+    <message>
+      <source>The property name or group name must only contain alpha numericals,
+underscore, and must not start with a digit.</source>
+      <translation type="unfinished">The property name or group name must only contain alpha numericals,
+underscore, and must not start with a digit.</translation>
+    </message>
+    <message>
+      <source>The property '%1' already exists in '%2'</source>
+      <translation type="unfinished">The property '%1' already exists in '%2'</translation>
+    </message>
+    <message>
+      <source>Add property</source>
+      <translation>Legg til egenskap</translation>
+    </message>
+    <message>
+      <source>Failed to add property to '%1': %2</source>
+      <translation type="unfinished">Failed to add property to '%1': %2</translation>
+    </message>
+    <message>
+      <source>Save dependent files</source>
+      <translation type="unfinished">Save dependent files</translation>
+    </message>
+    <message>
+      <source>The file contains external dependencies. Do you want to save the dependent files, too?</source>
+      <translation type="unfinished">The file contains external dependencies. Do you want to save the dependent files, too?</translation>
+    </message>
+    <message>
+      <source>Failed to save document</source>
+      <translation type="unfinished">Failed to save document</translation>
+    </message>
+    <message>
+      <source>Documents contains cyclic dependencies. Do you still want to save them?</source>
+      <translation type="unfinished">Documents contains cyclic dependencies. Do you still want to save them?</translation>
+    </message>
+    <message>
+      <source>Undo</source>
+      <translation type="unfinished">Undo</translation>
+    </message>
+    <message>
+      <source>Redo</source>
+      <translation type="unfinished">Redo</translation>
+    </message>
+    <message>
+      <source>There are grouped transactions in the following documents with other preceding transactions</source>
+      <translation type="unfinished">There are grouped transactions in the following documents with other preceding transactions</translation>
+    </message>
+    <message>
+      <source>Choose 'Yes' to roll back all preceding transactions.
+Choose 'No' to roll back in the active document only.
+Choose 'Abort' to abort</source>
+      <translation type="unfinished">Choose 'Yes' to roll back all preceding transactions.
+Choose 'No' to roll back in the active document only.
+Choose 'Abort' to abort</translation>
+    </message>
+    <message>
+      <source>Do you want to save your changes to document before closing?</source>
+      <translation type="unfinished">Do you want to save your changes to document before closing?</translation>
+    </message>
+    <message>
+      <source>Apply answer to all</source>
+      <translation type="unfinished">Apply answer to all</translation>
+    </message>
+    <message>
+      <source>Drag &amp; drop failed</source>
+      <translation type="unfinished">Drag &amp; drop failed</translation>
+    </message>
+    <message>
+      <source>Override colors...</source>
+      <translation type="unfinished">Override colors...</translation>
+    </message>
+    <message>
+      <source>Identical physical path detected. It may cause unwanted overwrite of existing document!
+
+</source>
+      <translation type="unfinished">Identical physical path detected. It may cause unwanted overwrite of existing document!
+
+</translation>
+    </message>
+    <message>
+      <source>Are you sure you want to continue?</source>
+      <translation type="unfinished">Are you sure you want to continue?</translation>
+    </message>
+    <message>
+      <source>
+
+Please check report view for more...</source>
+      <translation type="unfinished">
+
+Please check report view for more...</translation>
+    </message>
+    <message>
+      <source>
+Document: </source>
+      <translation type="unfinished">
+Document: </translation>
+    </message>
+    <message>
+      <source>
+  Path: </source>
+      <translation type="unfinished">
+  Path: </translation>
+    </message>
+    <message>
+      <source>Identical physical path</source>
+      <translation type="unfinished">Identical physical path</translation>
+    </message>
+    <message>
+      <source>Error</source>
+      <translation>Feil</translation>
+    </message>
+    <message>
+      <source>There were errors while loading the file. Some data might have been modified or not recovered at all. Look in the report view for more specific information about the objects involved.</source>
+      <translation>Det oppstod feil under innlasting av filen. Enkelte data kan være endret eller ikke gjenopprettet i det hele tatt. Se i rapportvisningen for mer spesifikk informasjon om de involverte objektene.</translation>
+    </message>
+    <message>
+      <source>There were serious errors while loading the file. Some data might have been modified or not recovered at all. Saving the project will most likely result in loss of data.</source>
+      <translation type="unfinished">There were serious errors while loading the file. Some data might have been modified or not recovered at all. Saving the project will most likely result in loss of data.</translation>
+    </message>
+    <message>
+      <source>Workbenches</source>
+      <translation type="unfinished">Workbenches</translation>
+    </message>
+    <message>
+      <source>
+
+Physical path: </source>
+      <translation type="unfinished">
+
+Physical path: </translation>
+    </message>
+  </context>
+  <context>
+    <name>SelectionFilter</name>
+    <message>
+      <source>Not allowed:</source>
+      <translation type="unfinished">Not allowed:</translation>
+    </message>
+    <message>
+      <source>Selection not allowed by filter</source>
+      <translation type="unfinished">Selection not allowed by filter</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdBoxElementSelection</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Box element selection</source>
+      <translation type="unfinished">Box element selection</translation>
     </message>
   </context>
   <context>
     <name>StdBoxSelection</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Box selection</source>
-      <translation type="unfinished">Boksutvalg</translation>
+      <translation>Boksutvalg</translation>
     </message>
   </context>
   <context>
     <name>StdCmdAbout</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>&amp;About %1</source>
-      <translation type="unfinished">&amp;Om %1</translation>
+      <translation>&amp;Om %1</translation>
     </message>
     <message>
       <source>About %1</source>
-      <translation type="unfinished">Om %1</translation>
+      <translation>Om %1</translation>
     </message>
   </context>
   <context>
     <name>StdCmdAboutQt</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>About &amp;Qt</source>
-      <translation type="unfinished">Om &amp;Qt</translation>
+      <translation>Om &amp;Qt</translation>
     </message>
     <message>
       <source>About Qt</source>
-      <translation type="unfinished">Om Qt</translation>
+      <translation>Om Qt</translation>
     </message>
   </context>
   <context>
     <name>StdCmdActivateNextWindow</name>
     <message>
       <source>Window</source>
-      <translation type="unfinished">Vindu</translation>
+      <translation>Vindu</translation>
     </message>
     <message>
       <source>Ne&amp;xt</source>
-      <translation type="unfinished">Ne&amp;ste</translation>
+      <translation>Ne&amp;ste</translation>
     </message>
     <message>
       <source>Activate next window</source>
-      <translation type="unfinished">Aktiver neste vindu</translation>
+      <translation>Aktiver neste vindu</translation>
     </message>
   </context>
   <context>
     <name>StdCmdActivatePrevWindow</name>
     <message>
       <source>Window</source>
-      <translation type="unfinished">Vindu</translation>
+      <translation>Vindu</translation>
     </message>
     <message>
       <source>Pre&amp;vious</source>
-      <translation type="unfinished">For&amp;rige</translation>
+      <translation>For&amp;rige</translation>
     </message>
     <message>
       <source>Activate previous window</source>
-      <translation type="unfinished">Aktiver forrige vindu</translation>
+      <translation>Aktiver forrige vindu</translation>
     </message>
   </context>
   <context>
     <name>StdCmdAlignment</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>Alignment...</source>
-      <translation type="unfinished">Justering...</translation>
+      <translation>Justering...</translation>
     </message>
     <message>
       <source>Align the selected objects</source>
-      <translation type="unfinished">Juster de merkede objektene</translation>
+      <translation>Juster de merkede objektene</translation>
     </message>
   </context>
   <context>
     <name>StdCmdArrangeIcons</name>
     <message>
       <source>Window</source>
-      <translation type="unfinished">Vindu</translation>
+      <translation>Vindu</translation>
     </message>
     <message>
       <source>Arrange &amp;Icons</source>
-      <translation type="unfinished">Ordne &amp;ikoner</translation>
+      <translation>Ordne &amp;ikoner</translation>
     </message>
     <message>
       <source>Arrange Icons</source>
-      <translation type="unfinished">Ordne ikoner</translation>
+      <translation>Ordne ikoner</translation>
     </message>
   </context>
   <context>
     <name>StdCmdAxisCross</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Toggle axis cross</source>
@@ -4402,300 +7128,127 @@ You either have to finish or cancel the editing in the task panel.</source>
     <name>StdCmdCascadeWindows</name>
     <message>
       <source>Window</source>
-      <translation type="unfinished">Vindu</translation>
+      <translation>Vindu</translation>
     </message>
     <message>
       <source>&amp;Cascade</source>
-      <translation type="unfinished">&amp;Kaskade</translation>
+      <translation>&amp;Kaskade</translation>
     </message>
     <message>
       <source>Tile pragmatic</source>
-      <translation type="unfinished">Still opp praktisk</translation>
+      <translation>Still opp praktisk</translation>
     </message>
   </context>
   <context>
     <name>StdCmdCloseActiveWindow</name>
     <message>
       <source>Window</source>
-      <translation type="unfinished">Vindu</translation>
+      <translation>Vindu</translation>
     </message>
     <message>
       <source>Cl&amp;ose</source>
-      <translation type="unfinished">Lu&amp;kk</translation>
+      <translation>Lu&amp;kk</translation>
     </message>
     <message>
       <source>Close active window</source>
-      <translation type="unfinished">Lukk aktivt vindu</translation>
+      <translation>Lukk aktivt vindu</translation>
     </message>
   </context>
   <context>
     <name>StdCmdCloseAllWindows</name>
     <message>
       <source>Window</source>
-      <translation type="unfinished">Vindu</translation>
+      <translation>Vindu</translation>
     </message>
     <message>
       <source>Close Al&amp;l</source>
-      <translation type="unfinished">Lukk al&amp;le</translation>
+      <translation>Lukk al&amp;le</translation>
     </message>
     <message>
       <source>Close all windows</source>
-      <translation type="unfinished">Lukk alle vinduer</translation>
+      <translation>Lukk alle vinduer</translation>
     </message>
   </context>
   <context>
     <name>StdCmdCommandLine</name>
     <message>
       <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
+      <translation>Verktøy</translation>
     </message>
     <message>
       <source>Start command &amp;line...</source>
-      <translation type="unfinished">Åpne kommand&amp;olinje...</translation>
+      <translation>Åpne kommand&amp;olinje...</translation>
     </message>
     <message>
       <source>Opens the command line in the console</source>
-      <translation type="unfinished">Åpner kommandolinje i konsoll</translation>
+      <translation>Åpner kommandolinje i konsoll</translation>
     </message>
   </context>
   <context>
     <name>StdCmdCopy</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>C&amp;opy</source>
-      <translation type="unfinished">K&amp;opier</translation>
+      <translation>K&amp;opier</translation>
     </message>
     <message>
       <source>Copy operation</source>
-      <translation type="unfinished">Kopioperasjon</translation>
+      <translation>Kopioperasjon</translation>
     </message>
   </context>
   <context>
     <name>StdCmdCut</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>&amp;Cut</source>
-      <translation type="unfinished">&amp;Klipp ut</translation>
+      <translation>&amp;Klipp ut</translation>
     </message>
     <message>
       <source>Cut out</source>
-      <translation type="unfinished">Klipp ut</translation>
+      <translation>Klipp ut</translation>
     </message>
   </context>
   <context>
     <name>StdCmdDelete</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>&amp;Delete</source>
-      <translation type="unfinished">&amp;Slett</translation>
+      <translation>&amp;Slett</translation>
     </message>
     <message>
       <source>Deletes the selected objects</source>
-      <translation type="unfinished">Sletter valgte objekter</translation>
+      <translation>Sletter valgte objekter</translation>
     </message>
   </context>
   <context>
     <name>StdCmdDemoMode</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>View turntable...</source>
-      <translation type="unfinished">Vis dreieskive...</translation>
+      <translation>Vis dreieskive...</translation>
     </message>
     <message>
       <source>View turntable</source>
-      <translation type="unfinished">Vis dreieskive</translation>
+      <translation>Vis dreieskive</translation>
     </message>
   </context>
   <context>
-    <name>StdCmdDlgCustomize</name>
+    <name>StdCmdDependencyGraph</name>
     <message>
       <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
-    </message>
-    <message>
-      <source>Cu&amp;stomize...</source>
-      <translation type="unfinished">Til&amp;pass...</translation>
-    </message>
-    <message>
-      <source>Customize toolbars and command bars</source>
-      <translation type="unfinished">Tilpass verktøylinjer og kommandolinjer</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdDlgMacroExecute</name>
-    <message>
-      <source>Macros ...</source>
-      <translation type="unfinished">Makroer...</translation>
-    </message>
-    <message>
-      <source>Opens a dialog to let you execute a recorded macro</source>
-      <translation type="unfinished">Åpner en dialog som lar deg utføre en innspilt makro</translation>
-    </message>
-    <message>
-      <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdDlgMacroExecuteDirect</name>
-    <message>
-      <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
-    </message>
-    <message>
-      <source>Execute macro</source>
-      <translation type="unfinished">Kjør makro</translation>
-    </message>
-    <message>
-      <source>Execute the macro in the editor</source>
-      <translation type="unfinished">Utføre makroen i redigeringsprogrammet</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdDlgMacroRecord</name>
-    <message>
-      <source>&amp;Macro recording ...</source>
-      <translation type="unfinished">&amp;Makroinnspilling...</translation>
-    </message>
-    <message>
-      <source>Opens a dialog to record a macro</source>
-      <translation type="unfinished">Åpner en dialog for å spille inn makro</translation>
-    </message>
-    <message>
-      <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdDlgParameter</name>
-    <message>
-      <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
-    </message>
-    <message>
-      <source>E&amp;dit parameters ...</source>
-      <translation type="unfinished">Re&amp;diger parametere...</translation>
-    </message>
-    <message>
-      <source>Opens a Dialog to edit the parameters</source>
-      <translation type="unfinished">Åpner en dialog for å redigere parametere</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdDlgPreferences</name>
-    <message>
-      <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
-    </message>
-    <message>
-      <source>&amp;Preferences ...</source>
-      <translation type="unfinished">&amp;Preferanser ...</translation>
-    </message>
-    <message>
-      <source>Opens a Dialog to edit the preferences</source>
-      <translation type="unfinished">Åpner en dialog for å redigere preferanser</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdDockViewMenu</name>
-    <message>
-      <source>View</source>
-      <translation type="unfinished">Vis</translation>
-    </message>
-    <message>
-      <source>Vie&amp;ws</source>
-      <translation type="unfinished">Vi&amp;sninger</translation>
-    </message>
-    <message>
-      <source>Toggles this window</source>
-      <translation type="unfinished">Veksler dette vinduet</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdDrawStyle</name>
-    <message>
-      <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
-    </message>
-    <message>
-      <source>Draw style</source>
-      <translation type="unfinished">Draw style</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdDuplicateSelection</name>
-    <message>
-      <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
-    </message>
-    <message>
-      <source>Duplicate selection</source>
-      <translation type="unfinished">Dupliser valg</translation>
-    </message>
-    <message>
-      <source>Put duplicates of the selected objects to the active document</source>
-      <translation type="unfinished">Flytt duplikater av de valgte objektene til aktivt dokument</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdEdit</name>
-    <message>
-      <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
-    </message>
-    <message>
-      <source>Toggle &amp;Edit mode</source>
-      <translation type="unfinished">Toggle &amp;Edit mode</translation>
-    </message>
-    <message>
-      <source>Toggles the selected object's edit mode</source>
-      <translation type="unfinished">Toggles the selected object's edit mode</translation>
-    </message>
-    <message>
-      <source>Enters or leaves the selected object's edit mode</source>
-      <translation type="unfinished">Enters or leaves the selected object's edit mode</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdExport</name>
-    <message>
-      <source>File</source>
-      <translation type="unfinished">File</translation>
-    </message>
-    <message>
-      <source>&amp;Export...</source>
-      <translation type="unfinished">&amp;Eksporter...</translation>
-    </message>
-    <message>
-      <source>Export an object in the active document</source>
-      <translation type="unfinished">Eksporter et objekt i aktivt dokumentet</translation>
-    </message>
-    <message>
-      <source>No selection</source>
-      <translation type="unfinished">Ingen valg</translation>
-    </message>
-    <message>
-      <source>Please select first the objects you want to export.</source>
-      <translation type="unfinished">Please select first the objects you want to export.</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdExportGraphviz</name>
-    <message>
-      <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
+      <translation>Verktøy</translation>
     </message>
     <message>
       <source>Dependency graph...</source>
@@ -4707,25 +7260,228 @@ You either have to finish or cancel the editing in the task panel.</source>
     </message>
   </context>
   <context>
+    <name>StdCmdDlgCustomize</name>
+    <message>
+      <source>Tools</source>
+      <translation>Verktøy</translation>
+    </message>
+    <message>
+      <source>Cu&amp;stomize...</source>
+      <translation>Til&amp;pass...</translation>
+    </message>
+    <message>
+      <source>Customize toolbars and command bars</source>
+      <translation>Tilpass verktøylinjer og kommandolinjer</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdDlgMacroExecute</name>
+    <message>
+      <source>Macros ...</source>
+      <translation>Makroer...</translation>
+    </message>
+    <message>
+      <source>Opens a dialog to let you execute a recorded macro</source>
+      <translation>Åpner en dialog som lar deg utføre en innspilt makro</translation>
+    </message>
+    <message>
+      <source>Macro</source>
+      <translation>Makro</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdDlgMacroExecuteDirect</name>
+    <message>
+      <source>Macro</source>
+      <translation>Makro</translation>
+    </message>
+    <message>
+      <source>Execute macro</source>
+      <translation>Kjør makro</translation>
+    </message>
+    <message>
+      <source>Execute the macro in the editor</source>
+      <translation>Utføre makroen i redigeringsprogrammet</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdDlgMacroRecord</name>
+    <message>
+      <source>&amp;Macro recording ...</source>
+      <translation>&amp;Makroinnspilling...</translation>
+    </message>
+    <message>
+      <source>Opens a dialog to record a macro</source>
+      <translation>Åpner en dialog for å spille inn makro</translation>
+    </message>
+    <message>
+      <source>Macro</source>
+      <translation>Makro</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdDlgParameter</name>
+    <message>
+      <source>Tools</source>
+      <translation>Verktøy</translation>
+    </message>
+    <message>
+      <source>E&amp;dit parameters ...</source>
+      <translation>Re&amp;diger parametere...</translation>
+    </message>
+    <message>
+      <source>Opens a Dialog to edit the parameters</source>
+      <translation>Åpner en dialog for å redigere parametere</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdDlgPreferences</name>
+    <message>
+      <source>Tools</source>
+      <translation>Verktøy</translation>
+    </message>
+    <message>
+      <source>&amp;Preferences ...</source>
+      <translation>&amp;Preferanser ...</translation>
+    </message>
+    <message>
+      <source>Opens a Dialog to edit the preferences</source>
+      <translation>Åpner en dialog for å redigere preferanser</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdDockViewMenu</name>
+    <message>
+      <source>View</source>
+      <translation>Vis</translation>
+    </message>
+    <message>
+      <source>Panels</source>
+      <translation type="unfinished">Panels</translation>
+    </message>
+    <message>
+      <source>List of available dock panels</source>
+      <translation type="unfinished">List of available dock panels</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdDrawStyle</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Draw style</source>
+      <translation type="unfinished">Draw style</translation>
+    </message>
+    <message>
+      <source>Change the draw style of the objects</source>
+      <translation type="unfinished">Change the draw style of the objects</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdDuplicateSelection</name>
+    <message>
+      <source>Edit</source>
+      <translation>Rediger</translation>
+    </message>
+    <message>
+      <source>Duplicate selection</source>
+      <translation>Dupliser valg</translation>
+    </message>
+    <message>
+      <source>Put duplicates of the selected objects to the active document</source>
+      <translation>Flytt duplikater av de valgte objektene til aktivt dokument</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdEdit</name>
+    <message>
+      <source>Edit</source>
+      <translation>Rediger</translation>
+    </message>
+    <message>
+      <source>Toggle &amp;Edit mode</source>
+      <translation type="unfinished">Toggle &amp;Edit mode</translation>
+    </message>
+    <message>
+      <source>Toggles the selected object's edit mode</source>
+      <translation type="unfinished">Toggles the selected object's edit mode</translation>
+    </message>
+    <message>
+      <source>Activates or Deactivates the selected object's edit mode</source>
+      <translation type="unfinished">Activates or Deactivates the selected object's edit mode</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdExport</name>
+    <message>
+      <source>File</source>
+      <translation>File</translation>
+    </message>
+    <message>
+      <source>&amp;Export...</source>
+      <translation>&amp;Eksporter...</translation>
+    </message>
+    <message>
+      <source>Export an object in the active document</source>
+      <translation>Eksporter et objekt i aktivt dokumentet</translation>
+    </message>
+    <message>
+      <source>No selection</source>
+      <translation>Ingen valg</translation>
+    </message>
+    <message>
+      <source>Select the objects to export before choosing Export.</source>
+      <translation type="unfinished">Select the objects to export before choosing Export.</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdExpression</name>
+    <message>
+      <source>Edit</source>
+      <translation>Rediger</translation>
+    </message>
+    <message>
+      <source>Expression actions</source>
+      <translation type="unfinished">Expression actions</translation>
+    </message>
+  </context>
+  <context>
     <name>StdCmdFeatRecompute</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>&amp;Recompute</source>
-      <translation type="unfinished">&amp;Oppdater</translation>
+      <translation>&amp;Oppdater</translation>
     </message>
     <message>
       <source>Recompute feature or document</source>
-      <translation type="unfinished">Oppdater funksjon eller dokument</translation>
+      <translation>Oppdater funksjon eller dokument</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdFreeCADDonation</name>
+    <message>
+      <source>Help</source>
+      <translation>Hjelp</translation>
+    </message>
+    <message>
+      <source>Donate</source>
+      <translation>Doner</translation>
+    </message>
+    <message>
+      <source>Donate to FreeCAD development</source>
+      <translation type="unfinished">Donate to FreeCAD development</translation>
     </message>
   </context>
   <context>
     <name>StdCmdFreeCADFAQ</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>FreeCAD FAQ</source>
@@ -4744,7 +7500,7 @@ You either have to finish or cancel the editing in the task panel.</source>
     <name>StdCmdFreeCADForum</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>FreeCAD Forum</source>
@@ -4763,7 +7519,7 @@ You either have to finish or cancel the editing in the task panel.</source>
     <name>StdCmdFreeCADPowerUserHub</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>Python scripting documentation</source>
@@ -4782,7 +7538,7 @@ You either have to finish or cancel the editing in the task panel.</source>
     <name>StdCmdFreeCADUserHub</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>Users documentation</source>
@@ -4797,105 +7553,311 @@ You either have to finish or cancel the editing in the task panel.</source>
     <name>StdCmdFreeCADWebsite</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>FreeCAD Website</source>
-      <translation type="unfinished">FreeCAD nettsted</translation>
+      <translation>FreeCAD nettsted</translation>
     </message>
     <message>
       <source>The FreeCAD website</source>
-      <translation type="unfinished">FreeCAD-nettsiden</translation>
+      <translation>FreeCAD-nettsiden</translation>
     </message>
   </context>
   <context>
     <name>StdCmdFreezeViews</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Freeze display</source>
-      <translation type="unfinished">Frys visning</translation>
+      <translation>Frys visning</translation>
     </message>
     <message>
       <source>Freezes the current view position</source>
-      <translation type="unfinished">Fryser gjeldende visningsposisjon</translation>
+      <translation>Fryser gjeldende visningsposisjon</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdGroup</name>
+    <message>
+      <source>Structure</source>
+      <translation type="unfinished">Structure</translation>
+    </message>
+    <message>
+      <source>Create group</source>
+      <translation type="unfinished">Create group</translation>
+    </message>
+    <message>
+      <source>Create a new group for ordering objects</source>
+      <translation type="unfinished">Create a new group for ordering objects</translation>
     </message>
   </context>
   <context>
     <name>StdCmdHideObjects</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Hide all objects</source>
-      <translation type="unfinished">Skjul alle objekter</translation>
+      <translation>Skjul alle objekter</translation>
     </message>
     <message>
       <source>Hide all objects in the document</source>
-      <translation type="unfinished">Skjul alle objekter i dokumentet</translation>
+      <translation>Skjul alle objekter i dokumentet</translation>
     </message>
   </context>
   <context>
     <name>StdCmdHideSelection</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Hide selection</source>
-      <translation type="unfinished">Skjul valgt</translation>
+      <translation>Skjul valgt</translation>
     </message>
     <message>
       <source>Hide all selected objects</source>
-      <translation type="unfinished">Skjul alle valgte objekter</translation>
+      <translation>Skjul alle valgte objekter</translation>
     </message>
   </context>
   <context>
     <name>StdCmdImport</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>&amp;Import...</source>
-      <translation type="unfinished">&amp;Importer...</translation>
+      <translation>&amp;Importer...</translation>
     </message>
     <message>
       <source>Import a file in the active document</source>
-      <translation type="unfinished">Importer en fil inn i det aktive dokumentet</translation>
+      <translation>Importer en fil inn i det aktive dokumentet</translation>
     </message>
     <message>
       <source>Supported formats</source>
-      <translation type="unfinished">Støttede formater</translation>
+      <translation>Støttede formater</translation>
     </message>
     <message>
       <source>All files (*.*)</source>
-      <translation type="unfinished">Alle filer (*.*)</translation>
+      <translation>Alle filer (*.*)</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkActions</name>
+    <message>
+      <source>View</source>
+      <translation>Vis</translation>
+    </message>
+    <message>
+      <source>Link actions</source>
+      <translation type="unfinished">Link actions</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkImport</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Import links</source>
+      <translation>Importer koblinger</translation>
+    </message>
+    <message>
+      <source>Import selected external link(s)</source>
+      <translation type="unfinished">Import selected external link(s)</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkImportAll</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Import all links</source>
+      <translation>Importer alle koblinger</translation>
+    </message>
+    <message>
+      <source>Import all links of the active document</source>
+      <translation type="unfinished">Import all links of the active document</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkMake</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Make link</source>
+      <translation>Opprett kobling</translation>
+    </message>
+    <message>
+      <source>Create a link to the selected object(s)</source>
+      <translation type="unfinished">Create a link to the selected object(s)</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkMakeGroup</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Make link group</source>
+      <translation>Opprett koblingsgruppe</translation>
+    </message>
+    <message>
+      <source>Create a group of links</source>
+      <translation type="unfinished">Create a group of links</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkMakeRelative</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Make sub-link</source>
+      <translation>Opprett under-kobling</translation>
+    </message>
+    <message>
+      <source>Create a sub-object or sub-element link</source>
+      <translation type="unfinished">Create a sub-object or sub-element link</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkReplace</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Replace with link</source>
+      <translation type="unfinished">Replace with link</translation>
+    </message>
+    <message>
+      <source>Replace the selected object(s) with link</source>
+      <translation type="unfinished">Replace the selected object(s) with link</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkSelectActions</name>
+    <message>
+      <source>View</source>
+      <translation>Vis</translation>
+    </message>
+    <message>
+      <source>Link navigation</source>
+      <translation type="unfinished">Link navigation</translation>
+    </message>
+    <message>
+      <source>Link navigation actions</source>
+      <translation type="unfinished">Link navigation actions</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkSelectAllLinks</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Select all links</source>
+      <translation type="unfinished">Select all links</translation>
+    </message>
+    <message>
+      <source>Select all links to the current selected object</source>
+      <translation type="unfinished">Select all links to the current selected object</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkSelectLinked</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Go to linked object</source>
+      <translation type="unfinished">Go to linked object</translation>
+    </message>
+    <message>
+      <source>Select the linked object and switch to its owner document</source>
+      <translation type="unfinished">Select the linked object and switch to its owner document</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkSelectLinkedFinal</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Go to the deepest linked object</source>
+      <translation type="unfinished">Go to the deepest linked object</translation>
+    </message>
+    <message>
+      <source>Select the deepest linked object and switch to its owner document</source>
+      <translation type="unfinished">Select the deepest linked object and switch to its owner document</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdLinkUnlink</name>
+    <message>
+      <source>Link</source>
+      <translation>Lenke</translation>
+    </message>
+    <message>
+      <source>Unlink</source>
+      <translation type="unfinished">Unlink</translation>
+    </message>
+    <message>
+      <source>Strip on level of link</source>
+      <translation type="unfinished">Strip on level of link</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdMacroAttachDebugger</name>
+    <message>
+      <source>Macro</source>
+      <translation>Makro</translation>
+    </message>
+    <message>
+      <source>Attach to remote debugger...</source>
+      <translation type="unfinished">Attach to remote debugger...</translation>
+    </message>
+    <message>
+      <source>Attach to a remotely running debugger</source>
+      <translation type="unfinished">Attach to a remotely running debugger</translation>
     </message>
   </context>
   <context>
     <name>StdCmdMacroStartDebug</name>
     <message>
       <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
+      <translation>Makro</translation>
     </message>
     <message>
       <source>Debug macro</source>
-      <translation type="unfinished">Feilsøke makro</translation>
+      <translation>Feilsøke makro</translation>
     </message>
     <message>
       <source>Start debugging of macro</source>
-      <translation type="unfinished">Start feilsøking i makro</translation>
+      <translation>Start feilsøking i makro</translation>
     </message>
   </context>
   <context>
     <name>StdCmdMacroStepInto</name>
     <message>
       <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
+      <translation>Makro</translation>
     </message>
     <message>
       <source>Step into</source>
@@ -4906,233 +7868,256 @@ You either have to finish or cancel the editing in the task panel.</source>
     <name>StdCmdMacroStepOver</name>
     <message>
       <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
+      <translation>Makro</translation>
     </message>
     <message>
       <source>Step over</source>
-      <translation type="unfinished">Gå over</translation>
+      <translation>Gå over</translation>
     </message>
   </context>
   <context>
     <name>StdCmdMacroStopDebug</name>
     <message>
       <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
+      <translation>Makro</translation>
     </message>
     <message>
       <source>Stop debugging</source>
-      <translation type="unfinished">Stopp feilsøking</translation>
+      <translation>Stopp feilsøking</translation>
     </message>
     <message>
       <source>Stop debugging of macro</source>
-      <translation type="unfinished">Stopp feilsking av makro</translation>
+      <translation>Stopp feilsking av makro</translation>
     </message>
   </context>
   <context>
     <name>StdCmdMacroStopRecord</name>
     <message>
       <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
+      <translation>Makro</translation>
     </message>
     <message>
       <source>S&amp;top macro recording</source>
-      <translation type="unfinished">S&amp;top makroinnspilling</translation>
+      <translation>S&amp;top makroinnspilling</translation>
     </message>
     <message>
       <source>Stop the macro recording session</source>
-      <translation type="unfinished">Stopp makroinnspillingen</translation>
+      <translation>Stopp makroinnspillingen</translation>
     </message>
   </context>
   <context>
     <name>StdCmdMeasureDistance</name>
     <message>
       <source>View</source>
-      <translation type="unfinished">Vis</translation>
+      <translation>Vis</translation>
     </message>
     <message>
       <source>Measure distance</source>
-      <translation type="unfinished">Mål avstand</translation>
+      <translation>Mål avstand</translation>
     </message>
   </context>
   <context>
     <name>StdCmdMeasurementSimple</name>
     <message>
       <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
+      <translation>Verktøy</translation>
     </message>
     <message>
       <source>Measures distance between two selected objects</source>
-      <translation type="unfinished">Måler avstanden mellom to merkede objekter</translation>
+      <translation>Måler avstanden mellom to merkede objekter</translation>
     </message>
     <message>
       <source>Measure distance</source>
-      <translation type="unfinished">Mål avstand</translation>
+      <translation>Mål avstand</translation>
     </message>
   </context>
   <context>
     <name>StdCmdMergeProjects</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>Merge project...</source>
-      <translation type="unfinished">Flett prosjekt...</translation>
+      <translation>Flett prosjekt...</translation>
     </message>
     <message>
       <source>Merge project</source>
-      <translation type="unfinished">Flett prosjekt</translation>
-    </message>
-    <message>
-      <source>%1 document (*.fcstd)</source>
-      <translation type="unfinished">%1 dokument (*.fcstd)</translation>
+      <translation>Flett prosjekt</translation>
     </message>
     <message>
       <source>Cannot merge project with itself.</source>
-      <translation type="unfinished">Kan ikke flette prosjekt med seg selv.</translation>
+      <translation>Kan ikke flette prosjekt med seg selv.</translation>
+    </message>
+    <message>
+      <source>%1 document (*.FCStd)</source>
+      <translation>%1 dokument (*.FCStd)</translation>
     </message>
   </context>
   <context>
     <name>StdCmdNew</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>&amp;New</source>
-      <translation type="unfinished">&amp;Ny</translation>
+      <translation>&amp;Ny</translation>
     </message>
     <message>
       <source>Create a new empty document</source>
-      <translation type="unfinished">Lag et nytt dokument</translation>
+      <translation>Lag et nytt dokument</translation>
     </message>
     <message>
       <source>Unnamed</source>
-      <translation type="unfinished">Unnamed</translation>
+      <translation>Uten navn</translation>
     </message>
   </context>
   <context>
     <name>StdCmdOnlineHelp</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>Show help to the application</source>
-      <translation type="unfinished">Vis hjelp for programmet</translation>
+      <translation>Vis hjelp for programmet</translation>
     </message>
   </context>
   <context>
     <name>StdCmdOnlineHelpWebsite</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>Help Website</source>
-      <translation type="unfinished">Hjelp-nettsted</translation>
+      <translation>Hjelp-nettsted</translation>
     </message>
     <message>
       <source>The website where the help is maintained</source>
-      <translation type="unfinished">Nettstedet der hjelp er opprettholdt</translation>
+      <translation>Nettstedet der hjelp er opprettholdt</translation>
     </message>
   </context>
   <context>
     <name>StdCmdOpen</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>&amp;Open...</source>
-      <translation type="unfinished">&amp;Åpne...</translation>
+      <translation>&amp;Åpne...</translation>
     </message>
     <message>
       <source>Open a document or import files</source>
-      <translation type="unfinished">Åpne et dokument eller importer filer</translation>
+      <translation>Åpne et dokument eller importer filer</translation>
     </message>
     <message>
       <source>Supported formats</source>
-      <translation type="unfinished">Støttede formater</translation>
+      <translation>Støttede formater</translation>
     </message>
     <message>
       <source>All files (*.*)</source>
-      <translation type="unfinished">Alle filer (*.*)</translation>
+      <translation>Alle filer (*.*)</translation>
+    </message>
+    <message>
+      <source>Cannot open file</source>
+      <translation>Kan ikke åpne filen "%s"</translation>
+    </message>
+    <message>
+      <source>Loading the file %1 is not supported</source>
+      <translation type="unfinished">Loading the file %1 is not supported</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdPart</name>
+    <message>
+      <source>Structure</source>
+      <translation type="unfinished">Structure</translation>
+    </message>
+    <message>
+      <source>Create part</source>
+      <translation type="unfinished">Create part</translation>
+    </message>
+    <message>
+      <source>Create a new part and make it active</source>
+      <translation type="unfinished">Create a new part and make it active</translation>
     </message>
   </context>
   <context>
     <name>StdCmdPaste</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>&amp;Paste</source>
-      <translation type="unfinished">&amp;Lim inn</translation>
+      <translation>&amp;Lim inn</translation>
     </message>
     <message>
       <source>Paste operation</source>
-      <translation type="unfinished">Lim inn operasjon</translation>
+      <translation>Lim inn operasjon</translation>
     </message>
   </context>
   <context>
     <name>StdCmdPlacement</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>Placement...</source>
-      <translation type="unfinished">Plassering...</translation>
+      <translation>Plassering...</translation>
     </message>
     <message>
       <source>Place the selected objects</source>
-      <translation type="unfinished">Plasser de valgte objektene</translation>
+      <translation>Plasser de valgte objektene</translation>
     </message>
   </context>
   <context>
     <name>StdCmdPrint</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>&amp;Print...</source>
-      <translation type="unfinished">&amp;Skriv ut...</translation>
+      <translation>&amp;Skriv ut...</translation>
     </message>
     <message>
       <source>Print the document</source>
-      <translation type="unfinished">Skriv ut dokument</translation>
+      <translation>Skriv ut dokument</translation>
     </message>
   </context>
   <context>
     <name>StdCmdPrintPdf</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>&amp;Export PDF...</source>
-      <translation type="unfinished">&amp;Eksporter PDF...</translation>
+      <translation>&amp;Eksporter PDF...</translation>
     </message>
     <message>
       <source>Export the document as PDF</source>
-      <translation type="unfinished">Eksporter dokumentet som PDF</translation>
+      <translation>Eksporter dokumentet som PDF</translation>
     </message>
   </context>
   <context>
     <name>StdCmdPrintPreview</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>&amp;Print preview...</source>
-      <translation type="unfinished">&amp;Print preview...</translation>
+      <translation>Skriv ut forhåndsvisning...</translation>
     </message>
     <message>
       <source>Print the document</source>
-      <translation type="unfinished">Skriv ut dokument</translation>
+      <translation>Skriv ut dokument</translation>
     </message>
     <message>
       <source>Print preview</source>
@@ -5143,22 +8128,22 @@ You either have to finish or cancel the editing in the task panel.</source>
     <name>StdCmdProjectInfo</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>Project i&amp;nformation...</source>
-      <translation type="unfinished">Prosjekti&amp;nformasjon...</translation>
+      <translation>Prosjekti&amp;nformasjon...</translation>
     </message>
     <message>
       <source>Show details of the currently active project</source>
-      <translation type="unfinished">Vis detaljer om det aktive prosjektet</translation>
+      <translation>Vis detaljer om det aktive prosjektet</translation>
     </message>
   </context>
   <context>
     <name>StdCmdProjectUtil</name>
     <message>
       <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
+      <translation>Verktøy</translation>
     </message>
     <message>
       <source>Project utility...</source>
@@ -5173,363 +8158,513 @@ You either have to finish or cancel the editing in the task panel.</source>
     <name>StdCmdPythonWebsite</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>Python Website</source>
-      <translation type="unfinished">Python-nettsted</translation>
+      <translation>Python-nettsted</translation>
     </message>
     <message>
       <source>The official Python website</source>
-      <translation type="unfinished">Den offisielle nettsiden for Python</translation>
+      <translation>Den offisielle nettsiden for Python</translation>
     </message>
   </context>
   <context>
     <name>StdCmdQuit</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>E&amp;xit</source>
-      <translation type="unfinished">A&amp;vslutt</translation>
+      <translation>A&amp;vslutt</translation>
     </message>
     <message>
       <source>Quits the application</source>
-      <translation type="unfinished">Avslutter programmet</translation>
+      <translation>Avslutter programmet</translation>
     </message>
   </context>
   <context>
     <name>StdCmdRandomColor</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>Random color</source>
-      <translation type="unfinished">Tilfeldig farge</translation>
+      <translation>Tilfeldig farge</translation>
     </message>
   </context>
   <context>
     <name>StdCmdRecentFiles</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>Recent files</source>
-      <translation type="unfinished">Nylig brukte filer</translation>
+      <translation>Nylig brukte filer</translation>
     </message>
     <message>
       <source>Recent file list</source>
-      <translation type="unfinished">Listen over nylig brukte filer</translation>
+      <translation>Listen over nylig brukte filer</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdRecentMacros</name>
+    <message>
+      <source>Macro</source>
+      <translation>Makro</translation>
+    </message>
+    <message>
+      <source>Recent macros</source>
+      <translation type="unfinished">Recent macros</translation>
+    </message>
+    <message>
+      <source>Recent macro list</source>
+      <translation type="unfinished">Recent macro list</translation>
     </message>
   </context>
   <context>
     <name>StdCmdRedo</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>&amp;Redo</source>
-      <translation type="unfinished">&amp;Gjør om</translation>
+      <translation>&amp;Gjør om</translation>
     </message>
     <message>
       <source>Redoes a previously undone action</source>
-      <translation type="unfinished">Gjør om en tidligere angret handling</translation>
+      <translation>Gjør om en tidligere angret handling</translation>
     </message>
   </context>
   <context>
     <name>StdCmdRefresh</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>&amp;Refresh</source>
-      <translation type="unfinished">&amp;Oppdater</translation>
+      <translation>&amp;Oppdater</translation>
     </message>
     <message>
       <source>Recomputes the current active document</source>
-      <translation type="unfinished">Oppdaterer det gjeldende aktive dokumentet</translation>
+      <translation>Oppdaterer det gjeldende aktive dokumentet</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdRevert</name>
+    <message>
+      <source>File</source>
+      <translation>File</translation>
+    </message>
+    <message>
+      <source>Revert</source>
+      <translation type="unfinished">Revert</translation>
+    </message>
+    <message>
+      <source>Reverts to the saved version of this file</source>
+      <translation type="unfinished">Reverts to the saved version of this file</translation>
     </message>
   </context>
   <context>
     <name>StdCmdSave</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>&amp;Save</source>
-      <translation type="unfinished">&amp;Lagre</translation>
+      <translation>&amp;Lagre</translation>
     </message>
     <message>
       <source>Save the active document</source>
-      <translation type="unfinished">Lagrer det aktive dokumentet</translation>
+      <translation>Lagrer det aktive dokumentet</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdSaveAll</name>
+    <message>
+      <source>File</source>
+      <translation>File</translation>
+    </message>
+    <message>
+      <source>Save All</source>
+      <translation type="unfinished">Save All</translation>
+    </message>
+    <message>
+      <source>Save all opened document</source>
+      <translation type="unfinished">Save all opened document</translation>
     </message>
   </context>
   <context>
     <name>StdCmdSaveAs</name>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>Save &amp;As...</source>
-      <translation type="unfinished">Lagre &amp;som...</translation>
+      <translation>Lagre &amp;som...</translation>
     </message>
     <message>
       <source>Save the active document under a new file name</source>
-      <translation type="unfinished">Lagre aktivt dokument under et nytt filnavn</translation>
+      <translation>Lagre aktivt dokument under et nytt filnavn</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdSaveCopy</name>
+    <message>
+      <source>File</source>
+      <translation>File</translation>
+    </message>
+    <message>
+      <source>Save a &amp;Copy...</source>
+      <translation type="unfinished">Save a &amp;Copy...</translation>
+    </message>
+    <message>
+      <source>Save a copy of the active document under a new file name</source>
+      <translation type="unfinished">Save a copy of the active document under a new file name</translation>
     </message>
   </context>
   <context>
     <name>StdCmdSceneInspector</name>
     <message>
       <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
+      <translation>Verktøy</translation>
     </message>
     <message>
       <source>Scene inspector...</source>
-      <translation type="unfinished">Sceneinspektør...</translation>
+      <translation>Sceneinspektør...</translation>
     </message>
     <message>
       <source>Scene inspector</source>
-      <translation type="unfinished">Sceneinspektør</translation>
+      <translation>Sceneinspektør</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdSelBack</name>
+    <message>
+      <source>View</source>
+      <translation>Vis</translation>
+    </message>
+    <message>
+      <source>&amp;Back</source>
+      <translation type="unfinished">&amp;Back</translation>
+    </message>
+    <message>
+      <source>Go back to previous selection</source>
+      <translation type="unfinished">Go back to previous selection</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdSelBoundingBox</name>
+    <message>
+      <source>View</source>
+      <translation>Vis</translation>
+    </message>
+    <message>
+      <source>&amp;Bounding box</source>
+      <translation type="unfinished">&amp;Bounding box</translation>
+    </message>
+    <message>
+      <source>Show selection bounding box</source>
+      <translation type="unfinished">Show selection bounding box</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdSelForward</name>
+    <message>
+      <source>View</source>
+      <translation>Vis</translation>
+    </message>
+    <message>
+      <source>&amp;Forward</source>
+      <translation type="unfinished">&amp;Forward</translation>
+    </message>
+    <message>
+      <source>Repeat the backed selection</source>
+      <translation type="unfinished">Repeat the backed selection</translation>
     </message>
   </context>
   <context>
     <name>StdCmdSelectAll</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>Select &amp;All</source>
-      <translation type="unfinished">Velg &amp;alle</translation>
+      <translation>Velg &amp;alle</translation>
     </message>
     <message>
       <source>Select all</source>
-      <translation type="unfinished">Velg alle</translation>
+      <translation>Velg alle</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdSelectVisibleObjects</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Select visible objects</source>
+      <translation type="unfinished">Select visible objects</translation>
+    </message>
+    <message>
+      <source>Select visible objects in the active document</source>
+      <translation type="unfinished">Select visible objects in the active document</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdSendToPythonConsole</name>
+    <message>
+      <source>Edit</source>
+      <translation>Rediger</translation>
+    </message>
+    <message>
+      <source>&amp;Send to Python Console</source>
+      <translation type="unfinished">&amp;Send to Python Console</translation>
+    </message>
+    <message>
+      <source>Sends the selected object to the Python console</source>
+      <translation type="unfinished">Sends the selected object to the Python console</translation>
     </message>
   </context>
   <context>
     <name>StdCmdSetAppearance</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Appearance...</source>
-      <translation type="unfinished">Utseende...</translation>
+      <translation>Utseende...</translation>
     </message>
     <message>
       <source>Sets the display properties of the selected object</source>
-      <translation type="unfinished">Angir visningsegenskaper for valgte objekt</translation>
+      <translation>Angir visningsegenskaper for valgte objekt</translation>
     </message>
   </context>
   <context>
     <name>StdCmdShowObjects</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Show all objects</source>
-      <translation type="unfinished">Vis alle objekter</translation>
+      <translation>Vis alle objekter</translation>
     </message>
     <message>
       <source>Show all objects in the document</source>
-      <translation type="unfinished">Vis alle objekter i dokument</translation>
+      <translation>Vis alle objekter i dokument</translation>
     </message>
   </context>
   <context>
     <name>StdCmdShowSelection</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Show selection</source>
-      <translation type="unfinished">Vis valgte</translation>
+      <translation>Vis valgte</translation>
     </message>
     <message>
       <source>Show all selected objects</source>
-      <translation type="unfinished">Vis alle valgte objekter</translation>
+      <translation>Vis alle valgte objekter</translation>
     </message>
   </context>
   <context>
     <name>StdCmdStatusBar</name>
     <message>
       <source>View</source>
-      <translation type="unfinished">Vis</translation>
+      <translation>Vis</translation>
     </message>
     <message>
       <source>Status bar</source>
-      <translation type="unfinished">Statuslinjen</translation>
+      <translation>Statuslinjen</translation>
     </message>
     <message>
       <source>Toggles the status bar</source>
-      <translation type="unfinished">Veksler statuslinjen</translation>
+      <translation>Veksler statuslinjen</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdTextDocument</name>
+    <message>
+      <source>Tools</source>
+      <translation>Verktøy</translation>
+    </message>
+    <message>
+      <source>Add text document</source>
+      <translation type="unfinished">Add text document</translation>
+    </message>
+    <message>
+      <source>Add text document to active document</source>
+      <translation type="unfinished">Add text document to active document</translation>
     </message>
   </context>
   <context>
     <name>StdCmdTextureMapping</name>
     <message>
       <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
+      <translation>Verktøy</translation>
     </message>
     <message>
       <source>Texture mapping...</source>
-      <translation type="unfinished">Teksturtilordning...</translation>
+      <translation>Teksturtilordning...</translation>
     </message>
     <message>
       <source>Texture mapping</source>
-      <translation type="unfinished">Teksturtilordning</translation>
+      <translation>Teksturtilordning</translation>
     </message>
   </context>
   <context>
     <name>StdCmdTileWindows</name>
     <message>
       <source>Window</source>
-      <translation type="unfinished">Vindu</translation>
+      <translation>Vindu</translation>
     </message>
     <message>
       <source>&amp;Tile</source>
-      <translation type="unfinished">&amp;Still opp</translation>
+      <translation>&amp;Still opp</translation>
     </message>
     <message>
       <source>Tile the windows</source>
-      <translation type="unfinished">Still opp vinduene</translation>
+      <translation>Still opp vinduene</translation>
     </message>
   </context>
   <context>
     <name>StdCmdToggleBreakpoint</name>
     <message>
       <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
+      <translation>Makro</translation>
     </message>
     <message>
       <source>Toggle breakpoint</source>
-      <translation type="unfinished">Veksle stopppunkt</translation>
+      <translation>Veksle stopppunkt</translation>
     </message>
   </context>
   <context>
     <name>StdCmdToggleClipPlane</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Clipping plane</source>
-      <translation type="unfinished">Beskjæringsplan</translation>
+      <translation>Beskjæringsplan</translation>
     </message>
     <message>
       <source>Toggles clipping plane for active view</source>
-      <translation type="unfinished">Veksler beskjæringsplan for aktiv visning</translation>
+      <translation>Veksler beskjæringsplan for aktiv visning</translation>
     </message>
   </context>
   <context>
     <name>StdCmdToggleNavigation</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Toggle navigation/Edit mode</source>
-      <translation type="unfinished">Veksle navigasjon/ redigeringsmodus</translation>
+      <translation>Veksle navigasjon/ redigeringsmodus</translation>
     </message>
     <message>
       <source>Toggle between navigation and edit mode</source>
-      <translation type="unfinished">Veksle mellom navigasjons- og redigeringsmodus</translation>
+      <translation>Veksle mellom navigasjons- og redigeringsmodus</translation>
     </message>
   </context>
   <context>
     <name>StdCmdToggleObjects</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Toggle all objects</source>
-      <translation type="unfinished">Veksler mellom alle objekter</translation>
+      <translation>Veksler mellom alle objekter</translation>
     </message>
     <message>
       <source>Toggles visibility of all objects in the active document</source>
-      <translation type="unfinished">Veksler synligheten av alle objekter i det aktive dokumentet</translation>
+      <translation>Veksler synligheten av alle objekter i det aktive dokumentet</translation>
     </message>
   </context>
   <context>
     <name>StdCmdToggleSelectability</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Toggle selectability</source>
-      <translation type="unfinished">Veksle valgmulighet</translation>
+      <translation>Veksle valgmulighet</translation>
     </message>
     <message>
       <source>Toggles the property of the objects to get selected in the 3D-View</source>
-      <translation type="unfinished">Veksler egenskap på objektene for å bli merket i 3D-visningen</translation>
+      <translation>Veksler egenskap på objektene for å bli merket i 3D-visningen</translation>
     </message>
   </context>
   <context>
     <name>StdCmdToggleVisibility</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Toggle visibility</source>
-      <translation type="unfinished">Veksle synlighet</translation>
+      <translation>Veksle synlighet</translation>
     </message>
     <message>
       <source>Toggles visibility</source>
-      <translation type="unfinished">Veksle synlighet</translation>
+      <translation>Veksle synlighet</translation>
     </message>
   </context>
   <context>
     <name>StdCmdToolBarMenu</name>
     <message>
       <source>View</source>
-      <translation type="unfinished">Vis</translation>
+      <translation>Vis</translation>
     </message>
     <message>
       <source>Tool&amp;bars</source>
-      <translation type="unfinished">Verktøy&amp;linjer</translation>
+      <translation>Verktøy&amp;linjer</translation>
     </message>
     <message>
       <source>Toggles this window</source>
-      <translation type="unfinished">Veksler dette vinduet</translation>
+      <translation>Veksler dette vinduet</translation>
     </message>
   </context>
   <context>
     <name>StdCmdTransform</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>Transform...</source>
-      <translation type="unfinished">Transformer...</translation>
+      <translation>Transformer...</translation>
     </message>
     <message>
       <source>Transform the geometry of selected objects</source>
-      <translation type="unfinished">Transformer geometrien av utvalgte objekter</translation>
+      <translation>Transformer geometrien av utvalgte objekter</translation>
     </message>
   </context>
   <context>
     <name>StdCmdTransformManip</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>Transform</source>
-      <translation type="unfinished">Transformer</translation>
+      <translation>Transformer</translation>
     </message>
     <message>
       <source>Transform the selected object in the 3d view</source>
@@ -5537,44 +8672,89 @@ You either have to finish or cancel the editing in the task panel.</source>
     </message>
   </context>
   <context>
-    <name>StdCmdTreeSelection</name>
+    <name>StdCmdTreeCollapse</name>
     <message>
       <source>View</source>
-      <translation type="unfinished">Vis</translation>
+      <translation>Vis</translation>
     </message>
     <message>
-      <source>Go to selection</source>
-      <translation type="unfinished">Gå til valg</translation>
+      <source>Collapse selected item</source>
+      <translation type="unfinished">Collapse selected item</translation>
     </message>
     <message>
-      <source>Scroll to first selected item</source>
-      <translation type="unfinished">Bla til første valgte element</translation>
+      <source>Collapse currently selected tree items</source>
+      <translation type="unfinished">Collapse currently selected tree items</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdTreeExpand</name>
+    <message>
+      <source>View</source>
+      <translation>Vis</translation>
+    </message>
+    <message>
+      <source>Expand selected item</source>
+      <translation type="unfinished">Expand selected item</translation>
+    </message>
+    <message>
+      <source>Expand currently selected tree items</source>
+      <translation type="unfinished">Expand currently selected tree items</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdTreeSelectAllInstances</name>
+    <message>
+      <source>View</source>
+      <translation>Vis</translation>
+    </message>
+    <message>
+      <source>Select all instances</source>
+      <translation type="unfinished">Select all instances</translation>
+    </message>
+    <message>
+      <source>Select all instances of the current selected object</source>
+      <translation type="unfinished">Select all instances of the current selected object</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdTreeViewActions</name>
+    <message>
+      <source>View</source>
+      <translation>Vis</translation>
+    </message>
+    <message>
+      <source>TreeView actions</source>
+      <translation type="unfinished">TreeView actions</translation>
+    </message>
+    <message>
+      <source>TreeView behavior options and actions</source>
+      <translation type="unfinished">TreeView behavior options and actions</translation>
     </message>
   </context>
   <context>
     <name>StdCmdUndo</name>
     <message>
       <source>Edit</source>
-      <translation type="unfinished">Rediger</translation>
+      <translation>Rediger</translation>
     </message>
     <message>
       <source>&amp;Undo</source>
-      <translation type="unfinished">&amp;Angre</translation>
+      <translation>&amp;Angre</translation>
     </message>
     <message>
       <source>Undo exactly one action</source>
-      <translation type="unfinished">Angre nøyaktig én handling</translation>
+      <translation>Angre nøyaktig én handling</translation>
     </message>
   </context>
   <context>
     <name>StdCmdUnitsCalculator</name>
     <message>
       <source>Tools</source>
-      <translation type="unfinished">Verktøy</translation>
+      <translation>Verktøy</translation>
     </message>
     <message>
       <source>&amp;Units calculator...</source>
-      <translation type="unfinished">&amp;Units calculator...</translation>
+      <translation>&amp; Enhets kalkulator...</translation>
     </message>
     <message>
       <source>Start the units calculator</source>
@@ -5585,434 +8765,704 @@ You either have to finish or cancel the editing in the task panel.</source>
     <name>StdCmdUserInterface</name>
     <message>
       <source>View</source>
-      <translation type="unfinished">Vis</translation>
+      <translation>Vis</translation>
     </message>
     <message>
       <source>Dock views</source>
-      <translation type="unfinished">Forankre visninger</translation>
+      <translation>Forankre visninger</translation>
     </message>
     <message>
       <source>Dock all top-level views</source>
-      <translation type="unfinished">Forankre alle toppnivå visninger</translation>
-    </message>
-  </context>
-  <context>
-    <name>StdCmdViewAxo</name>
-    <message>
-      <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
-    </message>
-    <message>
-      <source>Axometric</source>
-      <translation type="unfinished">Axometrisk</translation>
-    </message>
-    <message>
-      <source>Set to axometric view</source>
-      <translation type="unfinished">Sett til axometrisk visning</translation>
+      <translation>Forankre alle toppnivå visninger</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewBottom</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Bottom</source>
-      <translation type="unfinished">Bunn</translation>
+      <translation>Bunn</translation>
     </message>
     <message>
       <source>Set to bottom view</source>
-      <translation type="unfinished">Sett til bunnvisning</translation>
+      <translation>Sett til bunnvisning</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewCreate</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Create new view</source>
-      <translation type="unfinished">Lag ny visning</translation>
+      <translation>Lag ny visning</translation>
     </message>
     <message>
-      <source>Creates a new  view window for the active document</source>
-      <translation type="unfinished">Lager et nytt visningsvindu for det aktive dokumentet</translation>
+      <source>Creates a new view window for the active document</source>
+      <translation type="unfinished">Creates a new view window for the active document</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdViewDimetric</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Dimetric</source>
+      <translation type="unfinished">Dimetric</translation>
+    </message>
+    <message>
+      <source>Set to dimetric view</source>
+      <translation type="unfinished">Set to dimetric view</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewExample1</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Inventor example #1</source>
-      <translation type="unfinished">Oppfinnereksempel #1</translation>
+      <translation>Oppfinnereksempel #1</translation>
     </message>
     <message>
       <source>Shows a 3D texture with manipulator</source>
-      <translation type="unfinished">Viser en 3D-struktur med manipulator</translation>
+      <translation>Viser en 3D-struktur med manipulator</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewExample2</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Inventor example #2</source>
-      <translation type="unfinished">Oppfinnereksempel #2</translation>
+      <translation>Oppfinnereksempel #2</translation>
     </message>
     <message>
       <source>Shows spheres and drag-lights</source>
-      <translation type="unfinished">Viser sfærer og dralys</translation>
+      <translation>Viser sfærer og dralys</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewExample3</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Inventor example #3</source>
-      <translation type="unfinished">Oppfinnereksempel #3</translation>
+      <translation>Oppfinnereksempel #3</translation>
     </message>
     <message>
       <source>Shows a animated texture</source>
-      <translation type="unfinished">Viser en animert tekstur</translation>
+      <translation>Viser en animert tekstur</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewFitAll</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Fit all</source>
-      <translation type="unfinished">Pass til alle</translation>
+      <translation>Pass til alle</translation>
     </message>
     <message>
       <source>Fits the whole content on the screen</source>
-      <translation type="unfinished">Tilpasser hele innholdet til skjerm</translation>
+      <translation>Tilpasser hele innholdet til skjerm</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewFitSelection</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Fit selection</source>
-      <translation type="unfinished">Pass til valgte</translation>
+      <translation>Pass til valgte</translation>
     </message>
     <message>
       <source>Fits the selected content on the screen</source>
-      <translation type="unfinished">Tilpasser det valgte innhold til skjerm</translation>
+      <translation>Tilpasser det valgte innhold til skjerm</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewFront</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Front</source>
-      <translation type="unfinished">Front</translation>
+      <translation>Front</translation>
     </message>
     <message>
       <source>Set to front view</source>
-      <translation type="unfinished">Sett til frontvisning</translation>
+      <translation>Sett til frontvisning</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdViewHome</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Home</source>
+      <translation type="unfinished">Home</translation>
+    </message>
+    <message>
+      <source>Set to default home view</source>
+      <translation type="unfinished">Set to default home view</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdViewIsometric</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Isometric</source>
+      <translation>Isometrisk</translation>
+    </message>
+    <message>
+      <source>Set to isometric view</source>
+      <translation type="unfinished">Set to isometric view</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewIvIssueCamPos</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Issue camera position</source>
-      <translation type="unfinished">Utsted kameraposisjon</translation>
+      <translation>Utsted kameraposisjon</translation>
     </message>
     <message>
       <source>Issue the camera position to the console and to a macro, to easily recall this position</source>
-      <translation type="unfinished">Utsted kameraposisjon til konsoll og en makro for enkelt å hente den fram igjen</translation>
+      <translation>Utsted kameraposisjon til konsoll og en makro for enkelt å hente den fram igjen</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewIvStereoInterleavedColumns</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Stereo Interleaved Columns</source>
-      <translation type="unfinished">Stereo oppdelte kolonner</translation>
+      <translation>Stereo oppdelte kolonner</translation>
     </message>
     <message>
       <source>Switch stereo viewing to Interleaved Columns</source>
-      <translation type="unfinished">Bytt stereovisning til oppdelte kolonner</translation>
+      <translation>Bytt stereovisning til oppdelte kolonner</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewIvStereoInterleavedRows</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Stereo Interleaved Rows</source>
-      <translation type="unfinished">Stereo oppdelte rader</translation>
+      <translation>Stereo oppdelte rader</translation>
     </message>
     <message>
       <source>Switch stereo viewing to Interleaved Rows</source>
-      <translation type="unfinished">Bytt stereovisning til oppdelte rader</translation>
+      <translation>Bytt stereovisning til oppdelte rader</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewIvStereoOff</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Stereo Off</source>
-      <translation type="unfinished">Stereo av</translation>
+      <translation>Stereo av</translation>
     </message>
     <message>
       <source>Switch stereo viewing off</source>
-      <translation type="unfinished">Slå stereo visning av</translation>
+      <translation>Slå stereo visning av</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewIvStereoQuadBuff</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Stereo quad buffer</source>
-      <translation type="unfinished">Stereo quad buffer</translation>
+      <translation>Stereo quad buffer</translation>
     </message>
     <message>
       <source>Switch stereo viewing to quad buffer</source>
-      <translation type="unfinished">Bytt stereovisning til quad buffer</translation>
+      <translation>Bytt stereovisning til quad buffer</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewIvStereoRedGreen</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
-      <source>Stereo red/green</source>
-      <translation type="unfinished">Stereo rød/ grønn</translation>
+      <source>Stereo red/cyan</source>
+      <translation type="unfinished">Stereo red/cyan</translation>
     </message>
     <message>
-      <source>Switch stereo viewing to red/green</source>
-      <translation type="unfinished">Bytt stereovisning til rød/ grønn</translation>
+      <source>Switch stereo viewing to red/cyan</source>
+      <translation type="unfinished">Switch stereo viewing to red/cyan</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewLeft</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Left</source>
-      <translation type="unfinished">Venstre</translation>
+      <translation>Venstre</translation>
     </message>
     <message>
       <source>Set to left view</source>
-      <translation type="unfinished">Sett til venstrevisning</translation>
+      <translation>Sett til venstrevisning</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewRear</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Rear</source>
-      <translation type="unfinished">Bak</translation>
+      <translation>Bak</translation>
     </message>
     <message>
       <source>Set to rear view</source>
-      <translation type="unfinished">Sett til bakvisning</translation>
+      <translation>Sett til bakvisning</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdViewRestoreCamera</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Restore saved camera</source>
+      <translation type="unfinished">Restore saved camera</translation>
+    </message>
+    <message>
+      <source>Restore saved camera settings</source>
+      <translation type="unfinished">Restore saved camera settings</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewRight</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Right</source>
-      <translation type="unfinished">Høyre</translation>
+      <translation>Høyre</translation>
     </message>
     <message>
       <source>Set to right view</source>
-      <translation type="unfinished">Sett til høyrevisning</translation>
+      <translation>Sett til høyrevisning</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewRotateLeft</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Rotate Left</source>
       <translation type="unfinished">Rotate Left</translation>
     </message>
     <message>
-      <source>Rotate the view by 90Â° counter-clockwise</source>
-      <translation type="unfinished">Rotate the view by 90Â° counter-clockwise</translation>
+      <source>Rotate the view by 90° counter-clockwise</source>
+      <translation type="unfinished">Rotate the view by 90° counter-clockwise</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewRotateRight</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Rotate Right</source>
       <translation type="unfinished">Rotate Right</translation>
     </message>
     <message>
-      <source>Rotate the view by 90Â° clockwise</source>
-      <translation type="unfinished">Rotate the view by 90Â° clockwise</translation>
+      <source>Rotate the view by 90° clockwise</source>
+      <translation type="unfinished">Rotate the view by 90° clockwise</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdViewSaveCamera</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Save current camera</source>
+      <translation type="unfinished">Save current camera</translation>
+    </message>
+    <message>
+      <source>Save current camera settings</source>
+      <translation type="unfinished">Save current camera settings</translation>
     </message>
   </context>
   <context>
     <name>StdCmdViewTop</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Top</source>
-      <translation type="unfinished">Topp</translation>
+      <translation>Topp</translation>
     </message>
     <message>
       <source>Set to top view</source>
-      <translation type="unfinished">Sett til toppvisning</translation>
+      <translation>Sett til toppvisning</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdViewTrimetric</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Trimetric</source>
+      <translation type="unfinished">Trimetric</translation>
+    </message>
+    <message>
+      <source>Set to trimetric view</source>
+      <translation type="unfinished">Set to trimetric view</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdCmdViewVR</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>FreeCAD-VR</source>
+      <translation type="unfinished">FreeCAD-VR</translation>
+    </message>
+    <message>
+      <source>Extend the FreeCAD 3D Window to a Oculus Rift</source>
+      <translation type="unfinished">Extend the FreeCAD 3D Window to a Oculus Rift</translation>
     </message>
   </context>
   <context>
     <name>StdCmdWhatsThis</name>
     <message>
       <source>Help</source>
-      <translation type="unfinished">Hjelp</translation>
+      <translation>Hjelp</translation>
     </message>
     <message>
       <source>&amp;What's This?</source>
-      <translation type="unfinished">&amp;Hva er dette?</translation>
+      <translation>&amp;Hva er dette?</translation>
     </message>
     <message>
       <source>What's This</source>
-      <translation type="unfinished">Hva er dette</translation>
+      <translation>Hva er dette</translation>
     </message>
   </context>
   <context>
     <name>StdCmdWindows</name>
     <message>
       <source>Window</source>
-      <translation type="unfinished">Vindu</translation>
+      <translation>Vindu</translation>
     </message>
     <message>
       <source>&amp;Windows...</source>
-      <translation type="unfinished">&amp;Vinduer...</translation>
+      <translation>&amp;Vinduer...</translation>
     </message>
     <message>
       <source>Windows list</source>
-      <translation type="unfinished">Vindusliste</translation>
+      <translation>Vindusliste</translation>
     </message>
   </context>
   <context>
     <name>StdCmdWindowsMenu</name>
     <message>
       <source>Window</source>
-      <translation type="unfinished">Vindu</translation>
+      <translation>Vindu</translation>
     </message>
     <message>
       <source>Activates this window</source>
-      <translation type="unfinished">Aktiverer dette vinduet</translation>
+      <translation>Aktiverer dette vinduet</translation>
     </message>
   </context>
   <context>
     <name>StdCmdWorkbench</name>
     <message>
       <source>View</source>
-      <translation type="unfinished">Vis</translation>
+      <translation>Vis</translation>
     </message>
     <message>
       <source>Workbench</source>
-      <translation type="unfinished">Arbeidsbenk</translation>
+      <translation>Arbeidsbenk</translation>
     </message>
     <message>
       <source>Switch between workbenches</source>
-      <translation type="unfinished">Bytt mellom arbeidsbenker</translation>
+      <translation>Bytt mellom arbeidsbenker</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdMainFullscreen</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Fullscreen</source>
+      <translation>Fullskjerm</translation>
+    </message>
+    <message>
+      <source>Display the main window in fullscreen mode</source>
+      <translation type="unfinished">Display the main window in fullscreen mode</translation>
     </message>
   </context>
   <context>
     <name>StdOrthographicCamera</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Orthographic view</source>
-      <translation type="unfinished">Ortografisk visning</translation>
+      <translation>Ortografisk visning</translation>
     </message>
     <message>
       <source>Switches to orthographic view mode</source>
-      <translation type="unfinished">Bytter til ortografisk visningsmodus</translation>
+      <translation>Bytter til ortografisk visningsmodus</translation>
     </message>
   </context>
   <context>
     <name>StdPerspectiveCamera</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Perspective view</source>
-      <translation type="unfinished">Perspektivvisning</translation>
+      <translation>Perspektivvisning</translation>
     </message>
     <message>
       <source>Switches to perspective view mode</source>
-      <translation type="unfinished">Bytter til perspektiv visningsmodus</translation>
+      <translation>Bytter til perspektiv visningsmodus</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreeCollapseDocument</name>
+    <message>
+      <source>Collapse/Expand</source>
+      <translation type="unfinished">Collapse/Expand</translation>
+    </message>
+    <message>
+      <source>Expand active document and collapse all others</source>
+      <translation type="unfinished">Expand active document and collapse all others</translation>
+    </message>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreeDrag</name>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+    <message>
+      <source>Initiate dragging</source>
+      <translation type="unfinished">Initiate dragging</translation>
+    </message>
+    <message>
+      <source>Initiate dragging of current selected tree items</source>
+      <translation type="unfinished">Initiate dragging of current selected tree items</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreeMultiDocument</name>
+    <message>
+      <source>Display all documents in the tree view</source>
+      <translation type="unfinished">Display all documents in the tree view</translation>
+    </message>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+    <message>
+      <source>Multi document</source>
+      <translation type="unfinished">Multi document</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreePreSelection</name>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+    <message>
+      <source>Pre-selection</source>
+      <translation type="unfinished">Pre-selection</translation>
+    </message>
+    <message>
+      <source>Preselect the object in 3D view when mouse over the tree item</source>
+      <translation type="unfinished">Preselect the object in 3D view when mouse over the tree item</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreeRecordSelection</name>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+    <message>
+      <source>Record selection</source>
+      <translation type="unfinished">Record selection</translation>
+    </message>
+    <message>
+      <source>Record selection in tree view in order to go back/forward using navigation button</source>
+      <translation type="unfinished">Record selection in tree view in order to go back/forward using navigation button</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreeSelection</name>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+    <message>
+      <source>Go to selection</source>
+      <translation>Gå til valg</translation>
+    </message>
+    <message>
+      <source>Scroll to first selected item</source>
+      <translation>Bla til første valgte element</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreeSingleDocument</name>
+    <message>
+      <source>Only display the active document in the tree view</source>
+      <translation type="unfinished">Only display the active document in the tree view</translation>
+    </message>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+    <message>
+      <source>Single document</source>
+      <translation type="unfinished">Single document</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreeSyncPlacement</name>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+    <message>
+      <source>Sync placement</source>
+      <translation type="unfinished">Sync placement</translation>
+    </message>
+    <message>
+      <source>Auto adjust placement on drag and drop objects across coordinate systems</source>
+      <translation type="unfinished">Auto adjust placement on drag and drop objects across coordinate systems</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreeSyncSelection</name>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+    <message>
+      <source>Sync selection</source>
+      <translation type="unfinished">Sync selection</translation>
+    </message>
+    <message>
+      <source>Auto expand tree item when the corresponding object is selected in 3D view</source>
+      <translation type="unfinished">Auto expand tree item when the corresponding object is selected in 3D view</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdTreeSyncView</name>
+    <message>
+      <source>TreeView</source>
+      <translation type="unfinished">TreeView</translation>
+    </message>
+    <message>
+      <source>Sync view</source>
+      <translation type="unfinished">Sync view</translation>
+    </message>
+    <message>
+      <source>Auto switch to the 3D view containing the selected item</source>
+      <translation type="unfinished">Auto switch to the 3D view containing the selected item</translation>
     </message>
   </context>
   <context>
     <name>StdViewBoxZoom</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Box zoom</source>
-      <translation type="unfinished">Boks zoom</translation>
+      <translation>Boks zoom</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdViewDock</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Docked</source>
+      <translation>Forankret</translation>
+    </message>
+    <message>
+      <source>Display the active view either in fullscreen, in undocked or docked mode</source>
+      <translation>Vis den aktive visningen enten i fullskjerm, uforankret eller forankret modus</translation>
     </message>
   </context>
   <context>
     <name>StdViewDockUndockFullscreen</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Document window</source>
@@ -6020,57 +9470,102 @@ You either have to finish or cancel the editing in the task panel.</source>
     </message>
     <message>
       <source>Display the active view either in fullscreen, in undocked or docked mode</source>
-      <translation type="unfinished">Vis den aktive visningen enten i fullskjerm, uforankret eller forankret modus</translation>
+      <translation>Vis den aktive visningen enten i fullskjerm, uforankret eller forankret modus</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdViewFullscreen</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Fullscreen</source>
+      <translation>Fullskjerm</translation>
+    </message>
+    <message>
+      <source>Display the active view either in fullscreen, in undocked or docked mode</source>
+      <translation>Vis den aktive visningen enten i fullskjerm, uforankret eller forankret modus</translation>
     </message>
   </context>
   <context>
     <name>StdViewScreenShot</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Save picture...</source>
-      <translation type="unfinished">Lagre bilde...</translation>
+      <translation>Lagre bilde...</translation>
     </message>
     <message>
       <source>Creates a screenshot of the active view</source>
-      <translation type="unfinished">Lager en skjermdump av den aktive visningen</translation>
+      <translation>Lager en skjermdump av den aktive visningen</translation>
+    </message>
+  </context>
+  <context>
+    <name>StdViewUndock</name>
+    <message>
+      <source>Standard-View</source>
+      <translation>Standardvisning</translation>
+    </message>
+    <message>
+      <source>Undocked</source>
+      <translation>Uforankret</translation>
+    </message>
+    <message>
+      <source>Display the active view either in fullscreen, in undocked or docked mode</source>
+      <translation>Vis den aktive visningen enten i fullskjerm, uforankret eller forankret modus</translation>
     </message>
   </context>
   <context>
     <name>StdViewZoomIn</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Zoom In</source>
-      <translation type="unfinished">Zoom inn</translation>
+      <translation>Zoom inn</translation>
     </message>
   </context>
   <context>
     <name>StdViewZoomOut</name>
     <message>
       <source>Standard-View</source>
-      <translation type="unfinished">Standardvisning</translation>
+      <translation>Standardvisning</translation>
     </message>
     <message>
       <source>Zoom Out</source>
-      <translation type="unfinished">Zoom ut</translation>
+      <translation>Zoom ut</translation>
     </message>
   </context>
   <context>
     <name>Std_Delete</name>
     <message>
+      <source>The following referencing objects might break.
+
+Are you sure you want to continue?
+</source>
+      <translation type="unfinished">The following referencing objects might break.
+
+Are you sure you want to continue?
+</translation>
+    </message>
+    <message>
       <source>Object dependencies</source>
       <translation type="unfinished">Object dependencies</translation>
     </message>
     <message>
-      <source>This object is referenced by other objects and thus these objects might get broken.
-Are you sure to continue?</source>
-      <translation type="unfinished">This object is referenced by other objects and thus these objects might get broken.
-Are you sure to continue?</translation>
+      <source>These items are selected for deletion, but are not in the active document.</source>
+      <translation type="unfinished">These items are selected for deletion, but are not in the active document.</translation>
+    </message>
+  </context>
+  <context>
+    <name>Std_DependencyGraph</name>
+    <message>
+      <source>Dependency graph</source>
+      <translation type="unfinished">Dependency graph</translation>
     </message>
   </context>
   <context>
@@ -6109,11 +9604,27 @@ Are you sure to continue?</translation>
     </message>
     <message>
       <source>Points</source>
-      <translation type="unfinished">Punkter</translation>
+      <translation>Punkter</translation>
     </message>
     <message>
       <source>Points mode</source>
       <translation type="unfinished">Points mode</translation>
+    </message>
+    <message>
+      <source>Hidden line</source>
+      <translation type="unfinished">Hidden line</translation>
+    </message>
+    <message>
+      <source>Hidden line mode</source>
+      <translation type="unfinished">Hidden line mode</translation>
+    </message>
+    <message>
+      <source>No shading</source>
+      <translation type="unfinished">No shading</translation>
+    </message>
+    <message>
+      <source>No shading mode</source>
+      <translation type="unfinished">No shading mode</translation>
     </message>
   </context>
   <context>
@@ -6123,113 +9634,163 @@ Are you sure to continue?</translation>
       <translation type="unfinished">Object dependencies</translation>
     </message>
     <message>
-      <source>The selected objects have a dependency to unselected objects.
-Do you want to duplicate them, too?</source>
-      <translation type="unfinished">The selected objects have a dependency to unselected objects.
-Do you want to duplicate them, too?</translation>
+      <source>To link to external objects, the document must be saved at least once.
+Do you want to save the document now?</source>
+      <translation type="unfinished">To link to external objects, the document must be saved at least once.
+Do you want to save the document now?</translation>
     </message>
   </context>
   <context>
-    <name>Std_ExportGraphviz</name>
+    <name>Std_Group</name>
     <message>
-      <source>Graphviz not found</source>
-      <translation type="unfinished">Graphviz not found</translation>
+      <source>Group</source>
+      <translation>Gruppe</translation>
+    </message>
+  </context>
+  <context>
+    <name>Std_Refresh</name>
+    <message>
+      <source>The document contains dependency cycles.
+Please check the Report View for more details.
+
+Do you still want to proceed?</source>
+      <translation type="unfinished">The document contains dependency cycles.
+Please check the Report View for more details.
+
+Do you still want to proceed?</translation>
+    </message>
+  </context>
+  <context>
+    <name>Std_Revert</name>
+    <message>
+      <source>This will discard all the changes since last file save.</source>
+      <translation type="unfinished">This will discard all the changes since last file save.</translation>
     </message>
     <message>
-      <source>Graphviz couldn't be found on your system.
-Do you want to specify its installation path if it's already installed?</source>
-      <translation type="unfinished">Graphviz couldn't be found on your system.
-Do you want to specify its installation path if it's already installed?</translation>
+      <source>Revert document</source>
+      <translation type="unfinished">Revert document</translation>
     </message>
     <message>
-      <source>Graphviz installation path</source>
-      <translation type="unfinished">Graphviz installation path</translation>
+      <source>Do you want to continue?</source>
+      <translation type="unfinished">Do you want to continue?</translation>
+    </message>
+  </context>
+  <context>
+    <name>ViewIsometricCmd</name>
+    <message>
+      <source>Isometric</source>
+      <translation>Isometrisk</translation>
     </message>
     <message>
-      <source>Dependency graph</source>
-      <translation type="unfinished">Dependency graph</translation>
+      <source>Set NaviCube to Isometric mode</source>
+      <translation type="unfinished">Set NaviCube to Isometric mode</translation>
+    </message>
+  </context>
+  <context>
+    <name>ViewOrthographicCmd</name>
+    <message>
+      <source>Orthographic</source>
+      <translation type="unfinished">Orthographic</translation>
     </message>
     <message>
-      <source>Graphviz failed</source>
-      <translation type="unfinished">Graphviz failed</translation>
+      <source>Set View to Orthographic mode</source>
+      <translation type="unfinished">Set View to Orthographic mode</translation>
+    </message>
+  </context>
+  <context>
+    <name>ViewPerspectiveCmd</name>
+    <message>
+      <source>Perspective</source>
+      <translation type="unfinished">Perspective</translation>
     </message>
     <message>
-      <source>Graphviz failed to create an image file</source>
-      <translation type="unfinished">Graphviz failed to create an image file</translation>
+      <source>Set View to Perspective mode</source>
+      <translation type="unfinished">Set View to Perspective mode</translation>
+    </message>
+  </context>
+  <context>
+    <name>ViewZoomToFitCmd</name>
+    <message>
+      <source>Zoom to fit</source>
+      <translation type="unfinished">Zoom to fit</translation>
+    </message>
+    <message>
+      <source>Zoom so that model fills the view</source>
+      <translation type="unfinished">Zoom so that model fills the view</translation>
     </message>
   </context>
   <context>
     <name>Workbench</name>
     <message>
       <source>&amp;File</source>
-      <translation type="unfinished">&amp;Fil</translation>
+      <translation>&amp;Fil</translation>
     </message>
     <message>
       <source>&amp;Edit</source>
-      <translation type="unfinished">&amp;Rediger</translation>
+      <translation>&amp;Rediger</translation>
     </message>
     <message>
       <source>Standard views</source>
-      <translation type="unfinished">Standardvisninger</translation>
+      <translation>Standardvisninger</translation>
     </message>
     <message>
       <source>&amp;Stereo</source>
-      <translation type="unfinished">&amp;Stereo</translation>
+      <translation>&amp;Stereo</translation>
     </message>
     <message>
       <source>&amp;Zoom</source>
-      <translation type="unfinished">&amp;Zoom</translation>
+      <translation>&amp;Zoom</translation>
     </message>
     <message>
       <source>Visibility</source>
-      <translation type="unfinished">Synlighet</translation>
+      <translation>Synlighet</translation>
     </message>
     <message>
       <source>&amp;View</source>
-      <translation type="unfinished">&amp;Vis</translation>
+      <translation>&amp;Vis</translation>
     </message>
     <message>
       <source>&amp;Tools</source>
-      <translation type="unfinished">&amp;Verktøy</translation>
+      <translation>&amp;Verktøy</translation>
     </message>
     <message>
       <source>&amp;Macro</source>
-      <translation type="unfinished">&amp;Makro</translation>
+      <translation>&amp;Makro</translation>
     </message>
     <message>
       <source>&amp;Windows</source>
-      <translation type="unfinished">&amp;Vinduer</translation>
+      <translation>&amp;Vinduer</translation>
     </message>
     <message>
       <source>&amp;On-line help</source>
-      <translation type="unfinished">&amp;Internetthjelp</translation>
+      <translation>&amp;Internetthjelp</translation>
     </message>
     <message>
       <source>&amp;Help</source>
-      <translation type="unfinished">&amp;Hjelp</translation>
+      <translation>&amp;Hjelp</translation>
     </message>
     <message>
       <source>File</source>
-      <translation type="unfinished">File</translation>
+      <translation>File</translation>
     </message>
     <message>
       <source>Macro</source>
-      <translation type="unfinished">Makro</translation>
+      <translation>Makro</translation>
     </message>
     <message>
       <source>View</source>
-      <translation type="unfinished">Vis</translation>
+      <translation>Vis</translation>
     </message>
     <message>
       <source>Special Ops</source>
-      <translation type="unfinished">Spesielle operasjoner</translation>
+      <translation>Spesielle operasjoner</translation>
     </message>
   </context>
   <context>
     <name>testClass</name>
     <message>
       <source>test</source>
-      <translation type="unfinished">test</translation>
+      <translation>test</translation>
     </message>
     <message>
       <source>&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
@@ -6240,7 +9801,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:20pt; font-weight:600;"&gt;&lt;span style=" font-size:12pt;"&gt;Created for Qt 4.3.x&lt;/span&gt;&lt;/p&gt;
 &lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:600;"&gt;&lt;/p&gt;
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:600;"&gt;www.ii-system.com&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation type="unfinished">&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+      <translation>&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;"&gt;
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;"&gt;&lt;span style=" font-size:20pt; font-weight:600;"&gt;iisOppgavePanel&lt;/span&gt;&lt;/p&gt;
@@ -6251,15 +9812,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
       <source>Choose the style of the Task Panel</source>
-      <translation type="unfinished">Velg stil for oppgavepanelet</translation>
+      <translation>Velg stil for oppgavepanelet</translation>
     </message>
     <message>
       <source>Default</source>
-      <translation type="unfinished">Standard</translation>
+      <translation>Standard</translation>
     </message>
     <message>
       <source>Windows XP</source>
-      <translation type="unfinished">Windows XP</translation>
+      <translation>Windows XP</translation>
     </message>
   </context>
 </TS>

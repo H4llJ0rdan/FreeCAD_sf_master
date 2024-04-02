@@ -33,12 +33,12 @@ namespace Dialog {
  * \author Werner Mayer
  */
 class UndoDialog : public QMenu
-{ 
+{
     Q_OBJECT
 
 public:
-  UndoDialog( QWidget* parent = 0 );
-  virtual ~UndoDialog();
+  explicit UndoDialog( QWidget* parent = nullptr );
+  ~UndoDialog() override;
 
 protected Q_SLOTS:
   void onSelected();
@@ -49,12 +49,12 @@ protected Q_SLOTS:
  * \author Werner Mayer
  */
 class RedoDialog : public QMenu
-{ 
+{
     Q_OBJECT
 
 public:
-  RedoDialog( QWidget* parent = 0 );
-  virtual ~RedoDialog();
+  explicit RedoDialog( QWidget* parent = nullptr );
+  ~RedoDialog() override;
 
 protected Q_SLOTS:
   void onSelected();

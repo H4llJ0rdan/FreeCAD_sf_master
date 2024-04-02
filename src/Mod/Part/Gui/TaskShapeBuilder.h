@@ -20,37 +20,44 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PARTGUI_TASKSHAPEBUILDER_H
 #define PARTGUI_TASKSHAPEBUILDER_H
 
-#include <Gui/TaskView/TaskView.h>
+#include <Gui/Selection.h>
 #include <Gui/TaskView/TaskDialog.h>
+#include <Gui/TaskView/TaskView.h>
 
-namespace PartGui { 
 
-class ShapeBuilderWidget : public QWidget
+namespace PartGui {
+
+class ShapeBuilderWidget : public QWidget,
+                           public Gui::SelectionObserver
 {
     Q_OBJECT
 
 public:
-    ShapeBuilderWidget(QWidget* parent = 0);
-    ~ShapeBuilderWidget();
+    explicit ShapeBuilderWidget(QWidget* parent = nullptr);
+    ~ShapeBuilderWidget() override;
 
     bool accept();
     bool reject();
 
-private Q_SLOTS:
-    void on_createButton_clicked();
+private:
+    void onCreateButtonClicked();
+    void onSelectButtonClicked();
     void switchMode(int);
 
 private:
+    void onSelectionChanged(const Gui::SelectionChanges& msg) override;
+
+private:
     void createEdgeFromVertex();
+    void createWireFromEdge();
     void createFaceFromVertex();
     void createFaceFromEdge();
     void createShellFromFace();
     void createSolidFromShell();
-    void changeEvent(QEvent *e);
+    void changeEvent(QEvent *e) override;
 
 private:
     class Private;
@@ -63,15 +70,15 @@ class TaskShapeBuilder : public Gui::TaskView::TaskDialog
 
 public:
     TaskShapeBuilder();
-    ~TaskShapeBuilder();
+    ~TaskShapeBuilder() override;
 
 public:
-    void open();
-    bool accept();
-    bool reject();
-    void clicked(int);
+    void open() override;
+    bool accept() override;
+    bool reject() override;
+    void clicked(int) override;
 
-    QDialogButtonBox::StandardButtons getStandardButtons() const
+    QDialogButtonBox::StandardButtons getStandardButtons() const override
     { return QDialogButtonBox::Close; }
 
 private:

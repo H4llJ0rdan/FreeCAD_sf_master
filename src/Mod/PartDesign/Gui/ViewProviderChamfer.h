@@ -24,30 +24,29 @@
 #ifndef PARTGUI_ViewProviderChamfer_H
 #define PARTGUI_ViewProviderChamfer_H
 
-#include "ViewProvider.h"
+#include "ViewProviderDressUp.h"
 
 
 namespace PartDesignGui {
 
-class PartDesignGuiExport ViewProviderChamfer : public ViewProvider
+class PartDesignGuiExport ViewProviderChamfer : public ViewProviderDressUp
 {
-    PROPERTY_HEADER(PartDesignGui::ViewProviderChamfer);
+    Q_DECLARE_TR_FUNCTIONS(PartDesignGui::ViewProviderChamfer)
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderChamfer);
 
 public:
     /// constructor
-    ViewProviderChamfer();
-    /// destructor
-    virtual ~ViewProviderChamfer();
+    ViewProviderChamfer()
+        { sPixmap = "PartDesign_Chamfer.svg";
+          menuName = tr("Chamfer parameters");}
 
-    /// grouping handling 
-    void setupContextMenu(QMenu*, QObject*, const char*);
-
-    virtual bool onDelete(const std::vector<std::string> &);
+    /// return "Chamfer"
+    const std::string & featureName() const override;
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-    virtual void unsetEdit(int ModNum);
-
+    /// Returns a newly create dialog for the part to be placed in the task view
+    TaskDlgFeatureParameters *getEditDialog() override;
 };
 
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -32,24 +32,24 @@ namespace Gui {
 
 class GuiExport ViewProviderMaterialObject : public ViewProviderDocumentObject
 {
-    PROPERTY_HEADER(Gui::ViewProviderMaterialObject);
+    PROPERTY_HEADER_WITH_OVERRIDE(Gui::ViewProviderMaterialObject);
 
 public:
     /// constructor.
     ViewProviderMaterialObject();
     /// destructor.
-    virtual ~ViewProviderMaterialObject();
+    ~ViewProviderMaterialObject() override;
 
-    QIcon getIcon(void) const;
+    QIcon getIcon() const override;
 
-    bool doubleClicked(void);
+    bool doubleClicked() override;
 
     // shows solid in the tree
-    virtual bool isShow(void) const{return true;}
+    bool isShow() const override{return true;}
 
 };
 
-typedef ViewProviderPythonFeatureT<ViewProviderMaterialObject> ViewProviderMaterialObjectPython;
+using ViewProviderMaterialObjectPython = ViewProviderPythonFeatureT<ViewProviderMaterialObject>;
 
 } // namespace Gui
 

@@ -20,21 +20,11 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-#ifndef _PreComp_
-# include <QByteArray>
-# include <QInputDialog>
-# include <QEventLoop>
-# include <QTimer>
-#endif
 
 #include "PythonConsolePy.h"
 #include "PythonConsole.h"
-#include "MainWindow.h"
 
-#include <Base/Console.h>
-#include <Base/Exception.h>
 
 using namespace Gui;
 
@@ -46,6 +36,7 @@ void PythonStdout::init_type()
     behaviors().supportRepr();
     add_varargs_method("write",&PythonStdout::write,"write()");
     add_varargs_method("flush",&PythonStdout::flush,"flush()");
+    add_noargs_method("isatty",&PythonStdout::isatty,"isatty()");
 }
 
 PythonStdout::PythonStdout(PythonConsole *pc)
@@ -53,9 +44,7 @@ PythonStdout::PythonStdout(PythonConsole *pc)
 {
 }
 
-PythonStdout::~PythonStdout()
-{
-}
+PythonStdout::~PythonStdout() = default;
 
 Py::Object PythonStdout::getattr(const char *name)
 {
@@ -76,27 +65,16 @@ Py::Object PythonStdout::repr()
 
 Py::Object PythonStdout::write(const Py::Tuple& args)
 {
-    try {
-        Py::Object output(args[0]);
-        if (PyUnicode_Check(output.ptr())) {
-            PyObject* unicode = PyUnicode_AsEncodedObject(output.ptr(), "utf-8", "strict");
-            if (unicode) {
-                const char* string = PyString_AsString(unicode);
-                int maxlen = qstrlen(string) > 10000 ? 10000 : -1;
-                pyConsole->insertPythonOutput(QString::fromUtf8(string, maxlen));
-                Py_DECREF(unicode);
-            }
-        }
-        else {
-            Py::String text(args[0]);
-            std::string string = (std::string)text;
-            int maxlen = string.size() > 10000 ? 10000 : -1;
-            pyConsole->insertPythonOutput(QString::fromUtf8(string.c_str(), maxlen));
-        }
-    }
-    catch (Py::Exception& e) {
-        // Do not provoke error messages 
-        e.clear();
+    PyObject* output;
+    if (!PyArg_ParseTuple(args.ptr(), "O!",&PyUnicode_Type, &output))
+        throw Py::TypeError("PythonStdout.write() takes exactly one argument of type str");
+
+    PyObject* unicode = PyUnicode_AsEncodedString(output, "utf-8", nullptr);
+    if (unicode) {
+        const char* string = PyBytes_AsString(unicode);
+        int maxlen = qstrlen(string) > 10000 ? 10000 : -1;
+        pyConsole->insertPythonOutput(QString::fromUtf8(string, maxlen));
+        Py_DECREF(unicode);
     }
 
     return Py::None();
@@ -105,6 +83,11 @@ Py::Object PythonStdout::write(const Py::Tuple& args)
 Py::Object PythonStdout::flush(const Py::Tuple&)
 {
     return Py::None();
+}
+
+Py::Object PythonStdout::isatty()
+{
+    return Py::False();
 }
 
 // -------------------------------------------------------------------------
@@ -117,6 +100,7 @@ void PythonStderr::init_type()
     behaviors().supportRepr();
     add_varargs_method("write",&PythonStderr::write,"write()");
     add_varargs_method("flush",&PythonStderr::flush,"flush()");
+    add_noargs_method("isatty",&PythonStderr::isatty,"isatty()");
 }
 
 PythonStderr::PythonStderr(PythonConsole *pc)
@@ -124,9 +108,7 @@ PythonStderr::PythonStderr(PythonConsole *pc)
 {
 }
 
-PythonStderr::~PythonStderr()
-{
-}
+PythonStderr::~PythonStderr() = default;
 
 Py::Object PythonStderr::getattr(const char *name)
 {
@@ -147,27 +129,16 @@ Py::Object PythonStderr::repr()
 
 Py::Object PythonStderr::write(const Py::Tuple& args)
 {
-    try {
-        Py::Object output(args[0]);
-        if (PyUnicode_Check(output.ptr())) {
-            PyObject* unicode = PyUnicode_AsEncodedObject(output.ptr(), "utf-8", "strict");
-            if (unicode) {
-                const char* string = PyString_AsString(unicode);
-                int maxlen = qstrlen(string) > 10000 ? 10000 : -1;
-                pyConsole->insertPythonError(QString::fromUtf8(string, maxlen));
-                Py_DECREF(unicode);
-            }
-        }
-        else {
-            Py::String text(args[0]);
-            std::string string = (std::string)text;
-            int maxlen = string.size() > 10000 ? 10000 : -1;
-            pyConsole->insertPythonError(QString::fromUtf8(string.c_str(), maxlen));
-        }
-    }
-    catch (Py::Exception& e) {
-        // Do not provoke error messages
-        e.clear();
+    PyObject* output;
+    if (!PyArg_ParseTuple(args.ptr(), "O!",&PyUnicode_Type, &output))
+        throw Py::TypeError("PythonStderr.write() takes exactly one argument of type str");
+
+    PyObject* unicode = PyUnicode_AsEncodedString(output, "utf-8", nullptr);
+    if (unicode) {
+        const char* string = PyBytes_AsString(unicode);
+        int maxlen = qstrlen(string) > 10000 ? 10000 : -1;
+        pyConsole->insertPythonError(QString::fromUtf8(string, maxlen));
+        Py_DECREF(unicode);
     }
 
     return Py::None();
@@ -178,25 +149,27 @@ Py::Object PythonStderr::flush(const Py::Tuple&)
     return Py::None();
 }
 
+Py::Object PythonStderr::isatty()
+{
+    return Py::False();
+}
+
 // -------------------------------------------------------------------------
 
 void OutputStdout::init_type()
 {
     behaviors().name("OutputStdout");
-    behaviors().doc("Redirection of stdout to FreeCAD's output window");
+    behaviors().doc("Redirection of stdout to FreeCAD's report view");
     // you must have overwritten the virtual functions
     behaviors().supportRepr();
     add_varargs_method("write",&OutputStdout::write,"write()");
     add_varargs_method("flush",&OutputStdout::flush,"flush()");
+    add_noargs_method("isatty",&OutputStdout::isatty,"isatty()");
 }
 
-OutputStdout::OutputStdout()
-{
-}
+OutputStdout::OutputStdout() = default;
 
-OutputStdout::~OutputStdout()
-{
-}
+OutputStdout::~OutputStdout() = default;
 
 Py::Object OutputStdout::getattr(const char *name)
 {
@@ -217,25 +190,15 @@ Py::Object OutputStdout::repr()
 
 Py::Object OutputStdout::write(const Py::Tuple& args)
 {
-    try {
-        Py::Object output(args[0]);
-        if (PyUnicode_Check(output.ptr())) {
-            PyObject* unicode = PyUnicode_AsEncodedObject(output.ptr(), "utf-8", "strict");
-            if (unicode) {
-                const char* string = PyString_AsString(unicode);
-                Base::Console().Message("%s",string);
-                Py_DECREF(unicode);
-            }
-        }
-        else {
-            Py::String text(args[0]);
-            std::string string = (std::string)text;
-            Base::Console().Message("%s",string.c_str());
-        }
-    }
-    catch (Py::Exception& e) {
-        // Do not provoke error messages
-        e.clear();
+    PyObject* output;
+    if (!PyArg_ParseTuple(args.ptr(), "O!",&PyUnicode_Type, &output))
+        throw Py::TypeError("OutputStdout.write() takes exactly one argument of type str");
+
+    PyObject* unicode = PyUnicode_AsEncodedString(output, "utf-8", nullptr);
+    if (unicode) {
+        const char* string = PyBytes_AsString(unicode);
+        Base::Console().Message("%s",string);
+        Py_DECREF(unicode);
     }
 
     return Py::None();
@@ -246,25 +209,28 @@ Py::Object OutputStdout::flush(const Py::Tuple&)
     return Py::None();
 }
 
+Py::Object OutputStdout::isatty()
+{
+    return Py::False();
+}
+
+
 // -------------------------------------------------------------------------
 
 void OutputStderr::init_type()
 {
     behaviors().name("OutputStderr");
-    behaviors().doc("Redirection of stdout to FreeCAD's output window");
+    behaviors().doc("Redirection of stdout to FreeCAD's report view");
     // you must have overwritten the virtual functions
     behaviors().supportRepr();
     add_varargs_method("write",&OutputStderr::write,"write()");
     add_varargs_method("flush",&OutputStderr::flush,"flush()");
+    add_noargs_method("isatty",&OutputStderr::isatty,"isatty()");
 }
 
-OutputStderr::OutputStderr()
-{
-}
+OutputStderr::OutputStderr() = default;
 
-OutputStderr::~OutputStderr()
-{
-}
+OutputStderr::~OutputStderr() = default;
 
 Py::Object OutputStderr::getattr(const char *name)
 {
@@ -285,25 +251,15 @@ Py::Object OutputStderr::repr()
 
 Py::Object OutputStderr::write(const Py::Tuple& args)
 {
-    try {
-        Py::Object output(args[0]);
-        if (PyUnicode_Check(output.ptr())) {
-            PyObject* unicode = PyUnicode_AsEncodedObject(output.ptr(), "utf-8", "strict");
-            if (unicode) {
-                const char* string = PyString_AsString(unicode);
-                Base::Console().Error("%s",string);
-                Py_DECREF(unicode);
-            }
-        }
-        else {
-            Py::String text(args[0]);
-            std::string string = (std::string)text;
-            Base::Console().Error("%s",string.c_str());
-        }
-    }
-    catch (Py::Exception& e) {
-        // Do not provoke error messages
-        e.clear();
+    PyObject* output;
+    if (!PyArg_ParseTuple(args.ptr(), "O!",&PyUnicode_Type, &output))
+        throw Py::TypeError("OutputStderr.write() takes exactly one argument of type str");
+
+    PyObject* unicode = PyUnicode_AsEncodedString(output, "utf-8", nullptr);
+    if (unicode) {
+        const char* string = PyBytes_AsString(unicode);
+        Base::Console().Error("%s",string);
+        Py_DECREF(unicode);
     }
 
     return Py::None();
@@ -314,6 +270,12 @@ Py::Object OutputStderr::flush(const Py::Tuple&)
     return Py::None();
 }
 
+Py::Object OutputStderr::isatty()
+{
+    return Py::False();
+}
+
+
 // -------------------------------------------------------------------------
 
 void PythonStdin::init_type()
@@ -322,6 +284,7 @@ void PythonStdin::init_type()
     behaviors().doc("Redirection of stdin to FreeCAD to open an input dialog");
     // you must have overwritten the virtual functions
     behaviors().supportRepr();
+    behaviors().supportGetattr();
     add_varargs_method("readline",&PythonStdin::readline,"readline()");
 }
 
@@ -330,9 +293,7 @@ PythonStdin::PythonStdin(PythonConsole *pc)
 {
 }
 
-PythonStdin::~PythonStdin()
-{
-}
+PythonStdin::~PythonStdin() = default;
 
 Py::Object PythonStdin::repr()
 {
@@ -342,7 +303,15 @@ Py::Object PythonStdin::repr()
     return Py::String(s_out.str());
 }
 
-Py::Object PythonStdin::readline(const Py::Tuple& args)
+Py::Object PythonStdin::getattr(const char *name)
 {
-    return Py::String( (const char *)pyConsole->readline().toAscii() );
+    if (strcmp(name, "closed") == 0) {
+        return Py::Boolean(false);
+    }
+    return getattr_methods(name);
+}
+
+Py::Object PythonStdin::readline(const Py::Tuple& /*args*/)
+{
+    return Py::String( (const char *)pyConsole->readline().toLatin1() );
 }

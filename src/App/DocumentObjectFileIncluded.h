@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2008                        *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -28,25 +28,24 @@
 #include "PropertyFile.h"
 
 
-
 namespace App
 {
 
 class AppExport DocumentObjectFileIncluded : public DocumentObject
 {
-    PROPERTY_HEADER(App::DocumentObjectFileIncluded);
+    PROPERTY_HEADER_WITH_OVERRIDE(App::DocumentObjectFileIncluded);
 
 public:
     /// Constructor
-    DocumentObjectFileIncluded(void);
-    virtual ~DocumentObjectFileIncluded();
+    DocumentObjectFileIncluded();
+    ~DocumentObjectFileIncluded() override;
 
- 
+
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "Gui::ViewProviderDocumentObject";
     }
- 
+
     /// Properties
     PropertyFileIncluded File;
 

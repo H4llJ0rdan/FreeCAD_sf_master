@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2002     *
+ *   Copyright (c) 2002 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -23,18 +23,25 @@
 #ifndef PARTGUI_DLGPARTCYLINDERIMP_H
 #define PARTGUI_DLGPARTCYLINDERIMP_H
 
-#include "ui_DlgPartCylinder.h"
 #include <Gui/InputVector.h>
 
 namespace PartGui {
+class Ui_DlgPartCylinder;
+using Ui_DlgPartCylinderPtr = std::shared_ptr<Ui_DlgPartCylinder>;
 
-class DlgPartCylinderImp : public Gui::LocationInterface<Ui_DlgPartCylinder>
+class DlgPartCylinderImp : public Gui::LocationDialogUiImp
 {
     Q_OBJECT
 
 public:
-    DlgPartCylinderImp(QWidget* parent = 0, Qt::WFlags fl = 0);
-    ~DlgPartCylinderImp();
+    explicit DlgPartCylinderImp(QWidget* parent = nullptr, Qt::WindowFlags fl = Qt::WindowFlags());
+    ~DlgPartCylinderImp() override;
+
+    double getRadius() const;
+    double getLength() const;
+
+private:
+    Ui_DlgPartCylinderPtr getUi() const;
 };
 
 } // namespace PartGui

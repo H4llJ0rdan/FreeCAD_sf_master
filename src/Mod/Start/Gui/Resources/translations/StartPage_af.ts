@@ -1,292 +1,498 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="af" sourcelanguage="en">
+<TS version="2.1" language="af" sourcelanguage="en">
   <context>
     <name>StartPage</name>
     <message>
-      <location filename="StartPage.py" line="50"/>
-      <source>FreeCAD Start Center</source>
-      <translation type="unfinished">FreeCAD Beginpunt</translation>
+      <location filename="TranslationTexts.py" line="42"/>
+      <source>Start</source>
+      <translation type="unfinished">Start</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="51"/>
-      <source>Start a new project</source>
-      <translation type="unfinished">Skep 'n nuwe projek</translation>
+      <location filename="TranslationTexts.py" line="43"/>
+      <source>Documents</source>
+      <translation type="unfinished">Documents</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="52"/>
-      <source>Recent Files</source>
-      <translation type="unfinished">Onlangse lêers</translation>
+      <location filename="TranslationTexts.py" line="44"/>
+      <source>Help</source>
+      <translation>Hulp</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="88"/>
-      <source>Tutorials</source>
-      <translation type="unfinished">Tutoriale</translation>
+      <location filename="TranslationTexts.py" line="45"/>
+      <source>Activity</source>
+      <translation type="unfinished">Activity</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="57"/>
-      <source>FreeCAD Homepage</source>
-      <translation type="unfinished">FreeCAD Tuisblad</translation>
+      <location filename="TranslationTexts.py" line="46"/>
+      <source>Recent files</source>
+      <translation>Onlangse lêers</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="58"/>
-      <source>Example projects</source>
-      <translation type="unfinished">Voorbeeldprojekte</translation>
+      <location filename="TranslationTexts.py" line="47"/>
+      <source>Tip</source>
+      <translation type="unfinished">Tip</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="59"/>
-      <source>Schenkel STEP file</source>
-      <translation type="unfinished">Schenkel STEP-lêer</translation>
+      <location filename="TranslationTexts.py" line="48"/>
+      <source>Adjust the number of recent files to be shown here in menu Edit -&gt; Preferences -&gt; General -&gt; Size of recent file list</source>
+      <translation type="unfinished">Adjust the number of recent files to be shown here in menu Edit -&gt; Preferences -&gt; General -&gt; Size of recent file list</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="60"/>
-      <source>Load a PartDesign example</source>
-      <translation type="unfinished">Laai 'n onderdeelontwerp voorbeeld</translation>
+      <location filename="TranslationTexts.py" line="49"/>
+      <source>Examples</source>
+      <translation type="unfinished">Examples</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="61"/>
-      <source>Load a Drawing extraction</source>
-      <translation type="unfinished">Laai 'n deel van 'n tekening</translation>
+      <location filename="TranslationTexts.py" line="50"/>
+      <source>General documentation</source>
+      <translation type="unfinished">General documentation</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="62"/>
-      <source>Load a Robot simulation example</source>
-      <translation type="unfinished">Laai 'n robotsimulasie voorbeeld</translation>
+      <location filename="TranslationTexts.py" line="51"/>
+      <source>User hub</source>
+      <translation type="unfinished">User hub</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="63"/>
-      <source>Projects from the Web</source>
-      <translation type="unfinished">Projekte van die internet</translation>
+      <location filename="TranslationTexts.py" line="52"/>
+      <source>This section contains documentation useful for FreeCAD users in general: a list of all the workbenches, detailed instructions on how to install and use the FreeCAD application, tutorials, and all you need to get started.</source>
+      <translation type="unfinished">This section contains documentation useful for FreeCAD users in general: a list of all the workbenches, detailed instructions on how to install and use the FreeCAD application, tutorials, and all you need to get started.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="64"/>
-      <source>Schenkel STEP</source>
-      <translation type="unfinished">Schenkel STEP</translation>
+      <location filename="TranslationTexts.py" line="53"/>
+      <source>Power users hub</source>
+      <translation type="unfinished">Power users hub</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="65"/>
-      <source>Complex Part</source>
-      <translation type="unfinished">Komplekse onderdeel</translation>
+      <location filename="TranslationTexts.py" line="54"/>
+      <source>This section gathers documentation for advanced users and people interested in writing python scripts. You will also find there a repository of macros, instructions on how to install and use them, and more information about customizing FreeCAD to your specific needs.</source>
+      <translation type="unfinished">This section gathers documentation for advanced users and people interested in writing python scripts. You will also find there a repository of macros, instructions on how to install and use them, and more information about customizing FreeCAD to your specific needs.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="66"/>
-      <source>Close this window after opening or creating a file</source>
-      <translation type="unfinished">Sluit hierdie venster na 'n lêer geskep of oopgemaak is</translation>
+      <location filename="TranslationTexts.py" line="55"/>
+      <source>Developers hub</source>
+      <translation type="unfinished">Developers hub</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="67"/>
-      <source>Don't show me this window again next time</source>
-      <translation type="unfinished">Wys my nie hierdie venster volgende keer nie</translation>
+      <location filename="TranslationTexts.py" line="56"/>
+      <source>This section contains material for developers: How to compile FreeCAD yourself, how the FreeCAD source code is structured + how to navigate in it, how to develop new workbenches and/or embed FreeCAD in your own application.</source>
+      <translation type="unfinished">This section contains material for developers: How to compile FreeCAD yourself, how the FreeCAD source code is structured + how to navigate in it, how to develop new workbenches and/or embed FreeCAD in your own application.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="68"/>
-      <source>Designing parts</source>
-      <translation type="unfinished">Die ontwerp van onderdele</translation>
+      <location filename="TranslationTexts.py" line="57"/>
+      <source>Manual</source>
+      <translation type="unfinished">Manual</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="69"/>
-      <source>The &lt;b&gt;Part Design&lt;/b&gt; workbench is designed to create complex pieces based on constrained 2D sketches. Use it to draw 2D shapes, constrain some of their elements and extrude them to form 3D pieces.</source>
-      <translation type="unfinished">Die &lt;b&gt;Onderdeelontwerp&lt;/b&gt; werkbank is ontwerp om ingewikkelde dele te skep gebaseer op vervormde 2D-sketse. Gebruik dit om 2D-vorms te teken, vervorm van hulle elemente en rek hulle om 3D elemente te vorm.</translation>
+      <location filename="TranslationTexts.py" line="58"/>
+      <source>The FreeCAD manual is another, more linear way to present the information contained in this wiki. It is made to be read like a book, and will gently introduce you to many other pages from the hubs above. &lt;a href="https://www.gitbook.com/book/yorikvanhavre/a-freecad-manual/details"&gt;e-book versions&lt;/a&gt; are also available.</source>
+      <translation type="unfinished">The FreeCAD manual is another, more linear way to present the information contained in this wiki. It is made to be read like a book, and will gently introduce you to many other pages from the hubs above. &lt;a href="https://www.gitbook.com/book/yorikvanhavre/a-freecad-manual/details"&gt;e-book versions&lt;/a&gt; are also available.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="70"/>
-      <source>Example workflow</source>
-      <translation type="unfinished">Werkvloei voorbeeld</translation>
+      <location filename="TranslationTexts.py" line="59"/>
+      <source>Workbenches documentation</source>
+      <translation type="unfinished">Workbenches documentation</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="71"/>
-      <source>Part Design</source>
-      <translation type="unfinished">Onderdeelontwerp</translation>
+      <location filename="TranslationTexts.py" line="60"/>
+      <source>These are the help pages of all the workbenches currently installed on this computer.</source>
+      <translation type="unfinished">These are the help pages of all the workbenches currently installed on this computer.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="72"/>
-      <source>Designing architectural elements</source>
-      <translation type="unfinished">Die ontwerp van argitektoniese elemente</translation>
+      <location filename="TranslationTexts.py" line="61"/>
+      <source>Getting help from the community</source>
+      <translation type="unfinished">Getting help from the community</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="73"/>
-      <source>The &lt;b&gt;Architectural Design&lt;/b&gt; workbench is specially designed for working with architectural elements such as walls or windows. Start by drawing 2D shapes, and use them as guides to build architecutral objects.</source>
-      <translation type="unfinished">Die &lt;b&gt;Argitektoniese ontwerp&lt;/b&gt; werkbank is spesiaal ontwerp om te werk met argitektoniese elemente soos mure en vensters. Begin deur 2D-vorms te teken en gebruik hulle as gidse om argitektoniese voorwerpe te bou.</translation>
+      <location filename="TranslationTexts.py" line="62"/>
+      <source>The &lt;a href="http://forum.freecadweb.org"&gt;FreeCAD forum&lt;/a&gt; is a great place to get help from other FreeCAD users and developers. The forum has many sections for different types of issues and discussion subjects. If in doubt, post in the more general &lt;a href="https://forum.freecadweb.org/viewforum.php?f=3"&gt;Help on using FreeCAD&lt;/a&gt; section.</source>
+      <translation type="unfinished">The &lt;a href="http://forum.freecadweb.org"&gt;FreeCAD forum&lt;/a&gt; is a great place to get help from other FreeCAD users and developers. The forum has many sections for different types of issues and discussion subjects. If in doubt, post in the more general &lt;a href="https://forum.freecadweb.org/viewforum.php?f=3"&gt;Help on using FreeCAD&lt;/a&gt; section.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="74"/>
-      <source>Architectual Design</source>
-      <translation type="unfinished">Argitektoniese Ontwerp</translation>
+      <location filename="TranslationTexts.py" line="63"/>
+      <source>If it is the first time you are posting on the forum, be sure to &lt;a href="https://forum.freecadweb.org/viewtopic.php?f=3&amp;t=2264"&gt;read the guidelines&lt;/a&gt; first!</source>
+      <translation type="unfinished">If it is the first time you are posting on the forum, be sure to &lt;a href="https://forum.freecadweb.org/viewtopic.php?f=3&amp;t=2264"&gt;read the guidelines&lt;/a&gt; first!</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="75"/>
-      <source>Working with Meshes</source>
-      <translation type="unfinished">Werk met Mase</translation>
+      <location filename="TranslationTexts.py" line="64"/>
+      <source>FreeCAD also maintains a public &lt;a href="https://www.freecadweb.org/tracker"&gt;bug tracker&lt;/a&gt; where anybody can submit bugs and propose new features. To avoid causing extra work and give the best chances to see your bug solved, make sure you read the &lt;a href="https://forum.freecadweb.org/viewtopic.php?f=3&amp;t=5236"&gt;bug submission guide&lt;/a&gt; before posting.</source>
+      <translation type="unfinished">FreeCAD also maintains a public &lt;a href="https://www.freecadweb.org/tracker"&gt;bug tracker&lt;/a&gt; where anybody can submit bugs and propose new features. To avoid causing extra work and give the best chances to see your bug solved, make sure you read the &lt;a href="https://forum.freecadweb.org/viewtopic.php?f=3&amp;t=5236"&gt;bug submission guide&lt;/a&gt; before posting.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="76"/>
-      <source>The &lt;b&gt;Mesh Workbench&lt;/b&gt; is used to work with Mesh objects. Meshes are simpler 3D objects than Part objects, but they are often easier to import and export to/from other applications.</source>
-      <translation type="unfinished">Die  &lt;b&gt;Maaswerkbank&lt;/b&gt; word gebruik om te werk met maasvoorwerpe. Mase is eenvoudiger 3D voorwerpe as onderdeelvoorwerpe, en hulle is dikwels makliker om in te voer en uit te voer na/van ander programme.</translation>
+      <location filename="TranslationTexts.py" line="65"/>
+      <source>Available addons</source>
+      <translation type="unfinished">Available addons</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="77"/>
-      <source>FreeCAD offers you several tools to convert between Mesh and Part objects.</source>
-      <translation type="unfinished">FreeCAD bied jou verskeie werktuie vir omskakeling tussen Maas- en Onderdeelvoorwerpe.</translation>
+      <location filename="TranslationTexts.py" line="66"/>
+      <source>Below is a list of available extra workbenches that can be added to your FreeCAD installation. Browse and install them from menu Tools -&gt; Addons manager. You can learn more about any of them by clicking the links below.</source>
+      <translation type="unfinished">Below is a list of available extra workbenches that can be added to your FreeCAD installation. Browse and install them from menu Tools -&gt; Addons manager. You can learn more about any of them by clicking the links below.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="78"/>
-      <source>Work with Meshes</source>
-      <translation type="unfinished">Werk met Mase</translation>
+      <location filename="TranslationTexts.py" line="67"/>
+      <source>If not bundled with your FreeCAD version, install the FreeCAD documentation package to get documentation hubs, workbench help and individual command documentation without an internet connection.</source>
+      <translation type="unfinished">If not bundled with your FreeCAD version, install the FreeCAD documentation package to get documentation hubs, workbench help and individual command documentation without an internet connection.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="79"/>
-      <source>The complete workbench</source>
-      <translation type="unfinished">Die volwaardige werkbank</translation>
+      <location filename="TranslationTexts.py" line="68"/>
+      <source>Cannot fetch information from GitHub. &lt;a href="EnableDownload.py"&gt;Authorize FreeCAD to access the internet&lt;/a&gt; and reload the Start page.</source>
+      <translation type="unfinished">Cannot fetch information from GitHub. &lt;a href="EnableDownload.py"&gt;Authorize FreeCAD to access the internet&lt;/a&gt; and reload the Start page.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="80"/>
-      <source>FreeCAD Complete workbench</source>
-      <translation type="unfinished">FreeCAD Complete workbench</translation>
+      <location filename="TranslationTexts.py" line="69"/>
+      <source>Recent commits</source>
+      <translation type="unfinished">Recent commits</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="82"/>
-      <source>file size:</source>
-      <translation type="unfinished">lêergrootte:</translation>
+      <location filename="TranslationTexts.py" line="70"/>
+      <source>Below are the latest changes added to the &lt;a href="http://github.com/FreeCAD/FreeCAD/"&gt;FreeCAD source code&lt;/a&gt;. These changes might not reflect yet in the FreeCAD version that you are currently running. Check the &lt;a href="https://www.freecadweb.org/wiki/Downloads"&gt;available options&lt;/a&gt; if you wish to obtain a development version.</source>
+      <translation type="unfinished">Below are the latest changes added to the &lt;a href="http://github.com/FreeCAD/FreeCAD/"&gt;FreeCAD source code&lt;/a&gt;. These changes might not reflect yet in the FreeCAD version that you are currently running. Check the &lt;a href="https://www.freecadweb.org/wiki/Downloads"&gt;available options&lt;/a&gt; if you wish to obtain a development version.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="83"/>
-      <source>creation time:</source>
-      <translation type="unfinished">skeppingstyd:</translation>
+      <location filename="TranslationTexts.py" line="71"/>
+      <source>See all commits on github</source>
+      <translation type="unfinished">See all commits on github</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="84"/>
-      <source>last modified:</source>
-      <translation type="unfinished">onlangse wysigings:</translation>
+      <location filename="TranslationTexts.py" line="72"/>
+      <source>You can configure a custom folder to display here in menu Edit -&gt; Preferences -&gt; Start -&gt; Show additional folder</source>
+      <translation type="unfinished">You can configure a custom folder to display here in menu Edit -&gt; Preferences -&gt; Start -&gt; Show additional folder</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="81"/>
-      <source>populated with some of the most commonly used tools.</source>
-      <translation type="unfinished">bevat van die mees aangewende werktuie.</translation>
+      <location filename="TranslationTexts.py" line="73"/>
+      <source>version</source>
+      <translation type="unfinished">version</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="53"/>
-      <source>Latest videos</source>
-      <translation type="unfinished">Onlangse video's</translation>
+      <location filename="TranslationTexts.py" line="74"/>
+      <source>build</source>
+      <translation type="unfinished">build</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="54"/>
-      <source>Latest news</source>
-      <translation type="unfinished">Onlangse nuus</translation>
+      <location filename="TranslationTexts.py" line="75"/>
+      <source>Create new...</source>
+      <translation type="unfinished">Create new...</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="55"/>
-      <source>On the web</source>
-      <translation type="unfinished">Op die internet</translation>
+      <location filename="TranslationTexts.py" line="76"/>
+      <source>Unknown</source>
+      <translation type="unfinished">Unknown</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="56"/>
-      <source>This is the FreeCAD Homepage. Here you will be able to find a lot of information about FreeCAD, including tutorials, examples and user documentation.</source>
-      <translation type="unfinished">Hierdie is die FreeCAD Tuisblad. Hier sal jy heelwat informasie oor FreeCAD vind, insluitende tutoriale, voorbeelde en gebruikersdokumentasie.</translation>
+      <location filename="TranslationTexts.py" line="77"/>
+      <source>Forum</source>
+      <translation>Forum</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="85"/>
-      <source>location:</source>
-      <translation type="unfinished">ligging:</translation>
+      <location filename="TranslationTexts.py" line="78"/>
+      <source>The latest posts on the &lt;a href="https://forum.freecadweb.org"&gt;FreeCAD forum&lt;/a&gt;:</source>
+      <translation type="unfinished">The latest posts on the &lt;a href="https://forum.freecadweb.org"&gt;FreeCAD forum&lt;/a&gt;:</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="86"/>
-      <source>User manual</source>
-      <translation type="unfinished">Gebruikershandleiding</translation>
+      <location filename="TranslationTexts.py" line="79"/>
+      <source>To open any of the links above in your desktop browser, Right-click -&gt; Open in external browser</source>
+      <translation type="unfinished">To open any of the links above in your desktop browser, Right-click -&gt; Open in external browser</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="89"/>
-      <source>Python resources</source>
-      <translation type="unfinished">Python hulpbronne</translation>
+      <location filename="TranslationTexts.py" line="80"/>
+      <source>Creation date</source>
+      <translation type="unfinished">Creation date</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="90"/>
-      <source>File not found</source>
-      <translation type="unfinished">Lêer nie gevind nie</translation>
+      <location filename="TranslationTexts.py" line="81"/>
+      <source>Last modification</source>
+      <translation type="unfinished">Last modification</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="91"/>
-      <source>from &lt;a href=http://twitter.com/FreeCADNews&gt;@FreeCADNews&lt;/a&gt;</source>
-      <translation type="unfinished">van &lt;a href=http://twitter.com/FreeCADNews&gt;@FreeCADNews&lt;/a&gt;</translation>
+      <location filename="TranslationTexts.py" line="82"/>
+      <source>Notes</source>
+      <translation type="unfinished">Notes</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="92"/>
-      <source>The FreeCAD-tutorial blog</source>
-      <translation type="unfinished">Die FreeCAD-tutoriaal blog</translation>
+      <location filename="TranslationTexts.py" line="83"/>
+      <source>Open start page preferences</source>
+      <translation type="unfinished">Open start page preferences</translation>
+    </message>
+  </context>
+  <context>
+    <name>Workbench</name>
+    <message>
+      <location filename="../../Workbench.cpp" line="75"/>
+      <source>Start page</source>
+      <translation type="unfinished">Start page</translation>
+    </message>
+  </context>
+  <context>
+    <name>CmdStartPage</name>
+    <message>
+      <location filename="../../Command.cpp" line="45"/>
+      <source>Start</source>
+      <translation type="unfinished">Start</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="93"/>
-      <source>from &lt;a href=http://www.youtube.com/user/FreeCADNews?feature=mhee&gt;FreeCADNews channel&lt;/a&gt;</source>
-      <translation type="unfinished">van &lt;a href=http://www.youtube.com/user/FreeCADNews?feature=mhee&gt;FreeCADNews channel&lt;/a&gt;</translation>
+      <location filename="../../Command.cpp" line="46"/>
+      <source>Start Page</source>
+      <translation type="unfinished">Start Page</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="94"/>
-      <source>This is the official user manual of FreeCAD, built, maintained and translated by the FreeCAD community.</source>
-      <translation type="unfinished">Hierdie is die amptelike gebruikershandleiding van FreeCAD, gebou, onderhou en vertaal deur die FreeCAD gemeenskap.</translation>
+      <location filename="../../Command.cpp" line="47"/>
+      <source>Displays the start page in a browser view</source>
+      <translation type="unfinished">Displays the start page in a browser view</translation>
+    </message>
+  </context>
+  <context>
+    <name>DlgStartPreferences</name>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="14"/>
+      <source>Start page options</source>
+      <translation type="unfinished">Start page options</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="95"/>
-      <source>The tutorials section on the FreeCAD website</source>
-      <translation type="unfinished">Die tutoriaalafdeling van die FreeCAD webwerf</translation>
+      <location filename="../../DlgStartPreferences.ui" line="20"/>
+      <source>Start page template</source>
+      <translation type="unfinished">Start page template</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="96"/>
-      <source>The section of the FreeCAd website dedicate dto python scripting, with examples, explanations, and API commands.</source>
-      <translation type="unfinished">Die gedeelte van die FreeCAD werberf toegewy aan python kodering, met voorbeelde, verklarings, en API-bevele.</translation>
+      <location filename="../../DlgStartPreferences.ui" line="26"/>
+      <source>An optional HTML template that will be used instead of the default start page.</source>
+      <translation type="unfinished">An optional HTML template that will be used instead of the default start page.</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="97"/>
-      <source>A blog dedicated to teaching FreeCAD, maintained by members of the FreeCAD community</source>
-      <translation type="unfinished">'n Blog toegewy daaraan om FreeCAD te leer, onderhou deur lede van die FreeCAD gemeenskap</translation>
+      <location filename="../../DlgStartPreferences.ui" line="42"/>
+      <source>Contents</source>
+      <translation type="unfinished">Contents</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="98"/>
-      <source>Getting started</source>
-      <translation type="unfinished">Getting started</translation>
+      <location filename="../../DlgStartPreferences.ui" line="48"/>
+      <source>Show forum</source>
+      <translation type="unfinished">Show forum</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="99"/>
-      <source>The FreeCAD interface is divided in workbenches, which are sets of tools suited for a specific task. You can start with one of the workbenches in this list, or with the complete workbench, which presents you with some of the most used tools gathered from other workbenches. Click to read more about workbenches on the FreeCAD website.</source>
-      <translation type="unfinished">The FreeCAD interface is divided in workbenches, which are sets of tools suited for a specific task. You can start with one of the workbenches in this list, or with the complete workbench, which presents you with some of the most used tools gathered from other workbenches. Click to read more about workbenches on the FreeCAD website.</translation>
+      <location filename="../../DlgStartPreferences.ui" line="55"/>
+      <source>Show examples folder contents</source>
+      <translation type="unfinished">Show examples folder contents</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="101"/>
-      <source>Ship Design</source>
-      <translation type="unfinished">Ship Design</translation>
+      <location filename="../../DlgStartPreferences.ui" line="62"/>
+      <source>Show additional folder</source>
+      <translation type="unfinished">Show additional folder</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="102"/>
-      <source>Designing and calculating ships</source>
-      <translation type="unfinished">Designing and calculating ships</translation>
+      <location filename="../../DlgStartPreferences.ui" line="69"/>
+      <source>If you want the examples to show on the first page</source>
+      <translation type="unfinished">If you want the examples to show on the first page</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="103"/>
-      <source>The &lt;b&gt;Ship Design&lt;/b&gt; module offers several tools to help ship designers to view, model and calculate profiles and other specific properties of ship hulls.</source>
-      <translation type="unfinished">The &lt;b&gt;Ship Design&lt;/b&gt; module offers several tools to help ship designers to view, model and calculate profiles and other specific properties of ship hulls.</translation>
+      <location filename="../../DlgStartPreferences.ui" line="91"/>
+      <source>If this is checked, the latest posts from the FreeCAD forum will be displayed on the Activity tab</source>
+      <translation type="unfinished">If this is checked, the latest posts from the FreeCAD forum will be displayed on the Activity tab</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="104"/>
-      <source>Load an Architectural example model</source>
-      <translation type="unfinished">Load an Architectural example model</translation>
+      <location filename="../../DlgStartPreferences.ui" line="110"/>
+      <source>An optional custom folder to be displayed at the bottom of the first page.
+By using ";;" to separate paths, you can add several folders here</source>
+      <translation type="unfinished">An optional custom folder to be displayed at the bottom of the first page.
+By using ";;" to separate paths, you can add several folders here</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="87"/>
-      <source>http://www.freecadweb.org/wiki/index.php?title=Online_Help_Toc</source>
-      <translation type="unfinished">http://www.freecadweb.org/wiki/index.php?title=Online_Help_Toc</translation>
+      <location filename="../../DlgStartPreferences.ui" line="127"/>
+      <source>Show notepad</source>
+      <translation type="unfinished">Show notepad</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="100"/>
-      <source>http://www.freecadweb.org/wiki/index.php?title=Workbench_Concept</source>
-      <translation type="unfinished">http://www.freecadweb.org/wiki/index.php?title=Workbench_Concept</translation>
+      <location filename="../../DlgStartPreferences.ui" line="134"/>
+      <source>Shows a notepad next to the file thumbnails, where you can keep notes across sessions</source>
+      <translation type="unfinished">Shows a notepad next to the file thumbnails, where you can keep notes across sessions</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="105"/>
-      <source>http://www.freecadweb.org/wiki/index.php?title=Tutorials</source>
-      <translation type="unfinished">http://www.freecadweb.org/wiki/index.php?title=Tutorials</translation>
+      <location filename="../../DlgStartPreferences.ui" line="153"/>
+      <source>Show tips</source>
+      <translation type="unfinished">Show tips</translation>
     </message>
     <message>
-      <location filename="StartPage.py" line="106"/>
-      <source>http://www.freecadweb.org/wiki/index.php?title=Power_users_hub</source>
-      <translation type="unfinished">http://www.freecadweb.org/wiki/index.php?title=Power_users_hub</translation>
+      <location filename="../../DlgStartPreferences.ui" line="163"/>
+      <source>Displays help tips in the Start workbench Documents tab</source>
+      <translation type="unfinished">Displays help tips in the Start workbench Documents tab</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="185"/>
+      <source>Fonts and colors</source>
+      <translation type="unfinished">Fonts and colors</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="197"/>
+      <source>The background of the main start page area</source>
+      <translation type="unfinished">The background of the main start page area</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="217"/>
+      <source>Background color</source>
+      <translation>Agtergrond kleur</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="229"/>
+      <source>in FreeCAD</source>
+      <translation type="unfinished">in FreeCAD</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="248"/>
+      <source>In external browser</source>
+      <translation type="unfinished">In external browser</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="266"/>
+      <source>Background color down gradient</source>
+      <translation type="unfinished">Background color down gradient</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="279"/>
+      <source>The color of the version text</source>
+      <translation type="unfinished">The color of the version text</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="299"/>
+      <source>Link color</source>
+      <translation type="unfinished">Link color</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="306"/>
+      <source>An optional image to display as background</source>
+      <translation type="unfinished">An optional image to display as background</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="319"/>
+      <source>If this is checked and a style sheet is specified in General preferences, it will be used and override the colors below</source>
+      <translation type="unfinished">If this is checked and a style sheet is specified in General preferences, it will be used and override the colors below</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="338"/>
+      <source>Page background color</source>
+      <translation type="unfinished">Page background color</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="351"/>
+      <source>The color of the text on the main pages</source>
+      <translation type="unfinished">The color of the text on the main pages</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="371"/>
+      <source>Background image</source>
+      <translation type="unfinished">Background image</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="378"/>
+      <source>Page text color</source>
+      <translation type="unfinished">Page text color</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="391"/>
+      <source>The color of the links</source>
+      <translation type="unfinished">The color of the links</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="417"/>
+      <source>The background color of the boxes inside the pages</source>
+      <translation type="unfinished">The background color of the boxes inside the pages</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="437"/>
+      <source>Box background color</source>
+      <translation type="unfinished">Box background color</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="450"/>
+      <source>The background color behind the panels</source>
+      <translation type="unfinished">The background color behind the panels</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="479"/>
+      <source>The down gradient for the background color (currently unsupported)</source>
+      <translation type="unfinished">The down gradient for the background color (currently unsupported)</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="502"/>
+      <source>Open links</source>
+      <translation type="unfinished">Open links</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="509"/>
+      <source>Background text color</source>
+      <translation type="unfinished">Background text color</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="516"/>
+      <source>Use FreeCAD style sheet</source>
+      <translation type="unfinished">Use FreeCAD style sheet</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="523"/>
+      <source>Font family</source>
+      <translation type="unfinished">Font family</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="532"/>
+      <source>The font family to use on the start page. Can be a font name or a comma-separated series of fallback fonts</source>
+      <translation type="unfinished">The font family to use on the start page. Can be a font name or a comma-separated series of fallback fonts</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="538"/>
+      <source>Arial,Helvetica,sans</source>
+      <translation type="unfinished">Arial,Helvetica,sans</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="551"/>
+      <source>The base font size to use for all texts of the Start page</source>
+      <translation type="unfinished">The base font size to use for all texts of the Start page</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="554"/>
+      <source>px</source>
+      <translation type="unfinished">px</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="572"/>
+      <source>Use gradient for New File icon</source>
+      <translation type="unfinished">Use gradient for New File icon</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="579"/>
+      <source>If this is selected, the 'New File' icon shows a gradient icon instead of the normal icon</source>
+      <translation type="unfinished">If this is selected, the 'New File' icon shows a gradient icon instead of the normal icon</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="601"/>
+      <source>Options</source>
+      <translation>Opsies</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="607"/>
+      <source>Choose which workbench to switch to after the program launches</source>
+      <translation type="unfinished">Choose which workbench to switch to after the program launches</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="614"/>
+      <source>If checked, will automatically close the Start page when FreeCAD launches</source>
+      <translation type="unfinished">If checked, will automatically close the Start page when FreeCAD launches</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="633"/>
+      <source>Switch workbench after loading</source>
+      <translation type="unfinished">Switch workbench after loading</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="640"/>
+      <source>Close start page after loading</source>
+      <translation type="unfinished">Close start page after loading</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="647"/>
+      <source>Close and switch on opening file</source>
+      <translation type="unfinished">Close and switch on opening file</translation>
+    </message>
+    <message>
+      <location filename="../../DlgStartPreferences.ui" line="654"/>
+      <source>If application is started by opening a file, apply the two settings above</source>
+      <translation type="unfinished">If application is started by opening a file, apply the two settings above</translation>
     </message>
   </context>
 </TS>

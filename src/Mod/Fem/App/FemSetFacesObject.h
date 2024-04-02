@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,40 +20,39 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef Fem_FemSetFacesObject_H
 #define Fem_FemSetFacesObject_H
 
-#include <App/DocumentObject.h>
-#include <App/PropertyStandard.h>
 #include "FemSetObject.h"
+#include <App/DocumentObject.h>
+
 
 namespace Fem
 {
 
-class AppFemExport FemSetFacesObject : public FemSetObject
+class FemExport FemSetFacesObject: public FemSetObject
 {
-    PROPERTY_HEADER(Fem::FemSetFacesObject);
+    PROPERTY_HEADER_WITH_OVERRIDE(Fem::FemSetFacesObject);
 
 public:
     /// Constructor
-    FemSetFacesObject(void);
-    virtual ~FemSetFacesObject();
+    FemSetFacesObject();
+    ~FemSetFacesObject() override;
 
     // returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override
+    {
         return "FemGui::ViewProviderSetFaces";
     }
-    virtual App::DocumentObjectExecReturn *execute(void) {
+    App::DocumentObjectExecReturn* execute() override
+    {
         return App::DocumentObject::StdReturn;
     }
-    virtual short mustExecute(void) const;
-    virtual PyObject *getPyObject(void);
-
-
+    short mustExecute() const override;
+    PyObject* getPyObject() override;
 };
 
-} //namespace Fem
+}  // namespace Fem
 
 
-#endif // Fem_FemSetFacesObject_H
+#endif  // Fem_FemSetFacesObject_H

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   (c) Jürgen Riegel (juergen.riegel@web.de) 2008                        *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -27,25 +27,33 @@
 // Std. configurations
 
 #include <string>
+#ifndef FC_GLOBAL_H
+#include <FCGlobal.h>
+#endif
 
 namespace Base
 {
 
 /** Creates a Uuid
- * \author Jürgen Riegel
+ * \author JÃ¼rgen Riegel
  */
 class BaseExport Uuid
 {
 public:
     /// Construction
     Uuid();
+    Uuid(const Uuid&) = default;
+    Uuid& operator=(const Uuid&) = default;
     /// Destruction
     virtual ~Uuid();
 
     void setValue(const char* sString);
     void setValue(const std::string &sString);
-    const std::string& getValue(void) const;
-    static std::string createUuid(void);
+    const std::string& getValue() const;
+    static std::string createUuid();
+
+    bool operator==(const Uuid &other) const {return _uuid == other._uuid;}
+    bool operator<(const Uuid &other) const {return _uuid < other._uuid;}
 
 private:
     std::string _uuid;

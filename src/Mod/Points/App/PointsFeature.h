@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Juergen Riegel         <juergen.riegel@web.de>          *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,23 +20,25 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef POINTS_FEATURE_H
 #define POINTS_FEATURE_H
 
-#include <App/GeoFeature.h>
+#include <App/FeatureCustom.h>
 #include <App/FeaturePython.h>
-#include <App/PropertyLinks.h>
+#include <App/GeoFeature.h>  // must be first include
 #include <App/PropertyGeo.h>
+
 #include "Points.h"
 #include "PropertyPointKernel.h"
 
 
-namespace Base{
+namespace Base
+{
 class Writer;
 }
 
-namespace App{
+namespace App
+{
 class Color;
 }
 
@@ -48,58 +50,44 @@ class PointsFeaturePy;
 /** Base class of all Points feature classes in FreeCAD.
  * This class holds an PointsKernel object.
  */
-class PointsExport Feature : public App::GeoFeature
+class PointsExport Feature: public App::GeoFeature
 {
-    PROPERTY_HEADER(Points::Feature);
+    PROPERTY_HEADER_WITH_OVERRIDE(Points::Feature);
 
 public:
     /// Constructor
-    Feature(void);
-    virtual ~Feature(void);
+    Feature();
 
-    /** @name methods overide Feature */
+    /** @name methods override Feature */
     //@{
-    void Restore(Base::XMLReader &reader);
-    void RestoreDocFile(Base::Reader &reader);
+    void Restore(Base::XMLReader& reader) override;
+    void RestoreDocFile(Base::Reader& reader) override;
+    short mustExecute() const override;
     /// recalculate the Feature
-    virtual App::DocumentObjectExecReturn *execute(void);
+    App::DocumentObjectExecReturn* execute() override;
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
-        return "PointsGui::ViewProviderPoints";
+    const char* getViewProviderName() const override
+    {
+        return "PointsGui::ViewProviderScattered";
     }
+
+    const App::PropertyComplexGeoData* getPropertyOfGeometry() const override
+    {
+        return &Points;
+    }
+
 protected:
-    void onChanged(const App::Property* prop);
+    void onChanged(const App::Property* prop) override;
     //@}
 
 public:
     PropertyPointKernel Points; /**< The point kernel property. */
 };
 
-/**
- * The Export class writes a point cloud to a file.
- * @author Werner Mayer
- */
-class Export : public Feature
-{
-    PROPERTY_HEADER(Points::Export);
+using FeatureCustom = App::FeatureCustomT<Feature>;
+using FeaturePython = App::FeaturePythonT<Feature>;
 
-public:
-    Export();
-
-    App::PropertyLinkList   Sources;
-    App::PropertyString FileName;
-    App::PropertyString Format;
-
-    /** @name methods override Feature */
-    //@{
-    /// recalculate the Feature
-    virtual App::DocumentObjectExecReturn *execute(void);
-    //@}
-};
-
-typedef App::FeaturePythonT<Feature> FeaturePython;
-
-} //namespace Points
+}  // namespace Points
 
 
-#endif 
+#endif

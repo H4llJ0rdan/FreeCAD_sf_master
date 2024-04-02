@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jan Rheinländer <jrheinlaender@users.sourceforge.net>        *
+ *   Copyright (c) 2013 Jan Rheinländer                                    *
+ *                                   <jrheinlaender@users.sourceforge.net> *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,65 +21,56 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef GUI_TASKVIEW_TaskFemConstraintFixed_H
 #define GUI_TASKVIEW_TaskFemConstraintFixed_H
 
-#include <Gui/TaskView/TaskView.h>
-#include <Gui/Selection.h>
-#include <Gui/TaskView/TaskDialog.h>
+#include <QObject>
+#include <memory>
 
-#include "TaskFemConstraint.h"
+#include "TaskFemConstraintOnBoundary.h"
 #include "ViewProviderFemConstraintFixed.h"
+
 
 class Ui_TaskFemConstraintFixed;
 
-namespace App {
-class Property;
-}
-
-namespace Gui {
-class ViewProvider;
-}
-
-namespace FemGui {
-
-class TaskFemConstraintFixed : public TaskFemConstraint
+namespace FemGui
+{
+class TaskFemConstraintFixed: public TaskFemConstraintOnBoundary
 {
     Q_OBJECT
 
 public:
-    TaskFemConstraintFixed(ViewProviderFemConstraintFixed *ConstraintView,QWidget *parent = 0);
-    virtual ~TaskFemConstraintFixed();
-
-    virtual const std::string getReferences() const;
+    explicit TaskFemConstraintFixed(ViewProviderFemConstraintFixed* ConstraintView,
+                                    QWidget* parent = nullptr);
+    ~TaskFemConstraintFixed() override;
+    const std::string getReferences() const override;
 
 private Q_SLOTS:
-    void onReferenceDeleted(void);
+    void onReferenceDeleted();
+    void addToSelection() override;
+    void removeFromSelection() override;
 
 protected:
-    virtual void changeEvent(QEvent *e);
+    bool event(QEvent* e) override;
+    void changeEvent(QEvent* e) override;
+    void clearButtons(const SelectionChangeModes notThis) override;
 
 private:
-    virtual void onSelectionChanged(const Gui::SelectionChanges& msg);
-
-private:
-    Ui_TaskFemConstraintFixed* ui;
+    void updateUI();
+    std::unique_ptr<Ui_TaskFemConstraintFixed> ui;
 };
 
-/// simulation dialog for the TaskView
-class TaskDlgFemConstraintFixed : public TaskDlgFemConstraint
+class TaskDlgFemConstraintFixed: public TaskDlgFemConstraint
 {
     Q_OBJECT
 
 public:
-    TaskDlgFemConstraintFixed(ViewProviderFemConstraintFixed *ConstraintView);
-
-    /// is called by the framework if the dialog is accepted (Ok)
-    virtual bool accept();
-
+    explicit TaskDlgFemConstraintFixed(ViewProviderFemConstraintFixed* ConstraintView);
+    void open() override;
+    bool accept() override;
+    bool reject() override;
 };
 
-} //namespace FemGui
+}  // namespace FemGui
 
-#endif // GUI_TASKVIEW_TaskFemConstraintFixed_H
+#endif  // GUI_TASKVIEW_TaskFemConstraintFixed_H

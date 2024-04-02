@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jürgen Riegel (FreeCAD@juergen-riegel.net)         *
+ *   Copyright (c) 2013 JÃ¼rgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,26 +24,24 @@
 #ifndef FEM_ViewProviderSetElements_H
 #define FEM_ViewProviderSetElements_H
 
-#include "ViewProviderSetElements.h"
 #include <Gui/ViewProviderGeometryObject.h>
-#include <Mod/Fem/App/FemSetNodesObject.h>
 
 namespace FemGui
 {
 
-class ViewProviderSetElements : public Gui::ViewProviderGeometryObject
+class ViewProviderSetElements: public Gui::ViewProviderGeometryObject
 {
-    PROPERTY_HEADER(RobotGui::ViewProviderSetElements);
+    PROPERTY_HEADER_WITH_OVERRIDE(RobotGui::ViewProviderSetElements);
 
 public:
-    virtual bool doubleClicked(void);
-protected:
-    virtual bool setEdit(int ModNum);
-    virtual void unsetEdit(int ModNum);
+    bool doubleClicked() override;
 
+protected:
+    bool setEdit(int ModNum) override;
+    void unsetEdit(int ModNum) override;
 };
 
-} //namespace FemGui
+}  // namespace FemGui
 
 
-#endif // FEM_ViewProviderSetElements_H
+#endif  // FEM_ViewProviderSetElements_H

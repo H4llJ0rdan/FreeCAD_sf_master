@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,13 +20,10 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PARTGUI_VIEWPROVIDERRULEDSURFACE_H
 #define PARTGUI_VIEWPROVIDERRULEDSURFACE_H
 
 #include "ViewProvider.h"
-
-
 
 
 namespace PartGui {
@@ -34,19 +31,18 @@ namespace PartGui {
 
 class PartGuiExport ViewProviderRuledSurface:public ViewProviderPart
 {
-    PROPERTY_HEADER(PartGui::ViewProviderRuledSurface);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderRuledSurface);
 
 public:
     /// constructor
     ViewProviderRuledSurface();
     /// destructor
-    virtual ~ViewProviderRuledSurface();
+    ~ViewProviderRuledSurface() override;
 
-    std::vector<std::string> getDisplayModes(void) const;
-    std::vector<App::DocumentObject*> claimChildren() const;
-    void updateData(const App::Property*);
-    bool onDelete(const std::vector<std::string> &);
-    
+    std::vector<std::string> getDisplayModes() const override;
+    std::vector<App::DocumentObject*> claimChildren() const override;
+    void updateData(const App::Property*) override;
+    bool onDelete(const std::vector<std::string> &) override;
 
 protected:
 
@@ -56,4 +52,3 @@ protected:
 
 
 #endif // PARTGUI_VIEWPROVIDERRULEDSURFACE_H
-

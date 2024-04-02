@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Jürgen Riegel          (juergen.riegel@web.de) 2005     *
+ *   Copyright (c) 2005 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -27,7 +27,6 @@
 # include <cstring>
 #endif
 
-#include <Base/Exception.h>
 #include "Material.h"
 
 using namespace App;
@@ -36,24 +35,26 @@ using namespace App;
 //===========================================================================
 // Material
 //===========================================================================
-Material::Material(void)
+Material::Material()
+  : shininess{0.2000f}
+  , transparency{}
 {
     setType(STEEL);
     setType(USER_DEFINED);
 }
 
 Material::Material(const char* MatName)
+  : shininess{0.2000f}
+  , transparency{}
 {
     set(MatName);
 }
 
 Material::Material(const MaterialType MatType)
+  : shininess{0.2000f}
+  , transparency{}
 {
     setType(MatType);
-}
-
-Material::~Material() 
-{
 }
 
 void Material::set(const char* MatName)
@@ -268,7 +269,7 @@ void Material::setType(const MaterialType MatType)
         break;
     case CHROME:
         ambientColor .set(0.3500f,0.3500f,0.3500f);
-        diffuseColor .set(0.4000f,0.4000f,0.4000f);
+        diffuseColor .set(0.9176f,0.9176f,0.9176f);
         specularColor.set(0.9746f,0.9746f,0.9746f);
         emissiveColor.set(0.0000f,0.0000f,0.0000f);
         shininess    = 0.1000f;

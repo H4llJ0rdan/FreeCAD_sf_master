@@ -20,63 +20,106 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-
 #ifndef _PreComp_
-# include <qobject.h>
+#include <QCoreApplication>
 #endif
 
-#include "Workbench.h"
-#include <Gui/ToolBarManager.h>
-#include <Gui/MenuManager.h>
-#include <Gui/ToolBarManager.h>
-#include <Gui/DockWindowManager.h>
-#include <Gui/Application.h>
-#include <Gui/Action.h>
-#include <Gui/Command.h>
-#include <Gui/Selection.h>
-#include <Gui/ToolBoxManager.h>
-#include <App/Document.h>
-#include <App/DocumentObject.h>
 #include <Base/Console.h>
 #include <Base/Exception.h>
+#include <Base/Interpreter.h>
+#include <Base/Tools.h>
+#include <Gui/Command.h>
+#include <Gui/DockWindowManager.h>
+#include <Gui/MDIView.h>
+#include <Gui/MainWindow.h>
+#include <Gui/ToolBarManager.h>
 
-#include <Mod/Start/App/StartConfiguration.h>
+#include "Workbench.h"
+
 
 using namespace StartGui;
 
 TYPESYSTEM_SOURCE(StartGui::Workbench, Gui::StdWorkbench)
 
-StartGui::Workbench::Workbench()
-{
-}
+StartGui::Workbench::Workbench() = default;
 
-StartGui::Workbench::~Workbench()
-{
-}
+StartGui::Workbench::~Workbench() = default;
 
 void StartGui::Workbench::activated()
 {
+    // Automatically display the StartPage only the very first time
+    static bool first = true;
+    if (first) {
+        loadStartPage();
+        first = false;
+    }
+}
+
+void StartGui::Workbench::loadStartPage()
+{
+    // Ensure that we don't open the Start page multiple times
+    QString title = QCoreApplication::translate("Workbench", "Start page");
+    QList<QWidget*> ch = Gui::getMainWindow()->windows();
+    for (auto c : ch) {
+        if (c->windowTitle() == title) {
+            Gui::MDIView* mdi = qobject_cast<Gui::MDIView*>(c);
+            if (mdi) {
+                Gui::getMainWindow()->setActiveWindow(mdi);
+            }
+            return;
+        }
+    }
+
     try {
-        Gui::Command::doCommand(Gui::Command::Gui,"import WebGui");
-        Gui::Command::doCommand(Gui::Command::Gui,"from StartPage import StartPage");
+        QByteArray utf8Title = title.toUtf8();
+        std::string escapedstr = Base::Tools::escapedUnicodeFromUtf8(utf8Title);
+        std::stringstream str;
+        str << "import WebGui,sys,Start\n"
+            << "from StartPage import StartPage\n\n"
+            << "class WebPage(object):\n"
+            << "    def __init__(self):\n"
+            << "        self.browser=WebGui.openBrowserWindow(u\"" << escapedstr.c_str() << "\")\n"
 #if defined(FC_OS_WIN32)
-        Gui::Command::doCommand(Gui::Command::Gui,"WebGui.openBrowserHTML"
-        "(StartPage.handle(),App.getResourceDir() + 'Mod/Start/StartPage/','Start page')");
+            << "        self.browser.setHtml(StartPage.handle(), App.getResourceDir() + "
+               "'Mod/Start/StartPage/')\n"
 #else
-        Gui::Command::doCommand(Gui::Command::Gui,"WebGui.openBrowserHTML"
-        "(StartPage.handle(),'file://' + App.getResourceDir() + 'Mod/Start/StartPage/','Start page')");
+            << "        self.browser.setHtml(StartPage.handle(), 'file://' + App.getResourceDir() "
+               "+ 'Mod/Start/StartPage/')\n"
 #endif
+            << "    def onChange(self, par, reason):\n"
+            << "        try:\n"
+            << "            if reason == 'RecentFiles':\n"
+#if defined(FC_OS_WIN32)
+            << "                self.browser.setHtml(StartPage.handle(), App.getResourceDir() + "
+               "'Mod/Start/StartPage/')\n\n"
+#else
+            << "                self.browser.setHtml(StartPage.handle(), 'file://' + "
+               "App.getResourceDir() + 'Mod/Start/StartPage/')\n\n"
+#endif
+            << "        except RuntimeError as e:\n"
+            << "            pass\n"
+            << "class WebView(object):\n"
+            << "    def __init__(self):\n"
+            << "        self.pargrp = FreeCAD.ParamGet('User "
+               "parameter:BaseApp/Preferences/RecentFiles')\n"
+            << "        self.webPage = WebPage()\n"
+            << "        self.pargrp.Attach(self.webPage)\n"
+            << "    def __del__(self):\n"
+            << "        self.pargrp.Detach(self.webPage)\n\n"
+            << "webView = WebView()\n"
+            << "StartPage.checkPostOpenStartPage()\n";
+
+        Base::Interpreter().runString(str.str().c_str());
     }
     catch (const Base::Exception& e) {
         Base::Console().Error("%s\n", e.what());
     }
 }
 
-void StartGui::Workbench::setupContextMenu(const char* recipient,Gui::MenuItem* item) const
+void StartGui::Workbench::setupContextMenu(const char* recipient, Gui::MenuItem* item) const
 {
-
+    Gui::StdWorkbench::setupContextMenu(recipient, item);
 }
 
 Gui::MenuItem* StartGui::Workbench::setupMenuBar() const
@@ -91,10 +134,13 @@ Gui::ToolBarItem* StartGui::Workbench::setupToolBars() const
     // web navigation toolbar
     Gui::ToolBarItem* navigation = new Gui::ToolBarItem(root);
     navigation->setCommand("Navigation");
-    *navigation << "Web_OpenWebsite" 
-                << "Separator" 
-                << "Web_BrowserBack" 
-                << "Web_BrowserNext" 
+    *navigation << "Web_BrowserSetURL"
+                << "Separator"
+                << "Web_OpenWebsite"
+                << "Start_StartPage"
+                << "Separator"
+                << "Web_BrowserBack"
+                << "Web_BrowserNext"
                 << "Web_BrowserRefresh"
                 << "Web_BrowserStop"
                 << "Separator"
@@ -102,7 +148,6 @@ Gui::ToolBarItem* StartGui::Workbench::setupToolBars() const
                 << "Web_BrowserZoomOut";
 
     return root;
-
 }
 
 Gui::ToolBarItem* StartGui::Workbench::setupCommandBars() const
@@ -114,7 +159,8 @@ Gui::ToolBarItem* StartGui::Workbench::setupCommandBars() const
 Gui::DockWindowItems* StartGui::Workbench::setupDockWindows() const
 {
     Gui::DockWindowItems* root = Gui::StdWorkbench::setupDockWindows();
-    root->setVisibility(false); // hide all dock windows by default
-    root->setVisibility("Std_CombiView",true); // except of the combi view
+    root->setVisibility(false);                  // hide all dock windows by default
+    root->setVisibility("Std_ComboView", true);  // except of the combo view
+    root->setVisibility("Std_TaskView", true);   // and the task view
     return root;
 }

@@ -24,33 +24,30 @@
 #ifndef PARTGUI_ViewProviderFillet_H
 #define PARTGUI_ViewProviderFillet_H
 
-#include "ViewProvider.h"
+#include "ViewProviderDressUp.h"
 
 
 namespace PartDesignGui {
 
-class PartDesignGuiExport ViewProviderFillet : public ViewProvider
+class PartDesignGuiExport ViewProviderFillet : public ViewProviderDressUp
 {
-    PROPERTY_HEADER(PartDesignGui::ViewProviderFillet);
+    Q_DECLARE_TR_FUNCTIONS(PartDesignGui::ViewProviderFillet)
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderFillet);
 
 public:
     /// constructor
-    ViewProviderFillet();
-    /// destructor
-    virtual ~ViewProviderFillet();
+    ViewProviderFillet()
+        { sPixmap = "PartDesign_Fillet.svg";
+          menuName = tr("Fillet parameters"); }
 
-    /// grouping handling 
-    void setupContextMenu(QMenu*, QObject*, const char*);
-
-    virtual bool onDelete(const std::vector<std::string> &);
+    /// return "Fillet"
+    const std::string & featureName() const override;
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-    virtual void unsetEdit(int ModNum);
-
+    /// Returns a newly create dialog for the part to be placed in the task view
+    TaskDlgFeatureParameters *getEditDialog() override;
 };
-
-
 
 } // namespace PartDesignGui
 

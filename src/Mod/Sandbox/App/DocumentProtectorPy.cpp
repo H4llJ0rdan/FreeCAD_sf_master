@@ -79,13 +79,13 @@ PyObject *DocumentProtectorPy::method_varargs_ext_handler(PyObject *_self_and_na
         return pycxx_handler(_self_and_name_tuple, _args);
     }
     catch (const Base::Exception& e) {
-        throw Py::Exception(e.what());
+        throw Py::RuntimeError(e.what());
     }
     catch (const std::exception& e) {
-        throw Py::Exception(e.what());
+        throw Py::RuntimeError(e.what());
     }
     catch(...) {
-        throw Py::Exception("Unknown C++ exception");
+        throw Py::RuntimeError("Unknown C++ exception");
     }
 }
 
@@ -239,7 +239,7 @@ int DocumentObjectProtectorPy::setattr(const char * attr, const Py::Object & val
             throw Py::AttributeError(s_out.str());
         }
         Base::PyGILStateRelease unlock;
-        std::auto_ptr<App::Property> copy(static_cast<App::Property*>
+        std::unique_ptr<App::Property> copy(static_cast<App::Property*>
             (prop->getTypeId().createInstance()));
         if (PyObject_TypeCheck(value.ptr(), DocumentObjectProtectorPy::type_object())) {
             copy->setPyObject(static_cast<const DocumentObjectProtectorPy*>(value.ptr())->getObject().ptr());

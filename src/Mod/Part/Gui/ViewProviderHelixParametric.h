@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2004 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2004 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -25,32 +25,41 @@
 #define PARTGUI_VIEWPROVIDERHELIXPARAMETRIC_H
 
 #include "ViewProviderSpline.h"
+#include "ViewProviderPrimitive.h"
 
 namespace PartGui {
 
 
-class PartGuiExport ViewProviderHelixParametric : public ViewProviderSpline
+class PartGuiExport ViewProviderHelixParametric : public ViewProviderPrimitive
 {
-    PROPERTY_HEADER(PartGui::ViewProviderHelixParametric);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderHelixParametric);
 
 public:
     /// constructor
     ViewProviderHelixParametric();
     /// destructor
-    virtual ~ViewProviderHelixParametric();
-    std::vector<std::string> getDisplayModes(void) const;
+    ~ViewProviderHelixParametric() override;
+    std::vector<std::string> getDisplayModes() const override;
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
+
+private:
+    ViewProviderSplineExtension extension;
 };
 
-class PartGuiExport ViewProviderSpiralParametric : public ViewProviderSpline
+class PartGuiExport ViewProviderSpiralParametric : public ViewProviderPrimitive
 {
-    PROPERTY_HEADER(PartGui::ViewProviderSpiralParametric);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderSpiralParametric);
 
 public:
     /// constructor
     ViewProviderSpiralParametric();
     /// destructor
-    virtual ~ViewProviderSpiralParametric();
-    std::vector<std::string> getDisplayModes(void) const;
+    ~ViewProviderSpiralParametric() override;
+    std::vector<std::string> getDisplayModes() const override;
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
+
+private:
+    ViewProviderSplineExtension extension;
 };
 
 } // namespace PartGui

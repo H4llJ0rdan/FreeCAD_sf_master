@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) Juergen Riegel         <juergen.riegel@web.de>          *
+ *   Copyright (c) 2011 Jürgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -32,6 +32,9 @@
 
 #include <Gui/TaskView/TaskDialog.h>
 
+class QDockWidget;
+class QTabBar;
+
 namespace App
 {
   class DocumentObject;
@@ -54,10 +57,10 @@ class GuiExport ControlSingleton : public QObject
      Q_OBJECT
 
 public:
-    static ControlSingleton& instance(void);
-    static void destruct (void);
+    static ControlSingleton& instance();
+    static void destruct ();
 
-    /** @name dialog handling 
+    /** @name dialog handling
      *  These methods are used to control the TaskDialog stuff.
      */
     //@{
@@ -67,33 +70,40 @@ public:
     //void closeDialog();
     //@}
 
-    /** @name task view handling 
+    /** @name task view handling
      */
     //@{
     Gui::TaskView::TaskView* taskPanel() const;
     /// raising the model view
     void showModelView();
-    /// get the tab panel
-    QTabWidget* tabPanel() const;
     //@}
 
-    bool isAllowedAlterDocument(void) const;
-    bool isAllowedAlterView(void) const;
-    bool isAllowedAlterSelection(void) const;
+    /*!
+      If a task dialog is open then it indicates whether this task dialog allows other commands to modify
+      the document while it is open. If no task dialog is open true is returned.
+     */
+    bool isAllowedAlterDocument() const;
+    /*!
+      If a task dialog is open then it indicates whether this task dialog allows other commands to modify
+      the 3d view while it is open. If no task dialog is open true is returned.
+     */
+    bool isAllowedAlterView() const;
+    /*!
+      If a task dialog is open then it indicates whether this task dialog allows other commands to modify
+      the selection while it is open. If no task dialog is open true is returned.
+     */
+    bool isAllowedAlterSelection() const;
 
 public Q_SLOTS:
     void accept();
     void reject();
     void closeDialog();
-    /// raises the task view panel 
+    /// raises the task view panel
     void showTaskView();
 
 private Q_SLOTS:
     /// This get called by the TaskView when the Dialog is finished
     void closedDialog();
-
-private:
-    Gui::TaskView::TaskView *getTaskPanel();
 
 private:
     struct status {
@@ -103,18 +113,23 @@ private:
     std::stack<status> StatusStack;
 
     Gui::TaskView::TaskDialog *ActiveDialog;
- 
+    int oldTabIndex;
+
 private:
     /// Construction
     ControlSingleton();
     /// Destruction
-    virtual ~ControlSingleton();
+    ~ControlSingleton() override;
+    void showDockWidget(QWidget*);
+    QTabBar* findTabBar(QDockWidget*) const;
+    void aboutToShowDialog(QDockWidget* widget);
+    void aboutToHideDialog(QDockWidget* widget);
 
     static ControlSingleton* _pcSingleton;
 };
 
 /// Get the global instance
-inline ControlSingleton& Control(void)
+inline ControlSingleton& Control()
 {
     return ControlSingleton::instance();
 }

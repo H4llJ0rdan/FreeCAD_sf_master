@@ -24,30 +24,25 @@
 #ifndef PARTGUI_ViewProviderPad_H
 #define PARTGUI_ViewProviderPad_H
 
-#include "ViewProvider.h"
+#include "ViewProviderSketchBased.h"
 
 namespace PartDesignGui {
 
-class PartDesignGuiExport ViewProviderPad : public ViewProvider
+class PartDesignGuiExport ViewProviderPad : public ViewProviderSketchBased
 {
-    PROPERTY_HEADER(PartGui::ViewProviderPad);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartDesignGui::ViewProviderPad);
 
 public:
     /// constructor
     ViewProviderPad();
     /// destructor
-    virtual ~ViewProviderPad();
+    ~ViewProviderPad() override;
 
-    /// grouping handling 
-    std::vector<App::DocumentObject*> claimChildren(void)const;
-    void setupContextMenu(QMenu*, QObject*, const char*);
-    bool doubleClicked();
-
-    virtual bool onDelete(const std::vector<std::string> &);
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-    virtual void unsetEdit(int ModNum);
+    /// Returns a newly created TaskDlgPadParameters
+    TaskDlgFeatureParameters *getEditDialog() override;
 
 };
 

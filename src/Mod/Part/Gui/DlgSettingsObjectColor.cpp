@@ -20,57 +20,65 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
 #include "DlgSettingsObjectColor.h"
-#include <Gui/PrefWidgets.h>
+#include "ui_DlgSettingsObjectColor.h"
+
 
 using namespace PartGui;
 
 /* TRANSLATOR PartGui::DlgSettingsObjectColor */
 
 /**
- *  Constructs a DlgSettingsObjectColor which is a child of 'parent', with the 
- *  name 'name' and widget flags set to 'f' 
+ *  Constructs a DlgSettingsObjectColor which is a child of 'parent', with the
+ *  name 'name' and widget flags set to 'f'
  */
 DlgSettingsObjectColor::DlgSettingsObjectColor(QWidget* parent)
     : PreferencePage(parent)
+    , ui(new Ui_DlgSettingsObjectColor)
 {
-    this->setupUi(this);
+    ui->setupUi(this);
+    ui->DefaultShapeColor->setDisabled(ui->checkRandomColor->isChecked());
 }
 
-/** 
+/**
  *  Destroys the object and frees any allocated resources
  */
-DlgSettingsObjectColor::~DlgSettingsObjectColor()
-{
-    // no need to delete child widgets, Qt does it all for us
-}
+DlgSettingsObjectColor::~DlgSettingsObjectColor() = default;
 
 void DlgSettingsObjectColor::saveSettings()
 {
     // Part
-    DefaultShapeColor->onSave();
-    DefaultShapeLineColor->onSave();
-    DefaultShapeLineWidth->onSave();
-    DefaultShapeVertexColor->onSave();
-    DefaultShapeVertexWidth->onSave();
-    BoundingBoxColor->onSave();
+    ui->DefaultShapeColor->onSave();
+    ui->checkRandomColor->onSave();
+    ui->DefaultShapeTransparency->onSave();
+    ui->DefaultShapeLineColor->onSave();
+    ui->DefaultShapeLineWidth->onSave();
+    ui->DefaultShapeVertexColor->onSave();
+    ui->DefaultShapeVertexSize->onSave();
+    ui->BoundingBoxColor->onSave();
+    ui->BoundingBoxFontSize->onSave();
+    ui->twosideRendering->onSave();
+    // Annotations
+    ui->AnnotationTextColor->onSave();
 }
 
 void DlgSettingsObjectColor::loadSettings()
 {
     // Part
-    DefaultShapeColor->onRestore();
-    DefaultShapeLineColor->onRestore();
-    DefaultShapeLineWidth->onRestore();
-    DefaultShapeVertexColor->onRestore();
-    DefaultShapeVertexWidth->onRestore();
-    BoundingBoxColor->onRestore();
+    ui->DefaultShapeColor->onRestore();
+    ui->checkRandomColor->onRestore();
+    ui->DefaultShapeTransparency->onRestore();
+    ui->DefaultShapeLineColor->onRestore();
+    ui->DefaultShapeLineWidth->onRestore();
+    ui->DefaultShapeVertexColor->onRestore();
+    ui->DefaultShapeVertexSize->onRestore();
+    ui->BoundingBoxColor->onRestore();
+    ui->BoundingBoxFontSize->onRestore();
+    ui->twosideRendering->onRestore();
+    // Annotations
+    ui->AnnotationTextColor->onRestore();
 }
 
 /**
@@ -79,7 +87,7 @@ void DlgSettingsObjectColor::loadSettings()
 void DlgSettingsObjectColor::changeEvent(QEvent *e)
 {
     if (e->type() == QEvent::LanguageChange) {
-        retranslateUi(this);
+        ui->retranslateUi(this);
     }
     else {
         QWidget::changeEvent(e);

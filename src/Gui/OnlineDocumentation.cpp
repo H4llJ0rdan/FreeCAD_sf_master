@@ -20,25 +20,21 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
+# include <QApplication>
 # include <QBuffer>
-# include <QHttpResponseHeader>
+# include <QImageWriter>
 # include <QMessageBox>
 # include <QTcpSocket>
 #endif
 
-#include <sstream>
-#include <CXX/Objects.hxx>
-#include <zipios++/zipfile.h>
 #include <Base/Interpreter.h>
-#include <Base/Stream.h>
-#include <App/Application.h>
+#include <Base/Exception.h>
 
-#include "MainWindow.h"
-#include "BitmapFactory.h"
 #include "OnlineDocumentation.h"
+#include "MainWindow.h"
+
 
 using namespace Gui;
 
@@ -69,138 +65,35 @@ static const unsigned char navicon_data[] = {
     0x9c,0x3d,0x00,0x00,0x9f,0xfd,0x00,0x00,0x80,0xfd,0x00,0x00,0xff,0x7d,
     0x00,0x00,0xfe,0x01,0x00,0x00,0xff,0x7f,0x00,0x00};
 
-OnlineDocumentation::OnlineDocumentation()
-{
-    // store the listed files in a stringlist
-    std::string path = App::GetApplication().getHomePath();
-    path += "/doc/docs.zip";
-    zipios::ZipFile zip(path);
-    if (zip.isValid()) {
-        zipios::ConstEntries entries = zip.entries();
-        for (zipios::ConstEntries::iterator it = entries.begin(); it != entries.end(); ++it) {
-            this->files.push_back(QString::fromAscii((*it)->getFileName().c_str()));
-        }
-    }
-}
+PythonOnlineHelp::PythonOnlineHelp() = default;
 
-OnlineDocumentation::~OnlineDocumentation()
-{
-}
-
-QByteArray OnlineDocumentation::loadResource(const QString& filename) const
-{
-    QString fn = filename;
-    fn = filename.mid(1);
-    QByteArray res;
-
-    if (fn == QLatin1String("favicon.ico")) {
-        // Return an resource icon in ico format
-        res.reserve(navicon_data_len);
-        for (int i=0; i<(int)navicon_data_len;i++) {
-            res[i] = navicon_data[i];
-        }
-    }
-    else if (filename == QLatin1String("/")) {
-        // load the startpage
-        QString header = QString::fromAscii(
-            "<!doctype html PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
-            "<link rel=\"shortcut icon\" href=\"favicon.ico\" type=\"image/x-icon\">"
-            "<html><head><title>Python: Index of Modules</title>"
-            "</head><body bgcolor=\"#f0f0f8\">"
-            ""
-            "<table width=\"100%\" cellspacing=0 cellpadding=2 border=0 summary=\"heading\">"
-            "<tr bgcolor=\"#7799ee\">"
-            "<td valign=bottom>&nbsp;<br>"
-            "<font color=\"#ffffff\" face=\"helvetica, arial\">&nbsp;<br><big><big><strong>Python: Index of Modules</strong></big></big></font></td>"
-            "<td align=right valign=bottom>"
-            "<font color=\"#ffffff\" face=\"helvetica, arial\">&nbsp;</font></td></tr></table>"
-            "<p><p>"
-            "<table width=\"100%\" cellspacing=0 cellpadding=2 border=0 summary=\"section\">"
-            "<tr bgcolor=\"#ee77aa\">"
-            "<td colspan=3 valign=bottom>&nbsp;<br>"
-            "<font color=\"#ffffff\" face=\"helvetica, arial\"><big><strong>FreeCAD Modules</strong></big></font></td></tr>"
-            ""
-            "<tr><td bgcolor=\"#ee77aa\"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>"
-            "<td width=\"100%\"><table width=\"100%\" summary=\"list\"><tr><td width=\"25%\" valign=top>");
-        int ct=0;
-        for (QStringList::ConstIterator it = this->files.begin(); it != this->files.end(); ++it) {
-            QString file = *it;
-            if (file.endsWith(QLatin1String(".html"))) {
-                file.chop(5);
-                if ((++ct)%15 == 0)
-                    header += QString::fromAscii("</td><td width=\"25%\" valign=top>");
-                header += QString::fromAscii("<a href=\"%1.html\">%2</a><br>").arg(file).arg(file);
-            }
-        }
-
-        header += QString::fromAscii(
-        "</td></tr></table></td></tr></table> <p>"
-        //"<p align=right>"
-        //"<font color=\"#909090\" face=\"helvetica, arial\"><strong>"
-        //"pydoc</strong> by Ka-Ping Yee &lt;ping@lfw.org&gt;</font>"
-        "</body></html>");
-        res.append(header);
-    }
-    else if (this->files.contains(fn)) {
-        // load the requested page from zip 
-        std::string path = App::GetApplication().getHomePath();
-        path += "/doc/docs.zip";
-        zipios::ZipFile zip(path);
-        zipios::ConstEntryPointer entry = zip.getEntry((const char*)fn.toAscii());
-        std::istream* str = zip.getInputStream(entry);
-
-        // set size of the array so that no re-allocation is needed when reading from the stream
-        res.reserve(entry->getSize());
-        QBuffer buffer(&res);
-        buffer.open(QIODevice::WriteOnly);
-        Base::IODeviceOStreambuf buf(&buffer);
-        (*str) >> &buf;
-    }
-    else {
-        // load the error page
-        QHttpResponseHeader header(404, QString::fromAscii("File not found"));
-        header.setContentType(QString::fromAscii("text/html\r\n"
-            "\r\n"
-            "<html><head><title>Error</title></head>"
-            "<body bgcolor=\"#f0f0f8\">"
-            "<table width=\"100%\" cellspacing=0 cellpadding=2 border=0 summary=\"heading\">"
-            "<tr bgcolor=\"#7799ee\">"
-            "<td valign=bottom>&nbsp;<br>"
-            "<font color=\"#ffffff\" face=\"helvetica, arial\">&nbsp;<br><big><big><strong>FreeCAD Documentation</strong></big></big></font></td>"
-            "<td align=right valign=bottom>"
-            "<font color=\"#ffffff\" face=\"helvetica, arial\">&nbsp;</font></td></tr></table>"
-            "<p><p>"
-            "<h1>404 - File not found</h1>"
-            "<div><p><strong>The requested URL was not found on this server."
-            "</strong></p>"
-            "</div></body>"
-            "</html>"
-            "\r\n"));
-        res.append(header.toString());
-    }
-
-    return res;
-}
-
-PythonOnlineHelp::PythonOnlineHelp()
-{
-}
-
-PythonOnlineHelp::~PythonOnlineHelp()
-{
-}
+PythonOnlineHelp::~PythonOnlineHelp() = default;
 
 QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
 {
-    QString fn = filename;
+    QString fn;
     fn = filename.mid(1);
     QByteArray res;
 
     if (fn == QLatin1String("favicon.ico")) {
-        // Return an resource icon in ico format
-        res.reserve(navicon_data_len);
-        for (int i=0; i<(int)navicon_data_len;i++) {
-            res[i] = navicon_data[i];
+        // Return a resource icon in ico format
+        QBuffer buffer;
+        buffer.open(QBuffer::WriteOnly);
+        QImageWriter writer;
+        writer.setDevice(&buffer);
+        writer.setFormat("ICO");
+        if (writer.canWrite()) {
+            QPixmap px = qApp->windowIcon().pixmap(24,24);
+            writer.write(px.toImage());
+            buffer.close();
+            res = buffer.data();
+        }
+        else {
+            // fallback
+            res.reserve(navicon_data_len);
+            for (int i=0; i<(int)navicon_data_len;i++) {
+                res[i] = navicon_data[i];
+            }
         }
     }
     else if (filename == QLatin1String("/")) {
@@ -212,7 +105,7 @@ QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
         dict = PyDict_Copy(dict);
 
         QByteArray cmd =
-            "import string, os, sys, pydoc, pkgutil\n"
+            "import os, sys, pydoc, pkgutil\n"
             "\n"
             "class FreeCADDoc(pydoc.HTMLDoc):\n"
             "    def index(self, dir, shadowed=None):\n"
@@ -239,8 +132,8 @@ QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
             "'#ffffff', '#7799ee')\n"
             "def bltinlink(name):\n"
             "    return '<a href=\"%s.html\">%s</a>' % (name, name)\n"
-            "names = filter(lambda x: x != '__main__',\n"
-            "               sys.builtin_module_names)\n"
+            "names = list(filter(lambda x: x != '__main__',\n"
+            "               sys.builtin_module_names))\n"
             "contents = pydoc.html.multicolumn(names, bltinlink)\n"
             "indices = ['<p>' + pydoc.html.bigsection(\n"
             "    'Built-in Modules', '#ffffff', '#ee77aa', contents)]\n"
@@ -256,7 +149,7 @@ QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
             "    ret = pydoc.html.index(dir, seen)\n"
             "    if ret != None:\n"
             "        indices.append(ret)\n"
-            "contents = heading + string.join(indices) + '''<p align=right>\n"
+            "contents = heading + ' '.join(indices) + '''<p align=right>\n"
             "<font color=\"#909090\" face=\"helvetica, arial\"><strong>\n"
             "pydoc</strong> by Ka-Ping Yee &lt;ping@lfw.org&gt;</font>'''\n"
             "htmldocument=pydoc.html.page(title,contents)\n";
@@ -265,7 +158,7 @@ QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
         if (result) {
             Py_DECREF(result);
             result = PyDict_GetItemString(dict, "htmldocument");
-            const char* contents = PyString_AsString(result);
+            const char* contents = PyUnicode_AsUTF8(result);
             res.append("HTTP/1.0 200 OK\n");
             res.append("Content-type: text/html\n");
             res.append(contents);
@@ -273,8 +166,8 @@ QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
         }
         else {
             // load the error page
-            PyErr_Clear();
-            res = fileNotFound();
+            Base::PyException e;
+            res = loadFailed(QString::fromUtf8(e.what()));
         }
 
         Py_DECREF(dict);
@@ -287,7 +180,7 @@ QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
         PyObject* main = PyImport_AddModule("__main__");
         PyObject* dict = PyModule_GetDict(main);
         dict = PyDict_Copy(dict);
-        QByteArray cmd = 
+        QByteArray cmd =
             "import pydoc\n"
             "object, name = pydoc.resolve(\"";
         cmd += name.toUtf8();
@@ -296,7 +189,7 @@ QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
         if (result) {
             Py_DECREF(result);
             result = PyDict_GetItemString(dict, "page");
-            const char* page = PyString_AsString(result);
+            const char* page = PyUnicode_AsUTF8(result);
             res.append("HTTP/1.0 200 OK\n");
             res.append("Content-type: text/html\n");
             res.append(page);
@@ -304,9 +197,10 @@ QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
         else {
             // get information about the error
             Base::PyException e;
-            Base::Console().Warning("PythonOnlineHelp::loadResource: %s\n", e.what());
+            //Base::Console().Error("loadResource: %s\n", e.what());
             // load the error page
-            res = fileNotFound();
+            //res = fileNotFound();
+            res = loadFailed(QString::fromUtf8(e.what()));
         }
 
         Py_DECREF(dict);
@@ -317,9 +211,8 @@ QByteArray PythonOnlineHelp::loadResource(const QString& filename) const
 
 QByteArray PythonOnlineHelp::fileNotFound() const
 {
-    QByteArray res;
-    QHttpResponseHeader header(404, QString::fromAscii("File not found"));
-    header.setContentType(QString::fromAscii("text/html\r\n"
+    QString contentType = QString::fromLatin1(
+        "text/html\r\n"
         "\r\n"
         "<html><head><title>Error</title></head>"
         "<body bgcolor=\"#f0f0f8\">"
@@ -335,8 +228,44 @@ QByteArray PythonOnlineHelp::fileNotFound() const
         "</strong></p>"
         "</div></body>"
         "</html>"
-        "\r\n"));
-    res.append(header.toString());
+        "\r\n"
+    );
+
+    QString header = QString::fromLatin1("content-type: %1\r\n").arg(contentType);
+
+    QString http(QLatin1String("HTTP/1.1 %1 %2\r\n%3\r\n"));
+    QString httpResponseHeader = http.arg(404).arg(QString::fromLatin1("File not found"), header);
+
+    QByteArray res = httpResponseHeader.toLatin1();
+    return res;
+}
+
+QByteArray PythonOnlineHelp::loadFailed(const QString& error) const
+{
+    QString contentType = QString::fromLatin1(
+        "text/html\r\n"
+        "\r\n"
+        "<html><head><title>Error</title></head>"
+        "<body bgcolor=\"#f0f0f8\">"
+        "<table width=\"100%\" cellspacing=0 cellpadding=2 border=0 summary=\"heading\">"
+        "<tr bgcolor=\"#7799ee\">"
+        "<td valign=bottom>&nbsp;<br>"
+        "<font color=\"#ffffff\" face=\"helvetica, arial\">&nbsp;<br><big><big><strong>FreeCAD Documentation</strong></big></big></font></td>"
+        "<td align=right valign=bottom>"
+        "<font color=\"#ffffff\" face=\"helvetica, arial\">&nbsp;</font></td></tr></table>"
+        "<p><p>"
+        "<h1>%1</h1>"
+        "</body>"
+        "</html>"
+        "\r\n"
+    ).arg(error);
+
+    QString header = QString::fromLatin1("content-type: %1\r\n").arg(contentType);
+
+    QString http(QLatin1String("HTTP/1.1 %1 %2\r\n%3\r\n"));
+    QString httpResponseHeader = http.arg(404).arg(QString::fromLatin1("File not found"), header);
+
+    QByteArray res = httpResponseHeader.toLatin1();
     return res;
 }
 
@@ -345,7 +274,7 @@ HttpServer::HttpServer(QObject* parent)
 {
 }
 
-void HttpServer::incomingConnection(int socket)
+void HttpServer::incomingConnection(qintptr socket)
 {
     if (disabled)
         return;
@@ -354,9 +283,9 @@ void HttpServer::incomingConnection(int socket)
     // communication with the client is done over this QTcpSocket. QTcpSocket
     // works asynchronously, this means that all the communication is done
     // in the two slots readClient() and discardClient().
-    QTcpSocket* s = new QTcpSocket(this);
-    connect(s, SIGNAL(readyRead()), this, SLOT(readClient()));
-    connect(s, SIGNAL(disconnected()), this, SLOT(discardClient()));
+    auto s = new QTcpSocket(this);
+    connect(s, &QTcpSocket::readyRead, this, &HttpServer::readClient);
+    connect(s, &QTcpSocket::disconnected, this, &HttpServer::discardClient);
     s->setSocketDescriptor(socket);
 }
 
@@ -376,14 +305,31 @@ void HttpServer::readClient()
         return;
 
     // This slot is called when the client sent data to the server. The
-    // server looks if it was a GET request and  sends back the 
+    // server looks if it was a GET request and  sends back the
     // corresponding HTML document from the ZIP file.
-    QTcpSocket* socket = (QTcpSocket*)sender();
+    auto socket = static_cast<QTcpSocket*>(sender());
     if (socket->canReadLine()) {
-        QString request = QString::fromAscii(socket->readLine());
-        QHttpRequestHeader header(request);
-        if (header.method() == QLatin1String("GET")) {
-            socket->write(help.loadResource(header.path()));
+        QString httpRequestHeader = QString::fromLatin1(socket->readLine());
+        QStringList lst = httpRequestHeader.simplified().split(QLatin1String(" "));
+        QString method;
+        QString path;
+        if (lst.count() > 0) {
+            QString m = lst[0];
+            if (lst.count() > 1) {
+                QString p = lst[1];
+                if (lst.count() > 2) {
+                    QString v = lst[2];
+                    if (v.length() >= 8 && v.left(5) == QLatin1String("HTTP/") &&
+                        v[5].isDigit() && v[6] == QLatin1Char('.') && v[7].isDigit()) {
+                        method = m;
+                        path = p;
+                    }
+                }
+            }
+        }
+
+        if (method == QLatin1String("GET")) {
+            socket->write(help.loadResource(path));
             socket->close();
             if (socket->state() == QTcpSocket::UnconnectedState) {
                 //mark the socket for deletion but do not destroy immediately
@@ -395,7 +341,7 @@ void HttpServer::readClient()
 
 void HttpServer::discardClient()
 {
-    QTcpSocket* socket = (QTcpSocket*)sender();
+    auto socket = static_cast<QTcpSocket*>(sender());
     socket->deleteLater();
 }
 
@@ -404,12 +350,12 @@ void HttpServer::discardClient()
 /* TRANSLATOR Gui::StdCmdPythonHelp */
 
 StdCmdPythonHelp::StdCmdPythonHelp()
-  : Command("Std_PythonHelp"), server(0)
+  : Command("Std_PythonHelp"), server(nullptr)
 {
-    sGroup        = QT_TR_NOOP("Tools");
+    sGroup        = "Tools";
     sMenuText     = QT_TR_NOOP("Automatic python modules documentation");
     sToolTipText  = QT_TR_NOOP("Opens a browser to show the Python modules documentation");
-    sWhatsThis    = QT_TR_NOOP("Opens a browser to show the Python modules documentation");
+    sWhatsThis    = "Std_PythonHelp";
     sStatusTip    = QT_TR_NOOP("Opens a browser to show the Python modules documentation");
     sPixmap       = "applications-python";
 }
@@ -424,18 +370,19 @@ StdCmdPythonHelp::~StdCmdPythonHelp()
 
 void StdCmdPythonHelp::activated(int iMsg)
 {
+    Q_UNUSED(iMsg);
     // try to open a connection over this port
     qint16 port = 7465;
     if (!this->server)
         this->server = new HttpServer();
 
     // if server is not yet running try to open one
-    if (this->server->isListening() || 
+    if (this->server->isListening() ||
         this->server->listen(QHostAddress(QHostAddress::LocalHost), port)) {
         // okay the server is running, now we try to open the system internet browser
         bool failed = true;
 
-        // The webbrowser Python module allows to start the system browser in an 
+        // The webbrowser Python module allows to start the system browser in an
         // OS-independent way
         Base::PyGILStateLocker lock;
         PyObject* module = PyImport_ImportModule("webbrowser");
@@ -447,10 +394,14 @@ void StdCmdPythonHelp::activated(int iMsg)
                 char szBuf[201];
                 snprintf(szBuf, 200, "http://localhost:%d", port);
                 PyObject* args = Py_BuildValue("(s)", szBuf);
+#if PY_VERSION_HEX < 0x03090000
                 PyObject* result = PyEval_CallObject(func,args);
+#else
+                PyObject* result = PyObject_CallObject(func,args);
+#endif
                 if (result)
                     failed = false;
-        
+
                 // decrement the args and module reference
                 Py_XDECREF(result);
                 Py_DECREF(args);
@@ -460,13 +411,13 @@ void StdCmdPythonHelp::activated(int iMsg)
 
         // print error message on failure
         if (failed) {
-            QMessageBox::critical(Gui::getMainWindow(), QObject::tr("No Browser"), 
+            QMessageBox::critical(Gui::getMainWindow(), QObject::tr("No Browser"),
                 QObject::tr("Unable to open your browser.\n\n"
                 "Please open a browser window and type in: http://localhost:%1.").arg(port));
         }
     }
     else {
-        QMessageBox::critical(Gui::getMainWindow(), QObject::tr("No Server"), 
+        QMessageBox::critical(Gui::getMainWindow(), QObject::tr("No Server"),
             QObject::tr("Unable to start the server to port %1: %2.").arg(port).arg(server->errorString()));
     }
 }
@@ -483,24 +434,28 @@ bool Gui::OpenURLInBrowser(const char * URL)
         PyObject* func = PyDict_GetItemString(dict, "open");
         if (func) {
             PyObject* args = Py_BuildValue("(s)", URL);
+#if PY_VERSION_HEX < 0x03090000
             PyObject* result = PyEval_CallObject(func,args);
+#else
+            PyObject* result = PyObject_CallObject(func,args);
+#endif
             if (result)
                 failed = false;
-        
+
             // decrement the args and module reference
             Py_XDECREF(result);
             Py_DECREF(args);
             Py_DECREF(module);
         }
-    } 
+    }
 
     // print error message on failure
     if (failed) {
-        QMessageBox::critical(Gui::getMainWindow(), QObject::tr("No Browser"), 
+        QMessageBox::critical(Gui::getMainWindow(), QObject::tr("No Browser"),
             QObject::tr("Unable to open your system browser."));
         return false;
     }
-  
+
     return true;
 }
 

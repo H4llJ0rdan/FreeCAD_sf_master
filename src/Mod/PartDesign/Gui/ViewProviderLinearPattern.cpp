@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (c)2012 Jan Rheinlaender <jrheinlaender@users.sourceforge.net> *
+ *   Copyright (c) 2012 Jan Rheinländer <jrheinlaender@users.sourceforge.net> *
  *                                                                            *
  *   This file is part of the FreeCAD CAx development system.                 *
  *                                                                            *
@@ -23,41 +23,25 @@
 
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
 #include "ViewProviderLinearPattern.h"
 #include "TaskLinearPatternParameters.h"
-#include <Mod/PartDesign/App/FeatureLinearPattern.h>
-#include <Mod/Sketcher/App/SketchObject.h>
-#include <Gui/Control.h>
-#include <Gui/Command.h>
-#include <Gui/Application.h>
 
 using namespace PartDesignGui;
 
-PROPERTY_SOURCE(PartDesignGui::ViewProviderLinearPattern,PartDesignGui::ViewProvider)
+PROPERTY_SOURCE(PartDesignGui::ViewProviderLinearPattern,PartDesignGui::ViewProviderTransformed)
 
-bool ViewProviderLinearPattern::setEdit(int ModNum)
+TaskDlgFeatureParameters *ViewProviderLinearPattern::getEditDialog() {
+    return new TaskDlgLinearPatternParameters (this);
+}
+
+void ViewProviderLinearPattern::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
 {
-    ViewProviderTransformed::setEdit(ModNum);
+    addDefaultAction(menu, QObject::tr("Edit linear pattern"));
+    PartDesignGui::ViewProvider::setupContextMenu(menu, receiver, member);
+}
 
-    if (ModNum == ViewProvider::Default ) {
-        TaskDlgLinearPatternParameters *linearpatternDlg = NULL;
-
-        if (checkDlgOpen(linearpatternDlg)) {
-            // start the edit dialog
-            if (linearpatternDlg)
-                Gui::Control().showDialog(linearpatternDlg);
-            else
-                Gui::Control().showDialog(new TaskDlgLinearPatternParameters(this));
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-    else {
-        return ViewProviderPart::setEdit(ModNum);
-    }
+const std::string & ViewProviderLinearPattern::featureName() const
+{
+    static const std::string name = "LinearPattern";
+    return name;
 }

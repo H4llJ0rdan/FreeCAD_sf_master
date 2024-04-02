@@ -24,37 +24,57 @@
 #ifndef GUI_DIALOG_DLGSETTINGSCOLORGRADIENT_IMP_H
 #define GUI_DIALOG_DLGSETTINGSCOLORGRADIENT_IMP_H
 
-#include "ui_DlgSettingsColorGradient.h"
 #include <App/ColorModel.h>
+#include <QDialog>
+#include <memory>
 
 class QDoubleValidator;
 
 namespace Gui {
 namespace Dialog {
+class Ui_DlgSettingsColorGradient;
+
 /**
  * The DlgSettingsColorGradientImp class implements a preference page to change settings
  * for the color gradient bar.
  * @author Werner Mayer
  */
-class DlgSettingsColorGradientImp : public QDialog, public Ui_DlgSettingsColorGradient
+class DlgSettingsColorGradientImp : public QDialog
 {
     Q_OBJECT
 
 public:
-    DlgSettingsColorGradientImp( QWidget* parent = 0, Qt::WFlags fl = 0 );
-    ~DlgSettingsColorGradientImp();
+    explicit DlgSettingsColorGradientImp(const App::ColorGradient& cg,
+                                QWidget* parent = nullptr,
+                                Qt::WindowFlags fl = Qt::WindowFlags());
+    ~DlgSettingsColorGradientImp() override;
 
-    void accept();
+    void accept() override;
+
+    /** @name Color profile */
+    //@{
+    App::ColorGradientProfile getProfile() const;
+    void setProfile(const App::ColorGradientProfile& pro);
+    //@}
+    /** @name Parameter range and scale */
+    //@{
+    void setNumberOfDecimals(int, float fMin, float fMax);
+    int numberOfDecimals() const;
+    //@}
+
+private:
+    void setupConnections();
 
     /** @name Color model */
     //@{
-    void setColorModel( App::ColorGradient::TColorModel tModel);
-    App::ColorGradient::TColorModel colorModel() const;
+    void setColorModelNames(const std::vector<std::string>&);
+    void setColorModel(std::size_t tModel);
+    std::size_t colorModel() const;
     //@}
     /** @name Color style */
     //@{
-    void setColorStyle( App::ColorGradient::TStyle tStyle );
-    App::ColorGradient::TStyle colorStyle() const;
+    void setColorStyle( App::ColorBarStyle tStyle );
+    App::ColorBarStyle colorStyle() const;
     //@}
     /** @name Display mode */
     //@{
@@ -65,17 +85,18 @@ public:
     //@}
     /** @name Parameter range and scale */
     //@{
-    void setRange( float fMin, float fMax );
-    void getRange( float& fMin, float& fMax) const;
+    void setRange(float fMin, float fMax);
+    void getRange(float& fMin, float& fMax) const;
     void setNumberOfLabels(int);
     int numberOfLabels() const;
-    void setNumberOfDecimals(int);
-    int numberOfDecimals() const;
     //@}
 
+Q_SIGNALS:
+    void colorModelChanged();
+
 private:
-    QDoubleValidator* fMaxVal;
-    QDoubleValidator* fMinVal;
+    QDoubleValidator* validator;
+    std::unique_ptr<Ui_DlgSettingsColorGradient> ui;
 };
 
 } // namespace Dialog

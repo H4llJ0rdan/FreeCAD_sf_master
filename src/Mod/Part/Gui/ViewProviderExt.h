@@ -20,15 +20,18 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef PARTGUI_VIEWPROVIDERPARTEXT_H
 #define PARTGUI_VIEWPROVIDERPARTEXT_H
 
-#include <Standard_math.hxx>
-#include <Standard_Boolean.hxx>
-#include <TopoDS_Shape.hxx>
-#include <Gui/ViewProviderGeometryObject.h>
 #include <map>
+#include <Standard_math.hxx>
+
+#include <App/PropertyUnits.h>
+#include <Gui/ViewProviderGeometryObject.h>
+
+#include <Mod/Part/App/PartFeature.h>
+#include <Mod/Part/PartGlobal.h>
+
 
 class TopoDS_Shape;
 class TopoDS_Edge;
@@ -59,69 +62,105 @@ class SoBrepPointSet;
 
 class PartGuiExport ViewProviderPartExt : public Gui::ViewProviderGeometryObject
 {
-    PROPERTY_HEADER(PartGui::ViewProviderPartExt);
+    PROPERTY_HEADER_WITH_OVERRIDE(PartGui::ViewProviderPartExt);
 
 public:
     /// constructor
     ViewProviderPartExt();
     /// destructor
-    virtual ~ViewProviderPartExt();
+    ~ViewProviderPartExt() override;
 
     // Display properties
-    App::PropertyFloatConstraint LineWidth;
-    App::PropertyFloatConstraint PointSize;
     App::PropertyFloatConstraint Deviation;
-    App::PropertyColor LineColor;
-    App::PropertyColor PointColor;
-    App::PropertyMaterial LineMaterial;
-    App::PropertyMaterial PointMaterial;
+    App::PropertyBool ControlPoints;
+    App::PropertyAngle AngularDeflection;
     App::PropertyEnumeration Lighting;
     App::PropertyEnumeration DrawStyle;
-
+    // Points
+    App::PropertyFloatConstraint PointSize;
+    App::PropertyColor PointColor;
+    App::PropertyMaterial PointMaterial;
+    App::PropertyColorList PointColorArray;
+    // Lines
+    App::PropertyFloatConstraint LineWidth;
+    App::PropertyColor LineColor;
+    App::PropertyMaterial LineMaterial;
+    App::PropertyColorList LineColorArray;
+    // Faces (Gui::ViewProviderGeometryObject::ShapeColor and Gui::ViewProviderGeometryObject::ShapeMaterial apply)
     App::PropertyColorList DiffuseColor;
 
-
-    virtual void attach(App::DocumentObject *);
-    virtual void setDisplayMode(const char* ModeName);
+    void attach(App::DocumentObject *) override;
+    void setDisplayMode(const char* ModeName) override;
     /// returns a list of all possible modes
-    virtual std::vector<std::string> getDisplayModes(void) const;
+    std::vector<std::string> getDisplayModes() const override;
     /// Update the view representation
     void reload();
+    /// If no other task is pending it opens a dialog to allow to change face colors
+    bool changeFaceColors();
 
-    virtual void updateData(const App::Property*);
+    void updateData(const App::Property*) override;
 
-      /** @name Selection handling
-      * This group of methodes do the selection handling.
-      * Here you can define how the selection for your ViewProfider
-      * works. 
+    /** @name Selection handling
+     * This group of methods do the selection handling.
+     * Here you can define how the selection for your ViewProfider
+     * works.
      */
     //@{
     /// indicates if the ViewProvider use the new Selection model
-    virtual bool useNewSelectionModel(void) const {return true;}
+    bool useNewSelectionModel() const override {return true;}
     /// return a hit element to the selection path or 0
-    virtual std::string getElement(const SoDetail*) const;
-    virtual SoDetail* getDetail(const char*) const;
-    virtual std::vector<Base::Vector3d> getModelPoints(const SoPickedPoint *) const;
-    /// return the higlight lines for a given element or the whole shape
-    virtual std::vector<Base::Vector3d> getSelectionShape(const char* Element) const;
+    std::string getElement(const SoDetail*) const override;
+    SoDetail* getDetail(const char*) const override;
+    std::vector<Base::Vector3d> getModelPoints(const SoPickedPoint *) const override;
+    /// return the highlight lines for a given element or the whole shape
+    std::vector<Base::Vector3d> getSelectionShape(const char* Element) const override;
     //@}
+
+    /** @name Highlight handling
+    * This group of methods do the highlighting of elements.
+    */
+    //@{
+    void setHighlightedFaces(const std::vector<App::Color>& colors);
+    void setHighlightedFaces(const std::vector<App::Material>& colors);
+    void unsetHighlightedFaces();
+    void setHighlightedEdges(const std::vector<App::Color>& colors);
+    void unsetHighlightedEdges();
+    void setHighlightedPoints(const std::vector<App::Color>& colors);
+    void unsetHighlightedPoints();
+    //@}
+
+    /** @name Color management methods
+     */
+    //@{
+    std::map<std::string,App::Color> getElementColors(const char *element=nullptr) const override;
+    //@}
+
+    bool isUpdateForced() const override {
+        return forceUpdateCount>0;
+    }
+    void forceUpdate(bool enable = true) override;
+
+    bool allowOverride(const App::DocumentObject &) const override;
 
     /** @name Edit methods */
     //@{
-    void setupContextMenu(QMenu*, QObject*, const char*);
+    void setupContextMenu(QMenu*, QObject*, const char*) override;
+
 protected:
-    bool setEdit(int ModNum);
-    void unsetEdit(int ModNum);
+    bool setEdit(int ModNum) override;
+    void unsetEdit(int ModNum) override;
     //@}
 
 protected:
     /// get called by the container whenever a property has been changed
-    virtual void onChanged(const App::Property* prop);
+    void onChanged(const App::Property* prop) override;
     bool loadParameter();
-    void updateVisual(const TopoDS_Shape &);
+    void updateVisual();
 
     // nodes for the data representation
-    SoMaterialBinding * pcShapeBind;
+    SoMaterialBinding * pcFaceBind;
+    SoMaterialBinding * pcLineBind;
+    SoMaterialBinding * pcPointBind;
     SoMaterial        * pcLineMaterial;
     SoMaterial        * pcPointMaterial;
     SoDrawStyle       * pcLineStyle;
@@ -136,13 +175,14 @@ protected:
     SoBrepPointSet    * nodeset;
 
     bool VisualTouched;
+    bool NormalsFromUV;
 
 private:
     // settings stuff
-    bool noPerVertexNormals;
-    bool qualityNormals;
+    int forceUpdateCount;
     static App::PropertyFloatConstraint::Constraints sizeRange;
     static App::PropertyFloatConstraint::Constraints tessRange;
+    static App::PropertyQuantityConstraint::Constraints angDeflectionRange;
     static const char* LightingEnums[];
     static const char* DrawStyleEnums[];
 };
@@ -150,4 +190,3 @@ private:
 }
 
 #endif // PARTGUI_VIEWPROVIDERPARTEXT_H
-

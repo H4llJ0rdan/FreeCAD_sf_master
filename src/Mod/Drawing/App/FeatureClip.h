@@ -20,13 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef _FeatureClip_h_
 #define _FeatureClip_h_
 
-
 #include <App/DocumentObjectGroup.h>
 #include <App/PropertyStandard.h>
+#include <Mod/Drawing/DrawingGlobal.h>
+
 
 namespace Drawing
 {
@@ -48,16 +48,18 @@ public:
     App::PropertyFloat Height;
     App::PropertyBool ShowFrame;
     App::PropertyString ViewResult;
+    App::PropertyBool Visible;
 
-    /** @name methods overide Feature */
+    /** @name methods override Feature */
     //@{
     /// recalculate the Feature
-    virtual App::DocumentObjectExecReturn *execute(void);
+    virtual App::DocumentObjectExecReturn* execute(void);
     //@}
 
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
-        return "DrawingGui::ViewProviderDrawingPage";
+    virtual const char* getViewProviderName(void) const
+    {
+        return "DrawingGui::ViewProviderDrawingClip";
     }
 
 protected:
@@ -65,7 +67,7 @@ protected:
 };
 
 
-} //namespace Drawing
+}  // namespace Drawing
 
 
 #endif

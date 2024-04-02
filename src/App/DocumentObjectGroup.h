@@ -24,82 +24,32 @@
 #ifndef APP_DOCUMENTOBJECTGROUP_H
 #define APP_DOCUMENTOBJECTGROUP_H
 
-#include "FeaturePython.h"
 #include "DocumentObject.h"
-#include "PropertyLinks.h"
-#include <vector>
+#include "FeaturePython.h"
+#include "GroupExtension.h"
 
 
 namespace App
 {
-class DocumentObjectGroupPy;
 
-class AppExport DocumentObjectGroup : public DocumentObject
-{
-    PROPERTY_HEADER(App::DocumentObjectGroup);
+class AppExport DocumentObjectGroup : public DocumentObject, public GroupExtension {
+
+    PROPERTY_HEADER_WITH_EXTENSIONS(App::DocumentObjectGroup);
 
 public:
     /// Constructor
-    DocumentObjectGroup(void);
-    virtual ~DocumentObjectGroup();
-
-    /** @name Object handling  */
-    //@{
-    /** Adds an object of \a sType with \a pObjectName to the document this group belongs to and 
-     * append it to this group as well.
-     */
-    DocumentObject *addObject(const char* sType, const char* pObjectName);
-    /* Adds the object \a obj to this group. 
-     */
-    void addObject(DocumentObject* obj);
-    /** Removes an object from this group.
-     */
-    void removeObject(DocumentObject* obj);
-    /** Removes all children objects from this group and the document.
-     */
-    void removeObjectsFromDocument();
-    /** Returns the object of this group with \a Name. If the group doesn't have such an object 0 is returned.
-     * @note This method might return 0 even if the document this group belongs to contains an object with this name.
-     */
-    DocumentObject *getObject(const char* Name) const;
-    /**
-     * Checks whether the object \a obj is part of this group.
-     */
-    bool hasObject(const DocumentObject* obj) const;
-    /**
-     * Checks whether this group object is a child (or sub-child)
-     * of the given group object.
-     */
-    bool isChildOf(const DocumentObjectGroup*) const;
-    /** Returns a list of all objects this group does have.
-     */
-    std::vector<DocumentObject*> getObjects() const;
-    /** Returns a list of all objects of \a typeId this group does have.
-     */
-    std::vector<DocumentObject*> getObjectsOfType(const Base::Type& typeId) const;
-    /** Returns the number of objects of \a typeId this group does have.
-     */
-    int countObjectsOfType(const Base::Type& typeId) const;
-    /** Returns the object group of the document which the given object \a obj is part of.
-     * In case this object is not part of a group 0 is returned.
-     */
-    static DocumentObjectGroup* getGroupOfObject(const DocumentObject* obj);
-    //@}
+    DocumentObjectGroup();
+    ~DocumentObjectGroup() override;
 
     /// returns the type name of the ViewProvider
-    virtual const char* getViewProviderName(void) const {
+    const char* getViewProviderName() const override {
         return "Gui::ViewProviderDocumentObjectGroup";
     }
-    virtual PyObject *getPyObject(void);
 
-    /// Properties
-    PropertyLinkList Group;
-
-private:
-    void removeObjectFromDocument(DocumentObject*);
+    PyObject *getPyObject() override;
 };
 
-typedef App::FeaturePythonT<DocumentObjectGroup> DocumentObjectGroupPython;
+using DocumentObjectGroupPython = App::FeaturePythonT<DocumentObjectGroup>;
 
 
 } //namespace App

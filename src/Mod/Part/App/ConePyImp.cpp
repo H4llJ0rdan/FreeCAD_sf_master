@@ -20,65 +20,58 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 #ifndef _PreComp_
-# include <Geom_ConicalSurface.hxx>
-# include <Geom_Circle.hxx>
 # include <GC_MakeConicalSurface.hxx>
-# include <gp_Circ.hxx>
+# include <Geom_ConicalSurface.hxx>
 # include <gp_Cone.hxx>
-# include <gp_Lin.hxx>
-# include <Geom_Line.hxx>
-# include <Geom_TrimmedCurve.hxx>
 # include <Standard_Failure.hxx>
 #endif
 
 #include <Base/GeometryPyCXX.h>
+#include <Base/PyWrapParseTupleAndKeywords.h>
 #include <Base/VectorPy.h>
 
-#include "OCCError.h"
-#include "Geometry.h"
-#include "LinePy.h"
-#include "CirclePy.h"
 #include "ConePy.h"
 #include "ConePy.cpp"
+#include "OCCError.h"
+
 
 using namespace Part;
 
 extern const char* gce_ErrorStatusText(gce_ErrorType et);
 
 // returns a string which represents the object e.g. when printed in python
-std::string ConePy::representation(void) const
+std::string ConePy::representation() const
 {
     return "<Cone object>";
 }
 
 PyObject *ConePy::PyMake(struct _typeobject *, PyObject *, PyObject *)  // Python wrapper
 {
-    // create a new instance of ConePy and the Twin object 
+    // create a new instance of ConePy and the Twin object
     return new ConePy(new GeomCone);
 }
 
 // constructor method
 int ConePy::PyInit(PyObject* args, PyObject* kwds)
 {
-    char* keywords_n[] = {NULL};
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "", keywords_n)) {
-        const Handle_Geom_ConicalSurface& s = static_cast<const Handle_Geom_ConicalSurface&>
-            (getGeometryPtr()->handle());
+    static const std::array<const char *, 1> keywords_n{nullptr};
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "", keywords_n)) {
+        Handle(Geom_ConicalSurface) s = Handle(Geom_ConicalSurface)::DownCast
+                (getGeometryPtr()->handle());
         s->SetRadius(1.0);
         return 0;
     }
 
     PyObject *pV1, *pV2;
     double radius1, radius2;
-    static char* keywords_pprr[] = {"Point1","Point2","Radius1","Radius2",NULL};
+    static const std::array<const char *, 5> keywords_pprr {"Point1", "Point2", "Radius1", "Radius2", nullptr};
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!O!dd", keywords_pprr,
-                                        &(Base::VectorPy::Type), &pV1,
-                                        &(Base::VectorPy::Type), &pV2,
-                                        &radius1, &radius2)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!O!dd", keywords_pprr,
+                                            &(Base::VectorPy::Type), &pV1,
+                                            &(Base::VectorPy::Type), &pV2,
+                                            &radius1, &radius2)) {
         Base::Vector3d v1 = static_cast<Base::VectorPy*>(pV1)->value();
         Base::Vector3d v2 = static_cast<Base::VectorPy*>(pV2)->value();
         GC_MakeConicalSurface mc(gp_Pnt(v1.x,v1.y,v1.z),
@@ -89,20 +82,20 @@ int ConePy::PyInit(PyObject* args, PyObject* kwds)
             return -1;
         }
 
-        Handle_Geom_ConicalSurface cone = Handle_Geom_ConicalSurface::DownCast
+        Handle(Geom_ConicalSurface) cone = Handle(Geom_ConicalSurface)::DownCast
             (getGeometryPtr()->handle());
         cone->SetCone(mc.Value()->Cone());
         return 0;
     }
 
     PyObject *pV3, *pV4;
-    static char* keywords_pppp[] = {"Point1","Point2","Point3","Point4",NULL};
+    static const std::array<const char *, 5> keywords_pppp{"Point1", "Point2", "Point3", "Point4", nullptr};
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O!O!", keywords_pppp,
-                                        &(Base::VectorPy::Type), &pV1,
-                                        &(Base::VectorPy::Type), &pV2,
-                                        &(Base::VectorPy::Type), &pV3,
-                                        &(Base::VectorPy::Type), &pV4)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!O!O!O!", keywords_pppp,
+                                            &(Base::VectorPy::Type), &pV1,
+                                            &(Base::VectorPy::Type), &pV2,
+                                            &(Base::VectorPy::Type), &pV3,
+                                            &(Base::VectorPy::Type), &pV4)) {
         Base::Vector3d v1 = static_cast<Base::VectorPy*>(pV1)->value();
         Base::Vector3d v2 = static_cast<Base::VectorPy*>(pV2)->value();
         Base::Vector3d v3 = static_cast<Base::VectorPy*>(pV3)->value();
@@ -116,39 +109,19 @@ int ConePy::PyInit(PyObject* args, PyObject* kwds)
             return -1;
         }
 
-        Handle_Geom_ConicalSurface cone = Handle_Geom_ConicalSurface::DownCast
-            (getGeometryPtr()->handle());
+        Handle(Geom_ConicalSurface) cone = Handle(Geom_ConicalSurface)::DownCast
+                (getGeometryPtr()->handle());
         cone->SetCone(mc.Value()->Cone());
         return 0;
     }
 
     PyObject *pCone;
-    double dist;
-    static char* keywords_cd[] = {"Cone","Distance",NULL};
+    static const std::array<const char *, 2> keywords_c{"Cone", nullptr};
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!d", keywords_cd,
-                                        &(ConePy::Type), &pCone, &dist)) {
+    if (Base::Wrapped_ParseTupleAndKeywords(args, kwds, "O!d", keywords_c,
+                                            &(ConePy::Type), &pCone)) {
         ConePy* pcCone = static_cast<ConePy*>(pCone);
-        Handle_Geom_ConicalSurface pcone = Handle_Geom_ConicalSurface::DownCast
-            (pcCone->getGeometryPtr()->handle());
-        GC_MakeConicalSurface mc(pcone->Cone(), dist);
-        if (!mc.IsDone()) {
-            PyErr_SetString(PartExceptionOCCError, gce_ErrorStatusText(mc.Status()));
-            return -1;
-        }
-
-        Handle_Geom_ConicalSurface cone = Handle_Geom_ConicalSurface::DownCast
-            (getGeometryPtr()->handle());
-        cone->SetCone(mc.Value()->Cone());
-        return 0;
-    }
-
-    static char* keywords_c[] = {"Cone",NULL};
-    PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "O!d", keywords_c,
-                                        &(ConePy::Type), &pCone)) {
-        ConePy* pcCone = static_cast<ConePy*>(pCone);
-        Handle_Geom_ConicalSurface pcone = Handle_Geom_ConicalSurface::DownCast
+        Handle(Geom_ConicalSurface) pcone = Handle(Geom_ConicalSurface)::DownCast
             (pcCone->getGeometryPtr()->handle());
         GC_MakeConicalSurface mc(pcone->Cone());
         if (!mc.IsDone()) {
@@ -156,7 +129,7 @@ int ConePy::PyInit(PyObject* args, PyObject* kwds)
             return -1;
         }
 
-        Handle_Geom_ConicalSurface cone = Handle_Geom_ConicalSurface::DownCast
+        Handle(Geom_ConicalSurface) cone = Handle(Geom_ConicalSurface)::DownCast
             (getGeometryPtr()->handle());
         cone->SetCone(mc.Value()->Cone());
         return 0;
@@ -171,89 +144,45 @@ int ConePy::PyInit(PyObject* args, PyObject* kwds)
     return -1;
 }
 
-PyObject* ConePy::uIso(PyObject * args)
+Py::Object ConePy::getApex() const
 {
-    double u;
-    if (!PyArg_ParseTuple(args, "d", &u))
-        return 0;
-
-    try {
-        Handle_Geom_ConicalSurface cone = Handle_Geom_ConicalSurface::DownCast
-            (getGeomConePtr()->handle());
-        Handle_Geom_Line c = Handle_Geom_Line::DownCast(cone->UIso(u));
-        GeomLineSegment* line = new GeomLineSegment();
-        Handle_Geom_TrimmedCurve this_curv = Handle_Geom_TrimmedCurve::DownCast
-            (line->handle());
-        Handle_Geom_Line this_line = Handle_Geom_Line::DownCast
-            (this_curv->BasisCurve());
-        this_line->SetLin(c->Lin());
-        return new LinePy(line);
-    }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
-        return 0;
-    }
-}
-
-PyObject* ConePy::vIso(PyObject * args)
-{
-    double v;
-    if (!PyArg_ParseTuple(args, "d", &v))
-        return 0;
-
-    try {
-        Handle_Geom_ConicalSurface cone = Handle_Geom_ConicalSurface::DownCast
-            (getGeomConePtr()->handle());
-        Handle_Geom_Curve c = cone->VIso(v);
-        return new CirclePy(new GeomCircle(Handle_Geom_Circle::DownCast(c)));
-    }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
-        return 0;
-    }
-}
-
-Py::Object ConePy::getApex(void) const
-{
-    Handle_Geom_ConicalSurface s = Handle_Geom_ConicalSurface::DownCast
+    Handle(Geom_ConicalSurface) s = Handle(Geom_ConicalSurface)::DownCast
         (getGeomConePtr()->handle());
     gp_Pnt loc = s->Apex();
     return Py::Vector(Base::Vector3d(loc.X(), loc.Y(), loc.Z()));
 }
 
-Py::Float ConePy::getRadius(void) const
+Py::Float ConePy::getRadius() const
 {
-    Handle_Geom_ConicalSurface s = Handle_Geom_ConicalSurface::DownCast
+    Handle(Geom_ConicalSurface) s = Handle(Geom_ConicalSurface)::DownCast
         (getGeomConePtr()->handle());
-    return Py::Float(s->RefRadius()); 
+    return Py::Float(s->RefRadius());
 }
 
 void ConePy::setRadius(Py::Float arg)
 {
-    Handle_Geom_ConicalSurface s = Handle_Geom_ConicalSurface::DownCast
+    Handle(Geom_ConicalSurface) s = Handle(Geom_ConicalSurface)::DownCast
         (getGeomConePtr()->handle());
     s->SetRadius((double)arg);
 }
 
-Py::Float ConePy::getSemiAngle(void) const
+Py::Float ConePy::getSemiAngle() const
 {
-    Handle_Geom_ConicalSurface s = Handle_Geom_ConicalSurface::DownCast
+    Handle(Geom_ConicalSurface) s = Handle(Geom_ConicalSurface)::DownCast
         (getGeomConePtr()->handle());
-    return Py::Float(s->SemiAngle()); 
+    return Py::Float(s->SemiAngle());
 }
 
 void ConePy::setSemiAngle(Py::Float arg)
 {
-    Handle_Geom_ConicalSurface s = Handle_Geom_ConicalSurface::DownCast
+    Handle(Geom_ConicalSurface) s = Handle(Geom_ConicalSurface)::DownCast
         (getGeomConePtr()->handle());
     s->SetSemiAngle((double)arg);
 }
 
-Py::Object ConePy::getCenter(void) const
+Py::Object ConePy::getCenter() const
 {
-    Handle_Geom_ElementarySurface s = Handle_Geom_ElementarySurface::DownCast
+    Handle(Geom_ElementarySurface) s = Handle(Geom_ElementarySurface)::DownCast
         (getGeomConePtr()->handle());
     gp_Pnt loc = s->Location();
     return Py::Vector(Base::Vector3d(loc.X(), loc.Y(), loc.Z()));
@@ -264,13 +193,13 @@ void ConePy::setCenter(Py::Object arg)
     PyObject* p = arg.ptr();
     if (PyObject_TypeCheck(p, &(Base::VectorPy::Type))) {
         Base::Vector3d loc = static_cast<Base::VectorPy*>(p)->value();
-        Handle_Geom_ElementarySurface s = Handle_Geom_ElementarySurface::DownCast
+        Handle(Geom_ElementarySurface) s = Handle(Geom_ElementarySurface)::DownCast
             (getGeomConePtr()->handle());
         s->SetLocation(gp_Pnt(loc.x, loc.y, loc.z));
     }
     else if (PyObject_TypeCheck(p, &PyTuple_Type)) {
         Base::Vector3d loc = Base::getVectorFromTuple<double>(p);
-        Handle_Geom_ElementarySurface s = Handle_Geom_ElementarySurface::DownCast
+        Handle(Geom_ElementarySurface) s = Handle(Geom_ElementarySurface)::DownCast
             (getGeomConePtr()->handle());
         s->SetLocation(gp_Pnt(loc.x, loc.y, loc.z));
     }
@@ -281,9 +210,9 @@ void ConePy::setCenter(Py::Object arg)
     }
 }
 
-Py::Object ConePy::getAxis(void) const
+Py::Object ConePy::getAxis() const
 {
-    Handle_Geom_ElementarySurface s = Handle_Geom_ElementarySurface::DownCast
+    Handle(Geom_ElementarySurface) s = Handle(Geom_ElementarySurface)::DownCast
         (getGeometryPtr()->handle());
     gp_Dir dir = s->Axis().Direction();
     return Py::Vector(Base::Vector3d(dir.X(), dir.Y(), dir.Z()));
@@ -312,26 +241,26 @@ void ConePy::setAxis(Py::Object arg)
     }
 
     try {
-        Handle_Geom_ElementarySurface this_surf = Handle_Geom_ElementarySurface::DownCast
+        Handle(Geom_ElementarySurface) this_surf = Handle(Geom_ElementarySurface)::DownCast
             (this->getGeometryPtr()->handle());
         gp_Ax1 axis;
         axis.SetLocation(this_surf->Location());
         axis.SetDirection(gp_Dir(dir_x, dir_y, dir_z));
         this_surf->SetAxis(axis);
     }
-    catch (Standard_Failure) {
-        throw Py::Exception("cannot set axis");
+    catch (Standard_Failure&) {
+        throw Py::RuntimeError("cannot set axis");
     }
 }
 
 PyObject *ConePy::getCustomAttributes(const char* /*attr*/) const
 {
-    return 0;
+    return nullptr;
 }
 
 int ConePy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
 {
-    return 0; 
+    return 0;
 }
 
 

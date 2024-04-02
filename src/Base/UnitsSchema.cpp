@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Juergen Riegel (FreeCAD@juergen-riegel.net)        *
+ *   Copyright (c) 2009 Jürgen Riegel <FreeCAD@juergen-riegel.net>         *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -26,7 +26,23 @@
 # include <unistd.h>
 #endif
 
-#include "Exception.h"
-#include "UnitsApi.h"
+#include <QLocale>
+#include <QString>
+
 #include "UnitsSchema.h"
 
+
+using namespace Base;
+
+QString UnitsSchema::toLocale(const Base::Quantity& quant, double factor, const QString& unitString) const
+{
+    QLocale Lc;
+    const QuantityFormat& format = quant.getFormat();
+    if (format.option != QuantityFormat::None) {
+        int opt = format.option;
+        Lc.setNumberOptions(static_cast<QLocale::NumberOptions>(opt));
+    }
+
+    QString Ln = Lc.toString((quant.getValue() / factor), format.toFormat(), format.precision);
+    return QString::fromUtf8("%1 %2").arg(Ln, unitString);
+}

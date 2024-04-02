@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,38 +20,35 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
-#ifndef _PreComp_
-#endif
-
-#include "ViewProviderEdge2TracObject.h"
 #include <Gui/Control.h>
 #include <Mod/Robot/Gui/TaskDlgEdge2Trac.h>
+
+#include "ViewProviderEdge2TracObject.h"
+
 
 using namespace Gui;
 using namespace RobotGui;
 
 PROPERTY_SOURCE(RobotGui::ViewProviderEdge2TracObject, RobotGui::ViewProviderTrajectory)
 
-bool ViewProviderEdge2TracObject::doubleClicked(void)
+bool ViewProviderEdge2TracObject::doubleClicked()
 {
-    Gui::TaskView::TaskDialog* dlg = new TaskDlgEdge2Trac(dynamic_cast<Robot::Edge2TracObject *>(getObject()));
+    Gui::TaskView::TaskDialog* dlg =
+        new TaskDlgEdge2Trac(static_cast<Robot::Edge2TracObject*>(getObject()));
     Gui::Control().showDialog(dlg);
     return true;
 }
 
 
-bool ViewProviderEdge2TracObject::setEdit(int ModNum)
+bool ViewProviderEdge2TracObject::setEdit(int)
 {
-    Gui::TaskView::TaskDialog* dlg = new TaskDlgEdge2Trac(dynamic_cast<Robot::Edge2TracObject *>(getObject()));
+    Gui::TaskView::TaskDialog* dlg =
+        new TaskDlgEdge2Trac(static_cast<Robot::Edge2TracObject*>(getObject()));
     Gui::Control().showDialog(dlg);
     return true;
 }
 
-void ViewProviderEdge2TracObject::unsetEdit(int ModNum)
-{
-
-
-}
+void ViewProviderEdge2TracObject::unsetEdit(int)
+{}

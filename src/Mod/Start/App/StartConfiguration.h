@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2008 Jürgen Riegel (juergen.riegel@web.de)              *
+ *   Copyright (c) 2008 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -28,14 +28,11 @@
 
 // Exporting of App classes
 #ifdef FC_OS_WIN32
-#    define START_SHOW_SKETCHER
-#    define START_USE_DRAFTING
-#else // for Linux
-#    define START_USE_DRAFTING
+#define START_SHOW_SKETCHER
+#define START_USE_DRAFTING
+#else  // for Linux
+#define START_USE_DRAFTING
 #endif
 
 
-
-
 #endif
-

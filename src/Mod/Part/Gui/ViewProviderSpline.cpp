@@ -20,81 +20,115 @@
  *                                                                         *
  ***************************************************************************/
 
- 
 #include "PreCompiled.h"
 #ifndef _PreComp_
+# include <QAction>
+# include <QMenu>
+
 # include <BRepAdaptor_Curve.hxx>
 # include <BRepAdaptor_Surface.hxx>
-# include <GeomAbs_CurveType.hxx>
-# include <GeomAbs_SurfaceType.hxx>
 # include <Geom_BezierCurve.hxx>
-# include <Geom_BSplineCurve.hxx>
 # include <Geom_BezierSurface.hxx>
+# include <Geom_BSplineCurve.hxx>
 # include <Geom_BSplineSurface.hxx>
 # include <gp_Pnt.hxx>
 # include <TopoDS.hxx>
 # include <TopoDS_Edge.hxx>
-# include <TopoDS_Wire.hxx>
 # include <TopoDS_Face.hxx>
 # include <TopoDS_Shape.hxx>
 # include <TopoDS_Shell.hxx>
+# include <TopoDS_Wire.hxx>
 # include <TopExp_Explorer.hxx>
+
 # include <Inventor/nodes/SoCoordinate3.h>
 # include <Inventor/nodes/SoSeparator.h>
 # include <Inventor/nodes/SoSwitch.h>
 #endif
 
+#include <Gui/ActionFunction.h>
+#include <Gui/BitmapFactory.h>
 
-#include <App/PropertyStandard.h>
-#include <Mod/Part/App/PartFeature.h>
-#include "SoFCShapeObject.h"
 #include "ViewProviderSpline.h"
+#include "SoFCShapeObject.h"
 
 
 using namespace PartGui;
+namespace sp = std::placeholders;
 
 
 PROPERTY_SOURCE(PartGui::ViewProviderSpline, PartGui::ViewProviderPartExt)
 
 ViewProviderSpline::ViewProviderSpline()
-    : pcControlPoints(0)
 {
-    ADD_PROPERTY(ControlPoints,(false));
+    sPixmap = "Part_Spline_Parametric";
+    extension.initExtension(this);
 }
 
-ViewProviderSpline::~ViewProviderSpline()
+ViewProviderSpline::~ViewProviderSpline() = default;
+
+QIcon ViewProviderSpline::getIcon() const
 {
+    return Gui::BitmapFactory().pixmap(sPixmap);
 }
 
-void ViewProviderSpline::updateData(const App::Property* prop)
+// ----------------------------------------------------------------------------
+
+EXTENSION_PROPERTY_SOURCE(PartGui::ViewProviderSplineExtension, Gui::ViewProviderExtension)
+
+
+ViewProviderSplineExtension::ViewProviderSplineExtension()
 {
-    ViewProviderPartExt::updateData(prop);
+    initExtensionType(ViewProviderSplineExtension::getExtensionClassTypeId());
+    EXTENSION_ADD_PROPERTY(ControlPoints,(false));
+}
+
+void ViewProviderSplineExtension::toggleControlPoints(bool on)
+{
+    ControlPoints.setValue(on);
+}
+
+void ViewProviderSplineExtension::extensionSetupContextMenu(QMenu* menu, QObject*, const char*)
+{
+    // toggle command to display components
+    Gui::ActionFunction* func = new Gui::ActionFunction(menu);
+    QAction* act = menu->addAction(QObject::tr("Show control points"));
+    act->setCheckable(true);
+    act->setChecked(ControlPoints.getValue());
+    func->toggle(act, [this](bool on) {
+        this->toggleControlPoints(on);
+    });
+}
+
+void ViewProviderSplineExtension::extensionUpdateData(const App::Property* prop)
+{
+    Gui::ViewProviderExtension::extensionUpdateData(prop);
     if (prop->getTypeId() == Part::PropertyPartShape::getClassTypeId() && strcmp(prop->getName(), "Shape") == 0) {
         // update control points if there
         if (pcControlPoints) {
-            pcControlPoints->removeAllChildren();
+            Gui::coinRemoveAllChildren(pcControlPoints);
             showControlPoints(this->ControlPoints.getValue(), prop);
         }
     }
 }
 
-void ViewProviderSpline::onChanged(const App::Property* prop)
+void ViewProviderSplineExtension::extensionOnChanged(const App::Property* prop)
 {
     if (prop == &ControlPoints) {
-        App::DocumentObject* obj = this->pcObject;
+        App::DocumentObject* obj = getExtendedViewProvider()->getObject();
         App::Property* shape = obj->getPropertyByName("Shape");
         showControlPoints(ControlPoints.getValue(), shape);
     }
     else {
-        ViewProviderPartExt::onChanged(prop);
+        Gui::ViewProviderExtension::extensionOnChanged(prop);
     }
 }
 
-void ViewProviderSpline::showControlPoints(bool show, const App::Property* prop)
+void ViewProviderSplineExtension::showControlPoints(bool show, const App::Property* prop)
 {
     if (!pcControlPoints && show) {
         pcControlPoints = new SoSwitch();
-        pcRoot->addChild(pcControlPoints);
+        SoSeparator* root = getExtendedViewProvider()->getRoot();
+        root->addChild(pcControlPoints);
     }
 
     if (pcControlPoints) {
@@ -135,11 +169,16 @@ void ViewProviderSpline::showControlPoints(bool show, const App::Property* prop)
     }
 }
 
-void ViewProviderSpline::showControlPointsOfEdge(const TopoDS_Edge& edge)
+void ViewProviderSplineExtension::showControlPointsOfEdge(const TopoDS_Edge& edge)
 {
     std::list<gp_Pnt> poles, knots;
     Standard_Integer nCt=0;
-    BRepAdaptor_Curve curve(edge);
+
+    TopoDS_Edge edge_loc(edge);
+    TopLoc_Location aLoc;
+    edge_loc.Location(aLoc);
+
+    BRepAdaptor_Curve curve(edge_loc);
     switch (curve.GetType())
     {
     case GeomAbs_BezierCurve:
@@ -173,40 +212,43 @@ void ViewProviderSpline::showControlPointsOfEdge(const TopoDS_Edge& edge)
     if (poles.empty())
         return; // nothing to do
 
-    SoCoordinate3 * coords = new SoCoordinate3;
-    coords->point.setNum(nCt + knots.size());
+    SoCoordinate3 * controlcoords = new SoCoordinate3;
+    controlcoords->point.setNum(nCt + knots.size());
 
     int index=0;
-    SbVec3f* verts = coords->point.startEditing();
-    for (std::list<gp_Pnt>::iterator p = poles.begin(); p != poles.end(); ++p) {
-        verts[index++].setValue((float)p->X(), (float)p->Y(), (float)p->Z());
+    SbVec3f* verts = controlcoords->point.startEditing();
+    for (const auto & pole : poles) {
+        verts[index++].setValue((float)pole.X(), (float)pole.Y(), (float)pole.Z());
     }
-    for (std::list<gp_Pnt>::iterator k = knots.begin(); k != knots.end(); ++k) {
-        verts[index++].setValue((float)k->X(), (float)k->Y(), (float)k->Z());
+    for (const auto & knot : knots) {
+        verts[index++].setValue((float)knot.X(), (float)knot.Y(), (float)knot.Z());
     }
-    coords->point.finishEditing();
+    controlcoords->point.finishEditing();
 
 
-    SoFCControlPoints* control = new SoFCControlPoints();
-    control->numPolesU = nCt;
-    control->numPolesV = 1;
+    SoFCControlPoints* controlpoints = new SoFCControlPoints();
+    controlpoints->numPolesU = nCt;
+    controlpoints->numPolesV = 1;
 
     SoSeparator* nodes = new SoSeparator();
-    nodes->addChild(coords);
-    nodes->addChild(control);
+    nodes->addChild(controlcoords);
+    nodes->addChild(controlpoints);
 
     pcControlPoints->addChild(nodes);
 }
 
-void ViewProviderSpline::showControlPointsOfFace(const TopoDS_Face& face)
+void ViewProviderSplineExtension::showControlPointsOfFace(const TopoDS_Face& face)
 {
     std::list<gp_Pnt> knots;
     std::vector<std::vector<gp_Pnt> > poles;
     Standard_Integer nCtU=0, nCtV=0;
-    BRepAdaptor_Surface surface(face);
 
-    BRepAdaptor_Surface clSurface(face);
-    switch (clSurface.GetType())
+    TopoDS_Face face_loc(face);
+    TopLoc_Location aLoc;
+    face_loc.Location(aLoc);
+
+    BRepAdaptor_Surface surface(face_loc);
+    switch (surface.GetType())
     {
     case GeomAbs_BezierSurface:
         {
@@ -251,13 +293,13 @@ void ViewProviderSpline::showControlPointsOfFace(const TopoDS_Face& face)
 
     int index=0;
     SbVec3f* verts = coords->point.startEditing();
-    for (std::vector<std::vector<gp_Pnt> >::iterator u = poles.begin(); u != poles.end(); ++u) {
-        for (std::vector<gp_Pnt>::iterator v = u->begin(); v != u->end(); ++v) {
-            verts[index++].setValue((float)v->X(), (float)v->Y(), (float)v->Z());
+    for (const auto & pole : poles) {
+        for (const auto& v : pole) {
+            verts[index++].setValue((float)v.X(), (float)v.Y(), (float)v.Z());
         }
     }
-    for (std::list<gp_Pnt>::iterator k = knots.begin(); k != knots.end(); ++k) {
-        verts[index++].setValue((float)k->X(), (float)k->Y(), (float)k->Z());
+    for (const auto & knot : knots) {
+        verts[index++].setValue((float)knot.X(), (float)knot.Y(), (float)knot.Z());
     }
     coords->point.finishEditing();
 
@@ -276,4 +318,11 @@ void ViewProviderSpline::showControlPointsOfFace(const TopoDS_Face& face)
     nodes->addChild(control);
 
     pcControlPoints->addChild(nodes);
+}
+
+namespace Gui {
+    EXTENSION_PROPERTY_SOURCE_TEMPLATE(PartGui::ViewProviderSplineExtensionPython, PartGui::ViewProviderSplineExtension)
+
+// explicit template instantiation
+    template class PartGuiExport ViewProviderExtensionPythonT<PartGui::ViewProviderSplineExtension>;
 }

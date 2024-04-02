@@ -5,15 +5,18 @@
 
 #include "zipinputstreambuf.h"
 #include "zipinputstream.h"
+#if defined(_WIN32) && defined(ZIPIOS_UTF8)
+#include <Base/FileInfo.h>
+#endif
 
 using std::istream;
 
 namespace zipios {
 
 ZipInputStream::ZipInputStream( std::istream &is, std::streampos pos ) 
-  : std::istream( 0 ), 
+  : std::istream( nullptr ), 
 // SGIs basic_ifstream calls istream with 0, but calls basic_ios constructor first??
-    ifs( 0 )
+    ifs( nullptr )
 {
   izf = new ZipInputStreambuf( is.rdbuf(), pos ) ;
 //  this->rdbuf( izf ) ; is replaced by:
@@ -21,10 +24,15 @@ ZipInputStream::ZipInputStream( std::istream &is, std::streampos pos )
 }
 
 ZipInputStream::ZipInputStream( const std::string &filename, std::streampos pos )
-  : std::istream( 0 ),
-    ifs( 0 )
+  : std::istream( nullptr ),
+    ifs( nullptr )
 {
+#if defined(_WIN32) && defined(ZIPIOS_UTF8)
+  std::wstring wsname = Base::FileInfo(filename).toStdWString();
+  ifs = new std::ifstream( wsname.c_str(), std::ios::in |std:: ios::binary ) ;
+#else
   ifs = new std::ifstream( filename.c_str(), std::ios::in |std:: ios::binary ) ;
+#endif
   izf = new ZipInputStreambuf( ifs->rdbuf(), pos ) ;
 //  this->rdbuf( izf ) ; is replaced by:
   this->init( izf ) ;
@@ -64,7 +72,7 @@ ZipInputStream::~ZipInputStream() {
 
 /*
   Zipios++ - a small C++ library that provides easy access to .zip files.
-  Copyright (C) 2000  Thomas Søndergaard
+  Copyright (C) 2000  Thomas SÃ¸ndergaard
   
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public

@@ -20,24 +20,50 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef WEB_SERVER_H
 #define WEB_SERVER_H
 
 #include <QByteArray>
-#include <QObject>
 #include <QEvent>
-#include <QTcpSocket>
+#include <QObject>
 #include <QTcpServer>
+#include <QTcpSocket>
 
 
-namespace Web {
+namespace Web
+{
 
-class ServerEvent : public QEvent
+class Firewall
+{
+public:
+    Firewall();
+    virtual ~Firewall();
+    virtual bool filter(const QByteArray&) const = 0;
+
+public:
+    static Firewall* getInstance();
+    static void setInstance(Firewall*);
+
+private:
+    static Firewall* instance;
+};
+
+class FirewallPython: public Firewall
+{
+public:
+    explicit FirewallPython(const Py::Object&);
+    ~FirewallPython() override;
+    bool filter(const QByteArray&) const override;
+
+private:
+    Py::Object obj;
+};
+
+class ServerEvent: public QEvent
 {
 public:
     ServerEvent(QTcpSocket* socket, const QByteArray&);
-    ~ServerEvent();
+    ~ServerEvent() override;
 
     QTcpSocket* socket() const;
     const QByteArray& request() const;
@@ -47,28 +73,34 @@ private:
     QByteArray text;
 };
 
-/** 
+/**
  * The Server class implements a simple TCP server.
  */
-class AppServer : public QTcpServer
+class AppServer: public QTcpServer
 {
     Q_OBJECT
 
 public:
-    AppServer(QObject* parent = 0);
-
-    void incomingConnection(int socket);
+    explicit AppServer(bool direct = false, QObject* parent = nullptr);
 
 protected:
-    void customEvent(QEvent* e);
+    void incomingConnection(qintptr socket) override;
+    void customEvent(QEvent* e) override;
+
+private:
+    std::string handleRequest(QByteArray);
+    static std::string runPython(const QByteArray&);
+    std::string getRequest(const std::string&) const;
 
 private Q_SLOTS:
     void readClient();
     void discardClient();
 
 private:
+    bool direct;
+    Py::Object module;
 };
 
-}
+}  // namespace Web
 
-#endif //Web_SERVER_H
+#endif  // Web_SERVER_H

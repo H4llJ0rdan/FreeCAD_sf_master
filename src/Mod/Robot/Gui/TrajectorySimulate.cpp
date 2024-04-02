@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (c) 2009 Jürgen Riegel <juergen.riegel@web.de>              *
+ *   Copyright (c) 2009 JÃ¼rgen Riegel <juergen.riegel@web.de>              *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -20,163 +20,188 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
-
 #ifndef _PreComp_
+#include <QTimer>
 #endif
 
-#include <QTimer>
-#include "TrajectorySimulate.h"
 #include <Gui/Application.h>
 #include <Gui/Document.h>
-#include <Gui/BitmapFactory.h>
-#include <Gui/ViewProvider.h>
-#include <Gui/WaitCursor.h>
-#include <Base/Console.h>
-#include <Gui/Selection.h>
-
 #include <Mod/Robot/App/Waypoint.h>
+
+#include "TrajectorySimulate.h"
+#include "ui_TrajectorySimulate.h"
 
 
 using namespace RobotGui;
 using namespace Gui;
 
-TrajectorySimulate::TrajectorySimulate(Robot::RobotObject *pcRobotObject,Robot::TrajectoryObject *pcTrajectoryObject,QWidget *parent)
-    : QDialog( parent),
-      sim(pcTrajectoryObject->Trajectory.getValue(),pcRobotObject->getRobot()),
-      Run(false),
-      block(false),
-      timePos(0.0)
+TrajectorySimulate::TrajectorySimulate(Robot::RobotObject* pcRobotObject,
+                                       Robot::TrajectoryObject* pcTrajectoryObject,
+                                       QWidget* parent)
+    : QDialog(parent)
+    , sim(pcTrajectoryObject->Trajectory.getValue(), pcRobotObject->getRobot())
+    , Run(false)
+    , block(false)
+    , timePos(0.0)
+    , ui(new Ui_DlgTrajectorySimulate)
 {
-    this->setupUi(this);
+    ui->setupUi(this);
     QMetaObject::connectSlotsByName(this);
 
     // set Tool
     sim.Tool = pcRobotObject->Tool.getValue();
 
-    trajectoryTable->setSortingEnabled(false);
+    ui->trajectoryTable->setSortingEnabled(false);
 
     Robot::Trajectory trac = pcTrajectoryObject->Trajectory.getValue();
-    trajectoryTable->setRowCount(trac.getSize());
+    ui->trajectoryTable->setRowCount(trac.getSize());
     duration = trac.getDuration();
-    timeSpinBox->setMaximum(duration);
+    ui->timeSpinBox->setMaximum(duration);
 
-    for(unsigned int i=0;i<trac.getSize();i++){
+    for (unsigned int i = 0; i < trac.getSize(); i++) {
         Robot::Waypoint pt = trac.getWaypoint(i);
-        switch(pt.Type){
-            case Robot::Waypoint::UNDEF: trajectoryTable->setItem(i, 0, new QTableWidgetItem(QString::fromAscii("UNDEF")));break;
-            case Robot::Waypoint::CIRC: trajectoryTable->setItem(i, 0, new QTableWidgetItem(QString::fromAscii("CIRC")));break;
-            case Robot::Waypoint::PTP: trajectoryTable->setItem(i, 0, new QTableWidgetItem(QString::fromAscii("PTP")));break;
-            case Robot::Waypoint::LINE: trajectoryTable->setItem(i, 0, new QTableWidgetItem(QString::fromAscii("LIN")));break;
-            default: trajectoryTable->setItem(i, 0, new QTableWidgetItem(QString::fromAscii("UNDEF")));break;
+        switch (pt.Type) {
+            case Robot::Waypoint::UNDEF:
+                ui->trajectoryTable->setItem(i,
+                                             0,
+                                             new QTableWidgetItem(QString::fromLatin1("UNDEF")));
+                break;
+            case Robot::Waypoint::CIRC:
+                ui->trajectoryTable->setItem(i,
+                                             0,
+                                             new QTableWidgetItem(QString::fromLatin1("CIRC")));
+                break;
+            case Robot::Waypoint::PTP:
+                ui->trajectoryTable->setItem(i,
+                                             0,
+                                             new QTableWidgetItem(QString::fromLatin1("PTP")));
+                break;
+            case Robot::Waypoint::LINE:
+                ui->trajectoryTable->setItem(i,
+                                             0,
+                                             new QTableWidgetItem(QString::fromLatin1("LIN")));
+                break;
+            default:
+                ui->trajectoryTable->setItem(i,
+                                             0,
+                                             new QTableWidgetItem(QString::fromLatin1("UNDEF")));
+                break;
         }
-        trajectoryTable->setItem(i, 1, new QTableWidgetItem(QString::fromUtf8(pt.Name.c_str())));
-        if(pt.Cont)
-            trajectoryTable->setItem(i, 2, new QTableWidgetItem(QString::fromAscii("|")));
-        else
-            trajectoryTable->setItem(i, 2, new QTableWidgetItem(QString::fromAscii("-")));
-        trajectoryTable->setItem(i, 3, new QTableWidgetItem(QString::number(pt.Velocity)));
-        trajectoryTable->setItem(i, 4, new QTableWidgetItem(QString::number(pt.Accelaration)));
-
+        ui->trajectoryTable->setItem(i,
+                                     1,
+                                     new QTableWidgetItem(QString::fromUtf8(pt.Name.c_str())));
+        if (pt.Cont) {
+            ui->trajectoryTable->setItem(i, 2, new QTableWidgetItem(QString::fromLatin1("|")));
+        }
+        else {
+            ui->trajectoryTable->setItem(i, 2, new QTableWidgetItem(QString::fromLatin1("-")));
+        }
+        ui->trajectoryTable->setItem(i, 3, new QTableWidgetItem(QString::number(pt.Velocity)));
+        ui->trajectoryTable->setItem(i, 4, new QTableWidgetItem(QString::number(pt.Acceleration)));
     }
 
-    QObject::connect(ButtonStepStart    ,SIGNAL(clicked()),this,SLOT(start()));
-    QObject::connect(ButtonStepStop     ,SIGNAL(clicked()),this,SLOT(stop()));
-    QObject::connect(ButtonStepRun      ,SIGNAL(clicked()),this,SLOT(run()));
-    QObject::connect(ButtonStepBack     ,SIGNAL(clicked()),this,SLOT(back()));
-    QObject::connect(ButtonStepForward  ,SIGNAL(clicked()),this,SLOT(forward()));
-    QObject::connect(ButtonStepEnd      ,SIGNAL(clicked()),this,SLOT(end()));
-
+    // clang-format off
+    QObject::connect(ui->ButtonStepStart, &QPushButton::clicked, this, &TrajectorySimulate::start);
+    QObject::connect(ui->ButtonStepStop, &QPushButton::clicked, this, &TrajectorySimulate::stop);
+    QObject::connect(ui->ButtonStepRun, &QPushButton::clicked, this, &TrajectorySimulate::run);
+    QObject::connect(ui->ButtonStepBack, &QPushButton::clicked, this, &TrajectorySimulate::back);
+    QObject::connect(ui->ButtonStepForward, &QPushButton::clicked, this, &TrajectorySimulate::forward);
+    QObject::connect(ui->ButtonStepEnd, &QPushButton::clicked, this, &TrajectorySimulate::end);
 
     // set up timer
-    timer = new QTimer( this );
+    timer = new QTimer(this);
     timer->setInterval(100);
-    QObject::connect(timer      ,SIGNAL(timeout ()),this,SLOT(timerDone()));
-
-    QObject::connect( timeSpinBox       ,SIGNAL(valueChanged(double)), this, SLOT(valueChanged(double)) );
-    QObject::connect( timeSlider        ,SIGNAL(valueChanged(int)   ), this, SLOT(valueChanged(int)) );
+    QObject::connect(timer, &QTimer::timeout, this, &TrajectorySimulate::timerDone);
+    QObject::connect(ui->timeSpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
+                     this, qOverload<double>(&TrajectorySimulate::valueChanged));
+    QObject::connect(ui->timeSlider, qOverload<int>(&QSlider::valueChanged),
+                     this, qOverload<int>(&TrajectorySimulate::valueChanged));
+    // clang-format on
 
     // get the view provider
-    ViewProv = dynamic_cast<ViewProviderRobotObject*>(Gui::Application::Instance->activeDocument()->getViewProvider(pcRobotObject) );
+    ViewProv = static_cast<ViewProviderRobotObject*>(
+        Gui::Application::Instance->activeDocument()->getViewProvider(pcRobotObject));
 
     setTo();
 }
 
-TrajectorySimulate::~TrajectorySimulate()
-{
-}
+TrajectorySimulate::~TrajectorySimulate() = default;
 
-void TrajectorySimulate::setTo(void)
+void TrajectorySimulate::setTo()
 {
     sim.setToTime(timePos);
-    ViewProv->setAxisTo(sim.Axis[0],sim.Axis[1],sim.Axis[2],sim.Axis[3],sim.Axis[4],sim.Axis[5],sim.Rob.getTcp());
+    ViewProv->setAxisTo(sim.Axis[0],
+                        sim.Axis[1],
+                        sim.Axis[2],
+                        sim.Axis[3],
+                        sim.Axis[4],
+                        sim.Axis[5],
+                        sim.Rob.getTcp());
 }
 
-void TrajectorySimulate::start(void)
+void TrajectorySimulate::start()
 {
     timePos = 0.0f;
-    timeSpinBox->setValue(timePos);
-    timeSlider->setValue(int((timePos/duration)*1000));
+    ui->timeSpinBox->setValue(timePos);
+    ui->timeSlider->setValue(int((timePos / duration) * 1000));
     setTo();
-
 }
-void TrajectorySimulate::stop(void)
+void TrajectorySimulate::stop()
 {
     timer->stop();
     Run = false;
 }
-void TrajectorySimulate::run(void)
+void TrajectorySimulate::run()
 {
     timer->start();
     Run = true;
 }
-void TrajectorySimulate::back(void)
-{
-}
-void TrajectorySimulate::forward(void)
-{
-}
-void TrajectorySimulate::end(void)
+void TrajectorySimulate::back()
+{}
+void TrajectorySimulate::forward()
+{}
+void TrajectorySimulate::end()
 {
     timePos = duration;
-    timeSpinBox->setValue(timePos);
-    timeSlider->setValue(int((timePos/duration)*1000));
+    ui->timeSpinBox->setValue(timePos);
+    ui->timeSlider->setValue(int((timePos / duration) * 1000));
     setTo();
 }
 
-void TrajectorySimulate::timerDone(void)
+void TrajectorySimulate::timerDone()
 {
-    if(timePos < duration){
+    if (timePos < duration) {
         timePos += .1f;
-        timeSpinBox->setValue(timePos);
-        timeSlider->setValue(int((timePos/duration)*1000));
+        ui->timeSpinBox->setValue(timePos);
+        ui->timeSlider->setValue(int((timePos / duration) * 1000));
         setTo();
         timer->start();
-    }else{
+    }
+    else {
         timer->stop();
         Run = false;
     }
 }
 
-void TrajectorySimulate::valueChanged ( int value )
+void TrajectorySimulate::valueChanged(int value)
 {
-    if(!block){
-        timePos = duration*(value/1000.0);
-        block=true;
-        timeSpinBox->setValue(timePos);
-        block=false;
+    if (!block) {
+        timePos = duration * (value / 1000.0);
+        block = true;
+        ui->timeSpinBox->setValue(timePos);
+        block = false;
         setTo();
     }
 }
 
-void TrajectorySimulate::valueChanged ( double value )
+void TrajectorySimulate::valueChanged(double value)
 {
-    if(!block){
+    if (!block) {
         timePos = value;
-        block=true;
-        timeSlider->setValue(int((timePos/duration)*1000));
-        block=false;
+        block = true;
+        ui->timeSlider->setValue(int((timePos / duration) * 1000));
+        block = false;
         setTo();
     }
 }

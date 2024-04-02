@@ -20,7 +20,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
@@ -33,38 +32,39 @@
 # include <GL/gl.h>
 # endif
 # include <cfloat>
-# include <algorithm>
 # include <QFontMetrics>
-# include <QGLWidget>
 # include <QPainter>
 # include <QPen>
 # include <Inventor/actions/SoGLRenderAction.h>
 # include <Inventor/bundles/SoMaterialBundle.h>
 # include <Inventor/elements/SoLazyElement.h>
-# include <Inventor/nodes/SoSurroundScale.h>
 # include <Inventor/misc/SoState.h>
 #endif
 
 #include <Inventor/C/basic.h>
 #include <Inventor/draggers/SoTranslate2Dragger.h>
-#include <Inventor/elements/SoFontNameElement.h>
-#include <Inventor/elements/SoFontSizeElement.h>
 #include <Inventor/elements/SoCullElement.h>
+#include <Inventor/elements/SoFontNameElement.h>
+#include <Inventor/elements/SoGLTextureEnabledElement.h>
 #include <Inventor/elements/SoModelMatrixElement.h>
 #include <Inventor/elements/SoProjectionMatrixElement.h>
 #include <Inventor/elements/SoViewingMatrixElement.h>
-#include <Inventor/elements/SoViewVolumeElement.h>
 #include <Inventor/elements/SoViewportRegionElement.h>
-#include <Inventor/elements/SoGLTextureEnabledElement.h>
+#include <Inventor/elements/SoViewVolumeElement.h>
+
 #if COIN_MAJOR_VERSION > 3
 #include <Inventor/elements/SoMultiTextureEnabledElement.h>
 #else
 #include <Inventor/elements/SoGLTexture3EnabledElement.h>
 #endif
 
+#include <QtOpenGL.h>
+
 #include "SoTextLabel.h"
-#include "SoFCInteractiveElement.h"
 #include "BitmapFactory.h"
+#include "SoFCInteractiveElement.h"
+#include "Tools.h"
+
 
 using namespace Gui;
 
@@ -94,7 +94,7 @@ App.ActiveDocument.addObject("App::InventorObject","iv").Buffer=s
 \endcode
 */
 
-SO_NODE_SOURCE(SoTextLabel);
+SO_NODE_SOURCE(SoTextLabel)
 
 void SoTextLabel::initClass()
 {
@@ -105,7 +105,7 @@ SoTextLabel::SoTextLabel()
 {
     SO_NODE_CONSTRUCTOR(SoTextLabel);
     SO_NODE_ADD_FIELD(backgroundColor, (SbVec3f(1.0f,1.0f,1.0f)));
-    SO_NODE_ADD_FIELD(background, (TRUE));
+    SO_NODE_ADD_FIELD(background, (true));
     SO_NODE_ADD_FIELD(frameSize, (10.0f));
 }
 
@@ -114,7 +114,8 @@ SoTextLabel::SoTextLabel()
  */
 void SoTextLabel::GLRender(SoGLRenderAction *action)
 {
-    if (!this->shouldGLRender(action)) return;
+    if (!this->shouldGLRender(action))
+        return;
 
     // only draw text without background
     if (!this->background.getValue()) {
@@ -131,19 +132,16 @@ void SoTextLabel::GLRender(SoGLRenderAction *action)
     SbVec3f center;
     this->computeBBox(action, box, center);
 
-    if (!SoCullElement::cullTest(state, box, TRUE)) {
+    if (!SoCullElement::cullTest(state, box, true)) {
         SoMaterialBundle mb(action);
         mb.sendFirst();
         const SbMatrix & mat = SoModelMatrixElement::get(state);
-        //const SbViewVolume & vv = SoViewVolumeElement::get(state);
         const SbMatrix & projmatrix = (mat * SoViewingMatrixElement::get(state) *
                                        SoProjectionMatrixElement::get(state));
         const SbViewportRegion & vp = SoViewportRegionElement::get(state);
         SbVec2s vpsize = vp.getViewportSizePixels();
 
         // font stuff
-        //float space = this->spacing.getValue();
-        //float fontsize = SoFontSizeElement::get(state);
         SbName fontname = SoFontNameElement::get(state);
         int lines = this->string.getNum();
 
@@ -153,7 +151,6 @@ void SoTextLabel::GLRender(SoGLRenderAction *action)
         nilpoint[0] = (nilpoint[0] + 1.0f) * 0.5f * vpsize[0];
         nilpoint[1] = (nilpoint[1] + 1.0f) * 0.5f * vpsize[1];
 
-#if 1
         // Unfortunately, the size of the label is stored in the pimpl class of
         // SoText2 which cannot be accessed directly. However, there is a trick
         // to get the required information: set model, viewing and projection
@@ -202,40 +199,6 @@ void SoTextLabel::GLRender(SoGLRenderAction *action)
         if (lines > 1) {
             nilpoint[1] -= (float(lines-1)/(float)lines*height);
         }
-#else
-        // Unfortunately, the required size (in pixels) is stored in a non-accessible way
-        // in the subclass SoText2. Thus, we try to get a satisfactory solution with Qt 
-        // methods.
-        // The font name is of the form "family:style". If 'style' is given it can be
-        // 'Bold', 'Italic' or 'Bold Italic'.
-        QFont font;
-        QString fn = QString::fromAscii(fontname.getString());
-        int pos = fn.indexOf(QLatin1Char(':'));
-        if (pos > -1) {
-            if (fn.indexOf(QLatin1String("Bold"),pos,Qt::CaseInsensitive) > pos)
-                font.setBold(true);
-            if (fn.indexOf(QLatin1String("Italic"),pos,Qt::CaseInsensitive) > pos)
-                font.setItalic(true);
-            fn = fn.left(pos);
-        }
-        font.setFamily(fn);
-        font.setPixelSize((int)fontsize);
-        QFontMetrics fm(font);
-
-        float width = 0.0f;
-        float height = 0.75f*fontsize*lines + (lines-1)*space;//fm.height();
-        float hh=0;
-        for (int i = 0; i < lines; i++) {
-            SbString str = this->string[i];
-            float w = fm.width(QLatin1String(this->string[i].getString()));
-            width = std::max<float>(width, w);
-            hh = fm.height();
-        }
-
-        if (lines > 1) {
-            nilpoint[1] -= ((lines-1)*fontsize*0.75f+space);
-        }
-#endif
 
         SbVec3f toppoint = nilpoint;
         toppoint[0] += width;
@@ -254,11 +217,11 @@ void SoTextLabel::GLRender(SoGLRenderAction *action)
         state->push();
 
         // disable textures for all units
-        SoGLTextureEnabledElement::set(state, this, FALSE);
+        SoGLTextureEnabledElement::set(state, this, false);
 #if COIN_MAJOR_VERSION > 3
-        SoMultiTextureEnabledElement::set(state, this, FALSE);
+        SoMultiTextureEnabledElement::set(state, this, false);
 #else
-        SoGLTexture3EnabledElement::set(state, this, FALSE);
+        SoGLTexture3EnabledElement::set(state, this, false);
 #endif
 
         glPushAttrib(GL_ENABLE_BIT | GL_PIXEL_MODE_BIT | GL_COLOR_BUFFER_BIT);
@@ -281,7 +244,7 @@ void SoTextLabel::GLRender(SoGLRenderAction *action)
         glPopClientAttrib();
         glPopAttrib();
         state->pop();
-          
+
         glPixelStorei(GL_UNPACK_ALIGNMENT,4);
         // Pop old GL matrix state.
         glMatrixMode(GL_PROJECTION);
@@ -297,7 +260,34 @@ void SoTextLabel::GLRender(SoGLRenderAction *action)
 
 // ------------------------------------------------------
 
-SO_NODE_SOURCE(SoStringLabel);
+SO_NODE_SOURCE(SoColorBarLabel)
+
+void SoColorBarLabel::initClass()
+{
+    SO_NODE_INIT_CLASS(SoColorBarLabel, SoText2, "Text2");
+}
+
+SoColorBarLabel::SoColorBarLabel()
+{
+    SO_NODE_CONSTRUCTOR(SoColorBarLabel);
+}
+
+void SoColorBarLabel::computeBBox(SoAction * action, SbBox3f & box, SbVec3f & center)
+{
+    inherited::computeBBox(action, box, center);
+    if (!box.hasVolume()) {
+        SbViewVolume vv = SoViewVolumeElement::get(action->getState());
+        // workaround for https://github.com/coin3d/coin/issues/417:
+        // extend by 2 percent
+        vv.scaleWidth(1.02f);
+        SoViewVolumeElement::set(action->getState(), this, vv);
+        inherited::computeBBox(action, box, center);
+    }
+}
+
+// ------------------------------------------------------
+
+SO_NODE_SOURCE(SoStringLabel)
 
 void SoStringLabel::initClass()
 {
@@ -318,7 +308,7 @@ SoStringLabel::SoStringLabel()
  */
 void SoStringLabel::GLRender(SoGLRenderAction *action)
 {
-    QGLWidget* window;
+    QtGLWidget* window;
     SoState * state = action->getState();
     state->push();
     SoLazyElement::setLightModel(state, SoLazyElement::BASE_COLOR);
@@ -349,25 +339,9 @@ void SoStringLabel::GLRender(SoGLRenderAction *action)
 
     glBlendFunc(GL_ONE,GL_SRC_ALPHA);
 
-    /* Background Box */
-    //glColor4f(1,0.1f,0.1f,1);
-    //int ln =4;
-    //float ls = font.pixelSize()*1.5f;
-    //float bh = -1 + 2.0*(ls*(ln+.25))/float(window->height());
-
-    //glBegin(GL_QUADS);
-    //glVertex2f(-1.f,bh);   glVertex2f(-1.f,-1.f);
-    //glVertex2f( 1.f,-1.f); glVertex2f( 1.f,bh);
-    //glEnd();
-
-    //float middleCol=window->width()*0.40;
-    //float rightCol=window->width()*0.85;
-    //float startPos = window->height()-(5+ls*(ln));
-
     // text color
     SbColor color = this->textColor.getValue();
-    glColor4f(color[0], color[1], color[2],1);
-    //window->renderText(20,20/*startPos+ 1*ls*/,QLatin1String(this->string[0].getString()),font);
+    glColor4f(color[0], color[1], color[2], 1);
     const SbMatrix & mat = SoModelMatrixElement::get(state);
     const SbMatrix & projmatrix = (mat * SoViewingMatrixElement::get(state) *
                                    SoProjectionMatrixElement::get(state));
@@ -376,7 +350,6 @@ void SoStringLabel::GLRender(SoGLRenderAction *action)
     QStringList list;
     for (int i=0; i<this->string.getNum(); i++)
         list << QLatin1String(this->string[i].getString());
-    window->renderText(nil[0],nil[1],nil[2],list.join(QLatin1String("\n")),font);
 
     // Leave 2D screen mode
     glPopAttrib();
@@ -390,7 +363,7 @@ void SoStringLabel::GLRender(SoGLRenderAction *action)
 
 // ------------------------------------------------------
 
-SO_NODE_SOURCE(SoFrameLabel);
+SO_NODE_SOURCE(SoFrameLabel)
 
 void SoFrameLabel::initClass()
 {
@@ -406,7 +379,7 @@ SoFrameLabel::SoFrameLabel()
     SO_NODE_ADD_FIELD(justification, (LEFT));
     SO_NODE_ADD_FIELD(name, ("Helvetica"));
     SO_NODE_ADD_FIELD(size, (12));
-    SO_NODE_ADD_FIELD(frame, (TRUE));
+    SO_NODE_ADD_FIELD(frame, (true));
   //SO_NODE_ADD_FIELD(image, (SbVec2s(0,0), 0, NULL));
 }
 
@@ -434,7 +407,7 @@ void SoFrameLabel::drawImage()
         return;
     }
 
-    QFont font(QString::fromAscii(name.getValue()), size.getValue());
+    QFont font(QString::fromLatin1(QByteArray(name.getValue())), size.getValue());
     QFontMetrics fm(font);
     int w = 0;
     int h = fm.height() * num;
@@ -448,7 +421,7 @@ void SoFrameLabel::drawImage()
     QStringList lines;
     for (int i=0; i<num; i++) {
         QString line = QString::fromUtf8(s[i].getString());
-        w = std::max<int>(w, fm.width(line));
+        w = std::max<int>(w, QtTools::horizontalAdvance(fm, line));
         lines << line;
     }
 
@@ -491,81 +464,11 @@ void SoFrameLabel::drawImage()
 void SoFrameLabel::GLRender(SoGLRenderAction *action)
 {
     inherited::GLRender(action);
-#if 0
-    QGLWidget* window;
-    SoState * state = action->getState();
-    state->push();
-    SoLazyElement::setLightModel(state, SoLazyElement::BASE_COLOR);
-    SoGLWidgetElement::get(state, window);
-    if (!window) {
-        state->pop();
-        return;
-    }
-
-    // Enter in 2D screen mode
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(-1,1,-1,1,-1,1);
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glPushAttrib(GL_ENABLE_BIT);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-
-    QFont font;
-    font.setStyleStrategy(QFont::NoAntialias);
-    font.setFamily(QLatin1String(this->name.getValue()));
-    font.setPixelSize(this->size.getValue());
-
-    glBlendFunc(GL_ONE,GL_SRC_ALPHA);
-
-    /* Background Box */
-    //glColor4f(1,0.1f,0.1f,1);
-    //int ln =4;
-    //float ls = font.pixelSize()*1.5f;
-    //float bh = -1 + 2.0*(ls*(ln+.25))/float(window->height());
-
-    //glBegin(GL_QUADS);
-    //glVertex2f(-1.f,bh);   glVertex2f(-1.f,-1.f);
-    //glVertex2f( 1.f,-1.f); glVertex2f( 1.f,bh);
-    //glEnd();
-
-    //float middleCol=window->width()*0.40;
-    //float rightCol=window->width()*0.85;
-    //float startPos = window->height()-(5+ls*(ln));
-
-    // text color
-    SbColor color = this->textColor.getValue();
-    glColor4f(color[0], color[1], color[2],1);
-    //window->renderText(20,20/*startPos+ 1*ls*/,QLatin1String(this->string[0].getString()),font);
-    const SbMatrix & mat = SoModelMatrixElement::get(state);
-    const SbMatrix & projmatrix = (mat * SoViewingMatrixElement::get(state) *
-                                   SoProjectionMatrixElement::get(state));
-    SbVec3f nil(0.0f, 0.0f, 0.0f);
-    projmatrix.multVecMatrix(nil, nil);
-    QStringList list;
-    for (int i=0; i<this->string.getNum(); i++)
-        list << QLatin1String(this->string[i].getString());
-    window->renderText(nil[0],nil[1],nil[2],list.join(QLatin1String("\n")),font);
-
-    // Leave 2D screen mode
-    glPopAttrib();
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-
-    state->pop();
-#endif
 }
 
 // ------------------------------------------------------
 
-SO_NODE_SOURCE(TranslateManip);
+SO_NODE_SOURCE(TranslateManip)
 
 void
 TranslateManip::initClass()
@@ -578,10 +481,8 @@ TranslateManip::TranslateManip()
 {
     SO_NODE_CONSTRUCTOR(TranslateManip);
 
-    SoTranslate2Dragger *myDrag = new SoTranslate2Dragger;
+    auto myDrag = new SoTranslate2Dragger;
     setDragger(myDrag);
 }
 
-TranslateManip::~TranslateManip()
-{
-}
+TranslateManip::~TranslateManip() = default;

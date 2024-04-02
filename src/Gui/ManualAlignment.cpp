@@ -28,40 +28,29 @@
 # include <QLabel>
 # include <QMenu>
 # include <QMessageBox>
-# include <QGLWidget>
 # include <QPainter>
 # include <QSplitter>
-# include <QStatusBar>
 # include <QTimer>
 # include <QVBoxLayout>
 # include <Inventor/SoPickedPoint.h>
 # include <Inventor/actions/SoSearchAction.h>
 # include <Inventor/events/SoMouseButtonEvent.h>
 # include <Inventor/fields/SoSFImage.h>
-# include <Inventor/nodes/SoCoordinate3.h>
-# include <Inventor/nodes/SoDrawStyle.h>
 # include <Inventor/nodes/SoImage.h>
 # include <Inventor/nodes/SoMaterial.h>
 # include <Inventor/nodes/SoOrthographicCamera.h>
-# include <Inventor/nodes/SoPickStyle.h>
-# include <Inventor/nodes/SoPointSet.h>
 # include <Inventor/nodes/SoSeparator.h>
 # include <Inventor/nodes/SoTranslation.h>
 # include <Inventor/sensors/SoNodeSensor.h>
 #endif
 
-#include <boost/signals.hpp>
-#include <boost/bind.hpp>
-
 #include <App/Document.h>
 #include <App/GeoFeature.h>
-#include <Base/Exception.h>
 #include <Gui/Application.h>
 #include <Gui/Document.h>
 #include <Gui/MainWindow.h>
 #include <Gui/Selection.h>
 #include <Gui/SplitView3DInventor.h>
-#include <Gui/View3DInventor.h>
 #include <Gui/View3DInventorViewer.h>
 #include <Gui/ViewProviderGeometryObject.h>
 #include <Gui/WaitCursor.h>
@@ -69,24 +58,22 @@
 #include "ManualAlignment.h"
 #include "BitmapFactory.h"
 #include "SoAxisCrossKit.h"
+#include "Tools.h"
 
 
 using namespace Gui;
+namespace sp = std::placeholders;
 
-AlignmentGroup::AlignmentGroup()
-{
-}
+AlignmentGroup::AlignmentGroup() = default;
 
-AlignmentGroup::~AlignmentGroup()
-{
-}
+AlignmentGroup::~AlignmentGroup() = default;
 
 void AlignmentGroup::addView(App::DocumentObject* pView)
 {
     if (pView) {
         App::Document* rDoc = pView->getDocument();
         Gui::Document* pDoc = Gui::Application::Instance->getDocument(rDoc);
-        Gui::ViewProviderDocumentObject* pProvider = static_cast<Gui::ViewProviderDocumentObject*>
+        auto pProvider = static_cast<Gui::ViewProviderDocumentObject*>
             (pDoc->getViewProvider(pView));
         this->_views.push_back(pProvider);
     }
@@ -158,7 +145,7 @@ void AlignmentGroup::setRandomColor()
             SoPath* selectionPath = searchAction.getPath();
 
             if (selectionPath) {
-                SoMaterial* material = static_cast<SoMaterial*>(selectionPath->getTail());
+                auto material = static_cast<SoMaterial*>(selectionPath->getTail());
                 material->diffuseColor.setValue(r, g, b);
             }
         }
@@ -168,7 +155,7 @@ void AlignmentGroup::setRandomColor()
 Gui::Document* AlignmentGroup::getDocument() const
 {
     if (this->_views.empty())
-        return 0;
+        return nullptr;
     App::DocumentObject* pView = this->_views[0]->getObject();
     if (pView) {
         App::Document* rDoc = pView->getDocument();
@@ -176,10 +163,10 @@ Gui::Document* AlignmentGroup::getDocument() const
         return pDoc;
     }
 
-    return 0;
+    return nullptr;
 }
 
-void AlignmentGroup::addPoint(const Base::Vector3d& pnt)
+void AlignmentGroup::addPoint(const PickedPoint& pnt)
 {
     this->_pickedPoints.push_back(pnt);
 }
@@ -194,7 +181,7 @@ int AlignmentGroup::countPoints() const
     return this->_pickedPoints.size();
 }
 
-const std::vector<Base::Vector3d>& AlignmentGroup::getPoints() const
+const std::vector<PickedPoint>& AlignmentGroup::getPoints() const
 {
     return this->_pickedPoints;
 }
@@ -206,14 +193,19 @@ void AlignmentGroup::clearPoints()
 
 void AlignmentGroup::setAlignable(bool align)
 {
-    //std::vector<Gui::ViewProviderDocumentObject*>::iterator it;
-    //for (it = this->_views.begin(); it != this->_views.end(); ++it) {
-    //    if (!align){
-    //        App::PropertyColor* pColor = (App::PropertyColor*)(*it)->getPropertyByName("ShapeColor");
-    //        if (pColor)
-    //            pColor->touch(); // resets to color defined by property
-    //    }
-    //}
+    std::vector<Gui::ViewProviderDocumentObject*>::iterator it;
+    for (it = this->_views.begin(); it != this->_views.end(); ++it) {
+        auto pAlignMode = dynamic_cast<App::PropertyBool*>((*it)->getPropertyByName("AlignMode"));
+        if (pAlignMode) {
+            pAlignMode->setValue(align);
+        }
+        // leaving alignment mode
+        else if (!align){
+            auto pColor = dynamic_cast<App::PropertyColor*>((*it)->getPropertyByName("ShapeColor"));
+            if (pColor)
+                pColor->touch(); // resets to color defined by property
+        }
+    }
 }
 
 void AlignmentGroup::moveTo(AlignmentGroup& that)
@@ -241,35 +233,38 @@ int AlignmentGroup::count() const
     return this->_views.size();
 }
 
-// ------------------------------------------------------------------
-
-MovableGroup::MovableGroup()
+Base::BoundBox3d AlignmentGroup::getBoundingBox() const
 {
-}
-
-MovableGroup::~MovableGroup()
-{
-}
-
-// ------------------------------------------------------------------
-
-FixedGroup::FixedGroup()
-{
-}
-
-FixedGroup::~FixedGroup()
-{
+    Base::BoundBox3d box;
+    std::vector<Gui::ViewProviderDocumentObject*>::const_iterator it;
+    for (it = this->_views.begin(); it != this->_views.end(); ++it) {
+        if ((*it)->isDerivedFrom(Gui::ViewProviderGeometryObject::getClassTypeId())) {
+            auto geo = static_cast<App::GeoFeature*>((*it)->getObject());
+            const App::PropertyComplexGeoData* prop = geo->getPropertyOfGeometry();
+            if (prop)
+                box.Add(prop->getBoundingBox());
+        }
+    }
+    return box;
 }
 
 // ------------------------------------------------------------------
 
-MovableGroupModel::MovableGroupModel()
-{
-}
+MovableGroup::MovableGroup() = default;
 
-MovableGroupModel::~MovableGroupModel()
-{
-}
+MovableGroup::~MovableGroup() = default;
+
+// ------------------------------------------------------------------
+
+FixedGroup::FixedGroup() = default;
+
+FixedGroup::~FixedGroup() = default;
+
+// ------------------------------------------------------------------
+
+MovableGroupModel::MovableGroupModel() = default;
+
+MovableGroupModel::~MovableGroupModel() = default;
 
 void MovableGroupModel::addGroup(const MovableGroup& grp)
 {
@@ -278,8 +273,8 @@ void MovableGroupModel::addGroup(const MovableGroup& grp)
 
 void MovableGroupModel::addGroups(const std::map<int, MovableGroup>& grps)
 {
-    for (std::map<int, MovableGroup>::const_iterator it = grps.begin(); it != grps.end(); ++it)
-        this->_groups.push_back(it->second);
+    for (const auto & grp : grps)
+        this->_groups.push_back(grp.second);
 }
 
 void MovableGroupModel::removeActiveGroup()
@@ -291,7 +286,7 @@ MovableGroup& MovableGroupModel::activeGroup()
 {
     // Make sure that the array is not empty
     if (this->_groups.empty())
-        throw Base::Exception("Empty group");
+        throw Base::RuntimeError("Empty group");
     return *(this->_groups.begin());
 }
 
@@ -299,8 +294,8 @@ const MovableGroup& MovableGroupModel::activeGroup() const
 {
     // Make sure that the array is not empty
     if (this->_groups.empty())
-        throw Base::Exception("Empty group");
-    return *(this->_groups.begin());
+        throw Base::RuntimeError("Empty group");
+    return this->_groups.front();
 }
 
 void MovableGroupModel::continueAlignment()
@@ -324,6 +319,23 @@ int MovableGroupModel::count() const
     return this->_groups.size();
 }
 
+const MovableGroup& MovableGroupModel::getGroup(int i) const
+{
+    if (i >= count())
+        throw Base::IndexError("Index out of range");
+    return this->_groups[i];
+}
+
+Base::BoundBox3d MovableGroupModel::getBoundingBox() const
+{
+    Base::BoundBox3d box;
+    std::vector<MovableGroup>::const_iterator it;
+    for (it = this->_groups.begin(); it != this->_groups.end(); ++it) {
+        box.Add(it->getBoundingBox());
+    }
+    return box;
+}
+
 // ------------------------------------------------------------------
 
 namespace Gui {
@@ -332,19 +344,38 @@ class AlignmentView : public Gui::AbstractSplitView
 public:
     QLabel* myLabel;
 
-    AlignmentView(Gui::Document* pcDocument, QWidget* parent, QGLWidget* shareWidget=0, Qt::WFlags wflags=0)
+    AlignmentView(Gui::Document* pcDocument, QWidget* parent, Qt::WindowFlags wflags=Qt::WindowFlags())
         : AbstractSplitView(pcDocument, parent, wflags)
     {
-        QSplitter* mainSplitter=0;
-        mainSplitter = new QSplitter(Qt::Horizontal, this);
-        _viewer.push_back(new View3DInventorViewer(mainSplitter, shareWidget));
-        _viewer.back()->setDocument(pcDocument);
-        _viewer.push_back(new View3DInventorViewer(mainSplitter, shareWidget));
-        _viewer.back()->setDocument(pcDocument);
+        //anti-aliasing settings
+        bool smoothing = false;
+        bool glformat = false;
+        int samples = View3DInventorViewer::getNumSamples();
+        QtGLFormat f;
 
-        QFrame* vbox = new QFrame(this);
-        QVBoxLayout* layout = new QVBoxLayout();
-        layout->setMargin(0);
+        if (samples > 1) {
+            glformat = true;
+            f.setSamples(samples);
+        }
+        else if (samples > 0) {
+            smoothing = true;
+        }
+
+        QSplitter* mainSplitter=nullptr;
+        mainSplitter = new QSplitter(Qt::Horizontal, this);
+        if (glformat) {
+            _viewer.push_back(new View3DInventorViewer(f, mainSplitter));
+            _viewer.push_back(new View3DInventorViewer(f, mainSplitter));
+        }
+        else {
+            _viewer.push_back(new View3DInventorViewer(mainSplitter));
+            _viewer.push_back(new View3DInventorViewer(mainSplitter));
+        }
+        setDocumentOfViewers(pcDocument);
+
+        auto vbox = new QFrame(this);
+        auto layout = new QVBoxLayout();
+        layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(0);
         vbox->setLayout(layout);
 
@@ -369,34 +400,37 @@ public:
         // apply the user settings
         setupSettings();
 
+        if (smoothing) {
+            for (const auto & i : _viewer)
+                i->getSoRenderManager()->getGLRenderAction()->setSmoothing(true);
+        }
+
         static_cast<SoGroup*>(getViewer(0)->getSoRenderManager()->getSceneGraph())->
             addChild(setupHeadUpDisplay(tr("Movable object")));
         static_cast<SoGroup*>(getViewer(1)->getSoRenderManager()->getSceneGraph())->
             addChild(setupHeadUpDisplay(tr("Fixed object")));
     }
-    ~AlignmentView()
-    {
-    }
-    PyObject* getPyObject()
+    ~AlignmentView() override = default;
+    PyObject* getPyObject() override
     {
         Py_Return;
     }
-    bool canClose()
+    bool canClose() override
     {
         return false;
     }
     SoNode* setupHeadUpDisplay(const QString& text) const
     {
-        SoSeparator* hudRoot = new SoSeparator;
+        auto hudRoot = new SoSeparator;
         hudRoot->ref();
 
-        SoOrthographicCamera* hudCam = new SoOrthographicCamera();
+        auto hudCam = new SoOrthographicCamera();
         hudCam->viewportMapping = SoCamera::LEAVE_ALONE;
 
         // Set the position in the window.
         // [0, 0] is in the center of the screen.
         //
-        SoTranslation* hudTrans = new SoTranslation;
+        auto hudTrans = new SoTranslation;
         hudTrans->translation.setValue(-0.95f, -0.95f, 0.0f);
 
         QFont font = this->font();
@@ -406,7 +440,7 @@ public:
         QColor front;
         front.setRgbF(0.8f, 0.8f, 0.8f);
 
-        int w = fm.width(text);
+        int w = QtTools::horizontalAdvance(fm, text);
         int h = fm.height();
 
         QImage image(w,h,QImage::Format_ARGB32_Premultiplied);
@@ -419,7 +453,7 @@ public:
         painter.end();
         SoSFImage sfimage;
         Gui::BitmapFactory().convert(image, sfimage);
-        SoImage* hudImage = new SoImage();
+        auto hudImage = new SoImage();
         hudImage->image = sfimage;
 
         // Assemble the parts...
@@ -437,13 +471,12 @@ class ManualAlignment::Private {
 public:
     SoSeparator * picksepLeft;
     SoSeparator * picksepRight;
-    SoNodeSensor* sensorCam1;
-    SoNodeSensor* sensorCam2;
+    SoNodeSensor* sensorCam1{nullptr};
+    SoNodeSensor* sensorCam2{nullptr};
     SbRotation rot_cam1, rot_cam2;
     SbVec3f pos_cam1, pos_cam2;
 
-    Private() 
-      : sensorCam1(0), sensorCam2(0)
+    Private()
     {
         // left view
         picksepLeft = new SoSeparator;
@@ -463,7 +496,8 @@ public:
     static
     void  reorientCamera(SoCamera * cam, const SbRotation & rot)
     {
-        if (cam == NULL) return;
+        if (!cam)
+            return;
 
         // Find global coordinates of focal point.
         SbVec3f direction;
@@ -483,13 +517,15 @@ public:
     void copyCameraSettings(SoCamera* cam1, SbRotation& rot_cam1, SbVec3f& pos_cam1,
                             SoCamera* cam2, SbRotation& rot_cam2, SbVec3f& pos_cam2)
     {
+        Q_UNUSED(pos_cam2);
+
         // recompute the diff we have applied to the camera's orientation
         SbRotation rot = cam1->orientation.getValue();
         SbRotation dif = rot * rot_cam1.inverse();
         rot_cam1 = rot;
 
         // copy the values
-        cam2->enableNotify(FALSE);
+        cam2->enableNotify(false);
         cam2->nearDistance = cam1->nearDistance;
         cam2->farDistance = cam1->farDistance;
         cam2->focalDistance = cam1->focalDistance;
@@ -512,19 +548,19 @@ public:
                 static_cast<SoOrthographicCamera*>(cam1)->height;
         }
 
-        cam2->enableNotify(TRUE);
+        cam2->enableNotify(true);
     }
     static
     void syncCameraCB(void * data, SoSensor * s)
     {
-        ManualAlignment* self = reinterpret_cast<ManualAlignment*>(data);
+        auto self = static_cast<ManualAlignment*>(data);
         if (!self->myViewer)
             return; // already destroyed
         SoCamera* cam1 = self->myViewer->getViewer(0)->getSoRenderManager()->getCamera();
         SoCamera* cam2 = self->myViewer->getViewer(1)->getSoRenderManager()->getCamera();
         if (!cam1 || !cam2)
             return; // missing camera
-        SoNodeSensor* sensor = static_cast<SoNodeSensor*>(s);
+        auto sensor = static_cast<SoNodeSensor*>(s);
         SoNode* node = sensor->getAttachedNode();
         if (node && node->getTypeId().isDerivedFrom(SoCamera::getClassTypeId())) {
             if (node == cam1) {
@@ -554,7 +590,7 @@ public:
         Base::Vector3d pln_base;
         rot.multVec(plane1_base,pln_base);
         Base::Vector3d dif = plane2_base - pln_base;
-        return Base::Placement(dif, rot);
+        return {dif, rot};
     }
 
     static Base::Placement
@@ -591,17 +627,19 @@ public:
 
 /* TRANSLATOR Gui::ManualAlignment */
 
-ManualAlignment* ManualAlignment::_instance = 0;
+ManualAlignment* ManualAlignment::_instance = nullptr;
 
 /**
  * Construction.
  */
 ManualAlignment::ManualAlignment()
-  : myViewer(0), myDocument(0), myPickPoints(3), d(new Private)
+  : myViewer(nullptr), myDocument(nullptr), myPickPoints(3), d(new Private)
 {
+    //NOLINTBEGIN
     // connect with the application's signal for deletion of documents
     this->connectApplicationDeletedDocument = Gui::Application::Instance->signalDeleteDocument
-        .connect(boost::bind(&ManualAlignment::slotDeletedDocument, this, _1));
+        .connect(std::bind(&ManualAlignment::slotDeletedDocument, this, sp::_1));
+    //NOLINTEND
 
     // setup sensor connection
     d->sensorCam1 = new SoNodeSensor(Private::syncCameraCB, this);
@@ -617,7 +655,7 @@ ManualAlignment::~ManualAlignment()
     this->connectApplicationDeletedDocument.disconnect();
     closeViewer();
     delete d;
-    _instance = 0;
+    _instance = nullptr;
 }
 
 /**
@@ -638,17 +676,17 @@ void ManualAlignment::destruct()
 {
     if (_instance) {
         ManualAlignment* tmp = _instance;
-        _instance = 0;
+        _instance = nullptr;
         delete tmp;
     }
 }
 
 /**
- * Checks whether the one instance exists. 
+ * Checks whether the one instance exists.
  */
 bool ManualAlignment::hasInstance()
 {
-    return _instance != 0;
+    return _instance != nullptr;
 }
 
 void ManualAlignment::setMinPoints(int minPoints)
@@ -672,7 +710,7 @@ void ManualAlignment::clearAll()
 {
     myFixedGroup.clear();
     myAlignModel.clear();
-    myDocument = 0;
+    myDocument = nullptr;
 }
 
 void ManualAlignment::setViewingDirections(const Base::Vector3d& view1, const Base::Vector3d& up1,
@@ -682,26 +720,54 @@ void ManualAlignment::setViewingDirections(const Base::Vector3d& view1, const Ba
         return;
 
     {
-        SbRotation rot;
-        rot.setValue(SbVec3f(0.0f, 0.0f, 1.0f), SbVec3f(-view1.x,-view1.y,-view1.z));
+        SbVec3f vz(-view1.x, -view1.y, -view1.z);
+        vz.normalize();
+        SbVec3f vy(up1.x, up1.y, up1.z);
+        vy.normalize();
+        SbVec3f vx = vy.cross(vz);
+        vy = vz.cross(vx);
 
-        SbRotation rot2;
-        SbVec3f up(0.0f, 1.0f, 0.0f);
-        rot.multVec(up, up);
-        rot2.setValue(up, SbVec3f(up1.x, up1.y, up1.z));
-        myViewer->getViewer(0)->getSoRenderManager()->getCamera()->orientation.setValue(rot * rot2);
+        SbMatrix rot = SbMatrix::identity();
+        rot[0][0] = vx[0];
+        rot[0][1] = vx[1];
+        rot[0][2] = vx[2];
+
+        rot[1][0] = vy[0];
+        rot[1][1] = vy[1];
+        rot[1][2] = vy[2];
+
+        rot[2][0] = vz[0];
+        rot[2][1] = vz[1];
+        rot[2][2] = vz[2];
+
+        SbRotation total(rot);
+        myViewer->getViewer(0)->getSoRenderManager()->getCamera()->orientation.setValue(total);
         myViewer->getViewer(0)->viewAll();
     }
 
     {
-        SbRotation rot;
-        rot.setValue(SbVec3f(0.0f, 0.0f, 1.0f), SbVec3f(-view2.x,-view2.y,-view2.z));
+        SbVec3f vz(-view2.x, -view2.y, -view2.z);
+        vz.normalize();
+        SbVec3f vy(up2.x, up2.y, up2.z);
+        vy.normalize();
+        SbVec3f vx = vy.cross(vz);
+        vy = vz.cross(vx);
 
-        SbRotation rot2;
-        SbVec3f up(0.0f, 1.0f, 0.0f);
-        rot.multVec(up, up);
-        rot2.setValue(up, SbVec3f(up2.x, up2.y, up2.z));
-        myViewer->getViewer(1)->getSoRenderManager()->getCamera()->orientation.setValue(rot * rot2);
+        SbMatrix rot = SbMatrix::identity();
+        rot[0][0] = vx[0];
+        rot[0][1] = vx[1];
+        rot[0][2] = vx[2];
+
+        rot[1][0] = vy[0];
+        rot[1][1] = vy[1];
+        rot[1][2] = vy[2];
+
+        rot[2][0] = vz[0];
+        rot[2][1] = vz[1];
+        rot[2][2] = vz[2];
+
+        SbRotation total(rot);
+        myViewer->getViewer(1)->getSoRenderManager()->getCamera()->orientation.setValue(total);
         myViewer->getViewer(1)->viewAll();
     }
 }
@@ -724,15 +790,8 @@ void ManualAlignment::startAlignment(Base::Type mousemodel)
     if (myAlignModel.isEmpty())
         return;
 
-    QGLWidget* shareWidget = 0;
-    std::list<MDIView*> theViews = myDocument->getMDIViewsOfType(View3DInventor::getClassTypeId());
-    if (!theViews.empty()) {
-        shareWidget = qobject_cast<QGLWidget*>(static_cast<View3DInventor*>
-            (theViews.front())->getViewer()->getGLWidget());
-    }
-
-    // create a splitted window for picking the points
-    myViewer = new AlignmentView(myDocument,Gui::getMainWindow(),shareWidget);
+    // create a split window for picking the points
+    myViewer = new AlignmentView(myDocument,Gui::getMainWindow());
     myViewer->setWindowTitle(tr("Alignment[*]"));
     myViewer->setWindowIcon(QApplication::windowIcon());
     myViewer->resize(400, 300);
@@ -744,7 +803,7 @@ void ManualAlignment::startAlignment(Base::Type mousemodel)
         : tr("Please, select at least %1 points in the left and the right view").arg(n);
     myViewer->myLabel->setText(msg);
 
-    connect(myViewer, SIGNAL(destroyed()), this, SLOT(reset()));
+    connect(myViewer, &QObject::destroyed, this, &ManualAlignment::reset);
 
     // show all aligned views in the 2nd view
     myFixedGroup.addToViewer(myViewer->getViewer(1));
@@ -761,10 +820,10 @@ void ManualAlignment::startAlignment(Base::Type mousemodel)
     }
 
     myViewer->getViewer(0)->setEditing(true);
-    myViewer->getViewer(0)->addEventCallback(SoMouseButtonEvent::getClassTypeId(), 
+    myViewer->getViewer(0)->addEventCallback(SoMouseButtonEvent::getClassTypeId(),
         ManualAlignment::probePickedCallback);
     myViewer->getViewer(1)->setEditing(true);
-    myViewer->getViewer(1)->addEventCallback(SoMouseButtonEvent::getClassTypeId(), 
+    myViewer->getViewer(1)->addEventCallback(SoMouseButtonEvent::getClassTypeId(),
         ManualAlignment::probePickedCallback);
     // apply the mouse model
     myViewer->getViewer(0)->setNavigationType(mousemodel);
@@ -773,8 +832,10 @@ void ManualAlignment::startAlignment(Base::Type mousemodel)
     // Connect to the document's signal as we want to be notified when something happens
     if (this->connectDocumentDeletedObject.connected())
         this->connectDocumentDeletedObject.disconnect();
-    this->connectDocumentDeletedObject = myDocument->signalDeletedObject.connect(boost::bind
-        (&ManualAlignment::slotDeletedObject, this, _1));
+    //NOLINTBEGIN
+    this->connectDocumentDeletedObject = myDocument->signalDeletedObject.connect(std::bind
+        (&ManualAlignment::slotDeletedObject, this, sp::_1));
+    //NOLINTEND
 
     continueAlignment();
 }
@@ -785,8 +846,8 @@ void ManualAlignment::startAlignment(Base::Type mousemodel)
 void ManualAlignment::continueAlignment()
 {
     myFixedGroup.clearPoints();
-    d->picksepLeft->removeAllChildren();
-    d->picksepRight->removeAllChildren();
+    coinRemoveAllChildren(d->picksepLeft);
+    coinRemoveAllChildren(d->picksepRight);
 
     if (!myAlignModel.isEmpty()) {
         AlignmentGroup& grp = myAlignModel.activeGroup();
@@ -809,13 +870,9 @@ void ManualAlignment::closeViewer()
     if (!myViewer)
         return;
     // Close the viewer
-#if !defined(NO_USE_QT_MDI_AREA)
     if (myViewer->parentWidget())
         myViewer->parentWidget()->deleteLater();
-#else
-    myViewer->deleteLater();
-#endif
-    myViewer = 0;
+    myViewer = nullptr;
 }
 
 /**
@@ -832,12 +889,12 @@ void ManualAlignment::reset()
     myFixedGroup.setAlignable(false);
     myFixedGroup.clear();
 
-    d->picksepLeft->removeAllChildren();
-    d->picksepRight->removeAllChildren();
+    coinRemoveAllChildren(d->picksepLeft);
+    coinRemoveAllChildren(d->picksepRight);
 
     if (myDocument) {
         this->connectDocumentDeletedObject.disconnect();
-        myDocument = 0;
+        myDocument = nullptr;
     }
 }
 
@@ -857,11 +914,11 @@ void ManualAlignment::finish()
     Gui::getMainWindow()->showMessage(tr("The alignment has finished"));
 
     // If an event receiver has been defined send the manual alignment finished event to it
-    emitFinished();
+    Q_EMIT emitFinished();
 }
 
 /**
- * Cancels the process and clöses the windows without performing an alignment.
+ * Cancels the process and closes the windows without performing an alignment.
  */
 void ManualAlignment::cancel()
 {
@@ -875,24 +932,24 @@ void ManualAlignment::cancel()
     Gui::getMainWindow()->showMessage(tr("The alignment has been canceled"));
 
     // If an event receiver has been defined send the manual alignment cancelled event to it
-    emitCanceled();
+    Q_EMIT emitCanceled();
 }
 
 void ManualAlignment::align()
 {
-    // Now we can start the actual alignment 
+    // Now we can start the actual alignment
     if (myAlignModel.activeGroup().countPoints() < myPickPoints) {
-        QMessageBox::warning(myViewer, tr("Manual alignment"), 
+        QMessageBox::warning(myViewer, tr("Manual alignment"),
                 tr("Too few points picked in the left view."
                    " At least %1 points are needed.").arg(myPickPoints));
     }
     else if (myFixedGroup.countPoints() < myPickPoints) {
-        QMessageBox::warning(myViewer, tr("Manual alignment"), 
+        QMessageBox::warning(myViewer, tr("Manual alignment"),
                 tr("Too few points picked in the right view."
                   " At least %1 points are needed.").arg(myPickPoints));
     }
     else if (myAlignModel.activeGroup().countPoints() != myFixedGroup.countPoints()) {
-        QMessageBox::warning(myViewer, tr("Manual alignment"), 
+        QMessageBox::warning(myViewer, tr("Manual alignment"),
                 tr("Different number of points picked in left and right view.\n"
                    "On the left view %1 points are picked,\n"
                    "on the right view %2 points are picked.")
@@ -910,9 +967,9 @@ void ManualAlignment::align()
         bool ok = computeAlignment(myAlignModel.activeGroup().getPoints(), myFixedGroup.getPoints());
         if (ok && myDocument) {
             // Align views
-            myDocument->openCommand("Align");
-            for (std::vector<App::DocumentObject*>::iterator it = pViews.begin(); it != pViews.end(); ++it)
-                alignObject(*it);
+            myDocument->openCommand(QT_TRANSLATE_NOOP("Command", "Align"));
+            for (const auto & pView : pViews)
+                alignObject(pView);
             myDocument->commitCommand();
 
             // the alignment was successful so show it in the right view now
@@ -924,13 +981,13 @@ void ManualAlignment::align()
         }
         else {
             // Inform user that alignment failed
-            int ret = QMessageBox::critical(myViewer, tr("Manual alignment"), 
+            auto ret = QMessageBox::critical(myViewer, tr("Manual alignment"),
                 tr("The alignment failed.\nHow do you want to proceed?"),
-                tr("Retry"), tr("Ignore"), tr("Abort"));
-            if ( ret == 1 ) {
+                QMessageBox::Retry | QMessageBox::Ignore | QMessageBox::Abort);
+            if ( ret == QMessageBox::Ignore ) {
                 myAlignModel.continueAlignment();
             }
-            else if ( ret == 2 ) {
+            else if ( ret == QMessageBox::Abort ) {
                 finish();
                 return;
             }
@@ -942,7 +999,7 @@ void ManualAlignment::align()
 
 void ManualAlignment::showInstructions()
 {
-    // Now we can start the actual alignment 
+    // Now we can start the actual alignment
     if (myAlignModel.activeGroup().countPoints() < myPickPoints) {
         Gui::getMainWindow()->showMessage(
             tr("Too few points picked in the left view."
@@ -977,8 +1034,8 @@ bool ManualAlignment::canAlign() const
  * This method computes the alignment. For the calculation of the alignment the picked points of both views
  * are taken. If the alignment fails false is returned, true otherwise.
  */
-bool ManualAlignment::computeAlignment(const std::vector<Base::Vector3d>& movPts,
-                                       const std::vector<Base::Vector3d>& fixPts)
+bool ManualAlignment::computeAlignment(const std::vector<PickedPoint>& movPts,
+                                       const std::vector<PickedPoint>& fixPts)
 {
     assert((int)movPts.size() >= myPickPoints);
     assert((int)fixPts.size() >= myPickPoints);
@@ -987,33 +1044,33 @@ bool ManualAlignment::computeAlignment(const std::vector<Base::Vector3d>& movPts
 
     if (movPts.size() == 1) {
         // 1 point partial solution: Simple translation only
-        myTransform.setPosition(fixPts[0] - movPts[0]);
+        myTransform.setPosition(fixPts[0].point - movPts[0].point);
     }
     else if (movPts.size() == 2) {
-        const Base::Vector3d& p1 = movPts[0];
-        const Base::Vector3d& p2 = movPts[1];
+        const Base::Vector3d& p1 = movPts[0].point;
+        const Base::Vector3d& p2 = movPts[1].point;
         Base::Vector3d d1 = p2-p1;
         d1.Normalize();
 
-        const Base::Vector3d& q1 = fixPts[0];
-        const Base::Vector3d& q2 = fixPts[1];
+        const Base::Vector3d& q1 = fixPts[0].point;
+        const Base::Vector3d& q2 = fixPts[1].point;
         Base::Vector3d d2 = q2-q1;
         d2.Normalize();
 
         myTransform = Private::transformation2x2(p1, d1, q1, d2);
     }
     else if (movPts.size() >= 3) {
-        const Base::Vector3d& p1 = movPts[0];
-        const Base::Vector3d& p2 = movPts[1];
-        const Base::Vector3d& p3 = movPts[2];
+        const Base::Vector3d& p1 = movPts[0].point;
+        const Base::Vector3d& p2 = movPts[1].point;
+        const Base::Vector3d& p3 = movPts[2].point;
         Base::Vector3d d1 = p2-p1;
         d1.Normalize();
         Base::Vector3d n1 = (p2-p1) % (p3-p1);
         n1.Normalize();
 
-        const Base::Vector3d& q1 = fixPts[0];
-        const Base::Vector3d& q2 = fixPts[1];
-        const Base::Vector3d& q3 = fixPts[2];
+        const Base::Vector3d& q1 = fixPts[0].point;
+        const Base::Vector3d& q2 = fixPts[1].point;
+        const Base::Vector3d& q3 = fixPts[2].point;
         Base::Vector3d d2 = q2-q1;
         d2.Normalize();
         Base::Vector3d n2 = (q2-q1) % (q3-q1);
@@ -1031,7 +1088,7 @@ bool ManualAlignment::computeAlignment(const std::vector<Base::Vector3d>& movPts
 void ManualAlignment::alignObject(App::DocumentObject *obj)
 {
     if (obj->getTypeId().isDerivedFrom(App::GeoFeature::getClassTypeId())) {
-        App::GeoFeature* geom = static_cast<App::GeoFeature*>(obj);
+        auto geom = static_cast<App::GeoFeature*>(obj);
         geom->transformPlacement(this->myTransform);
     }
 }
@@ -1056,12 +1113,12 @@ SoNode* ManualAlignment::pickedPointsSubGraph(const SbVec3f& p, const SbVec3f& n
 
     int index = (id-1) % 10;
 
-    SoRegPoint* probe = new SoRegPoint();
+    auto probe = new SoRegPoint();
     probe->base.setValue(p);
     probe->normal.setValue(n);
     probe->color.setValue(color_table[index][0],color_table[index][1],color_table[index][2]);
-    SbString s;
-    probe->text.setValue(s.sprintf("RegPoint_%d", id));
+    SbString s(tr("Point_%1").arg(id).toStdString().c_str());
+    probe->text.setValue(s);
     return probe;
 }
 
@@ -1083,7 +1140,7 @@ void ManualAlignment::slotDeletedObject(const Gui::ViewProvider& Obj)
     if (Obj.getTypeId().isDerivedFrom(Gui::ViewProviderDocumentObject::getClassTypeId())) {
         // remove the view provider immediately from the split window
         bool found = false;
-        Gui::ViewProviderDocumentObject* vp = const_cast<Gui::ViewProviderDocumentObject*>
+        auto vp = const_cast<Gui::ViewProviderDocumentObject*>
                                       (static_cast<const Gui::ViewProviderDocumentObject*>(&Obj));
         if (myAlignModel.activeGroup().hasView(vp)) {
             myViewer->getViewer(0)->removeViewProvider(vp);
@@ -1127,8 +1184,8 @@ void ManualAlignment::onClear()
     myAlignModel.activeGroup().clear();
     myFixedGroup.clear();
 
-    d->picksepLeft->removeAllChildren();
-    d->picksepRight->removeAllChildren();
+    coinRemoveAllChildren(d->picksepLeft);
+    coinRemoveAllChildren(d->picksepRight);
 }
 
 void ManualAlignment::onCancel()
@@ -1138,25 +1195,27 @@ void ManualAlignment::onCancel()
 
 void ManualAlignment::probePickedCallback(void * ud, SoEventCallback * n)
 {
-    Gui::View3DInventorViewer* view  = reinterpret_cast<Gui::View3DInventorViewer*>(n->getUserData());
+    Q_UNUSED(ud);
+
+    auto view  = static_cast<Gui::View3DInventorViewer*>(n->getUserData());
     const SoEvent* ev = n->getEvent();
     if (ev->getTypeId() == SoMouseButtonEvent::getClassTypeId()) {
         // set as handled
         n->getAction()->setHandled();
         n->setHandled();
 
-        const SoMouseButtonEvent * mbe = static_cast<const SoMouseButtonEvent *>(ev);
+        auto mbe = static_cast<const SoMouseButtonEvent *>(ev);
         if (mbe->getButton() == SoMouseButtonEvent::BUTTON1 && mbe->getState() == SoButtonEvent::DOWN) {
             // if we are in 'align' mode then handle the click event
             ManualAlignment* self = ManualAlignment::instance();
-            // Get the closest point to the camera of the whole scene. 
+            // Get the closest point to the camera of the whole scene.
             // This point doesn't need to be part of this view provider.
             Gui::WaitCursor wc;
             const SoPickedPoint * point = view->getPickedPoint(n);
             if (point) {
-                Gui::ViewProvider* vp = static_cast<Gui::ViewProvider*>(view->getViewProviderByPath(point->getPath()));
+                auto vp = static_cast<Gui::ViewProvider*>(view->getViewProviderByPath(point->getPath()));
                 if (vp && vp->getTypeId().isDerivedFrom(Gui::ViewProviderDocumentObject::getClassTypeId())) {
-                    Gui::ViewProviderDocumentObject* that = static_cast<Gui::ViewProviderDocumentObject*>(vp);
+                    auto that = static_cast<Gui::ViewProviderDocumentObject*>(vp);
                     if (self->applyPickedProbe(that, point)) {
                         const SbVec3f& vec = point->getPoint();
                         Gui::getMainWindow()->showMessage(
@@ -1185,35 +1244,35 @@ void ManualAlignment::probePickedCallback(void * ud, SoEventCallback * n)
             else
                 nPoints = self->myFixedGroup.countPoints();
             QMenu menu;
-            QAction* fi = menu.addAction(QLatin1String("&Align"));
-            QAction* rem = menu.addAction(QLatin1String("&Remove last point"));
+            QAction* fi = menu.addAction(tr("&Align"));
+            QAction* rem = menu.addAction(tr("&Remove last point"));
             //QAction* cl = menu.addAction("C&lear");
-            QAction* ca = menu.addAction(QLatin1String("&Cancel"));
+            QAction* ca = menu.addAction(tr("&Cancel"));
             fi->setEnabled(self->canAlign());
             rem->setEnabled(nPoints > 0);
             menu.addSeparator();
-            QAction* sync = menu.addAction(QLatin1String("&Synchronize views"));
+            QAction* sync = menu.addAction(tr("&Synchronize views"));
             sync->setCheckable(true);
             if (self->d->sensorCam1->getAttachedNode())
                 sync->setChecked(true);
             QAction* id = menu.exec(QCursor::pos());
             if (id == fi) {
                 // call align->align();
-                QTimer::singleShot(300, self, SLOT(onAlign()));
+                QTimer::singleShot(300, self, &ManualAlignment::onAlign);
             }
             else if ((id == rem) && (view == self->myViewer->getViewer(0))) {
-                QTimer::singleShot(300, self, SLOT(onRemoveLastPointMoveable()));
+                QTimer::singleShot(300, self, &ManualAlignment::onRemoveLastPointMoveable);
             }
             else if ((id == rem) && (view == self->myViewer->getViewer(1))) {
-                QTimer::singleShot(300, self, SLOT(onRemoveLastPointFixed()));
+                QTimer::singleShot(300, self, &ManualAlignment::onRemoveLastPointFixed);
             }
             //else if (id == cl) {
             //    // call align->clear();
-            //    QTimer::singleShot(300, self, SLOT(onClear()));
+            //    QTimer::singleShot(300, self, &ManualAlignment::onClear);
             //}
             else if (id == ca) {
                 // call align->cancel();
-                QTimer::singleShot(300, self, SLOT(onCancel()));
+                QTimer::singleShot(300, self, &ManualAlignment::onCancel);
             }
             else if (id == sync) {
                 // setup sensor connection
@@ -1252,7 +1311,9 @@ bool ManualAlignment::applyPickedProbe(Gui::ViewProviderDocumentObject* prov, co
         std::vector<Base::Vector3d> pts = prov->getModelPoints(pnt);
         if (pts.empty())
             return false;
-        myAlignModel.activeGroup().addPoint(pts.front());
+        PickedPoint pp;
+        pp.point = pts.front();
+        myAlignModel.activeGroup().addPoint(pp);
         // Adds a point marker for the picked point.
         d->picksepLeft->addChild(pickedPointsSubGraph(vec, nor, myAlignModel.activeGroup().countPoints()));
         return true;
@@ -1261,7 +1322,9 @@ bool ManualAlignment::applyPickedProbe(Gui::ViewProviderDocumentObject* prov, co
         std::vector<Base::Vector3d> pts = prov->getModelPoints(pnt);
         if (pts.empty())
             return false;
-        myFixedGroup.addPoint(pts.front());
+        PickedPoint pp;
+        pp.point = pts.front();
+        myFixedGroup.addPoint(pp);
         // Adds a point marker for the picked point.
         d->picksepRight->addChild(pickedPointsSubGraph(vec, nor, myFixedGroup.countPoints()));
         return true;

@@ -32,21 +32,60 @@ if open.__module__ == '__builtin__':
 # Part:: Wedge, Helix, Spiral, Elipsoid
 # Draft: Rectangle, BSpline, BezCurve
 
-def f2s(n,angle=False):
+def quaternionToString(rot):
+    def shorthexfloat(f):
+        s=f.hex()
+        mantisse, exponent = f.hex().split('p',1)
+        return '%sp%s' % (mantisse.rstrip('0'),exponent)
+    x,y,z,w=rot.Q
+    return 'q=%s+%s*i+%s*j+%s*k' % (shorthexfloat(w),shorthexfloat(x),
+            shorthexfloat(y),shorthexfloat(z))
+
+def f2s(n,angle=False,axis=False):
     '''convert to numerical value to string
     try to remove no significant digits, by guessing a former rounding
-    if it fail use 18 decimal place in fixed point notation
     '''
     if abs(n) < 1e-14: return '0'
-    elif len(('%0.13e' % n).split('e')[0].rstrip('0') ) < 6:
-        return ('%0.10f' % n).rstrip('0').rstrip('.')
-    elif not angle and len(('%0.15e' % n).split('e')[0].rstrip('0') ) < 15:
-        return ('%0.15f' % n).rstrip('0').rstrip('.')
-    elif angle and len(('%0.6e' % n).split('e')[0].rstrip('0') ) < 3:
+    if angle and len(('%0.6e' % n).split('e')[0].rstrip('0') ) < 3:
         return ('%0.5f' % n).rstrip('0').rstrip('.')
+    elif axis and len(('%0.13e' % n).split('e')[0].rstrip('0') ) < 6:
+        return ('%0.10f' % n).rstrip('0').rstrip('.')
     else:
-        return ('%0.18f' % n).rstrip('0').rstrip('.')
-    #return str(float(n))
+        for i in range(20):
+            s = ('%%1.%df'% i) % n
+            if float(s) == n:
+                return s
+        for i in range(20):
+            s = ('%%0.%de'% i) % n
+            if float(s) == n:
+                return s
+
+def ax2_xdir(normal):
+    #adapted from gp_Ax2.ccc (c) OpenCascade SAS LGPL 2.1+
+
+    xa=abs(normal.x)
+    ya=abs(normal.y)
+    za=abs(normal.z)
+    if ya <= xa and ya <= za:
+        if xa > za:
+            return FreeCAD.Vector(-normal.z,0, normal.x)
+        else:
+            return FreeCAD.Vector( normal.z,0,-normal.x)
+    elif xa <= ya and xa <= za:
+        if ya > za:
+            return FreeCAD.Vector(0,-normal.z, normal.y)
+        else:
+            return FreeCAD.Vector(0, normal.z,-normal.y)
+    else:
+        if xa > ya:
+            return FreeCAD.Vector(-normal.y, normal.x,0)
+        else:
+            return FreeCAD.Vector( normal.y,-normal.x,0)
+
+def occversiontuple():
+    import FreeCAD,Part
+    occmajs,occmins,occfixs = FreeCAD.ConfigGet('OCC_VERSION').split('.')[:3]
+    return (int(occmajs),int(occmins),int(occfixs))
 
 def polygonstr(r,pcount):
     import math
@@ -77,10 +116,23 @@ def placement2draw(placement,name='object'):
     drawcommand=''
     if not placement.Rotation.isNull():
         import math
-        dx,dy,dz=placement.Rotation.Axis
+        #dx,dy,dz=placement.Rotation.Axis
+        ax=placement.Rotation.Axis
+        import itertools
+        # denormalize rotation axis
+        for t in itertools.product((0,1,-1),repeat=3):
+            if t != (0,0,0):
+                if (ax-FreeCAD.Vector(*t).normalize()).Length < 1e-15:
+                    dx,dy,dz = t
+                    break
+        else:
+            dx,dy,dz=placement.Rotation.Axis
+            #drawcommand += "# %s\n" %quaternionToString(placement.Rotation)
         an=math.degrees(placement.Rotation.Angle)
-        drawcommand += "trotate %s 0 0 0 %s %s %s %s\n" % \
-            (name,f2s(dx),f2s(dy),f2s(dz),f2s(an,angle=True))
+        drawcommand += "trotate %s 0 0 0 %s %s %s %s\n" % (name,\
+            f2s(dx),f2s(dy),f2s(dz),\
+#            f2s(dx,axis=True),f2s(dy,axis=True),f2s(dz,axis=True),\
+            f2s(an,angle=True))
     if placement.Base.Length > 1e-8:
         x,y,z=placement.Base
         drawcommand += "ttranslate %s %s %s %s\n" % \
@@ -109,7 +161,7 @@ def saveShape(csg,filename,shape,name,hasplacement = True,cleanshape=False):
         sh=shape.copy()
         sh.Placement=FreeCAD.Placement()
         # it not yet tested if changing the placement recreated the
-        # tesselation. but for now we simply do the cleaing once agian
+        # tessellation. But for now we simply do the cleaning once again
         # to stay on the safe side
         if cleanshape:
             shape = shape.cleaned()
@@ -126,7 +178,8 @@ def isDraftFeature(ob):
         return True
 
 def isDraftClone(ob):
-    if ob.isDerivedFrom('Part::FeaturePython') and \
+    if (ob.isDerivedFrom('Part::FeaturePython') or \
+            ob.isDerivedFrom('Part::Part2DObjectPython')) and \
             hasattr(ob.Proxy,'__module__') and \
             ob.Proxy.__module__ == 'Draft':
         import Draft
@@ -136,6 +189,11 @@ def isDraftCircle(ob):
     if isDraftFeature(ob):
         import Draft
         return isinstance(ob.Proxy,Draft._Circle)
+
+def isDraftEllipse(ob):
+    if isDraftFeature(ob):
+        import Draft
+        return isinstance(ob.Proxy,Draft._Ellipse)
 
 def isDraftPolygon(ob):
     if isDraftFeature(ob):
@@ -153,7 +211,7 @@ def isDraftWire(ob):
         if isinstance(ob.Proxy,Draft._Wire):
             #only return true if we support all options
             #"Closed" append last point at the end
-            #"MakeFace" 
+            #"MakeFace"
             #"Points" data we need
             # the usage of 'start' and 'end' is not clear
             if ob.Base is None and ob.Tool is None and \
@@ -161,6 +219,10 @@ def isDraftWire(ob):
                     ob.ChamferSize.Value == 0.0:
                 return True
 
+def isDraftShape2DView(ob):
+    if isDraftFeature(ob):
+        import Draft
+        return isinstance(ob.Proxy,Draft._Shape2DView)
 
 def isOpenSCADFeature(ob):
     if ob.isDerivedFrom('Part::FeaturePython') and \
@@ -202,6 +264,7 @@ class Drawexporter(object):
 
     def write_header(self):
         import FreeCAD
+        #self.csg.write('#!/usr/bin/env DRAWEXE\n')
         self.csg.write('#generated by FreeCAD %s\n' % \
                 '.'.join(FreeCAD.Version()[0:3]))
         self.csg.write('pload MODELING\n')
@@ -284,7 +347,7 @@ class Drawexporter(object):
                         self.csg.write('explode %s E\n' % subobj.Name )
                         self.csg.write('wire %s %s_1\n' %(sectionname,subobj.Name))
                     if sh.ShapeType == 'Face':
-                        #we should use outer wire when it becomes avaiable
+                        #we should use outer wire when it becomes available
                         self.csg.write('explode %s W\n' % subobj.Name )
                         #csg.write('tcopy %s_1 %s\n' %(subobj.Name,sectionname))
                         sectionname ='%s_1' % subobj.Name
@@ -316,7 +379,8 @@ class Drawexporter(object):
             hasplacement = not ob.Placement.isNull()
         else:
             hasplacement = False
-        if ob.TypeId in ["Part::Cut","Part::Fuse","Part::Common","Part::Section"]:
+        if ob.TypeId in ["Part::Cut","Part::Fuse","Part::Common",\
+                "Part::Section"]:
             if checksupported: return True # The object is supported
             d1.update({'part':ob.Base.Name,'tool':ob.Tool.Name,\
                 'command':'b%s' % ob.TypeId[6:].lower()})
@@ -342,8 +406,12 @@ class Drawexporter(object):
             if checksupported: return True # The object is supported
             d1.update({'radius':f2s(ob.Radius),'angle1':f2s(ob.Angle1),\
                 'angle2':f2s(ob.Angle2),'angle3':f2s(ob.Angle3)})
-            self.csg.write('psphere %(name)s %(radius)s %(angle1)s %(angle2)s '\
-                '%(angle3)s\n'%d1)
+            if ob.Angle1.Value == -90 and ob.Angle2.Value == 90 and \
+                    ob.Angle3.Value == 360:
+                self.csg.write('psphere %(name)s %(radius)s\n'%d1)
+            else:
+                self.csg.write('psphere %(name)s %(radius)s %(angle1)s '
+                        '%(angle2)s %(angle3)s\n'%d1)
         elif ob.TypeId == "Part::Box" :
             if checksupported: return True # The object is supported
             d1.update({'dx':f2s(ob.Length),'dy':f2s(ob.Width),'dz':f2s(ob.Height)})
@@ -352,19 +420,32 @@ class Drawexporter(object):
             if checksupported: return True # The object is supported
             d1.update({'radius':f2s(ob.Radius),'height':f2s(ob.Height),\
                 'angle':f2s(ob.Angle)})
-            self.csg.write('pcylinder %(name)s %(radius)s %(height)s %(angle)s\n'%d1)
+            if ob.Angle.Value == 360:
+                self.csg.write('pcylinder %(name)s %(radius)s %(height)s\n'%d1)
+            else:
+                self.csg.write('pcylinder %(name)s %(radius)s %(height)s '\
+                        '%(angle)s\n'%d1)
         elif ob.TypeId == "Part::Cone" :
             if checksupported: return True # The object is supported
             d1.update({'radius1':f2s(ob.Radius1),'radius2':f2s(ob.Radius2),\
                     'height':f2s(ob.Height),'angle':f2s(ob.Angle)})
-            self.csg.write('pcone %(name)s %(radius1)s %(radius2)s %(height)s %(angle)s\n'%d1)
+            if ob.Angle.Value == 360:
+                self.csg.write('pcone %(name)s %(radius1)s %(radius2)s '\
+                        '%(height)s\n'%d1)
+            else:
+                self.csg.write('pcone %(name)s %(radius1)s %(radius2)s '\
+                        '%(height)s %(angle)s\n'%d1)
         elif ob.TypeId == "Part::Torus" :
             if checksupported: return True # The object is supported
             d1.update({'radius1':f2s(ob.Radius1),'radius2':f2s(ob.Radius2),\
                 'angle1': f2s(ob.Angle1),'angle2':f2s(ob.Angle2),\
                 'angle3': f2s(ob.Angle3)})
-            self.csg.write('ptorus %(name)s %(radius1)s %(radius2)s %(angle1)s '\
-                    '%(angle2)s %(angle3)s\n' % d1)
+            if ob.Angle1.Value == -180 and ob.Angle2.Value == 180 and \
+                    ob.Angle3.Value == 360:
+                self.csg.write('ptorus %(name)s %(radius1)s %(radius2)s\n'%d1)
+            else:
+                self.csg.write('ptorus %(name)s %(radius1)s %(radius2)s '\
+                        '%(angle1)s %(angle2)s %(angle3)s\n' % d1)
         elif ob.TypeId == "Part::Mirroring" :
             if checksupported: return True # The object is supported
             self.process_object(ob.Source)
@@ -401,6 +482,17 @@ class Drawexporter(object):
                     return self.process_object(ob.Shapes[0],True)
                 self.process_object(ob.Shapes[0],)
                 self.csg.write('tcopy %s %s\n'%(ob.Shapes[0].Name,d1['name']))
+            elif ob.TypeId == "Part::MultiFuse" and \
+                    occversiontuple() >= (6,8,1):
+                if checksupported: return True # The object is supported
+                for subobj in ob.Shapes:
+                    self.process_object(subobj)
+                self.csg.write("bclearobjects\nbcleartools\n")
+                self.csg.write("baddobjects %s\n" % ob.Shapes[0].Name)
+                self.csg.write("baddtools %s\n" % " ".join(subobj.Name for \
+                        subobj in ob.Shapes[1:]))
+                self.csg.write("bfillds\n")
+                self.csg.write("bbop %s 1\n" % ob.Name) #BOPAlgo_FUSE == 1
             else:
                 if checksupported: return True # The object is supported
                 topname = ob.Name
@@ -421,7 +513,7 @@ class Drawexporter(object):
                     curname=nxtname
                     i+=1
         elif (isDraftPolygon(ob) and ob.ChamferSize.Value == 0 and\
-                ob.FilletRadius.Value == 0 and ob.Support == None) or\
+                ob.FilletRadius.Value == 0 and ob.Support is None) or\
                 ob.TypeId == "Part::Prism" or \
                 ob.TypeId == "Part::RegularPolygon":
             if checksupported: return True # The object is supported
@@ -459,7 +551,7 @@ class Drawexporter(object):
         elif ob.TypeId == "Part::Extrusion" and ob.TaperAngle.Value == 0:
             if checksupported: return True # The object is supported
             self.process_object(ob.Base)
-            #Warning does not fully ressemle the functionallity of
+            #Warning does not fully resemble the functionality of
             #Part::Extrusion
             #csg.write('tcopy %s %s\n'%(ob.Base.Name,d1['name']))
             facename=ob.Base.Name
@@ -472,6 +564,22 @@ class Drawexporter(object):
             self.csg.write('blend %s %s %s\n' % (d1['name'],ob.Base.Name,\
                 ' '.join(('%s %s'%(f2s(e[1]),'%s_%d' % (ob.Base.Name,e[0])) \
                 for e in ob.Edges))))
+        elif ob.TypeId == "Part::Thickness" and not ob.SelfIntersection and \
+                ob.Mode == 'Skin':
+            if checksupported: return True # The object is supported
+            jointype = {'Arc':'a','Intersection':'i','Tangent':'t'} #Join
+            inter = {False: 'p', True: 'c'} #Intersection
+            baseobj, facelist = ob.Faces
+            self.process_object(baseobj)
+            faces = ' '.join([('%s_%s' %(baseobj.Name,f[4:])) \
+                for f in facelist])
+            value = f2s(ob.Value)
+            self.csg.write('explode %s F\n' % baseobj.Name )
+            self.csg.write('offsetparameter 1e-7 %s %s\n' % \
+                    (inter[ob.Intersection],jointype[ob.Join]))
+            self.csg.write('offsetload %s %s %s\n'%(baseobj.Name,value,faces))
+            self.csg.write('offsetperform %s\n' % d1['name'] )
+
         elif ob.TypeId == "Part::Sweep" and True:
             if checksupported: return True # The object is supported
             self.saveSweep(ob)
@@ -481,7 +589,7 @@ class Drawexporter(object):
             for i,subobj in enumerate(ob.Sections):
                 explodeshape = self.alwaysexplode or \
                         self.process_object(suboobj,True)
-                if explodeshape and False: #diabled TBD
+                if explodeshape and False: #disabled TBD
                     try:
                         raise NotImplementedError
                         sectionname = '%s-%02d-section' % (ob.Name,i)
@@ -507,6 +615,8 @@ class Drawexporter(object):
                         sectionname = tempname
                     except NotImplementedError:
                         explodeshape = False # fallback
+                else:
+                    explodeshape = False # fallback if we hit the False before
                 if not explodeshape: # extract only the used subshape
                     sh = subobj.Shape
                     if not sh.isNull():
@@ -552,9 +662,11 @@ class Drawexporter(object):
             d1['y']=f2s(ob.Y)
             d1['z']=f2s(ob.Z)
             self.csg.write('vertex %(name)s %(x)s %(y)s %(z)s\n' % d1)
-
-        elif isDraftCircle(ob) or ob.TypeId == "Part::Circle":
+        elif isDraftCircle(ob) or ob.TypeId == "Part::Circle" or \
+                isDraftEllipse(ob):
             if checksupported: return True # The object is supported
+            isdraftcircle=isDraftCircle(ob)
+            isdraftellipse=isDraftCircle(ob)
             "circle name x y [z [dx dy dz]] [ux uy [uz]] radius"
             curvename = '%s-curve' % d1['name']
             if ob.TypeId == "Part::Circle":
@@ -564,17 +676,26 @@ class Drawexporter(object):
                 self.csg.write('circle %s 0 0 0 %s\n' % (curvename,radius))
                 self.csg.write('mkedge %s %s %s %s\n' % \
                     (d1['name'],curvename,pfirst,plast))
-            else:
-                radius=f2s(ob.Radius.Value)
-                pfirst=f2s(ob.FirstAngle.getValueAs('rad').Value)
-                plast=f2s(ob.LastAngle.getValueAs('rad').Value)
+            else: #draft
                 makeface = ob.MakeFace and \
                     (ob.Shape.isNull() or ob.Shape.ShapeType == 'Face')
-                #FreeCAD ignore a failed mkplane but it may
-                #brake the model in DRAWEXE
-
+                #FreeCAD ignores a failed mkplane but it may
+                #break the model in DRAWEXE
                 edgename  = '%s-edge' % d1['name']
-                self.csg.write('circle %s 0 0 0 %s\n' % (curvename,radius))
+
+                if isdraftcircle:
+                    pfirst=f2s(ob.FirstAngle.getValueAs('rad').Value)
+                    plast=f2s(ob.LastAngle.getValueAs('rad').Value)
+                    radius=f2s(ob.Radius.Value)
+                    self.csg.write('circle %s 0 0 0 %s\n' % (curvename,radius))
+                else: #draft ellipse
+                    import math
+                    majr=f2s(float(ob.MajorRadius))
+                    minr=f2s(float(ob.MinorRadius))
+                    pfirst=f2s(math.radians(ob.FirstAngle))
+                    plast =f2s(math.radians(ob.LastAngle))
+                    self.csg.write('ellipse %s 0 0 0 %s %s\n' % \
+                            (curvename,majr,minr))
                 self.csg.write('mkedge %s %s %s %s\n' % \
                         (edgename,curvename,pfirst,plast))
                 if makeface:
@@ -583,7 +704,6 @@ class Drawexporter(object):
                     self.csg.write('mkplane %s %s\n' % (d1['name'],wirename))
                 else:
                     self.csg.write('wire %s %s\n' %(d1['name'],edgename))
-
         elif ob.TypeId == "Part::Line":
             if checksupported: return True # The object is supported
             self.csg.write('polyline %s %s %s %s %s %s %s\n' % \
@@ -608,7 +728,7 @@ class Drawexporter(object):
                 self.csg.write('wire %s %s\n' %(wirename,polyname))
         elif isDraftClone(ob):
             if checksupported: return True # The object is supported
-            x,y,z=ob.Scale.x
+            x,y,z=ob.Scale
             if x == y == z: #uniform scaling
                 d1['scale']=f2s(x)
             else:
@@ -639,7 +759,29 @@ class Drawexporter(object):
                         self.csg.write('deform %(newname)s %(basename)s'\
                                 ' %(cx)s %(cy)s %(cz)s\n' % d1)
                 self.csg.write('compound %s %s\n' % (' '.join(newnames),ob.Name))
-
+        elif isDraftShape2DView(ob) and not ob.Tessellation and \
+                ob.ProjectionMode == "Solid" and ob.Base is not None and \
+                hasattr(ob.Base,'Shape'):
+        # not supported are groups, Arch/Sections and individual faces mode
+            if checksupported: return True # The object is supported
+            self.process_object(ob.Base)
+            v=ob.Projection
+            x=ax2_xdir(v)
+            self.csg.write('hprj %s_proj 0 0 0 %s %s %s %s %s %s\n' % \
+                    ( ob.Name,f2s(v.x),f2s(v.y),f2s(v.z)\
+                    , f2s(x.x),f2s(x.y),f2s(x.z)))
+            self.csg.write('houtl %s_outl %s\n' % (ob.Name, ob.Base.Name))
+            self.csg.write('hfill %s_outl %s_proj 0\n' %(ob.Name,ob.Name)) #0?
+            self.csg.write('hload %s_outl\n' % (ob.Name))
+            self.csg.write('hsetprj %s_proj\n' % (ob.Name))
+            self.csg.write('hupdate\n')
+            self.csg.write('hhide\n')
+            self.csg.write('unset -nocomplain vl v1l vnl vol vil hl h1l hnl hol hil\n')
+            self.csg.write('hres2d\n')
+            if ob.HiddenLines:
+                self.csg.write('compound vl v1l vnl vol vil hl h1l hnl hol hil %s\n' % ob.Name)
+            else:
+                self.csg.write('compound vl v1l vnl vol vil %s\n' % ob.Name)
         #elif ob.isDerivedFrom('Part::FeaturePython') and \
         #    hasattr(ob.Proxy,'__module__'):
         #    pass
@@ -651,6 +793,9 @@ class Drawexporter(object):
                     formatobjtype(ob))
             hasplacement = saveShape(self.csg,self.filename,ob.Shape,ob.Name,\
                     hasplacement,self.cleanshape)
+        elif ob.isDerivedFrom('App::Annotation') :
+            return False # ignored here
+            #anntotations needs to be drawn after erase/donly
         else: # not derived from Part::Feature
             if not toplevel:
                 raise ValueError('Can not export child object')
@@ -671,12 +816,27 @@ class Drawexporter(object):
             self.csg.write('#Object Label: %s\n' % ob.Label.encode('unicode-escape'))
         return ob.Name #The object is present and can be referenced
 
+    def export_annotations(self,objlst):
+        for ob in objlst:
+            if ob.isDerivedFrom('App::Annotation') :
+                if ob.Name != ob.Label:
+                    self.csg.write('#Annotation Name %s Label %s"\n' % \
+                            (ob.Name,ob.Label.encode('unicode-escape')))
+                else:
+                    self.csg.write('#Annotation %s\n' % (ob.Name))
+                v=ob.Position
+                self.csg.write('dtext %s %s %s "%s"\n' % \
+                        (f2s(v.x),f2s(v.y),f2s(v.z), '\\n'.join(\
+                        ob.LabelText).encode(\
+                        'ascii', errors='xmlcharrefreplace')))
+
     def export_objects(self,objlst,toplevel=True):
         self.write_header()
         toplevelobjs = [self.process_object(ob, toplevel=toplevel)\
                 for ob in objlst]
         names = [name for name in toplevelobjs if name is not False]
         self.csg.write('donly %s\n'%(' '.join(names)))
+        self.export_annotations(objlst)
         #for ob in objlst:
         #    self.process_object(ob,toplevel=toplevel)
         #self.write_displayonly(objlst)
@@ -688,3 +848,6 @@ def export(exportList,filename):
     "called when freecad exports a file"
     with Drawexporter(filename) as exporter:
         exporter.export_objects(exportList)
+
+if 'tcl' not in FreeCAD.getExportType():
+    FreeCAD.addExportType("DRAWEXE script (*.tcl)","exportDRAWEXE")

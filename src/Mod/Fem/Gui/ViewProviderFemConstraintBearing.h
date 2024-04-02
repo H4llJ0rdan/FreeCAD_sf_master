@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (c) 2013 Jan Rheinländer <jrheinlaender[at]users.sourceforge.net>     *
+ *   Copyright (c) 2013 Jan Rheinländer                                    *
+ *                                   <jrheinlaender@users.sourceforge.net> *
  *                                                                         *
  *   This file is part of the FreeCAD CAx development system.              *
  *                                                                         *
@@ -24,52 +25,27 @@
 #ifndef GUI_VIEWPROVIDERFEMCONSTRAINTBEARING_H
 #define GUI_VIEWPROVIDERFEMCONSTRAINTBEARING_H
 
-#include <TopoDS_Shape.hxx>
-
 #include "ViewProviderFemConstraint.h"
-#include <QObject>
-#include <QVBoxLayout>
-
-class SoFontStyle;
-class SoText2;
-class SoBaseColor;
-class SoTranslation;
-class SbRotation;
-class SoMaterial;
-class SoLightModel;
-class SoCoordinate3;
-class SoIndexedLineSet;
-class SoIndexedFaceSet;
-class SoEventCallback;
-class SoMarkerSet;
-
-namespace Gui  {
-class View3DInventorViewer;
-    namespace TaskView {
-        class TaskDialog;
-    }
-}
 
 namespace FemGui
 {
 
-class FemGuiExport ViewProviderFemConstraintBearing : public FemGui::ViewProviderFemConstraint
+class FemGuiExport ViewProviderFemConstraintBearing: public FemGui::ViewProviderFemConstraint
 {
-    PROPERTY_HEADER(FemGui::ViewProviderFemConstraintBearing);
+    PROPERTY_HEADER_WITH_OVERRIDE(FemGui::ViewProviderFemConstraintBearing);
 
 public:
     /// Constructor
     ViewProviderFemConstraintBearing();
-    virtual ~ViewProviderFemConstraintBearing();
+    ~ViewProviderFemConstraintBearing() override;
 
-    virtual void updateData(const App::Property*);
+    void updateData(const App::Property*) override;
 
 protected:
-    virtual bool setEdit(int ModNum);
-
+    bool setEdit(int ModNum) override;
 };
 
-} //namespace FemGui
+}  // namespace FemGui
 
 
-#endif // GUI_VIEWPROVIDERFEMCONSTRAINTBEARING_H
+#endif  // GUI_VIEWPROVIDERFEMCONSTRAINTBEARING_H
